@@ -1,0 +1,248 @@
+﻿@using web_server.Models;
+@model DisplayModelShedule
+<style>
+    table {
+  border-collapse: collapse;
+}
+table td, table th {
+  border: 1px solid black;
+}
+table tr:first-child th {
+  border-top: 0;
+}
+table tr:last-child td {
+  border-bottom: 0;
+}
+table tr td:first-child,
+table tr th:first-child {
+  border-left: 0;
+}
+table tr td:last-child,
+table tr th:last-child {
+  border-right: 0;
+}
+</style>
+
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
+<label>Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")</label>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+
+
+<script>
+    function clicked(time, s_day) {
+        var date = document.getElementById("main-date").value;
+
+        if(date.includes("янв")){
+            date = date.replace("янв", "jan")
+        }
+        if(date.includes("фев")){
+            date = date.replace("фев", "feb")
+        }
+        if(date.includes("мар")){
+            date = date.replace("мар", "mar")
+
+        }
+        if(date.includes("апр")){
+            date = date.replace("апр", "apr")
+
+        }
+        if (date.includes("май")) {
+            date = date.replace("май", "may")
+
+        }
+        if(date.includes("июн")){
+            date = date.replace("июн", "jun")
+
+        }
+        if(date.includes("июл")){
+            date = date.replace("июл", "jul")
+
+        }
+        if(date.includes("авг")){
+            date = date.replace("авг", "aug")
+
+        }
+        if (date.includes("сен")) {
+            date = date.replace("сен", "sep")
+
+        }
+        if (date.includes("окт")) {
+            date = date.replace("окт", "oct")
+
+        }
+        if (date.includes("ноя")) {
+            date = date.replace("ноя", "nov")
+
+        }
+        if (date.includes("дек")) {
+            date = date.replace("дек", "dec")
+        }
+ 
+        var dateString = s_day + " " + date + " " + time;
+        const time2 = Date.parse(dateString);
+        
+        return time2;
+    }
+    
+    function prevWeek() {
+    }
+
+    function getCurrDate(){
+        return '@Model.Date';
+    }
+</script>
+
+<div class="calendar">
+    <div class="header">
+        <form method="get" action="/schedule/downDate">
+            <input hidden="hidden" id="date" name="date" value="@Model.Date" />
+            <input type="submit" onclick="nextWeek()" value="<<" />
+        </form>
+        <input id="main-date" class="main-date" disabled="disabled" type="text" value="@Model.Date.ToString("MMM yyyy")" />
+        <form method="get" action="/schedule/upDate">
+            <input hidden="hidden" id="date" name="date" value="@Model.Date"/>
+            <input type="submit"  value=">>" />
+        </form>
+    </div>
+    <br/>
+     <table cellpadding="0" cellspacing="0">
+    <tr>
+        
+            <th></th>
+
+            <th> Пн @Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).Day </th>
+            <th> Вт @Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(1).Day </th>
+            <th> Ср @Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(2).Day </th>
+            <th> Чт @Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(3).Day </th>
+            <th> Пт @Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(4).Day </th>
+            <th> Сб @Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(5).Day </th>
+            <th> Вс @Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(6).Day </th>
+          
+    </tr>
+        @{
+            var w_days = new List<DayOfWeek>()
+            {
+            DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+            };
+
+            var hours = new List<string>()
+            {
+                "00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00","08:00", "09:00","10:00", "11:00","12:00", "13:00","14:00", "15:00","16:00", "17:00",
+                "18:00", "19:00","20:00", "21:00","22:00", "23:00"
+            };
+
+            var countA = 0;
+
+            foreach (var item in hours)
+            {
+                var countB = 1;
+
+                <tr>
+                
+                <td>@item</td>
+                    @{
+                        foreach (var day in w_days)
+                        {
+                            var btn = $"{countA};{countB}";
+                            int s_day = -1;
+
+                            <td>
+                                @{
+                                    if (@countB == 1)
+                                    {
+                                        s_day= Model.Date.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday).Day;
+                                    }
+                                    if (@countB == 2)
+                                    {
+                                        s_day= Model.Date.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday).AddDays(1).Day;
+                                    }
+                                    if (@countB == 3)
+                                    {
+                                        s_day= Model.Date.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday).AddDays(2).Day;
+                                    }
+                                    if (@countB == 4)
+                                    {
+                                        s_day= Model.Date.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday).AddDays(3).Day;
+                                    }
+                                    if (@countB == 5)
+                                    {
+                                        s_day= Model.Date.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday).AddDays(4).Day;
+                                    }
+                                    if (@countB == 6)
+                                    {
+                                        s_day= Model.Date.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday).AddDays(5).Day;
+                                    }
+                                    if (@countB == 7)
+                                    {
+                                        s_day= Model.Date.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday).AddDays(6).Day;
+                                    }
+                            }
+                         
+                             <button class="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day')">clicked3</button>
+
+                                <div>
+                                    @{
+                                        foreach (var model1 in Model.Schedules)
+                                        {
+                                            foreach (var m_date in model1.Date.dateTimes)
+                                            {
+                                                if(m_date.DayOfWeek == day)
+                                                {
+                                                    if(model1.Looped != true)
+                                                    {
+                                                        if (m_date != DateTime.Parse(s_day + " " + Model.Date.ToString("MMM yyyy") + " " + item))
+                                                        {
+                                                            continue;
+                                                        }    
+                                                    }
+                                                    
+                                                    if(m_date.Hour == DateTime.Parse(item).Hour)
+                                                    {
+                                                        if(ViewData["role"].ToString() == "Tutor")
+                                                        {
+                                                            if (string.IsNullOrEmpty(model1.UserName))
+                                                            {
+                                                                <script>
+                                                                    document.getElementsByClassName('@btn')[0].style.backgroundColor = "turquoise";
+                                                                </script>
+                                                                break;
+                                                            }
+                                                            else
+                                                            {
+                                                                <script>
+                                                                    var elem = document.getElementsByClassName('@btn');
+                                                                    elem[0].parentNode.removeChild(elem[0]);
+                                                                </script>
+
+                                                                <label style="background-color:lightblue">@model1.UserName.ToString()</label>
+                                                                break;
+                                                            }
+                                                        }
+                                                        else
+                                                        { 
+                                                            <script>
+                                                                    var elem = document.getElementsByClassName('@btn');
+                                                                    elem[0].parentNode.removeChild(elem[0]);
+                                                            </script>
+
+                                                            <label style="background-color:lightblue">@model1.TutorFullName.ToString()</label>
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                </div>
+                            </td>
+                            countB++;
+                        }
+                    }
+                </tr>
+                countA++;
+            }
+    }    
+    </table>
+</div>

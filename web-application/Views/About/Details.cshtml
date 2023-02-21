@@ -1,0 +1,28 @@
+﻿@model server.Models.User
+<br/>
+<label>Имя и фамилия репетитора:</label>
+<label>@Model.FirstName @Model.LastName</label>
+
+<img src="@Model.PhotoUrl"/>
+<br/>
+<label>Имя и фамилия репетитора:</label>
+<label>@Model.FirstName @Model.LastName</label>
+
+<br />
+<label>О себе:</label>
+<label>@Model.About</label>
+
+<br />
+<label>Курсы:</label>
+@foreach(var item in Model.Courses)
+{
+
+    <label>@item.Title</label>
+}
+
+<br/>
+<br />
+@{
+    var url = "/about/tutors?#openModalmodal" + Model.Id;
+    <a href="@url">Записаться</a>
+}

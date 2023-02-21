@@ -1,0 +1,43 @@
+﻿@model web_server.Models.User
+
+<ul class="list-group">
+
+    @{
+        if(Model.Role == "Student")
+        {
+             <li class="nav-item">
+            <a class="nav-link text-dark">Осталось занятий:</a>
+             </li>
+             <br/>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/schedule">Расписание</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/chat">Чаты</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark">Репетиторы</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark">Тарифы</a>
+            </li>
+        }
+          if(Model.Role == "Tutor")
+        {
+        
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/schedule">Расписание</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/chat">Чаты</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark">Ученики</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark">Баланс</a>
+            </li>
+        }
+    }
+    
+</ul>

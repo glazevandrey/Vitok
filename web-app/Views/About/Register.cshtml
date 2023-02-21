@@ -1,0 +1,123 @@
+﻿@using System.Globalization;
+@using web_server.Models;
+@model List<User>;
+
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
+<script src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
+
+<script>
+    let time = [];
+
+    function clickeds (a, id, date){
+        
+        var fs = "." + a;
+
+       var f = document.querySelector(fs);
+       if(f.style.color == 'blue'){
+           f.style.color = "black";
+       }
+       f.style.color = "blue";
+
+         if(time.includes(date)){
+            time = time.filter(function (letter) {
+                return letter !== date;
+            });
+       }else{
+           time.push(date);
+       }
+
+     
+        document.getElementById('texdt;' + id).value = time;
+               console.log(time);
+
+    }
+
+    function getTime(){
+        return time;
+    }
+</script>
+
+@{
+    foreach (var item in Model)
+    {
+        <label>@item.FirstName</label>
+        <label>@item.LastName</label>
+        <label>@item.UserId</label>
+        var modalId = "modal" + item.UserId;
+
+        var openmodal = "openModal" + modalId;
+        var closemodal = "closeModal" + modalId;
+        var url = "/about/details?id=" + item.UserId;
+        <form method="post" action="@url">
+            <button>Подробнее</button>
+        </form>
+
+        <a href="#@openmodal">Выбрать время</a>
+        <div id="@openmodal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">@item.FirstName @item.LastName</h3>
+                        <a href="#@closemodal" title="Close" class="close">×</a>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+
+                            @{
+                                int x = 0;
+                                int y = 0;
+                                var w_days = new List<DayOfWeek>()
+                                {
+                                    DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+                                };
+
+                                foreach (var day in w_days)
+                                {
+                                    <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                                    y = 0;
+                                    <br />
+                                    <br />
+
+                                    foreach (var time in item.UserDates.dateTimes)
+                                    { 
+                                        if(time.DayOfWeek == day)
+                                        {
+                                                var name = $"a{item.UserId}{x}{y}";
+                                                <button class="@name" onclick="clickeds('@name', '@item.UserId', '@time')">@time.ToString("HH:mm")</button>
+                                                y++;
+
+                                                 <br />
+
+                                        }
+                                        x++;
+
+                                       
+                                    }
+                                     <br />
+
+                                }                           
+                            }
+
+
+                        </p>
+                        <form method="post" action="FromRegisterToLogin">
+                            @{
+                                var texdt = $"texdt;{item.UserId}";
+                                var tutor = $"tutor;{item.UserId}";
+
+                                <input hidden="hidden" class="texdt" name="texdt" id="@texdt" value="" />
+                                <input hidden="hidden" class="tutor" name="tutor" id="@tutor" value="@item.UserId" />
+
+                                <input type="submit" value="Записаться" />
+                            }
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+
+}
