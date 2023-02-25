@@ -13,5 +13,6 @@ namespace web_server.Models
         public Course Course { get; set; }
         public bool Looped { get; set; } = true;
         public UserDate Date { get; set; }
+        public Status Status { get; set; }
     }
 }

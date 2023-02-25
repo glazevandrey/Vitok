@@ -74,6 +74,8 @@ namespace web_server.DbContext
         public int TutorId { get; set; }
         public DateTime OldTime { get; set; }
         public DateTime NewTime { get; set; }
+        public string Reason { get; set; }
+        public string Initiator { get; set; }
     }
     public class ChatUser
     {

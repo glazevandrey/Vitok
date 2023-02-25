@@ -75,6 +75,12 @@ namespace web_app.Controllers
             var res = _requestService.SendPost(req, HttpContext);
             return RedirectToAction("Index", "Schedule");
         }
+        [HttpPost("changeStatus", Name = "changeStatus")]
+        public IActionResult changeStatus([FromForm] string status, [FromForm] string dateStatus, [FromForm] string userStatus, [FromForm] string tutorStatus, [FromForm] string newDate, [FromForm] string reason, [FromForm] string initiator, [FromForm] string newTime, [FromForm] string looped)
+        {
+           
+            return RedirectToAction("Index", "Schedule");
+        }
         [HttpGet("UpDate", Name = "UpDate")]
         public IActionResult UpDate(string date)
         {

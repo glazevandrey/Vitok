@@ -52,6 +52,92 @@ table tr th:last-child {
         </div>
  </div>
 
+    <div id="statusModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                       Выберите статус занятия
+                    </h3>
+                    <a href="#closeModal" title="Close" class="close">×</a>
+                </div>
+                <div class="modal-body">
+
+                    <script>
+                        function changesStatus(value){
+                            console.log(value.value);
+
+                            if(value.value === 'Перенесен'){
+                                $('#reason-label').removeAttr('hidden');
+                                $('#reason').removeAttr('hidden');
+
+                                $('#date-label').removeAttr('hidden');
+                                $('#newDate').removeAttr('hidden');
+                                $('#newTime').removeAttr('hidden');
+                                $('#looped2').removeAttr('hidden');
+
+                                $('#label-looped').removeAttr('hidden');
+
+                                $('#who-label').removeAttr('hidden');
+                                $('#initiator').removeAttr('hidden');
+
+                            }
+                        }
+                    </script>
+                    <form method="post" action="/schedule/changeStatus">
+                        @{
+                            <select name="status" id="status" onchange="changesStatus(this)">
+                                @{
+                                    foreach (Status item in Enum.GetValues(typeof(web_server.Models.Status)))
+                                    {
+                                        <option value="@item">@item</option>
+                                    }
+                                }
+                            </select>
+                           
+                        }
+                        <br/>
+
+                        <label hidden="hidden" id="label-looped" for="looped2">Постоянный перенос?</label>
+                        <input hidden="hidden" type="checkbox" id="looped2" name="looped" />
+
+                         <br/>
+                        <label hidden="hidden" id="reason-label">Причина:</label>
+
+                        <input hidden="hidden" type="text" id="reason" name="reason" />
+                        <br/>
+                        <label hidden="hidden" id="date-label">Новая дата:</label>
+
+                        <input hidden="hidden" type="date" id="newDate" name="newDate" />
+                        <input hidden="hidden" type="time" id="newTime" name="newTime" />
+
+                        <br />
+
+
+
+                        <label id="who-label" hidden="hidden">Кто перенес:</label>
+
+                        <select hidden="hidden" name="initiator" id="initiator">
+                            <option value="@ViewData["userid"]">Репетитор</option>
+                            <option value="" id="studentId">Студент</option>
+
+                        </select>
+                        <br/>
+
+                        <input hidden="hidden" type="text" value="st" id="dateStatus" name="dateStatus" />
+
+                        <input hidden="hidden" type="text" value="st" id="userStatus" name="userStatus" />
+
+                        <input hidden="hidden" type="text" value="st" id="tutorStatus" name="tutorStatus" />
+                        <input type="submit" value="ОК" />
+                        <input type="button" value="Отмена" href="#closeModal" />
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <div id="removeModal" class="modal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -306,8 +392,14 @@ table tr th:last-child {
                                     }
                             }
                          
-                             <button class="@btn" id="@btn"  style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day')">clicked3</button>
-
+                            @{
+                                        if (ViewData["role"].ToString() == "Tutor")
+                                        {
+                                            <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day')">clicked3</button>
+                                        }
+                            }
+                         
+                            
                                 <div>
                                     @{
                                         foreach (var model1 in Model.Schedules)
@@ -344,19 +436,37 @@ table tr th:last-child {
                                                                     document.getElementsByClassName('@btn')[0].style.backgroundColor = "turquoise";
 
                                                                     $("#@btn").mousedown(function (e) {
+
+
+                                                                          
+
                                                                         if (e.which === 3) {
-                                                                            var _class = e.target.getAttribute("id");
-                                                                            var sub = _class.split("_");
-                                                                            var datee = sub[2];
-                                                                            var userid = sub[1];
+                                                                                var _class = e.target.getAttribute("id");
+                                                                                var sub = _class.split("_");
+                                                                                var datee = sub[2];
+                                                                                var userid = sub[1];
 
-                                                                            var name = e.target.innerHTML;
-
+                                                                                var name = e.target.innerHTML;
                                                                             document.getElementById("removeDate").value = datee;
                                                                             document.getElementById("removeTutorId").value = @ViewData["userid"];
                                                                             document.getElementById("removeUserId").value = userid
 
                                                                             window.location.href = "#removeModal";
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                                var _class = e.target.getAttribute("id");
+                                                                                var sub = _class.split("_");
+                                                                                var datee = sub[2];
+                                                                                var userid = sub[1];
+
+                                                                                var name = e.target.innerHTML; 
+                                                                                document.getElementById("dateStatus").value = datee;
+                                                                                document.getElementById("tutorStatus").value = @ViewData["userid"];
+                                                                                document.getElementById("userStatus").value = userid;
+                                                                                document.getElementById("studentId").value = userid;
+                                                                                window.location.href = "#statusModal";
+
                                                                         }
                                                                     });
 
@@ -388,8 +498,22 @@ table tr th:last-child {
                                                                             document.getElementById("removeUserId").value = userid
 
                                                                             window.location.href = "#removeModal";
-                                                                          
-                                                                        }
+
+                                                                            } else {
+                                                                                var _class = e.target.getAttribute("id");
+                                                                                var sub = _class.split("_");
+                                                                                var datee = sub[2];
+                                                                                var userid = sub[1];
+
+                                                                                var name = e.target.innerHTML;
+                                                                                document.getElementById("dateStatus").value = datee;
+                                                                                document.getElementById("tutorStatus").value = @ViewData["userid"];
+                                                                                document.getElementById("userStatus").value = userid;
+                                                                                document.getElementById("studentId").value = userid;
+
+                                                                                window.location.href = "#statusModal";
+
+                                                                            }
                                                                     });
 
                                                                   </script>
