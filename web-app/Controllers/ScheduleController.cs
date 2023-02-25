@@ -7,6 +7,7 @@ using web_app.Models.Requests.Get;
 using web_app.Services;
 using System;
 using System.Globalization;
+using web_server.DbContext;
 
 namespace web_app.Controllers
 {
@@ -32,22 +33,47 @@ namespace web_app.Controllers
             {
                 return Redirect("/login");
             }
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
 
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
+            
             ViewData["role"] = user.Role;
-            ViewData["userd"] = user.UserId;
+            ViewData["userid"] = user.UserId;
+            ViewData["courses"] = TestData.Courses;
             var modl = new DisplayModelShedule()
             {
                 Date = date == null? DateTime.Now : DateTime.Parse(date),
                 Schedules = model
             };
+
             return View(modl);
         }
-        [HttpPost]
-        public IActionResult AddFreeTime(string date, string tutorId)
+        
+        [HttpPost("AddFreeTime", Name = "AddFreeTime")]
+        public IActionResult AddFreeTime([FromForm]string date2, [FromForm] string tutorId, [FromForm] string looped)
         {
-            return View();
+            var loop = looped == "on" ? true : false;
+            var req = new CustomRequestPost("api/tutor/addtutorfreedate", $"{tutorId};{DateTime.Parse(date2).ToString("dd.MM.yyyy HH:mm")};{loop}");
+            var res = _requestService.SendPost(req, HttpContext);
+            return RedirectToAction("Index", "Schedule");
+        }
+
+        [HttpPost("RemoveSchedule", Name = "RemoveSchedule")]
+        public IActionResult RemoveSchedule([FromForm] string removeDate, [FromForm] string removeTutorId, [FromForm] string removeUserId)
+        {
+            var date = DateTime.ParseExact(removeDate, "dd-MM-yyyy-HH-mm", CultureInfo.InvariantCulture);
+            CustomRequestPost req = new CustomRequestPost("api/tutor/removetutortimeandschedule", $"{removeTutorId};{removeUserId};{date}");
+            _requestService.SendPost(req, HttpContext);
+            return RedirectToAction("Index", "Schedule");
+        }
+
+        [HttpPost("AddSchedule", Name = "AddSchedule")]
+        public IActionResult AddTutorSchedule([FromForm] string date3, [FromForm] string tutorId, [FromForm] string looped, [FromForm] string userId, [FromForm] string courses )
+        {
+            var loop = looped == "on" ? true : false;
+            var req = new CustomRequestPost("api/tutor/addtutorschedule", $"{tutorId};{DateTime.Parse(date3).ToString("dd.MM.yyyy HH:mm")};{loop};{userId};{courses}");
+            var res = _requestService.SendPost(req, HttpContext);
+            return RedirectToAction("Index", "Schedule");
         }
         [HttpGet("UpDate", Name = "UpDate")]
         public IActionResult UpDate(string date)

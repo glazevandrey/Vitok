@@ -1,35 +1,40 @@
-﻿@model web_server.Models.User
-<style>
+﻿<style>
 
-    .FullContent{
+    .FullContent {
         display: flex;
         margin-top: 50px;
     }
-    .CustomLeftnavbar{
+
+    .CustomLeftnavbar {
         height: 100vh;
-        background-color:aqua;
+        background-color: aqua;
         flex: 0 0 300px;
     }
 
-    .container{
+    .container {
         margin-left: 100px;
     }
 
 </style>
 
+
+<html lang="ru">
 <body>
     <header>
     </header>
         <div class="FullContent">
-            <div class="CustomLeftnavbar" >
+            <div  class="CustomLeftnavbar" >
             @{
                 Html.RenderPartial("~/Views/Shared/_LeftMenu.cshtml");
             }
+
             </div>
-            <div class="container">
-                <main role="main" class="CustomBody">
+             <div class="container">
+                <main rol e="main" class="CustomBody">
                 @RenderBody();
                 </main>
             </div>
-        </div>
+        </div> 
 </body>
+</html>
+

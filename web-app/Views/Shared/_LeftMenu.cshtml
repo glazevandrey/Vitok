@@ -1,9 +1,7 @@
-﻿@model web_server.Models.User
-
-<ul class="list-group">
+﻿<ul class="list-group">
 
     @{
-        if(Model.Role == "Student")
+        if(ViewData["role"].ToString() == "Student")
         {
              <li class="nav-item">
             <a class="nav-link text-dark">Осталось занятий:</a>
@@ -22,7 +20,7 @@
                 <a class="nav-link text-dark">Тарифы</a>
             </li>
         }
-          if(Model.Role == "Tutor")
+        if (ViewData["role"].ToString() == "Tutor")
         {
         
             <li class="nav-item">

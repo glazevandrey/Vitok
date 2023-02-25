@@ -10,6 +10,7 @@ namespace web_server.Models
         public int TutorId { get; set; }
         public string TutorFullName { get; set; }
         public string UserName { get; set; }
+        public Course Course { get; set; }
         public bool Looped { get; set; } = true;
         public UserDate Date { get; set; }
     }

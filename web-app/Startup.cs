@@ -61,6 +61,8 @@ namespace web_app
             //});
             app.Use(async (context, next) =>
             {
+
+                // ...
                 var token = context.Request.Cookies[".AspNetCore.Application.Id"];
                 if (!string.IsNullOrEmpty(token))
                     context.Request.Headers.Add("Authorization", "Bearer " + token);
@@ -69,6 +71,7 @@ namespace web_app
             });
             app.UseEndpoints(routes =>
             {
+               
                 routes.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -57,14 +57,14 @@ namespace web_server.DbContext
         public static List<User> Tutors = UserList.Where(m => m.Role == "Tutor").ToList();
 
         public static List<Schedule> Schedules = new List<Schedule>() { new Schedule() {Id = 2, UserId=-1, TutorFullName = "Сергей Петров", TutorId = 0, Date = new UserDate(){ dateTimes = new List<DateTime>(){ DateTime.Parse("16.02.2023 19:00") } } },
-            new Schedule() { Id = 0, UserName = "Andrey", TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("09.02.2023 23:00") } } },
-            new Schedule() { Id = 1, UserName ="Andrey", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("10.02.2023 20:00") } }},
-          new Schedule() { Id = 3, UserName ="Сергей", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 13:00") } }, Looped = false},
-         new Schedule() { Id = 4, UserName ="Сергей", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 17:00") } }, Looped = false}};
+            new Schedule() { Id = 0, UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 1, UserId = 3,
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("09.02.2023 23:00") } }, Course = Courses[0] },
+            new Schedule() { Id = 1, UserName ="Петр Иванов", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 3,
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("10.02.2023 20:00") } }, Course = Courses[1]},
+          new Schedule() { Id = 3, UserName ="Сергей Курочка", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 13:00") } }, Looped = false, Course = Courses[2]},
+         new Schedule() { Id = 4, UserName ="Сергей Курочка", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 17:00") } }, Looped = false, Course = Courses[1]}};
 
         public static List<ChatUser> ChatUsers { get; set; } = new List<ChatUser>();
     }

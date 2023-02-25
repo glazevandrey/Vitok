@@ -7,5 +7,6 @@ namespace web_server.Models
     {
         public List<Schedule> Schedules { get; set; }
         public DateTime Date { get; set; }
+
     }
 }

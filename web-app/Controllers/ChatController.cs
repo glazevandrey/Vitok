@@ -19,14 +19,17 @@ namespace web_app.Controllers
         }
         public IActionResult Index()
         {
-         
             CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
             var result = _requestService.SendGet(request);
             if(result.success == false)
             {
                 return Redirect("/login");
             }
-            ViewData["userid"] =Newtonsoft.Json.JsonConvert.DeserializeObject<web_server.Models.User>(result.result.ToString()).UserId;
+
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<web_server.Models.User>(result.result.ToString());
+
+            ViewData["userid"] =user.UserId;
+            ViewData["role"] = user.Role;
             return View();
         }
     }

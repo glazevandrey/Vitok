@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.SignalR.Client;
 @model HubConnection;
 @{
-    ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
     string url = "https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.0-rc1-update1/dist/browser/signalr.min.js";
 }
 
@@ -327,10 +327,6 @@
     <div class="clearfix"></div>
 </div>
 <script>
-
-   
-
-    //var token = "Bearer " + '@ViewData["token"]';
     var url = "http://localhost:23382/chatHub" + "?" + "token=" + "@ViewData["userid"]";
     console.log(url);
     const connection = new signalR.HubConnectionBuilder()
@@ -350,12 +346,12 @@
         event.preventDefault();
     }
     var sendMessage = function () {
-                console.log("from send ");
-
         const message = document.getElementById("messageInput").value;
+
         connection.invoke("SendMessage", message, $('#chat-with-id').text()).then((result) => {
         }).catch(err => console.error(err.toString()));
         event.preventDefault();
+         document.getElementById("messageInput").value = "";
     }
     document.getElementById("sendButton").addEventListener("click", event => {
         sendMessage();
