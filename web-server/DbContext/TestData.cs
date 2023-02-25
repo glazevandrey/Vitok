@@ -56,7 +56,7 @@ namespace web_server.DbContext
 
         public static List<User> Tutors = UserList.Where(m => m.Role == "Tutor").ToList();
 
-        public static List<Schedule> Schedules = new List<Schedule>() { new Schedule() {Id = 2, UserId=-1, TutorFullName = "Сергей Петров", TutorId = 0, Date = new UserDate(){ dateTimes = new List<DateTime>(){ DateTime.Parse("16.02.2023 19:00") } } },
+        public static List<Schedule> Schedules = new List<Schedule>() { new Schedule() {Id = 2, UserId=-1, TutorFullName = "Сергей Петров", Course = Courses[1], TutorId = 0, Date = new UserDate(){ dateTimes = new List<DateTime>(){ DateTime.Parse("16.02.2023 19:00") } } },
             new Schedule() { Id = 0, UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 1, UserId = 3,
                 Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("09.02.2023 23:00") } }, Course = Courses[0] },
             new Schedule() { Id = 1, UserName ="Петр Иванов", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 3,

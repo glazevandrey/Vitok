@@ -3,6 +3,7 @@ using web_server.DbContext;
 using web_server.Models;
 using web_server.Services;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace web_server.Controllers
 {
@@ -44,6 +45,41 @@ namespace web_server.Controllers
             TestData.UserList[index] = user;
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.UserList[index]));
         }
+
+
+        [Models.Authorize]
+        [HttpGet("getreschedule", Name = "getreschedule")]
+        public string GetReSchedule([FromQuery] string args)
+        {
+            if (args == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
+            }
+
+            var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var schedules = new List<RescheduledLessons>();
+            if (user.Role == "Tutor")
+            {
+                schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
+            }
+            else
+            {
+                schedules = TestData.RescheduledLessons.Where(m => m.UserId == user.UserId).ToList();
+            }
+
+            if (schedules == null || schedules.Count == 0)
+            {
+                schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
+
+            }
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(schedules));
+        }
+
         [Models.Authorize]
         [HttpGet("getschedule", Name = "getschedule")]
         public string GetSchedule([FromQuery] string args)

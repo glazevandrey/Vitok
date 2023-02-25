@@ -65,8 +65,6 @@ table tr th:last-child {
 
                     <script>
                         function changesStatus(value){
-                            console.log(value.value);
-
                             if(value.value === 'Перенесен'){
                                 $('#reason-label').removeAttr('hidden');
                                 $('#reason').removeAttr('hidden');
@@ -80,10 +78,17 @@ table tr th:last-child {
 
                                 $('#who-label').removeAttr('hidden');
                                 $('#initiator').removeAttr('hidden');
-
                             }
                         }
                     </script>
+                        <br/>
+                        <label>Текущий статус занятия:</label>
+                    <input disabled="disabled" type="text" id="currstatus" name="currstatus" />
+                    <br/>
+                    <br />
+
+                    <label>Изменить статус занятия:</label>
+                    <br />
                     <form method="post" action="/schedule/changeStatus">
                         @{
                             <select name="status" id="status" onchange="changesStatus(this)">
@@ -97,6 +102,7 @@ table tr th:last-child {
                            
                         }
                         <br/>
+                        <input hidden="hidden" type="text" id="courseId" name="courseId" />
 
                         <label hidden="hidden" id="label-looped" for="looped2">Постоянный перенос?</label>
                         <input hidden="hidden" type="checkbox" id="looped2" name="looped" />
@@ -428,16 +434,16 @@ table tr th:last-child {
                                                                     
                                                                     </script>
                                                                btn = $"btn_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
-                                                                <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day')">clicked3</button>
+                                                                <button  class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day')">clicked3</button>
 
                                                                 <script>
                                                                    
 
                                                                     document.getElementsByClassName('@btn')[0].style.backgroundColor = "turquoise";
+                                                                       
+                                                                        $("#@btn").mousedown(function (e) {
 
-                                                                    $("#@btn").mousedown(function (e) {
-
-
+                                                                            
                                                                           
 
                                                                         if (e.which === 3) {
@@ -465,6 +471,10 @@ table tr th:last-child {
                                                                                 document.getElementById("tutorStatus").value = @ViewData["userid"];
                                                                                 document.getElementById("userStatus").value = userid;
                                                                                 document.getElementById("studentId").value = userid;
+                                                                                document.getElementById("courseId").value = @model1.Course.Id;
+                                                                                document.getElementById("currstatus").value = "@model1.Status";
+                                                                                document.getElementById("status").value = "@model1.Status";
+
                                                                                 window.location.href = "#statusModal";
 
                                                                         }
@@ -481,19 +491,59 @@ table tr th:last-child {
                                                                 </script>
                                                                 var label = $"label_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
                                                                 <div id="tooltrip">
-                                                                    <label data-title="Курс: @model1.Course?.Title; Цель: @model1.Course?.Goal?.Title; Имя и фамилия: @model1.UserName" id="@label" class="label_@btn" style="background-color:lightblue;">@model1.UserName.ToString()</label>
+                                                                    <label data-title="Курс: @model1.Course?.Title; Цель: @model1.Course?.Goal?.Title; Имя и фамилия: @model1.UserName" id="@label" class="@label" style="background-color:lightblue;">@model1.UserName.ToString()</label>
                                                                 </div>
+                                                               
                                                                 <script>
+                                                                        
+                                                                        @if (model1.ReadyDates.Count > 0)
+                                                                        {
+                                                                           <script>
+                                                                           console.log("IN");
+                                                                           console.log(@model1.ReadyDates)</script>
+                                                                                var date = DateTime.Parse(s_day + " " + Model.Date.ToString("MMM yyyy") + " " + item);
+                                                                                foreach (var readyDate in model1.ReadyDates)
+                                                                                {
+                                                                                    if (readyDate == date)
+                                                                                    {
+                                                                                        <script>
+                                                                                           document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                                        document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                                       </script>
+
+                                                                                    }
+                                                                                }
+                                                                            
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (model1.Status == Status.Проведен) {
+                                                                                <script>
+                                                                                document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                                </script>
+                                                                               
+                                                                            }
+
+                                                                            if (model1.Status == Status.Перенесен) {
+                                                                                <script>   document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "white";</script>
+                                                                             
+                                                                            }
+                                                                        }
+
+                                                                     
+                                                                       
                                                                     $("#@label").mousedown(function (e) {
                                                                         if (e.which === 3) {
                                                                             var _class = e.target.getAttribute("id");
                                                                             var sub = _class.split("_");
-                                                                            var datee = sub[2];
+                                                                            var date = sub[2];
                                                                             var userid = sub[1];
                                                                             
                                                                             var name = e.target.innerHTML;
 
-                                                                            document.getElementById("removeDate").value = datee;
+                                                                            document.getElementById("removeDate").value = date;
                                                                             document.getElementById("removeTutorId").value = @ViewData["userid"];
                                                                             document.getElementById("removeUserId").value = userid
 
@@ -510,35 +560,38 @@ table tr th:last-child {
                                                                                 document.getElementById("tutorStatus").value = @ViewData["userid"];
                                                                                 document.getElementById("userStatus").value = userid;
                                                                                 document.getElementById("studentId").value = userid;
-
+                                                                                document.getElementById("courseId").value = @model1.Course.Id;
+                                                                                document.getElementById("currstatus").value = "@model1.Status";
+                                                                                document.getElementById("status").value = "@model1.Status";
                                                                                 window.location.href = "#statusModal";
 
                                                                             }
                                                                     });
 
                                                                   </script>
+                                                                    
                                                                     <style>
-                                                                    label[data-title] {
-                                                                      position: relative;
-                                                                      display: inline-block;
-                                                                      cursor: pointer;
-                                                                      border-bottom: 1px dashed #000;
-                                                                    }
+                                                                        label[data-title] {
+                                                                        position: relative;
+                                                                        display: inline-block;
+                                                                        cursor: pointer;
+                                                                        border-bottom: 1px dashed #000;
+                                                                        }
 
                                                                         label[data-title]:hover:before {
-                                                                      content: attr(data-title);
-                                                                      position: absolute;
-                                                                      width: 100px;
-                                                                      color: #fff;
-                                                                      background: #000;
-                                                                      padding: 5px;
-                                                                      border-radius: 4px;
-                                                                      bottom: 25px;
-                                                                      left: 50px;
-                                                                    }
-                                                                </style>
-                                                                break;
-                                                            }
+                                                                        content: attr(data-title);
+                                                                        position: absolute;
+                                                                        width: 100px;
+                                                                        color: #fff;
+                                                                        background: #000;
+                                                                        padding: 5px;
+                                                                        border-radius: 4px;
+                                                                        bottom: 25px;
+                                                                        left: 50px;
+                                                                        }
+                                                                    </style>
+                                                                    break;
+                                                                }
                                                         }
                                                         else
                                                         { 
@@ -546,8 +599,21 @@ table tr th:last-child {
                                                                     var elem = document.getElementsByClassName('@btn');
                                                                     elem[0].parentNode.removeChild(elem[0]);
                                                             </script>
+                                                                var label = $"label_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
 
-                                                            <label style="background-color:lightblue">@model1.TutorFullName.ToString()</label>
+                                                            <label id="@label" class="@label" style="background-color:lightblue">@model1.TutorFullName.ToString()</label>
+                                                            <script>
+                                                                    if ("@model1.Status" == "@Status.Проведен") {
+                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                        document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                    }
+
+                                                                    if ("@model1.Status" == "@Status.Перенесен") {
+                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
+                                                                        document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                    }
+
+                                                                </script>
                                                             break;
                                                         }
                                                     }

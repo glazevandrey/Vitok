@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using web_app.Services;
+using Microsoft.Extensions.WebEncoders;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace web_app
 {
@@ -30,7 +33,11 @@ namespace web_app
                // services.AddSession();
             services.AddScoped<IRequestService, RequestService>();
             services.AddCustomServices();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(); 
+            services.Configure<WebEncoderOptions>(options =>
+            {
+                options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
+            });
             //  services.AddSignalR();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

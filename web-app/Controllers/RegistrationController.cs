@@ -80,12 +80,8 @@ namespace web_app.Controllers
                 }
             }
 
-            //make signalr
-            Func<string,string> sayHello = ChatHandler.ExampleFunc;
-
             var f = new HubConnectionBuilder().WithUrl("http://localhost:23382/chatHub").Build();
             var ff = f.StartAsync();
-            //var fas = f.On("OnlineUserList", sayHello);
             Program.Conn = f;
             HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", response.result.ToString(),
               new CookieOptions

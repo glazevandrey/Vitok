@@ -36,10 +36,17 @@ namespace web_app.Controllers
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
-            
+
             ViewData["role"] = user.Role;
             ViewData["userid"] = user.UserId;
             ViewData["courses"] = TestData.Courses;
+
+            req = new GetReSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+            res = _requestService.SendGet(req, HttpContext);
+
+            var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(res.result.ToString());
+            ViewData["rescheduled"] = rescheduled;
+
             var modl = new DisplayModelShedule()
             {
                 Date = date == null? DateTime.Now : DateTime.Parse(date),
@@ -76,9 +83,23 @@ namespace web_app.Controllers
             return RedirectToAction("Index", "Schedule");
         }
         [HttpPost("changeStatus", Name = "changeStatus")]
-        public IActionResult changeStatus([FromForm] string status, [FromForm] string dateStatus, [FromForm] string userStatus, [FromForm] string tutorStatus, [FromForm] string newDate, [FromForm] string reason, [FromForm] string initiator, [FromForm] string newTime, [FromForm] string looped)
+        public IActionResult changeStatus([FromForm] string status, [FromForm] string dateStatus, [FromForm] string userStatus, [FromForm] string tutorStatus, [FromForm] string newDate, [FromForm] string reason, [FromForm] string initiator, [FromForm] string newTime, [FromForm] string looped, [FromForm] string courseId)
         {
-           
+           bool loop = looped == "on" ? true : false;
+            if(status == "Перенесен")
+            {
+                var req = new CustomRequestPost("api/tutor/rescheduletutor", $"{status};{tutorStatus};" +
+                $"{DateTime.ParseExact(dateStatus, "dd-MM-yyyy-HH-mm", CultureInfo.InvariantCulture).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime};{courseId}");
+                var res = _requestService.SendPost(req, HttpContext);
+
+            }
+            else
+            {
+                var req = new CustomRequestPost("api/tutor/changeStatusServer", $"{status};{tutorStatus};{userStatus};{dateStatus}");
+                var res = _requestService.SendPost(req, HttpContext);
+
+            }
+
             return RedirectToAction("Index", "Schedule");
         }
         [HttpGet("UpDate", Name = "UpDate")]

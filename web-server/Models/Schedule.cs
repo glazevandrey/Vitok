@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace web_server.Models
 {
@@ -13,6 +15,8 @@ namespace web_server.Models
         public Course Course { get; set; }
         public bool Looped { get; set; } = true;
         public UserDate Date { get; set; }
-        public Status Status { get; set; }
+        public Status Status { get; set; } = Status.Ожидает;
+        public int RescheduledId { get; set; } = -1;
+        public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
     }
 }

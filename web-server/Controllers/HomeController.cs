@@ -47,6 +47,7 @@ namespace web_server.Controllers
             var json = _authService.Register(user, HttpContext);
             return json;
         }
+        [Authorize]
         [HttpGet("getuser", Name = "getuser")]
         public string GetUser([FromQuery] string args)
         {
