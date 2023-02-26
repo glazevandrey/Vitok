@@ -95,13 +95,16 @@ namespace vitok.Controllers
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     TutorId = tutor.Id,
                     UserId = user.UserId,
-                    Course = course
+                    Course = course,
+                    Status = Status.Ожидает,
+                    StartDate = dateTime
                 }) ;
 
                 return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
             }
             return _jsonService.PrepareErrorJson("Tutor not found");
         }
+
         [Authorize]
         [HttpPost("removetutortimeandschedule", Name = "removetutortimeandschedule")]
         public string RemoveTutorTimeAndSchedule()
@@ -122,9 +125,11 @@ namespace vitok.Controllers
             if (tutor != null)
             {
                 TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
+               
                 if (TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id)) != null)
                 {
-                    TestData.Schedules.Remove(TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id)));
+                    TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id)).RemoveDate = dateTime;
+                    //TestData.Schedules.Remove(TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id)));
                 }
                 return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
             }
@@ -148,10 +153,12 @@ namespace vitok.Controllers
             var tutor_id = Convert.ToInt32(split[1]);
             var user_id = Convert.ToInt32(split[2]);
             var date = DateTime.ParseExact(split[3], "dd-MM-yyyy-HH-mm", CultureInfo.InvariantCulture);
+            var dateCurr = DateTime.Parse(split[4]);
+
             var model = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
             if (model.Looped)
             {
-                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).ReadyDates.Add(date);
+                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).ReadyDates.Add(dateCurr);
             }
             else
             {
@@ -195,7 +202,7 @@ namespace vitok.Controllers
             var initiator = split[7];
             var reason = split[6];
             var courseId = Convert.ToInt32(split[9]);
-
+            var cureDate = DateTime.Parse(split[10]);
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
             var user = TestData.UserList.FirstOrDefault(m=>m.UserId == user_id);
 

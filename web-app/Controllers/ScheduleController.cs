@@ -8,6 +8,7 @@ using web_app.Services;
 using System;
 using System.Globalization;
 using web_server.DbContext;
+using System.Data;
 
 namespace web_app.Controllers
 {
@@ -83,19 +84,19 @@ namespace web_app.Controllers
             return RedirectToAction("Index", "Schedule");
         }
         [HttpPost("changeStatus", Name = "changeStatus")]
-        public IActionResult changeStatus([FromForm] string status, [FromForm] string dateStatus, [FromForm] string userStatus, [FromForm] string tutorStatus, [FromForm] string newDate, [FromForm] string reason, [FromForm] string initiator, [FromForm] string newTime, [FromForm] string looped, [FromForm] string courseId)
+        public IActionResult changeStatus([FromForm] string status, [FromForm] string dateStatus, [FromForm] string userStatus, [FromForm] string tutorStatus, [FromForm] string newDate, [FromForm] string reason, [FromForm] string initiator, [FromForm] string newTime, [FromForm] string looped, [FromForm] string courseId, [FromForm] string currDate)
         {
            bool loop = looped == "on" ? true : false;
             if(status == "Перенесен")
             {
                 var req = new CustomRequestPost("api/tutor/rescheduletutor", $"{status};{tutorStatus};" +
-                $"{DateTime.ParseExact(dateStatus, "dd-MM-yyyy-HH-mm", CultureInfo.InvariantCulture).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime};{courseId}");
+                $"{DateTime.ParseExact(dateStatus, "dd-MM-yyyy-HH-mm", CultureInfo.InvariantCulture).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime};{courseId};{currDate}");
                 var res = _requestService.SendPost(req, HttpContext);
 
             }
             else
             {
-                var req = new CustomRequestPost("api/tutor/changeStatusServer", $"{status};{tutorStatus};{userStatus};{dateStatus}");
+                var req = new CustomRequestPost("api/tutor/changeStatusServer", $"{status};{tutorStatus};{userStatus};{dateStatus};{currDate}");
                 var res = _requestService.SendPost(req, HttpContext);
 
             }

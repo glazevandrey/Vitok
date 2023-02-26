@@ -15,8 +15,11 @@ namespace web_server.Models
         public Course Course { get; set; }
         public bool Looped { get; set; } = true;
         public UserDate Date { get; set; }
+        public DateTime StartDate { get; set; }
         public Status Status { get; set; } = Status.Ожидает;
         public int RescheduledId { get; set; } = -1;
         public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
+        public DateTime RemoveDate { get; set; }
+
     }
 }
