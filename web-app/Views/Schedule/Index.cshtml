@@ -37,18 +37,18 @@ table tr th:last-child {
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title">Выберите действие</h3>
-                    <a href="#closeModal" title="Close" class="close">×</a>
+                    <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
                 </div>
                 <div class="modal-body">
 
                 <label>Добавить свободный xас</label>
-                <a href="#addhour">Ууу</a>
+                <a href="#addhour">Добавить</a>
             </div>
                    <br/>
                    <br/>
 
                 <label>Добавить занитяе</label>
-                <a href="#choosestudent">Ууу</a>
+                <a href="#choosestudent">Добавить</a>
             </div>
         </div>
  </div>
@@ -60,7 +60,7 @@ table tr th:last-child {
                     <h3 class="modal-title">
                        Выберите статус занятия
                     </h3>
-                    <a href="#closeModal" title="Close" class="close">×</a>
+                    <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
                 </div>
                 <div class="modal-body">
 
@@ -127,8 +127,8 @@ table tr th:last-child {
                         <label id="who-label" hidden="hidden">Кто перенес:</label>
 
                         <select hidden="hidden" name="initiator" id="initiator">
-                            <option value="@ViewData["userid"]">Репетитор</option>
-                            <option value="" id="studentId">Студент</option>
+                            <option value="Репетитор">Репетитор</option>
+                            <option value="Студент" id="studentId">Студент</option>
 
                         </select>
                         <br/>
@@ -139,7 +139,7 @@ table tr th:last-child {
 
                         <input hidden="hidden" type="text" value="st" id="tutorStatus" name="tutorStatus" />
                         <input type="submit" value="ОК" />
-                        <input type="button" value="Отмена" href="#closeModal" />
+                        <input type="button" value="Отмена" onclick ="closeModalWindow()" />
 
                     </form>
                 </div>
@@ -154,16 +154,18 @@ table tr th:last-child {
                 <h3 class="modal-title">
                    Удалить выбранное занятие?
                 </h3>
-                <a href="#closeModal" title="Close" class="close">×</a>
+                <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
             </div>
             <div class="modal-body">
                 <form method="post" action="/schedule/RemoveSchedule">
                     <input hidden="hidden" type="text" value="ss" id="removeDate" name="removeDate" />
                     <input hidden="hidden" type="text" value="ss" id="removeTutorId" name="removeTutorId" />
                     <input hidden="hidden" type="text" value="ss" id="removeUserId" name="removeUserId" />
+                        <input hidden="hidden" type="text" value="ss" id="currRemoveDate" name="currRemoveDate" />
 
+                        
                     <input type="submit" value="ОК" />
-                    <input type="button" value="Отмена" href="#closeModal" />
+                    <input type="button" value="Отмена" onclick ="closeModalWindow()" />
 
                 </form>
             </div>
@@ -178,7 +180,7 @@ table tr th:last-child {
                 <h3 class="modal-title">
                     Добавить свободный час на выбранную дату?
                 </h3>
-                    <a href="#closeModal" title="Close" class="close">×</a>
+                    <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
                 </div>
                 <div class="modal-body">
           
@@ -191,7 +193,7 @@ table tr th:last-child {
                     <input id="date2" name="date2" type="text" value="s" hidden="hidden" />
                     <input id="tutorId" name="tutorId" type="text" value="@ViewData["userid"]" hidden="hidden" />
                     <input type="submit" value="ОК" />
-                    <input type="button" value="Отмена" href="#closeModal"/>
+                    <input type="button" value="Отмена" onclick ="closeModalWindow()"/>
 
                 </form>
             </div>
@@ -204,7 +206,7 @@ table tr th:last-child {
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title">Выберите ученика и курс</h3>
-                    <a href="#closeModal" title="Close" class="close">×</a>
+                    <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
                 </div>
                 <div class="modal-body">
                 <form method="post" action="/schedule/AddSchedule">
@@ -227,10 +229,10 @@ table tr th:last-child {
                         }
                     }
                 </select>
-                        <br />
+
+                <br />
 
                 <select name="courses" id="courses">
-
                     @{
                         foreach (web_server.Models.Course item in (List<web_server.Models.Course>)ViewData["courses"])
                         {
@@ -240,10 +242,10 @@ table tr th:last-child {
 
                 </select>
                 <br/>
-                    <input id="date3" name="date3" type="text" value="s" hidden="hidden" />
-                    <input id="tutorId" name="tutorId" type="text" value="@ViewData["userid"]" hidden="hidden" />
+                <input id="date3" name="date3" type="text" value="s" hidden="hidden" />
+                <input id="tutorId" name="tutorId" type="text" value="@ViewData["userid"]" hidden="hidden" />
                 <input type="submit" value="ОК" />
-                <input type="button" value="Отмена" href="#closeModal" />
+                <input type="button" value="Отмена" onclick ="closeModalWindow()" />
                 </form>
                 <script>
                     var el = document.getElementById("choosedDate");
@@ -256,9 +258,11 @@ table tr th:last-child {
 <input id="choosedDate" type="text" value="s" hidden="hidden" />
 
 <script>
-    function clicked(time, s_day) {
+    function closeModalWindow(){
+                window.location.href = "#closeModal";
+    }
+    function clicked(time, s_day, s_date) {
         var date = document.getElementById("main-date").value;
-
         if(date.includes("янв")){
             date = date.replace("янв", "jan")
         }
@@ -304,12 +308,11 @@ table tr th:last-child {
         if (date.includes("дек")) {
             date = date.replace("дек", "dec")
         }
- 
-        var dateString = s_day + " " + date + " " + time;
-        const time2 = Date.parse(dateString);
-        document.getElementById("choosedDate").value = dateString;
-        document.getElementById("date2").value = dateString;
-        document.getElementById("date3").value = dateString;
+
+
+            document.getElementById("choosedDate").value = s_date;
+            document.getElementById("date2").value = s_date;
+            document.getElementById("date3").value = s_date;
 
         window.location.href = "#openmodal";
 
@@ -343,7 +346,6 @@ table tr th:last-child {
           
     </tr>
         @{
-                ViewBag.Date = Model.Date.ToString("MMM yyyy");
 
             var w_days = new List<DayOfWeek>()
             {
@@ -403,24 +405,22 @@ table tr th:last-child {
                                             date = Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(6);
                                         }
 
-                                        s_date = date;
+                                        s_date = DateTime.Parse($"{date.Day} {date.Month} {date.Year} {item}");
+                                        ViewBag.Date = s_date;
                                         s_day = date.Day;
-                                        <script>console.log("date @date" );</script>
 
                             }
                          
                             @{
                                         if (ViewData["role"].ToString() == "Tutor")
                                         {
-                                            <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day')">clicked3</button>
+                                            <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day','@s_date')">clicked3</button>
                                         }
                             }
                                 <div>
                                         @{
                                             foreach (var model1 in Model.Schedules)
                                             {
-
-
 
                                                 var _date = s_date;
 
@@ -429,20 +429,32 @@ table tr th:last-child {
                                                     continue;
                                                 }
 
-                                                if(model1.RemoveDate != null)
+                                                if (model1.RemoveDate != DateTime.Parse("01.01.0001 0:00:00"))
                                                 {
-                                                    if (_date < model1.RemoveDate)
+                                                    if (_date >= model1.RemoveDate)
                                                     {
                                                         continue;
                                                     }
                                                 }
-                                            foreach (var m_date in model1.Date.dateTimes)
+                                                if (model1.RescheduledDate != DateTime.Parse("01.01.0001 0:00:00"))
+                                                {
+                                                    <script>
+                                                        console.log("23 @_date - @model1.RescheduledDate");</script>
+                                                    if (_date >= model1.RescheduledDate && model1.Looped == true)
+                                                    {
+                                                        <script>
+                                                            console.log("54 @_date - @model1.RescheduledDate");</script>
+                                                        continue;
+                                                    }
+                                                                                                           
+                                                }
+                                                foreach (var m_date in model1.Date.dateTimes)
                                             {
                                                 if (m_date.DayOfWeek == day)
                                                 {
                                                     if (model1.Looped != true)
                                                     {
-                                                        if (m_date != DateTime.Parse(s_day + " " + ViewBag.Date + " " + item))
+                                                        if (m_date != s_date)
                                                         {
                                                             continue;
                                                         }    
@@ -456,13 +468,12 @@ table tr th:last-child {
                                                                  <script>
                                                                     var elem = document.getElementsByClassName('@btn');
                                                                     elem[0].parentNode.removeChild(elem[0]);
-                                                                    </script>
+                                                                 </script>
+
                                                                btn = $"btn_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
                                                                 <button  class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day')">clicked3</button>
 
                                                                 <script>
-                                                                   
-
                                                                     document.getElementsByClassName('@btn')[0].style.backgroundColor = "turquoise";
                                                                        
                                                                         $("#@btn").mousedown(function (e) {
@@ -477,6 +488,8 @@ table tr th:last-child {
                                                                                 document.getElementById("removeTutorId").value = @ViewData["userid"];
                                                                                 document.getElementById("removeUserId").value = userid
                                                                                 document.getElementById("removeDate").value = date;
+                                                                                document.getElementById("currRemoveDate").value = "@s_date";
+
                                                                                 window.location.href = "#removeModal";
                                                                         }
                                                                         else
@@ -490,9 +503,8 @@ table tr th:last-child {
                                                                                 document.getElementById("dateStatus").value = datee;
                                                                                 document.getElementById("tutorStatus").value = @ViewData["userid"];
                                                                                 document.getElementById("userStatus").value = userid;
-                                                                                document.getElementById("studentId").value = userid;
-                                                                                document.getElementById("courseId").value = @model1.Course.Id;
-                                                                                document.getElementById("currDate").value = "@DateTime.Parse($"{s_day} {ViewBag.Date} {item}")";
+                                                                                document.getElementById("courseId").value = "-1";
+                                                                                document.getElementById("currDate").value = "@s_date";
 
                                                                                 document.getElementById("currstatus").value = "@model1.Status";
                                                                                 document.getElementById("status").value = "@model1.Status";
@@ -510,16 +522,40 @@ table tr th:last-child {
                                                                 <script>
                                                                     var elem = document.getElementsByClassName('@btn');
                                                                     elem[0].parentNode.removeChild(elem[0]);
-                                                                </script>
-                                                                var label = $"label_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
-                                                                <div id="tooltrip">
-                                                                    <label data-title="Курс: @model1.Course?.Title; Цель: @model1.Course?.Goal?.Title; Имя и фамилия: @model1.UserName" id="@label" class="@label" style="background-color:lightblue;">@model1.UserName.ToString()</label>
-                                                                </div>
-                                                                        if (model1.ReadyDates.Count > 0)
-                                                                        {
+                                                                    </script>
+                                                                    var label = $"label_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
+                                                                    <div id="tooltrip">
 
-                                                                                var date2 = DateTime.Parse(s_day + " " + ViewBag.Date+ " " + item);
-                                                                                foreach (var readyDate in model1.ReadyDates)
+                                                                        @{
+
+                                                                            var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.UserName};";
+                                                                            if(model1.Status == Status.Перенесен)
+                                                                            {
+                                                                                <script>console.log("IN!")</script>
+                                                                                var rescheduled = model1.RescheduledLessons;
+                                                                                <script>console.log("count @rescheduled.Count");</script>
+
+                                                                                foreach (var resc in rescheduled)
+                                                                                {
+                                                                                    <script>console.log("inss");</script>
+
+                                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId && resc.OldTime == model1.Date.dateTimes[0])
+                                                                                    {
+                                                                                        <script>console.log("insfgfgs");</script>
+
+                                                                                        textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;">@model1.UserName.ToString()</label>
+                                                                    </div>
+                                                                    if (model1.ReadyDates.Count > 0)
+                                                                    {
+
+                                                                        var date2 = s_date;
+                                                                        foreach (var readyDate in model1.ReadyDates)
                                                                                  {
                                                                             if (readyDate == date2)
                                                                                     {
@@ -539,18 +575,29 @@ table tr th:last-child {
                                                                                 <script>
                                                                                 document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
                                                                                 document.getElementsByClassName('@label')[0].style.color = "white";
-                                                                                </>
-                                                                               
-                                                                            }
+                                                                            </script>
 
-                                                                            if (model1.Status == Status.Перенесен) {
-                                                                                <script>   document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
-                                                                                document.getElementsByClassName('@label')[0].style.color = "white";</script>
-                                                                             
-                                                                            }
                                                                         }
 
-                                                                     
+
+                                                                    }
+
+                                                                    if(model1.RescheduledLessons.Count > 0)
+                                                                    {
+                                                                        foreach (var less in model1.RescheduledLessons)
+                                                                        {
+                                                                            if(less.OldTime == s_date)
+                                                                            {
+                                                                                <script>
+                                                                                    console.log("11 @model1.RescheduledDate - @s_date")
+                                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
+                                                                                    document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                                </script>
+                                                                            }
+                                                                        }
+                                                                    }
+
+             
                                                                        <script>
                                                                     $("#@label").mousedown(function (e) {
                                                                         if (e.which === 3) {
@@ -562,7 +609,9 @@ table tr th:last-child {
                                                                             var name = e.target.innerHTML;
 
                                                                                 document.getElementById("removeTutorId").value = @ViewData["userid"];
-                                                                            document.getElementById("removeUserId").value = userid
+                                                                            document.getElementById("removeUserId").value = userid;
+                                                                                document.getElementById("currRemoveDate").value = "@s_date";
+
                                                                             document.getElementById("removeDate").value = date;
                                                                             window.location.href = "#removeModal";
 
@@ -573,13 +622,12 @@ table tr th:last-child {
                                                                                 var userid = sub[1];
 
                                                                                 var name = e.target.innerHTML;
-                                                                                document.getElementById("dateStatus").value = datee;
+                                                                                document.getElementById("dateStatus").value = "@model1.Date.dateTimes[0]";
                                                                                 document.getElementById("tutorStatus").value = @ViewData["userid"];
                                                                                 document.getElementById("userStatus").value = userid;
-                                                                                document.getElementById("studentId").value = userid;
                                                                                 document.getElementById("courseId").value = @model1.Course.Id;
                                                                                 document.getElementById("currstatus").value = "@model1.Status";
-                                                                                document.getElementById("currDate").value = "@DateTime.Parse($"{s_day} {ViewBag.Date} {item}")";
+                                                                                document.getElementById("currDate").value = "@s_date";
                                                                                 document.getElementById("status").value = "@model1.Status";
                                                                                 window.location.href = "#statusModal";
 
@@ -595,12 +643,14 @@ table tr th:last-child {
                                                                         cursor: pointer;
                                                                         border-bottom: 1px dashed #000;
                                                                         }
-
+                                                                        
                                                                         label[data-title]:hover:before {
                                                                         content: attr(data-title);
                                                                         position: absolute;
-                                                                        width: 100px;
+                                                                        width: 150px;
                                                                         color: #fff;
+                                                                        height:auto;
+                                                                        word-wrap:break-word;
                                                                         background: #000;
                                                                         padding: 5px;
                                                                         border-radius: 4px;
@@ -617,13 +667,59 @@ table tr th:last-child {
                                                                     var elem = document.getElementsByClassName('@btn');
                                                                     elem[0].parentNode.removeChild(elem[0]);
                                                             </script>
+
+                                                             var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.UserName};";
+                                                                            if(model1.Status == Status.Перенесен)
+                                                                            {
+                                                                                <script>console.log("IN!")</script>
+                                                                                var rescheduled = model1.RescheduledLessons;
+                                                                                <script>console.log("count @rescheduled.Count");</script>
+
+                                                                                foreach (var resc in rescheduled)
+                                                                                {
+                                                                                    <script>console.log("inss");</script>
+
+                                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId && resc.OldTime == model1.Date.dateTimes[0])
+                                                                                    {
+                                                                                        <script>console.log("insfgfgs");</script>
+
+                                                                                        textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
+                                                                                        break;
+                                                                                    }
+                                                                                }
+                                                                            }
+
                                                                 var label = $"label_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
 
-                                                            <label id="@label" class="@label" style="background-color:lightblue">@model1.TutorFullName.ToString()</label>
+                                                                 <style>
+                                                                        label[data-title] {
+                                                                        position: relative;
+                                                                        display: inline-block;
+                                                                        cursor: pointer;
+                                                                        border-bottom: 1px dashed #000;
+                                                                        }
+                                                                        
+                                                                        label[data-title]:hover:before {
+                                                                        content: attr(data-title);
+                                                                        position: absolute;
+                                                                        width: 150px;
+                                                                        color: #fff;
+                                                                        height:auto;
+                                                                        word-wrap:break-word;
+                                                                        background: #000;
+                                                                        padding: 5px;
+                                                                        border-radius: 4px;
+                                                                        bottom: 25px;
+                                                                        left: 50px;
+                                                                        }
+                                                                    </style>
+
+                                                                <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue">@model1.TutorFullName.ToString()</label>
+
                                                                 if (model1.ReadyDates.Count > 0)
                                                                 {
 
-                                                                    var date3 = DateTime.Parse(s_day + " " + ViewBag.Date + " " + item);
+                                                                    var date3 = s_date;
                                                                     foreach (var readyDate in model1.ReadyDates)
                                                                     {
 
@@ -633,8 +729,6 @@ table tr th:last-child {
                                                                                 document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
                                                                                 document.getElementsByClassName('@label')[0].style.color = "white";
                                                                             </script>
-
-
                                                                         }
                                                                     }
 
@@ -644,18 +738,29 @@ table tr th:last-child {
                                                                     if (model1.Status == Status.Проведен)
                                                                     {
                                                                         <script>
-                                                                                document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
-                                                                                document.getElementsByClassName('@label')[0].style.color = "white";
-                                                                                </>
-
-                                                                            }
-
-                                                                            if (model1.Status == Status.Перенесен) {
-                                                                                <script>document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
-                                                                            document.getElementsByClassName('@label')[0].style.color = "white";</script>
+                                                                            document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                            document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                            </script>
 
                                                                     }
+
                                                                 }
+
+                                                                if (model1.RescheduledLessons.Count > 0)
+                                                                {
+                                                                    foreach (var less in model1.RescheduledLessons)
+                                                                    {
+                                                                        if (less.OldTime == s_date)
+                                                                        {
+                                                                            <script>
+                                                                                console.log("11 @model1.RescheduledDate - @s_date")
+                                                                                document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                            </script>
+                                                                        }
+                                                                    }
+                                                                }
+                                                               
                                                                 break;
                                                             }
                                                         }

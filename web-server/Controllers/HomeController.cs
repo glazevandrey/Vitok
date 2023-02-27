@@ -66,6 +66,25 @@ namespace web_server.Controllers
 
             return json;
         }
+        [Authorize]
+        [HttpGet("getuserbyid", Name = "getuserbyid")]
+        public string GetUserById([FromQuery] string args)
+        {
+            if (args == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+
+            var json = _authService.GetUserById(args);
+            var check = _authService.CheckIsActive(HttpContext);
+            if (check == false)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+
+            }
+
+            return json;
+        }
 
         [HttpPost("adduserregistration", Name = "adduserregistration")]
         public string AddUserRegistration()

@@ -24,7 +24,17 @@ namespace web_server.Services
             //return false;
 
         }
+        public string GetUserById(string id)
+        {
+            var user = TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
+            if (user == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
 
+            var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+            return json;
+        }
         public string GetUserByToken(string token)
         {
             var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == token);

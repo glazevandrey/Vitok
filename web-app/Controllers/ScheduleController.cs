@@ -67,10 +67,12 @@ namespace web_app.Controllers
         }
 
         [HttpPost("RemoveSchedule", Name = "RemoveSchedule")]
-        public IActionResult RemoveSchedule([FromForm] string removeDate, [FromForm] string removeTutorId, [FromForm] string removeUserId)
+        public IActionResult RemoveSchedule([FromForm] string removeDate, [FromForm] string removeTutorId, [FromForm] string removeUserId, [FromForm] string currRemoveDate)
         {
             var date = DateTime.ParseExact(removeDate, "dd-MM-yyyy-HH-mm", CultureInfo.InvariantCulture);
-            CustomRequestPost req = new CustomRequestPost("api/tutor/removetutortimeandschedule", $"{removeTutorId};{removeUserId};{date}");
+            var currDate = DateTime.Parse(currRemoveDate);
+
+            CustomRequestPost req = new CustomRequestPost("api/tutor/removetutortimeandschedule", $"{removeTutorId};{removeUserId};{date};{currDate}");
             _requestService.SendPost(req, HttpContext);
             return RedirectToAction("Index", "Schedule");
         }
@@ -90,7 +92,7 @@ namespace web_app.Controllers
             if(status == "Перенесен")
             {
                 var req = new CustomRequestPost("api/tutor/rescheduletutor", $"{status};{tutorStatus};" +
-                $"{DateTime.ParseExact(dateStatus, "dd-MM-yyyy-HH-mm", CultureInfo.InvariantCulture).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime};{courseId};{currDate}");
+                $"{DateTime.Parse(dateStatus).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime};{courseId};{currDate}");
                 var res = _requestService.SendPost(req, HttpContext);
 
             }
