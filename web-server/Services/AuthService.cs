@@ -3,6 +3,9 @@ using web_server.DbContext;
 using web_server.Models;
 using System;
 using System.Linq;
+using System.Drawing;
+using System.Threading;
+using System.Timers;
 
 namespace web_server.Services
 {
@@ -24,13 +27,23 @@ namespace web_server.Services
             //return false;
 
         }
-        public string GetUserById(string id)
+        public string GetUserById(string args)
         {
-            var user = TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
-            if (user == null)
+
+            var split = args.Split(';');
+            var id = split[0];
+            var role = split[1];
+            var user = new User();
+            if(role == "Tutor")
             {
-                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+                user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
             }
+            else
+            {
+                user = TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
+
+            }
+
 
             var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
             return json;
@@ -66,6 +79,14 @@ namespace web_server.Services
 
             return _jsonService.PrepareErrorJson("Что-то пошло не так. Мы уже работаем над устранением неполадок!");
         }
+        public static void DeleteUnPaid(object obj)
+        {
+            var id = (int)obj;
+            var schedule = TestData.Schedules.FirstOrDefault(m=>m.Id == id);
+            TestData.Schedules.Remove(schedule);
+            Program.Timers[id].Dispose();
+            Program.Timers.Remove(id);
+        }
 
         public string Register(User user, HttpContext context)
         {
@@ -73,15 +94,33 @@ namespace web_server.Services
             var reg = TestData.Registations.FirstOrDefault(m => m.UserId == user.UserId);
             if (reg != null)
             {
-                TestData.Schedules.Add(new Schedule()
+
+                foreach (var item in reg.WantThis.dateTimes)
                 {
-                    Id = 1,
-                    TutorId = reg.TutorId,
-                    TutorFullName = TestData.Tutors.FirstOrDefault(m => m.UserId == reg.TutorId).FirstName + " " + TestData.Tutors.FirstOrDefault(m => m.UserId == reg.TutorId).LastName,
-                    UserId = reg.UserId,
-                    UserName = TestData.UserList.FirstOrDefault(m=>m.UserId == reg.UserId).FirstName,
-                    Date = reg.WantThis
-                }); ;
+                    var id = TestData.Schedules.Last().Id + 1;
+
+                    TestData.Schedules.Add(new Schedule()
+                    {
+                        Id = id,
+                        TutorId = reg.TutorId,
+                        Course = reg.Course,
+                        TutorFullName = TestData.Tutors.FirstOrDefault(m => m.UserId == reg.TutorId).FirstName + " " + TestData.Tutors.FirstOrDefault(m => m.UserId == reg.TutorId).LastName,
+                        UserId = reg.UserId,
+                        UserName = TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName,
+                        Date = new UserDate() { dateTimes = new System.Collections.Generic.List<DateTime>() { item } },
+                        CreatedDate = DateTime.Now,
+                        Looped = false,
+                        Status = Status.ОжидаетОплату
+                    });
+
+                    TimerCallback tm = new TimerCallback(DeleteUnPaid);
+
+                    // TODO: !!!!!!!!!!!!!!! 24* 3600000!!!!!!!!!!!!!!!!!!!;
+
+                    Program.Timers.Add(id, new System.Threading.Timer(tm, id, 60000, 60000));
+                    var timer = Program.Timers[id];
+                }
+           
             }
 
             return LogIn(user, context);

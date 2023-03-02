@@ -257,68 +257,31 @@ table tr th:last-child {
 </div>
 <input id="choosedDate" type="text" value="s" hidden="hidden" />
 
-<script>
-    function closeModalWindow(){
-                window.location.href = "#closeModal";
-    }
-    function clicked(time, s_day, s_date) {
-        var date = document.getElementById("main-date").value;
-        if(date.includes("янв")){
-            date = date.replace("янв", "jan")
-        }
-        if(date.includes("фев")){
-            date = date.replace("фев", "feb")
-        }
-        if(date.includes("мар")){
-            date = date.replace("мар", "mar")
-
-        }
-        if(date.includes("апр")){
-            date = date.replace("апр", "apr")
-
-        }
-        if (date.includes("май")) {
-            date = date.replace("май", "may")
-
-        }
-        if(date.includes("июн")){
-            date = date.replace("июн", "jun")
-
-        }
-        if(date.includes("июл")){
-            date = date.replace("июл", "jul")
-
-        }
-        if(date.includes("авг")){
-            date = date.replace("авг", "aug")
-
-        }
-        if (date.includes("сен")) {
-            date = date.replace("сен", "sep")
-
-        }
-        if (date.includes("окт")) {
-            date = date.replace("окт", "oct")
-
-        }
-        if (date.includes("ноя")) {
-            date = date.replace("ноя", "nov")
-
-        }
-        if (date.includes("дек")) {
-            date = date.replace("дек", "dec")
+    <script>
+        function closeModalWindow() {
+            window.location.hash = "#closeModal";
         }
 
+        function clicked(time, s_day, s_date) {
+            var months = { "янв": "jan", "фев": "feb", "мар": "mar", "апр": "apr", "май": "may", "июн": "jun", "июл": "jul", "авг": "aug", "сен": "sep", "окт": "oct", "ноя": "nov", "дек": "dec" };
+
+            var date = document.getElementById("main-date").value.toLowerCase();
+
+            for (var key in months) {
+                if (date.includes(key)) {
+                    date = date.replace(key, months[key]);
+                    break;
+                }
+            }
 
             document.getElementById("choosedDate").value = s_date;
             document.getElementById("date2").value = s_date;
             document.getElementById("date3").value = s_date;
 
-        window.location.href = "#openmodal";
-
-    }
-</script>
-<div class="calendar">
+            window.location.hash = "#openmodal";
+        }
+    </script>
+    <div class="calendar">
     <div class="header">
         <form method="get" action="/schedule/downDate">
             <input hidden="hidden" id="date" name="date" value="@Model.Date" />
@@ -577,6 +540,28 @@ table tr th:last-child {
                                                                                 document.getElementsByClassName('@label')[0].style.color = "white";
                                                                             </script>
 
+                                                                        }else if (model1.Status == Status.ОжидаетОплату)
+                                                                        {
+                                                                            <script>
+                                                                                document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                                console.log(@model1.CreatedDate);
+
+                                                                                @{
+                                                                                    var text2 = "";
+
+                                                                                    DateTime now = DateTime.Now;
+                                                                                    DateTime target = model1.CreatedDate.AddHours(24);
+
+                                                                                    TimeSpan diff = target - now;
+
+                                                                                    double totalSeconds = diff.TotalSeconds;
+
+                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                                }
+                                                                            </script>
+                                                                            <label style="background-color:yellow;" data-title="@text2">(!)</label>
+
                                                                         }
 
 
@@ -625,7 +610,7 @@ table tr th:last-child {
                                                                                 document.getElementById("dateStatus").value = "@model1.Date.dateTimes[0]";
                                                                                 document.getElementById("tutorStatus").value = @ViewData["userid"];
                                                                                 document.getElementById("userStatus").value = userid;
-                                                                                document.getElementById("courseId").value = @model1.Course.Id;
+                                                                                document.getElementById("courseId").value = @model1.Course?.Id;
                                                                                 document.getElementById("currstatus").value = "@model1.Status";
                                                                                 document.getElementById("currDate").value = "@s_date";
                                                                                 document.getElementById("status").value = "@model1.Status";
@@ -740,7 +725,29 @@ table tr th:last-child {
                                                                         <script>
                                                                             document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
                                                                             document.getElementsByClassName('@label')[0].style.color = "white";
-                                                                            </script>
+                                                                        </script>
+
+                                                                    }else if (model1.Status == Status.ОжидаетОплату)
+                                                                    {
+                                                                        <script>
+                                                                            document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                            document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                            console.log(@model1.CreatedDate);
+
+                                                                            @{
+                                                                                var text2 = "";
+
+                                                                                DateTime now = DateTime.Now;
+                                                                                DateTime target = model1.CreatedDate.AddHours(24);
+
+                                                                                TimeSpan diff = target - now;
+
+                                                                                double totalSeconds = diff.TotalSeconds;
+
+                                                                                text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                            }
+                                                                        </script>
+                                                                        <label style="background-color:yellow;" data-title="@text2">(!)</label>
 
                                                                     }
 

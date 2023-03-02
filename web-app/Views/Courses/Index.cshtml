@@ -1,0 +1,84 @@
+﻿@using web_server.Models;
+@model List<Course>;
+@{
+    Layout = "_Layout";
+}
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+
+<div>
+    <form method="post" action="/courses/savenew">
+        
+    <label>Название:</label>
+    <input name="title" id="title" type="text" value=""/>
+    <br/>
+        <br />
+        <label>Цель:</label>
+
+    <select name="goalId" id="goalId">
+        <option value=""></option>
+        @foreach (Goal item in (List<Goal>)ViewData["goals"])
+        {
+            <option value="@item.Id">@item.Title</option>
+        }
+
+    </select>
+    <br />
+    <br />
+    <input type="submit" value="Сохранить"/>
+    <br />
+    <br />
+
+    </form>
+    <br />
+    <br />
+    <input type="text" id="search" placeholder="Search...">
+    <br/>
+    <table id="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            @foreach (var item in Model)
+            {
+                 <tr>
+                    <td>
+                    @item.Title
+                    </td>
+
+                </tr>   
+            
+            }
+        
+         
+        </tbody>
+    </table>    
+</div>
+
+<script>
+    function searchTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("table");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td");
+            for (j = 0; j < td.length; j++) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    break;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    document.getElementById("search").onkeyup = searchTable;
+
+</script>

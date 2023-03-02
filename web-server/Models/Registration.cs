@@ -8,5 +8,6 @@ namespace web_server.Models
         public int UserId { get; set; }
         public int TutorId { get; set; }
         public UserDate WantThis { get; set; }
+        public Course Course { get; set; }
     }
 }

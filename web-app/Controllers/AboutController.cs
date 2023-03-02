@@ -34,7 +34,7 @@ namespace web_app.Controllers
             {
                 return BadRequest("Технические проблемы. Мы уже исправляем!");
             }
-
+            ViewData["courses"] = TestData.Courses;
             var data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(response.result.ToString());
             return View(data);
         }
@@ -45,6 +45,18 @@ namespace web_app.Controllers
             var form = Request.Form;
             var date = new UserDate();
             int tutorId = 0;
+            int courseId = 0;
+
+
+            try
+            {
+                courseId = Convert.ToInt32(form["course"]);
+            }
+            catch (Exception ex)
+            {
+                courseId = -1;
+            }
+
             if (form.Count != 0)
             {
                 tutorId = Convert.ToInt32(form["tutor"]);
@@ -66,8 +78,9 @@ namespace web_app.Controllers
 
             Registration registration = new Registration
             {
-                UserId = TestData.UserList.Last().UserId+1,
+                UserId = TestData.UserList.Last().UserId + 1,
                 WantThis = date,
+                Course = TestData.Courses.FirstOrDefault(m=>m.Id ==courseId),
                 TutorId = tutorId
             };
 

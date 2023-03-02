@@ -1,7 +1,7 @@
 ﻿namespace web_app.Models.Requests.Get
 {
-    public class GetUserById : CustomRequestGet
+    public class GetUserByToken : CustomRequestGet
     {
-        public GetUserById(string id) : base("api/home/getuserbyid", id) { }
+        public GetUserByToken(string token) : base("api/home/getuser", token) { }
     }
 }

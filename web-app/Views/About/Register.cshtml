@@ -29,7 +29,6 @@
 
      
         document.getElementById('texdt;' + id).value = time;
-               console.log(time);
 
     }
 
@@ -96,7 +95,29 @@
                                     }
                                      <br />
 
-                                }                           
+                                }      
+                                <script>
+                                function selectChanged(el){
+                                document.getElementById("course22").value = el.value;
+                                }
+                                </script>
+                                
+                                
+                                <br />
+                                <br/>
+
+
+                                <label>Выберите желаемый курс, либо оставьте поле пустым</label>
+                                <select onchange="selectChanged(this)">
+                                <option value=""></option>
+                                @{
+                                foreach (var course in (List<Course>)ViewData["courses"])
+                                {
+                                    <option value="@course.Id">@course.Title</option>
+                                }
+                                }
+                                </select>
+                                <br />
                             }
 
 
@@ -105,6 +126,8 @@
                             @{
                                 var texdt = $"texdt;{item.UserId}";
                                 var tutor = $"tutor;{item.UserId}";
+
+                                <input hidden="hidden" class="course" name="course" id="course22" value="" />
 
                                 <input hidden="hidden" class="texdt" name="texdt" id="@texdt" value="" />
                                 <input hidden="hidden" class="tutor" name="tutor" id="@tutor" value="@item.UserId" />

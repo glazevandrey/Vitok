@@ -12,6 +12,7 @@ namespace web_server.Models
         public int UserId { get; set; }
         public int TutorId { get; set; }
         public string TutorFullName { get; set; }
+        public DateTime CreatedDate { get; set; }
         public string UserName { get; set; }
         public Course Course { get; set; }
         public bool Looped { get; set; } = true;
@@ -24,6 +25,5 @@ namespace web_server.Models
 
         public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
         public DateTime RemoveDate { get; set; }
-
     }
 }

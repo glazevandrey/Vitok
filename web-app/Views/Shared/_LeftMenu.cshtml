@@ -6,7 +6,6 @@
              <li class="nav-item">
             <a class="nav-link text-dark">Осталось занятий:</a>
              </li>
-             <br/>
             <li class="nav-item">
                 <a class="nav-link text-dark" href="/schedule">Расписание</a>
             </li>
@@ -17,7 +16,7 @@
                 <a class="nav-link text-dark" href="/contacts">Репетиторы</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark">Тарифы</a>
+                <a class="nav-link text-dark" href="/tariff">Тарифы</a>
             </li>
         }
         if (ViewData["role"].ToString() == "Tutor")
@@ -33,7 +32,29 @@
                 <a class="nav-link text-dark" href="/contacts">Ученики</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark">Баланс</a>
+                <a class="nav-link text-dark" href="/balance">Баланс</a>
+            </li>
+        }
+        if (ViewData["role"].ToString() == "Manager")
+        {
+
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/schedule">Управление школой</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/chat">Чаты</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/courses">Курсы</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/contacts">Репетиторы</a>
+            </li>
+             <li class="nav-item">
+                <a class="nav-link text-dark" href="/contacts">Ученики</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" href="/balance">Баланс</a>
             </li>
         }
     }

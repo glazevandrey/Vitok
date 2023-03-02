@@ -3,40 +3,71 @@
 @{
     Layout = "_Layout";
 }
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 <script>
 
-    function openInfo(){
+    function openInfo(name, about,course, url)
+    {
+        document.getElementById("TutorName").innerHTML = name;
+        document.getElementById("course").innerHTML = course;
+        document.getElementById("selfAbout").innerHTML = about;
+        $("#photo").attr("src", url);
+
         window.location.href = "#openmodal";
     }
-
+    function closeModalWindow() {
+        window.location.href = "#closeModal";
+    }
 </script>
+
+<div id="openmodal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Удалить выбранное занятие?
+                </h3>
+                <a onclick="closeModalWindow()" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+                
+                <img width="100" height="100" id="photo" src=""/>
+                <br />                <br />
+
+                <label type="text" id="TutorName"></label>
+                <br/>
+                <label type="text" id="selfAbout"></label>
+                <br /><label type="text" id="course"></label>
+                                <br />
+                <br />
+
+                <input type="button" value="Назад" onclick="closeModalWindow()" />
+
+            </div>
+        </div>
+    </div>
+</div>
 <div>
-
     @{
-
         Dictionary<string, int> dic = new Dictionary<string, int>();
         foreach (var item in Model)
         {
             if (ViewData["role"].ToString() == "Tutor")
             {
-                if (dic.ContainsKey(item.UserName))
+                if (!dic.ContainsKey(item.UserName))
                 {
-                    dic[item.UserName]++;
+                    var users = (List<User>)ViewData["users"];
+                    var user = users.FirstOrDefault(m=>m.UserId == item.UserId);
+                    dic.Add(item.UserName, user.LessonsCount);
                 }
-                else
-                {
-                    dic.Add(item.UserName, 1);
-                }
+              
             }
             else
             {
-                if (dic.ContainsKey(item.TutorFullName))
-                {
-                    dic[item.TutorFullName]++;
-                }
-                else
+                if (!dic.ContainsKey(item.TutorFullName))
                 {
                     dic.Add(item.TutorFullName, 1);
                 }
@@ -47,21 +78,40 @@
         {
             if(ViewData["role"].ToString() == "Tutor")
             {
-                <label>Ученик: @item.Key Осталось занятий: @item.Value Курс: @Model.FirstOrDefault(m=>m.UserName == item.Key).Course.Title</label>
-
+                <label>Ученик: @item.Key Осталось занятий: @item.Value Курс: @Model.FirstOrDefault(m=>m.UserName == item.Key).Course?.Title</label>
             }
             else
             {
                 foreach (User tutor in (List<User>)ViewData["users"])
                 {
-                    if (tutor.UserId == @Model.FirstOrDefault(m => m.TutorFullName == item.Key).TutorId)
+                    if (tutor.UserId == Model.FirstOrDefault(m => m.TutorFullName == item.Key).TutorId)
                     {
                         <script>console.log("@tutor.PhotoUrl")</script>
-                        <img width="100" height="100" onclick="openInfo()" src="@tutor.PhotoUrl" />
+                        
+                        var courses = "";
+                        
+                        foreach (var cor in tutor.Courses)
+                        {
+                            courses += cor.Title + ";";
+                        }
+
+                        courses = courses.TrimEnd(';');
+
+                        <img width="100" height="100" onclick="openInfo('@item.Key', '@tutor.About', '@courses', '@tutor.PhotoUrl')" src="@tutor.PhotoUrl" />
                         <label>Репетитор: @item.Key Курс: @Model.FirstOrDefault(m=>m.TutorFullName == item.Key).Course?.Title</label>
+                        break;
                     }
+
+                    <br />
+                    <br />
+
                 }
+                <br />
+                <br />
+
             }
+            <br />
+
             <br />
         }
     }

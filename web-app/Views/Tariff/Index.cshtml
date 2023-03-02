@@ -1,0 +1,31 @@
+﻿@using web_server.Models;
+@model List<Tariff>
+
+
+<label>Осталось: @ViewData["count"] занятий</label>
+<form method="get" action="/balance">
+    <input type="submit" value="[МОНЕТКА]"/>
+
+</form>
+
+<br/>
+    <label>Пробное занятие - 250 рублей</label>
+    <br />
+    <label>    Цена одного занятия вне пакета - 1000 рублей</label>
+    
+    <br />
+<br />
+
+    @{
+
+    foreach (var item in Model)
+    {
+        <label>@item.Title</label>
+        <br/>
+
+        var s = item.Amount / item.LessonsCount;
+        <label>@s рублей за занятие / @item.Amount рублей</label>
+        <br />
+        <br/>
+    }
+    }

@@ -157,6 +157,19 @@ namespace vitok.Controllers
             var dateCurr = DateTime.Parse(split[4]);
 
             var model = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            
+            if((Status)Enum.Parse(typeof(Status), status) == Status.Проведен)
+            {
+                TestData.UserList.FirstOrDefault(m=>m.UserId == user_id).LessonsCount--;
+                TestData.UserList.FirstOrDefault(m => m.UserId == user_id).BalanceHistory.CustomMessages.Add(DateTime.Now, "-1 занятие");
+
+
+
+                TestData.Tutors.FirstOrDefault(m=>m.UserId == tutor_id).Balance += 1000;
+                TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id).BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000});
+
+            }
+
             if (model.Looped)
             {
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).ReadyDates.Add(dateCurr);
@@ -209,8 +222,6 @@ namespace vitok.Controllers
         
             if (Convert.ToBoolean(loop))
             {
-                //TestData.Schedules.Remove(model);
-
                 var new_model = new Schedule
                 {
                     TutorId = tutor_id,
@@ -268,6 +279,7 @@ namespace vitok.Controllers
 
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
         }
+
         [HttpPost("removetutortime", Name = "removetotortime")]
         public string RemoveTutorTime()
         {
@@ -285,10 +297,7 @@ namespace vitok.Controllers
             if (tutor != null)
             {
                 TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
-                //if(TestData.Schedules.FirstOrDefault(m=>m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime) != null)
-                //{
-                //    TestData.Schedules.Remove(TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime));
-                //}
+
                 return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
             }
             return _jsonService.PrepareErrorJson("Tutor not found");

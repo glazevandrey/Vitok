@@ -14,7 +14,15 @@ namespace web_server.DbContext
             new Course() {Id = 1, Title="ЕГЭ" ,Goal = Goals.FirstOrDefault(m=>m.Title == "Сдать экзамен") },
             new Course() {Id = 2, Title="Общий английский" ,Goal = Goals.FirstOrDefault(m=>m.Title == "Другое") }
         };
-        
+
+        public static List<Tariff> Tariffs = new List<Tariff>()
+        {
+            new Tariff() { Amount = 2700, Id = 0, LessonsCount = 3, Title = "ПАКЕТ занятий 3"},
+            new Tariff() { Amount = 7650, Id = 1, LessonsCount = 9, Title = "ПАКЕТ занятий 9"},
+            new Tariff() { Amount = 21600, Id = 2, LessonsCount = 27, Title = "ПАКЕТ занятий 27"},
+            new Tariff() { Amount = 56700, Id = 3, LessonsCount = 81, Title = "ВЫГОДНЫЙ ПАКЕТ ЗАНЯТИЙ 81"}
+        };
+
         public static List<SiteContact> Contacts = new List<SiteContact> { new SiteContact() { Title = "Телефон", Text = "+790523232" }, new SiteContact { Title = "Телеграм", Text = "@andreyglazev" } };
         public static List<InChat> LiveChats { get; set; } = new List<InChat>();
         public static List<Registration> Registations = new List<Registration>();
@@ -24,13 +32,13 @@ namespace web_server.DbContext
              new User() {FirstName = "Сергей", LastName = "Петров", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"),
                     Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(), UserId =0, Email = "b", Phone = "+79054769537",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
-                        dateTimes = new List<DateTime>(){DateTime.Parse("10.02.2023 17:00"), DateTime.Parse("16.02.2023 19:00") }
+                        dateTimes = new List<DateTime>(){DateTime.Parse("10.03.2023 17:00"), DateTime.Parse("16.03.2023 19:00") }
                     }},
 
                 new User() {FirstName = "Иван", LastName = "Петров", About = "Почти лучший", BirthDate = DateTime.Parse("14.01.2002"),
                     Courses = Courses.Where(m => m.Title == "ОГЭ").ToList(), UserId=1, Email = "a.glazev@mail.ru", Phone = "+79188703839",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
-                        dateTimes = new List<DateTime>(){DateTime.Parse("10.02.2023 15:00"), DateTime.Parse("13.02.2023 17:00") }
+                        dateTimes = new List<DateTime>(){DateTime.Parse("10.03.2023 15:00"), DateTime.Parse("13.02.2023 17:00") }
                     }},
  new User
                 {
@@ -46,15 +54,28 @@ namespace web_server.DbContext
                 {
                     FirstName = "Сергей",
                     LastName = "Курочка",
+                    LessonsCount = 2,
                     Password = "123123",
                     Role = "Student",
                     Email = "a",
                     Phone = "+79188793839",
                     UserId = 4
+                },
+                  new User
+                {
+                    FirstName = "Андрей",
+                    LastName = "Глазев",
+                    LessonsCount = 0,
+                    Password = "123",
+                    Role = "Manager",
+                    Email = "god",
+                    Phone = "+79054769537",
+                    UserId = 5
                 }
             };
 
         public static List<User> Tutors = UserList.Where(m => m.Role == "Tutor").ToList();
+        public static List<User> Managers = UserList.Where(m=>m.Role == "Manager").ToList();
 
         public static List<Schedule> Schedules = new List<Schedule>() { new Schedule() {Id = 2, UserId=-1, TutorFullName = "Сергей Петров", Course = Courses[1], TutorId = 0, Date = new UserDate(){ dateTimes = new List<DateTime>(){ DateTime.Parse("16.02.2023 19:00") } } },
             new Schedule() { Id = 0, UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 1, UserId = 3,

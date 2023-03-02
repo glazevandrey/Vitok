@@ -18,9 +18,13 @@ namespace web_server.Models
         public string Phone { get; set; }
         public string Role { get; set; }
         public string ActiveToken { get; set; }
+        public BalanceHistory BalanceHistory { get; set; } = new BalanceHistory();
+        public double Balance { get; set; }
 
         // поля студента
         public string Wish { get; set; }
+        public int LessonsCount { get; set; }
+        public bool UsedTrial { get; set; } = false;
 
         // поля Репетитора
         public List<Course> Courses { get; set; }
