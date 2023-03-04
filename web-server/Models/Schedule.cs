@@ -19,6 +19,11 @@ namespace web_server.Models
         public UserDate Date { get; set; }
         public DateTime StartDate { get; set; }
         public Status Status { get; set; } = Status.Ожидает;
+        public Dictionary<string, bool> Tasks = new Dictionary<string, bool>()
+        {
+            { Constatnts.NOTIF_START_LESSON, false},
+            { Constatnts.NOTIF_TOMORROW_LESSON, false},
+        };
         public int RescheduledId { get; set; } = -1;
         public List<RescheduledLessons> RescheduledLessons { get; set; } = new List<RescheduledLessons>();
         public DateTime RescheduledDate { get; set; } 

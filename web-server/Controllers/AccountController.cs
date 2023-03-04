@@ -15,10 +15,11 @@ namespace web_server.Controllers
     public class AccountController : Controller
     {
         IJsonService _jsonService;
-
+        NotificationBackgroundService f;
         private readonly IHubContext<NotifHub> _hubContext;
-        public AccountController(IJsonService jsonService, IHubContext<NotifHub> hubContext)
+        public AccountController(IJsonService jsonService, NotificationBackgroundService ff, IHubContext<NotifHub> hubContext)
         {
+            f = ff;
             _hubContext = hubContext;
             _jsonService = jsonService;
         }

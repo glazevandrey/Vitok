@@ -14,7 +14,7 @@ namespace web_server.Controllers
     {
         IAuthService _authService;
         IJsonService _jsonService;
-        public HomeController(IAuthService authService, IJsonService jsonService)
+        public HomeController(IAuthService authService,  IJsonService jsonService)
         {
             _authService = authService;
             _jsonService = jsonService;

@@ -238,6 +238,9 @@ namespace vitok.Controllers
                 TestData.Tutors.FirstOrDefault(m=>m.UserId == tutor_id).Balance += 1000;
                 TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id).BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000});
 
+                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).Tasks[Constatnts.NOTIF_START_LESSON] = false;
+                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = false;
+
             }
 
             if (model.Looped)

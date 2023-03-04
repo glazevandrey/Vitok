@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.DbContext;
+using web_server.Services;
+using System.Threading;
 
 namespace web_server
 {
@@ -65,6 +67,7 @@ namespace web_server
                   ClockSkew = TimeSpan.Zero
               };
           });
+            services.AddHostedService<NotificationBackgroundService>();
 
         }
 
@@ -137,6 +140,7 @@ namespace web_server
                 routes.MapHub<NotifHub>("/notifHub");
                 routes.MapHub<Class>("/chatHub");
             });
+
         }
     }
 }

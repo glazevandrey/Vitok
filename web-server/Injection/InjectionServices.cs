@@ -9,6 +9,7 @@ namespace web_server.Injection
         {
             services.AddScoped<IJsonService, JsonService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }
