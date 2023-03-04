@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using web_server.Models;
-using web_server.Services;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using web_app.Models;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
-using System;
-using System.Globalization;
 using web_server.DbContext;
-using System.Data;
-using web_app.Models;
+using web_server.Models;
+using web_server.Services;
 
 namespace web_app.Controllers
 {
@@ -39,7 +38,7 @@ namespace web_app.Controllers
             ViewData["usertoken"] = user.UserId;
 
             var result = new ResponseModel();
-            if(user.Role == "Manager")
+            if (user.Role == "Manager")
             {
                 CustomRequestGet request = new GetAllSchedules();
                 result = _requestService.SendGet(request, HttpContext);
@@ -56,7 +55,7 @@ namespace web_app.Controllers
             }
 
 
-            if (result == null || !result.success || !res.success )
+            if (result == null || !result.success || !res.success)
             {
                 return Redirect("/login");
             }
@@ -78,22 +77,22 @@ namespace web_app.Controllers
                 res = _requestService.SendGet(req, HttpContext);
 
             }
-          
+
 
             var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(res.result.ToString());
             ViewData["rescheduled"] = rescheduled;
 
             var modl = new DisplayModelShedule()
             {
-                Date = date == null? DateTime.Now : DateTime.Parse(date),
+                Date = date == null ? DateTime.Now : DateTime.Parse(date),
                 Schedules = model
             };
 
             return View(modl);
         }
-        
+
         [HttpPost("AddFreeTime", Name = "AddFreeTime")]
-        public IActionResult AddFreeTime([FromForm]string date2, [FromForm] string tutorIdFreeTime, [FromForm] string looped)
+        public IActionResult AddFreeTime([FromForm] string date2, [FromForm] string tutorIdFreeTime, [FromForm] string looped)
         {
             var loop = looped == "on" ? true : false;
             var req = new CustomRequestPost("api/tutor/addtutorfreedate", $"{tutorIdFreeTime};{DateTime.Parse(date2).ToString("dd.MM.yyyy HH:mm")};{loop}");
@@ -113,7 +112,7 @@ namespace web_app.Controllers
         }
 
         [HttpPost("AddSchedule", Name = "AddSchedule")]
-        public IActionResult AddTutorSchedule([FromForm] string date3, [FromForm] string tutorIdChoosed, [FromForm] string looped, [FromForm] string userId, [FromForm] string courses )
+        public IActionResult AddTutorSchedule([FromForm] string date3, [FromForm] string tutorIdChoosed, [FromForm] string looped, [FromForm] string userId, [FromForm] string courses)
         {
             var loop = looped == "on" ? true : false;
             var req = new CustomRequestPost("api/tutor/addtutorschedule", $"{tutorIdChoosed};{DateTime.Parse(date3).ToString("dd.MM.yyyy HH:mm")};{loop};{userId};{courses}");
@@ -123,8 +122,8 @@ namespace web_app.Controllers
         [HttpPost("changeStatus", Name = "changeStatus")]
         public IActionResult changeStatus([FromForm] string status, [FromForm] string dateStatus, [FromForm] string userStatus, [FromForm] string tutorStatus, [FromForm] string newDate, [FromForm] string reason, [FromForm] string initiator, [FromForm] string newTime, [FromForm] string looped, [FromForm] string courseId, [FromForm] string currDate)
         {
-           bool loop = looped == "on" ? true : false;
-            if(status == "Перенесен")
+            bool loop = looped == "on" ? true : false;
+            if (status == "Перенесен")
             {
                 var req = new CustomRequestPost("api/tutor/rescheduletutor", $"{status};{tutorStatus};" +
                 $"{DateTime.Parse(dateStatus).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime};{courseId};{currDate}");

@@ -1,12 +1,12 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using web_server.DbContext;
-using web_server.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using web_server.DbContext;
+using web_server.Models;
 
 namespace web_server
 {

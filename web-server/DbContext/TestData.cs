@@ -1,8 +1,7 @@
-﻿using web_server.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
+using web_server.Models;
 
 namespace web_server.DbContext
 {
@@ -103,29 +102,29 @@ namespace web_server.DbContext
         public static List<Notifications> Notifications = new List<Notifications>();
 
         public static List<User> Tutors = UserList.Where(m => m.Role == "Tutor").ToList();
-        public static List<User> Managers = UserList.Where(m=>m.Role == "Manager").ToList();
+        public static List<User> Managers = UserList.Where(m => m.Role == "Manager").ToList();
 
         public static List<Schedule> Schedules = new List<Schedule>() { new Schedule() {Id = 2, UserId=-1, TutorFullName = "Сергей Петров", Course = Courses[1], TutorId = 0, Date = new UserDate(){ dateTimes = new List<DateTime>(){ DateTime.Parse("16.02.2023 19:00") } },StartDate =DateTime.Parse("16.02.2023 19:00")  },
             new Schedule() { Id = 0, UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 1, UserId = 3,
-                
+
                 StartDate = DateTime.Parse("09.02.2023 23:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("09.02.2023 23:00") } }, Course = Courses[0] },
-            
-            
+
+
             new Schedule() { Id = 1, UserName ="Петр Иванов", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 3,
              StartDate =    DateTime.Parse("10.02.2023 20:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("10.02.2023 20:00") } }, Course = Courses[1]},
-         
-            
+
+
             new Schedule() { Id = 3, UserName ="Сергей Курочка", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
             StartDate = DateTime.Parse("23.02.2023 13:00"),
                 Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 13:00") } }, Looped = true, Course = Courses[2]},
-           
+
             new Schedule() { Id = 5, UserName ="Сергей Курочка",TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
             StartDate = DateTime.Parse("05.03.2023 10:00"),
                 Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("05.03.2023 10:00") } }, Looped = false, Course = Courses[0]},
-            
+
             new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
                 StartDate=DateTime.Parse("17.03.2023 7:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.03.2023 7:00") } }, Looped = true, Course = Courses[1]},
-             
+
             new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
                  StartDate = DateTime.Parse("17.03.2023 7:00"),
                 Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.03.2023 7:00") } }, Looped = true, Course = Courses[1]},
@@ -146,7 +145,7 @@ namespace web_server.DbContext
         public string Reason { get; set; }
         public string Initiator { get; set; }
     }
-   
+
     public class Notifications
     {
         public int Id { get; set; }
@@ -168,19 +167,19 @@ namespace web_server.DbContext
     }
     public class Contact
     {
-        public string DisplayName{ get; set; }
-        public int UserId{ get; set; }
+        public string DisplayName { get; set; }
+        public int UserId { get; set; }
     }
 
     public class Messages
     {
         public DateTime MessageTime { get; set; }
         public string SenderId { get; set; }
-        public string ReceiverId { get; set;}
+        public string ReceiverId { get; set; }
         public string Message { get; set; }
     }
 
-    public class InChat 
+    public class InChat
     {
         public string UserId { get; set; }
         public string WithUserId { get; set; }

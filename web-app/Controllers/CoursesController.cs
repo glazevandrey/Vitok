@@ -29,7 +29,7 @@ namespace web_app.Controllers
 
             req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             res = _requestService.SendGet(req, HttpContext);
-            if(res.success == false)
+            if (res.success == false)
             {
                 return Redirect("/login");
             }
@@ -41,7 +41,7 @@ namespace web_app.Controllers
             return View(courses);
         }
 
-        [HttpPost("savenew", Name ="savenew")]
+        [HttpPost("savenew", Name = "savenew")]
         public IActionResult SaveNew([FromForm] string title, [FromForm] string goalId)
         {
             CustomRequestPost req = new CustomRequestPost("api/servercourses/setnewcourse", $"{title};{goalId}");

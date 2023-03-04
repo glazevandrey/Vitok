@@ -1,19 +1,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using web_server.Injection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using web_app.Services;
 using Microsoft.Extensions.WebEncoders;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using web_app.Services;
+using web_server.Injection;
 
 namespace web_app
 {
@@ -28,12 +23,12 @@ namespace web_app
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {     
-           //   services.AddSignalR();
-               // services.AddSession();
+        {
+            //   services.AddSignalR();
+            // services.AddSession();
             services.AddScoped<IRequestService, RequestService>();
             services.AddCustomServices();
-            services.AddControllersWithViews(); 
+            services.AddControllersWithViews();
             services.Configure<WebEncoderOptions>(options =>
             {
                 options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
@@ -78,7 +73,7 @@ namespace web_app
             });
             app.UseEndpoints(routes =>
             {
-               
+
                 routes.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

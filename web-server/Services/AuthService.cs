@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
-using web_server.DbContext;
-using web_server.Models;
 using System;
 using System.Linq;
-using System.Drawing;
 using System.Threading;
-using System.Timers;
+using web_server.DbContext;
+using web_server.Models;
 
 namespace web_server.Services
 {
@@ -36,7 +34,7 @@ namespace web_server.Services
             var id = split[0];
             var role = split[1];
             var user = new User();
-            if(role == "Tutor")
+            if (role == "Tutor")
             {
                 user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
             }
@@ -84,7 +82,7 @@ namespace web_server.Services
         public static void DeleteUnPaid(object obj)
         {
             var id = (int)obj;
-            var schedule = TestData.Schedules.FirstOrDefault(m=>m.Id == id);
+            var schedule = TestData.Schedules.FirstOrDefault(m => m.Id == id);
             TestData.Schedules.Remove(schedule);
             Program.Timers[id].Dispose();
             Program.Timers.Remove(id);
@@ -122,7 +120,7 @@ namespace web_server.Services
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 60000, 60000));
                     var timer = Program.Timers[id];
                 }
-           
+
             }
 
             return LogIn(user, context);

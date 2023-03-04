@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using web_server.Models;
-using web_server.Services;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Linq;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
-using Microsoft.AspNetCore.SignalR.Client;
-using web_server;
-using Microsoft.AspNetCore.SignalR;
+using web_server.Models;
+using web_server.Services;
 
 namespace web_app.Controllers
 {
@@ -46,7 +44,7 @@ namespace web_app.Controllers
             }
             else
             {
-                user.UserId = web_server.DbContext.TestData.UserList.Last().UserId+1;
+                user.UserId = web_server.DbContext.TestData.UserList.Last().UserId + 1;
             }
             user.Role = "Student";
             CustomRequestPost req = new CustomRequestPost("api/home/registeruser", user);

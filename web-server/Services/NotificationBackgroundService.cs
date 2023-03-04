@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +14,7 @@ namespace web_server.Services
 
         public NotificationBackgroundService(IHubContext<NotifHub> hubContext)
         {
-            _hubContext= hubContext;
+            _hubContext = hubContext;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -38,7 +36,7 @@ namespace web_server.Services
                             {
                                 if (lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] == false)
                                 {
-                                    TimeSpan timeLeft = lesson.StartDate - DateTime.Now ; // Время, оставшееся до конца занятия
+                                    TimeSpan timeLeft = lesson.StartDate - DateTime.Now; // Время, оставшееся до конца занятия
 
                                     if (timeLeft.TotalHours < 25)
                                     {

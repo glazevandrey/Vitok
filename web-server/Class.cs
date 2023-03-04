@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +14,7 @@ namespace web_server
 
         public async Task SetChat(string userId, int with)
         {
-            if(TestData.LiveChats.FirstOrDefault(m=>m.UserId == userId) != null)
+            if (TestData.LiveChats.FirstOrDefault(m => m.UserId == userId) != null)
             {
                 TestData.LiveChats.FirstOrDefault(m => m.UserId == userId).WithUserId = with.ToString();
             }
@@ -30,7 +27,7 @@ namespace web_server
                     WithUserId = with.ToString()
                 });
             }
-      
+
         }
 
         public async Task GetMessages(string userId)
@@ -48,7 +45,7 @@ namespace web_server
 
             foreach (var message in messages)
             {
-                if(user.ConnectionTokens.ContainsKey(message.SenderId)|| user.ConnectionTokens.ContainsKey(message.ReceiverId))
+                if (user.ConnectionTokens.ContainsKey(message.SenderId) || user.ConnectionTokens.ContainsKey(message.ReceiverId))
                 {
                     result.Add(message);
                 }
@@ -60,7 +57,7 @@ namespace web_server
 
             foreach (var item in result)
             {
-                if(user.ConnectionTokens.ContainsKey(item.SenderId) || user.UserId == Convert.ToInt32(item.SenderId))
+                if (user.ConnectionTokens.ContainsKey(item.SenderId) || user.UserId == Convert.ToInt32(item.SenderId))
                 {
                     await Clients.Clients(Context.ConnectionId).SendAsync("ReceiveMessage", item.Message, userId);
                 }
@@ -79,16 +76,16 @@ namespace web_server
             if (user == null) { return; }
 
             var active = user.ConnectionTokens.Where(m => m.Value == "Connected").ToList();
-            foreach (var item in active) 
+            foreach (var item in active)
             {
-                if(TestData.LiveChats.FirstOrDefault(m=>m.UserId == token).WithUserId == own.UserId.ToString())
+                if (TestData.LiveChats.FirstOrDefault(m => m.UserId == token).WithUserId == own.UserId.ToString())
                 {
                     await Clients.Clients(item.Key).SendAsync("ReceiveMessage", message, own.UserId);
                 }
             }
 
-            user.Messages.Add(new Messages() { Message = message, SenderId = own.UserId.ToString(), ReceiverId= user.UserId.ToString(), MessageTime = DateTime.Now});
-            
+            user.Messages.Add(new Messages() { Message = message, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
+
 
             own.Messages.Add(new Messages() { Message = message, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
 
@@ -103,26 +100,26 @@ namespace web_server
             var ctx = Context.GetHttpContext();
             if (!ctx.Request.Query.ContainsKey("token"))
             {
-                return Task.CompletedTask; 
+                return Task.CompletedTask;
             }
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
-            
+
             if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId) == null)
             {
-                TestData.ChatUsers.Add(new ChatUser() { UserId = userId, ConnectionTokens = new System.Collections.Generic.Dictionary<string, string>() { {  connectionId , "Connected"} }  });
+                TestData.ChatUsers.Add(new ChatUser() { UserId = userId, ConnectionTokens = new System.Collections.Generic.Dictionary<string, string>() { { connectionId, "Connected" } } });
                 SetNewContact(userId);
 
             }
             else
             {
-                TestData.ChatUsers.FirstOrDefault(m=>m.UserId == userId).ConnectionTokens.Add(connectionId, "Connected");
+                TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens.Add(connectionId, "Connected");
             }
             GetContacts(userId);
 
-            foreach (var item in TestData.ChatUsers.FirstOrDefault(m=>m.UserId == userId).Messages)
+            foreach (var item in TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).Messages)
             {
-                var who = TestData.ChatUsers.FirstOrDefault(m=>m.ConnectionTokens.ContainsKey(item.SenderId));
-                if(who == null)
+                var who = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.ContainsKey(item.SenderId));
+                if (who == null)
                 {
                     who = TestData.ChatUsers.FirstOrDefault(m => m.UserId == Convert.ToInt32(item.SenderId));
                 }
@@ -135,18 +132,18 @@ namespace web_server
         }
 
         public async Task SetNewContact(int userId)
-        {           
-            var user = TestData.UserList.FirstOrDefault(m=>m.UserId == userId);
+        {
+            var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
 
             List<Schedule> userSchediles = new List<Schedule>();
-            
-            if(user.Role == "Student")
+
+            if (user.Role == "Student")
             {
                 userSchediles = TestData.Schedules.Where(m => m.UserId == userId).ToList();
             }
             else
             {
-                userSchediles =  TestData.Schedules.Where(m => m.TutorId == userId).ToList();
+                userSchediles = TestData.Schedules.Where(m => m.TutorId == userId).ToList();
             }
 
             foreach (var item in userSchediles)
@@ -156,13 +153,13 @@ namespace web_server
                     DisplayName = item.TutorFullName,
                     UserId = item.TutorId
                 };
-                
-                if(TestData.ChatUsers.FirstOrDefault(m=>m.UserId == item.UserId ) == null)
+
+                if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId) == null)
                 {
                     continue;
                 }
 
-                if ( TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId).Contacts.FirstOrDefault(m=>m.UserId == contact.UserId) == null)
+                if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId).Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
                 {
                     TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId).Contacts.Add(contact);
                 }
@@ -173,7 +170,7 @@ namespace web_server
                     UserId = item.UserId
                 };
                 var tutor = TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.TutorId);
-                if(tutor == null)
+                if (tutor == null)
                 {
                     continue;
                 }
@@ -181,12 +178,12 @@ namespace web_server
                 if (tutor.Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
                 {
                     TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.TutorId).Contacts.Add(contact);
-                }   
+                }
             }
         }
         public async Task GetContacts(int userId)
         {
-            var chatUser = TestData.ChatUsers.FirstOrDefault(m=>m.UserId == userId);
+            var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId);
             foreach (var item in chatUser.Contacts)
             {
                 await Clients.Clients(Context.ConnectionId).SendAsync("UserList", item.UserId, item.DisplayName);
@@ -198,7 +195,7 @@ namespace web_server
             var connectionId = Context.ConnectionId;
             var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
 
-            TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens[connectionId] =  "Disconnected";
+            TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens[connectionId] = "Disconnected";
             Clients.All.SendAsync("DisconnectUser", connectionId);
 
             return Task.CompletedTask;

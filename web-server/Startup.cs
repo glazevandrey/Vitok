@@ -4,20 +4,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using web_server.Injection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using web_server.DbContext;
+using web_server.Injection;
 using web_server.Services;
-using System.Threading;
 
 namespace web_server
 {
@@ -95,7 +90,7 @@ namespace web_server
 
             app.UseSwaggerUI();
             app.UseAuthentication();
-          
+
             app.Use(async (context, next) =>
             {
                 var token = context.Request.Cookies[".AspNetCore.Application.Id"];
@@ -117,8 +112,8 @@ namespace web_server
                         context.Request.Headers.Add("Authorization", "Bearer " + TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(context.Request.Query["token"])).ActiveToken);
                     }
                 }
-                    
-                
+
+
 
 
                 await next();

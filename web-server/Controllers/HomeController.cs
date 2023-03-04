@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Services;
-using System;
-using System.Linq;
 
 namespace web_server.Controllers
 {
@@ -14,7 +14,7 @@ namespace web_server.Controllers
     {
         IAuthService _authService;
         IJsonService _jsonService;
-        public HomeController(IAuthService authService,  IJsonService jsonService)
+        public HomeController(IAuthService authService, IJsonService jsonService)
         {
             _authService = authService;
             _jsonService = jsonService;
@@ -33,7 +33,7 @@ namespace web_server.Controllers
             var json = _authService.LogIn(user, HttpContext);
             return json;
         }
-        
+
         [HttpPost("registeruser", Name = "registeruser")]
         public string RegisterUser()
         {
@@ -58,7 +58,7 @@ namespace web_server.Controllers
         {
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.RescheduledLessons));
         }
-        
+
         [HttpGet("getuser", Name = "getuser")]
         public string GetUser([FromQuery] string args)
         {
@@ -111,8 +111,8 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var userSchedules = TestData.Schedules.Where(m=>m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
-            
+            var userSchedules = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
+
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(userSchedules));
         }
 

@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using web_server.DbContext;
-using web_server.Services;
 using System;
-using System.Linq;
-using web_server.Models;
 using System.Collections.Generic;
-using Microsoft.OpenApi.Validations;
-using System.Data;
-using System.Globalization;
+using System.Linq;
+using web_server.DbContext;
+using web_server.Models;
+using web_server.Services;
 
 namespace vitok.Controllers
 {
@@ -88,12 +85,12 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
-            if(user!= null)
+            if (user != null)
             {
-                TestData.Tutors.RemoveAll(m=>m.UserId == user.UserId);
-                if (TestData.UserList.FirstOrDefault(m=>m.UserId == user.UserId) != null)
+                TestData.Tutors.RemoveAll(m => m.UserId == user.UserId);
+                if (TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId) != null)
                 {
-                    TestData.UserList.RemoveAll(m=>m.UserId == user.UserId);
+                    TestData.UserList.RemoveAll(m => m.UserId == user.UserId);
                     return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject("OK"));
 
                 }
@@ -121,8 +118,8 @@ namespace vitok.Controllers
                 TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Add(dateTime);
                 TestData.Schedules.Add(new Schedule()
                 {
-                    Id  = TestData.Schedules.Last().Id+1,
-                    Date = new UserDate() { dateTimes = new List<DateTime>() { dateTime} },
+                    Id = TestData.Schedules.Last().Id + 1,
+                    Date = new UserDate() { dateTimes = new List<DateTime>() { dateTime } },
                     Looped = Convert.ToBoolean(split[2]),
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     TutorId = tutor.Id,
@@ -153,7 +150,7 @@ namespace vitok.Controllers
             var dateTime = DateTime.Parse(split[1]);
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id));
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(user_id));
-            var course = TestData.Courses.FirstOrDefault(m=>m.Id == Convert.ToInt32(course_id));
+            var course = TestData.Courses.FirstOrDefault(m => m.Id == Convert.ToInt32(course_id));
             if (tutor != null)
             {
                 tutor.UserDates.dateTimes.Add(dateTime);
@@ -169,7 +166,7 @@ namespace vitok.Controllers
                     Course = course,
                     Status = Status.Ожидает,
                     StartDate = dateTime
-                }) ;
+                });
 
                 return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
             }
@@ -197,7 +194,7 @@ namespace vitok.Controllers
             if (tutor != null)
             {
                 TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
-               
+
                 if (TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id)) != null)
                 {
                     TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id)).RemoveDate = curr;
@@ -227,16 +224,16 @@ namespace vitok.Controllers
             var dateCurr = DateTime.Parse(split[4]);
 
             var model = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
-            
-            if((Status)Enum.Parse(typeof(Status), status) == Status.Проведен)
+
+            if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен)
             {
-                TestData.UserList.FirstOrDefault(m=>m.UserId == user_id).LessonsCount--;
+                TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LessonsCount--;
                 TestData.UserList.FirstOrDefault(m => m.UserId == user_id).BalanceHistory.CustomMessages.Add(DateTime.Now, "-1 занятие");
 
 
 
-                TestData.Tutors.FirstOrDefault(m=>m.UserId == tutor_id).Balance += 1000;
-                TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id).BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000});
+                TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id).Balance += 1000;
+                TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id).BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000 });
 
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).Tasks[Constatnts.NOTIF_START_LESSON] = false;
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = false;
@@ -291,8 +288,8 @@ namespace vitok.Controllers
             var courseId = Convert.ToInt32(split[9]);
             var cureDate = DateTime.Parse(split[10]);
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
-            var user = TestData.UserList.FirstOrDefault(m=>m.UserId == user_id);
-        
+            var user = TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
+
             if (Convert.ToBoolean(loop))
             {
                 var new_model = new Schedule
@@ -301,11 +298,11 @@ namespace vitok.Controllers
                     UserId = user_id,
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     UserName = user.FirstName + " " + user.LastName,
-                    Course = TestData.Courses.FirstOrDefault(m=>m.Id == courseId),
-                    Date  = new UserDate() { dateTimes = new List<DateTime>() { newDateTime} },
-                    Id = TestData.Schedules.Last().Id +1,
+                    Course = TestData.Courses.FirstOrDefault(m => m.Id == courseId),
+                    Date = new UserDate() { dateTimes = new List<DateTime>() { newDateTime } },
+                    Id = TestData.Schedules.Last().Id + 1,
                     StartDate = newDateTime,
-                    Looped  = true,
+                    Looped = true,
                 };
 
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status = Status.Перенесен;
@@ -339,12 +336,12 @@ namespace vitok.Controllers
                     Looped = false,
                 };
 
-                var re_less = new RescheduledLessons() { Initiator= initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason, TutorId = tutor_id, UserId = user_id};
+                var re_less = new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason, TutorId = tutor_id, UserId = user_id };
 
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status = Status.Перенесен;
 
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).RescheduledLessons.Add(re_less);
-                
+
                 TestData.Schedules.Add(new_model);
             }
 

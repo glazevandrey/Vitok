@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using web_app.Models.Requests.Get;
-using web_app.Models.Requests;
-using web_app.Services;
-using web_server.Services;
 using System.Collections.Generic;
+using web_app.Models.Requests;
+using web_app.Models.Requests.Get;
+using web_app.Services;
 using web_server.Models;
-using System.Linq;
 
 namespace web_app.Controllers
 {
@@ -29,7 +27,7 @@ namespace web_app.Controllers
 
             if (!res.success)
             {
-               return  Redirect("/login");
+                return Redirect("/login");
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
             ViewData["role"] = user.Role;
@@ -38,13 +36,13 @@ namespace web_app.Controllers
             if (result.success)
             {
                 var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
-                model.RemoveAll(m=>m.UserId == -1);
+                model.RemoveAll(m => m.UserId == -1);
                 var model2 = new List<User>();
-                
-                    foreach (var item in model)
-                    {
+
+                foreach (var item in model)
+                {
                     CustomRequestGet req2;
-                    if(user.Role == "Student")
+                    if (user.Role == "Student")
                     {
                         req2 = new GetUserById(item.TutorId.ToString() + $";{user.Role}");
                         var res2 = _requestService.SendGet(req2, HttpContext);
@@ -57,10 +55,10 @@ namespace web_app.Controllers
                         model2.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res2.result.ToString()));
 
                     }
-                    }
-                    ViewData["users"] = model2;
-                
-               
+                }
+                ViewData["users"] = model2;
+
+
                 return View(model);
             }
             return View();

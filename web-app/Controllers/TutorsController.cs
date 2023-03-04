@@ -54,9 +54,9 @@ namespace web_app.Controllers
             return View(users);
         }
         [HttpPost("removeTutor", Name = "removeTutor")]
-        public IActionResult RemoveTutor([FromForm] string userIdRemove) 
+        public IActionResult RemoveTutor([FromForm] string userIdRemove)
         {
-            var req1 = new GetUserById(userIdRemove+";Tutor");
+            var req1 = new GetUserById(userIdRemove + ";Tutor");
             var res1 = _requestService.SendGet(req1, HttpContext);
 
             if (!res1.success)
@@ -74,9 +74,9 @@ namespace web_app.Controllers
             }
             return RedirectToAction("Index", "Tutors");
         }
-            [HttpPost("updateTutor", Name = "updateTutor")]
+        [HttpPost("updateTutor", Name = "updateTutor")]
         public IActionResult UpdateTutor([FromForm] string userIdEdit, [FromForm] string firstNameEdit, [FromForm] string lastNameEdit, [FromForm] string middleNameEdit, [FromForm] string birthDateEdit,
-            [FromForm] string emailEdit, [FromForm] string passwordEdit, [FromForm] string phoneEdit, [FromForm] string coursesEdit)
+        [FromForm] string emailEdit, [FromForm] string passwordEdit, [FromForm] string phoneEdit, [FromForm] string coursesEdit)
         {
             var course = coursesEdit?.Trim().Trim().Split(";");
 
@@ -87,12 +87,12 @@ namespace web_app.Controllers
                 foreach (var item in course)
                 {
                     var c = TestData.Courses.FirstOrDefault(m => m.Title == item);
-                    if(c != null)
+                    if (c != null)
                     {
                         listCourses.Add(c);
                     }
                 }
-               
+
             }
 
 
@@ -110,7 +110,7 @@ namespace web_app.Controllers
                 MiddleName = middleNameEdit,
                 Courses = listCourses,
             };
-            
+
             CustomRequestPost req = new CustomRequestPost("api/tutor/updatetutordata", user);
             var response = _requestService.SendPost(req, HttpContext);
             if (response == null)
@@ -126,17 +126,17 @@ namespace web_app.Controllers
             return RedirectToAction("Index", "Tutors");
         }
 
-        [HttpPost("addnewtutor", Name ="addnewtutor")]
+        [HttpPost("addnewtutor", Name = "addnewtutor")]
         public IActionResult AddNewTutor([FromForm] string firstName, [FromForm] string lastName, [FromForm] string middleName, [FromForm] string birthDate,
             [FromForm] string email, [FromForm] string password, [FromForm] string phone, [FromForm] string courses)
         {
 
-            
+
             var course = courses?.Trim().Trim().Split(";");
-            
+
             var listCourses = new List<Course>();
 
-            if(course != null)
+            if (course != null)
             {
                 foreach (var item in course)
                 {
@@ -154,9 +154,9 @@ namespace web_app.Controllers
                 BirthDate = DateTime.Parse(birthDate),
                 Email = email,
                 Courses = listCourses,
-                Role="Tutor",
-                UserDates = new UserDate() {  dateTimes = new List<DateTime>()},
-                
+                Role = "Tutor",
+                UserDates = new UserDate() { dateTimes = new List<DateTime>() },
+
             };
             CustomRequestPost req = new CustomRequestPost("api/tutor/addtutor", user);
             _requestService.SendPost(req, HttpContext);

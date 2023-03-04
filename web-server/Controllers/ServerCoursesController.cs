@@ -20,7 +20,7 @@ namespace web_server.Controllers
         }
 
 
-        [HttpGet("getcourses", Name ="getcourses")]
+        [HttpGet("getcourses", Name = "getcourses")]
         public string Index()
         {
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(
@@ -41,7 +41,7 @@ namespace web_server.Controllers
 
             course.Title = args[0];
             course.Id = TestData.Courses.Last().Id + 1;
-            course.Goal = TestData.Goals.FirstOrDefault(m=>m.Id == Convert.ToInt32(args[1]));
+            course.Goal = TestData.Goals.FirstOrDefault(m => m.Id == Convert.ToInt32(args[1]));
 
             TestData.Courses.Add(course);
 

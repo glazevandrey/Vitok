@@ -7,14 +7,14 @@ using web_server.DbContext;
 namespace web_server
 {
     public class NotifHub : Hub
-    {   
+    {
         public static void SendNotification(string message, string to, IHubContext<NotifHub> hub)
         {
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(to));
 
             var notif = new Notifications();
             var last = TestData.Notifications.LastOrDefault();
-            notif.Id = last == null ? 0: last.Id + 1;
+            notif.Id = last == null ? 0 : last.Id + 1;
             notif.Message = message;
             notif.UserIdTo = Convert.ToInt32(to);
             notif.DateTime = DateTime.Now;
@@ -27,7 +27,7 @@ namespace web_server
                 hub.Clients.Client(item.Key).SendAsync("ReceiveNotification", message, false, notif.Id);
             }
         }
-     
+
         public async Task SetNotifications(int userId)
         {
             var notifs = TestData.Notifications.Where(m => m.UserIdTo == userId).ToList();
@@ -46,8 +46,8 @@ namespace web_server
             }
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
 
-            var user = TestData.UserList.FirstOrDefault(m=>m.UserId == userId);
-            if(!user.NotificationTokens.Tokens.ContainsKey(connectionId))
+            var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
+            if (!user.NotificationTokens.Tokens.ContainsKey(connectionId))
             {
                 TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.Tokens.Add(connectionId, "Connected");
             }

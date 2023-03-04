@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using web_app.Models.Requests.Get;
 using web_app.Models.Requests;
-using web_server.DbContext;
+using web_app.Models.Requests.Get;
 using web_app.Services;
-using web_server.Services;
+using web_server.DbContext;
 using web_server.Models;
 
 namespace web_app.Controllers
@@ -11,7 +10,7 @@ namespace web_app.Controllers
     public class TariffController : Controller
     {
         IRequestService _requestService;
-        public TariffController( IRequestService requestService)
+        public TariffController(IRequestService requestService)
         {
             _requestService = requestService;
         }

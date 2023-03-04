@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using web_server.Models;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
-using Microsoft.AspNetCore.SignalR;
-using web_server;
-using System.Threading.Tasks;
+using web_server.Models;
 
 namespace web_app.Controllers
 {

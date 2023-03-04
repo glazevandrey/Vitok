@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using web_app.Models.Requests.Get;
 using web_app.Models.Requests;
+using web_app.Models.Requests.Get;
 using web_app.Services;
-using web_server.Services;
-using web_server.Models;
 using web_server.DbContext;
+using web_server.Models;
+using web_server.Services;
 
 namespace web_app.Controllers
 {
@@ -38,10 +38,10 @@ namespace web_app.Controllers
         [HttpPost("setLessons", Name = "setLessons")]
         public IActionResult SetLessons([FromForm] string userId, [FromForm] string count, [FromForm] string isTrialPay)
         {
-            CustomRequestPost req = new CustomRequestPost("api/account/addlessons",$"{userId};{count};{isTrialPay}");
+            CustomRequestPost req = new CustomRequestPost("api/account/addlessons", $"{userId};{count};{isTrialPay}");
             _requestService.SendPost(req, HttpContext);
 
-            return RedirectToAction("Index","Balance");
+            return RedirectToAction("Index", "Balance");
         }
     }
 }

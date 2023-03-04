@@ -26,7 +26,7 @@ namespace web_server.Models
         };
         public int RescheduledId { get; set; } = -1;
         public List<RescheduledLessons> RescheduledLessons { get; set; } = new List<RescheduledLessons>();
-        public DateTime RescheduledDate { get; set; } 
+        public DateTime RescheduledDate { get; set; }
 
         public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
         public DateTime RemoveDate { get; set; }

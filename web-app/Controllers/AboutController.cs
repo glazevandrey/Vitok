@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using web_server.DbContext;
-using web_server.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
+using web_server.DbContext;
+using web_server.Models;
 
 namespace web_app.Controllers
 {
@@ -80,7 +80,7 @@ namespace web_app.Controllers
             {
                 UserId = TestData.UserList.Last().UserId + 1,
                 WantThis = date,
-                Course = TestData.Courses.FirstOrDefault(m=>m.Id ==courseId),
+                Course = TestData.Courses.FirstOrDefault(m => m.Id == courseId),
                 TutorId = tutorId
             };
 

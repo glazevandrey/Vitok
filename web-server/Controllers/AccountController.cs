@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Services;
-using System.Linq;
-using System.Collections.Generic;
-using System;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNet.SignalR.Client;
 
 namespace web_server.Controllers
 {
@@ -41,7 +40,7 @@ namespace web_server.Controllers
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
             var old = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
-           
+
             old.FirstName = user.FirstName;
             old.LastName = user.LastName;
             old.BirthDate = user.BirthDate;
@@ -72,13 +71,13 @@ namespace web_server.Controllers
 
             var args = form.First().Key.Split(";");
 
-            var user  = TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args[0]));
-            TestData.UserList.FirstOrDefault(m=>m.UserId == user.UserId).LessonsCount+= Convert.ToInt32(args[1]);
-            var scheduled = TestData.Schedules.Where(m=>m.UserId == user.UserId).ToList();
+            var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args[0]));
+            TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).LessonsCount += Convert.ToInt32(args[1]);
+            var scheduled = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
             var trial = Convert.ToBoolean(args[2]);
             TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).UsedTrial = true;
             var tariff = TestData.Tariffs.FirstOrDefault(m => m.LessonsCount == Convert.ToInt32(args[1]));
-            if (tariff!= null)
+            if (tariff != null)
             {
                 TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.CustomMessages.Add(DateTime.Now, $"Оплата тарифа: {tariff.Title}");
             }
@@ -92,13 +91,13 @@ namespace web_server.Controllers
             {
 
                 var waited = scheduled.Where(m => m.Status == Status.ОжидаетОплату).ToList();
-                if(waited.Count > 0)
+                if (waited.Count > 0)
                 {
                     TestData.Schedules.FirstOrDefault(m => m.Id == waited.First().Id).Status = Status.Ожидает;
                     TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).LessonsCount -= 1;
                 }
             }
-            
+
 
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
         }
@@ -139,9 +138,9 @@ namespace web_server.Controllers
 
 
         [HttpPost("MarkAsRead", Name = "MarkAsRead")]
-        public void MarkAsRead([FromForm ]int id)
+        public void MarkAsRead([FromForm] int id)
         {
-            TestData.Notifications.FirstOrDefault(m => m.Id ==Convert.ToInt32(id)).Readed = true;
+            TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id)).Readed = true;
         }
 
 
@@ -156,12 +155,12 @@ namespace web_server.Controllers
             }
 
             var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
-            if(user == null)
+            if (user == null)
             {
                 return null;
             }
             var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
-            if(schedules == null || schedules.Count == 0)
+            if (schedules == null || schedules.Count == 0)
             {
                 schedules = TestData.Schedules.Where(m => m.TutorId == user.UserId).ToList();
 
