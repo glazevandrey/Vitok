@@ -1,0 +1,81 @@
+﻿<div>
+
+@{
+    string url2 = "https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.0-rc1-update1/dist/browser/signalr.min.js";
+}
+
+<script src="@url2"></script>
+
+
+    <script>
+        var url3 = "http://localhost:23382/notifHub" + "?" + "token=" + "@ViewData["usertoken"]";
+
+        var notificationsConnection = new signalR.HubConnectionBuilder()
+            .configureLogging(signalR.LogLevel.Debug)
+            .withUrl(url3)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        notificationsConnection.start().then(function () {
+            notificationsConnection.on("ReceiveNotification", function (message, read, id) {
+                console.log(id);
+                var notification = $("<li id='li_" + id +"' data-id='" + id + "'>").text(message);
+                $("#notif-list").append(notification);
+
+                
+                if (read === false) {
+                    notification.click(function () {
+                        if(!$("#li_" + id).hasClass('read')){
+                            notification.addClass("read");
+                            console.log(notification.attr("data-id"));
+
+                            $.post("http://localhost:23382/api/account/MarkAsRead", { id: notification.attr("data-id") });
+                            $("#icon-badge").text(parseInt($("#icon-badge").text()) - 1);
+                        }
+                 
+
+                });
+                    if (!$("#icon-badge").text()) {
+                        $("#icon-badge").text(1);
+                    } else {
+                        $("#icon-badge").text(parseInt($("#icon-badge").text()) + 1);
+                    }
+                }
+            });
+        });
+    </script>
+
+@*<script>
+        var url3 = "http://localhost:23382/notifHub" + "?" + "token=" + "@ViewData["usertoken"]";
+
+    var notificationsConnection = new signalR.HubConnectionBuilder()
+            .configureLogging(signalR.LogLevel.Debug)
+            .withUrl(url3)
+            .configureLogging(signalR.LogLevel.Information)
+        .build();
+        
+    notificationsConnection.start().then(function () {
+        notificationsConnection.on("ReceiveNotification", function (message, readed,id)
+        {
+            var notification = $("<li data-id='"+ id + "'>").text(message);
+            $("#notif-list").append(notification);
+
+              notification.click(function () {
+        notification.addClass("read");
+        $.post("/Account/MarkAsRead", { id: notification.attr("data-id") });
+                });
+
+
+            if(readed === false){
+                    if (!document.getElementById("icon-badge").innerHTML) {
+                        document.getElementById("icon-badge").innerHTML = 1;
+                    } else {
+                        document.getElementById("icon-badge").innerHTML++;
+
+                    }
+            }
+               
+        });
+
+</script>
+*@</div>

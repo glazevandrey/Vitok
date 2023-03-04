@@ -1,4 +1,6 @@
-﻿<style>
+﻿<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<style>
 
     .FullContent {
         display: flex;
@@ -10,21 +12,120 @@
         background-color: aqua;
         flex: 0 0 300px;
     }
-
     .container {
+        margin-top: 20px;
         margin-left: 100px;
     }
 
-</style>
 
+
+
+</style>
+<style>
+    .notification-wrapper {
+        position: relative;
+        display: inline-block;
+        float:right;
+    }
+
+    .notification-icon {
+        position: relative;
+        padding: 8px;
+        background-color: transparent;
+        border: none;
+        float:right;
+        cursor: pointer;
+    }
+
+    .icon-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        padding: 4px;
+        border-radius: 50%;
+        background-color: red;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 1;
+        text-align: center;
+    }
+
+    .icon-bell {
+        display: block;
+        width: 20px;
+        height: 20px;
+        background: url('https://cdn-icons-png.flaticon.com/512/3221/3221952.png') no-repeat center center / cover;
+        float: right;
+        margin-right: 20px;
+    }
+
+    .notification-menu {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        width: 200px;
+        padding: 10px;
+        background-color: white;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        display: none;
+    }
+
+        .notification-menu.show {
+            display: block;
+        }
+
+        .notification-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .notification-menu li {
+            margin: 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+            .notification-menu li:last-child {
+                border-bottom: none;
+            }
+
+        .notification-menu a {
+            color: #333;
+            text-decoration: none;
+        }
+
+            .notification-menu a:hover {
+                text-decoration: underline;
+            }
+
+</style>
 
 <html lang="ru">
 <body>
+
     <header>
     </header>
-        <div class="FullContent">
-            <div  class="CustomLeftnavbar" >
+  <div class="notification-wrapper">
+  <button class="notification-icon" aria-label="Уведомления">
+   <span id="icon-badge" class="icon-badge"></span>
+    <span class="icon-bell"></span>
+  </button>
+  <div class="notification-menu">
+    <ul id="notif-list" class="norif-list">
+       
+    </ul>
+
+  </div>
+</div>
+    @{
+        Html.RenderPartial("~/Views/Shared/_Notifications.cshtml");
+        }<div class="FullContent">
+                    
+            <div  class="CustomLeftnavbar">
             @{
+
                 Html.RenderPartial("~/Views/Shared/_LeftMenu.cshtml");
             }
 
@@ -35,6 +136,16 @@
                 </main>
             </div>
         </div> 
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </body>
 </html>
 
+        <script>
+           const notificationIcon = document.querySelector('.notification-icon');
+const notificationMenu = document.querySelector('.notification-menu');
+
+notificationIcon.addEventListener('click', function () {
+  notificationMenu.classList.toggle('show');
+});
+        </script>

@@ -1,0 +1,363 @@
+﻿@using Newtonsoft.Json;
+@using web_server.Models
+@model List<User>;
+
+@{
+    Layout = "_Layout";
+}
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
+<style>
+    label {
+     display: block;
+    }
+
+    label > span {
+        display: inline-block;
+        width: 170px;
+    }
+
+    label > input {
+        display: inline-block;
+        width: 170px;
+    }
+</style>
+    
+<form method="post" action="/tutors/addnewtutor">
+
+            <fieldset>
+                <legend>Добавить нового репетитора</legend>
+
+                <div class="container" align="center">
+
+                <label>
+                <span>Фамилия</span>
+                <input id="lastName" name="lastName" value="" />
+                </label>
+                <br />
+                <br />
+
+                <label>
+                <span>Имя</span>
+                <input name="firstName" id="firstName" value="" />
+                    <br />             <br />
+
+                </label>
+                <label>
+                <span>Отчество</span>
+                <input id="middleName" name="middleName" value="" />
+                    <br />             <br />
+
+                </label>
+                <label>
+                <span>Дата рождения</span>
+                <input name="birthDate" id="birthDate" value="" />
+                    <br />             <br />
+
+                </label>
+
+            <label style="display:none; color:darkred" id="email_error">Такая почта уже используется</label>
+<br/>
+                <label>
+                    
+                <span>Почта</span>
+                
+                <input name="email" id="email" onchange="validateEmail(this)" value="" />
+                    <br />             <br />
+
+                </label>
+            <label>
+                <span>Пароль</span>
+                <input name="password" id="password" value="" />
+                <br />             <br />
+
+            </label>
+                        <label>
+                <span>Телефон</span>
+                <input name="phone" id="phone" value="" />
+                <br />             <br />
+
+            </label>
+            <label>
+                <span>Курсы</span>
+                <input name="courses" id="courses" placeholder="(напр. ЕГЭ;Общий ангийский;ОГЭ)" value="" />
+                <br />             <br />
+
+            </label>
+
+                </div>
+            </fieldset>
+            <br/>
+
+    <div align="center">
+        <input type="submit" value="Добавить нового репетитора" />
+
+    </div>
+
+        </form>
+        <br/>
+
+        <br/>
+<input type="text" id="search" placeholder="Search...">
+<br/>
+         <table id="table">
+        <thead>
+            <tr>
+                <th>Фамилия</th>
+           
+            <th>Имя</th>
+      
+            <th>Отчество</th>
+       
+            <th>Дата рождения</th>
+       
+            <th>Почта</th>
+     
+                <th>Пароль</th>
+        
+                <th>Телефон</th>
+
+        
+            <th>Курсы</th>
+            <th></th>
+            <th></th>
+
+        </tr>
+        </thead>
+        <tbody id="table-body">
+            @foreach (var item in Model)
+            {
+                 <tr>
+                    <td>
+                    @item.LastName
+                    </td>
+
+                    <td>
+                    @item.FirstName
+                    </td>
+
+                    <td>
+                    @item.MiddleName
+                    </td>
+
+                    <td>
+                    @item.BirthDate.ToString("dd.MM.yyyy")
+                    </td>
+
+                    <td>
+                    @item.Email
+                    </td>
+
+                    <td>
+                    @item.Password
+                    </td>
+
+                    <td>
+                    @item.Phone
+                    </td>
+
+                    <td>
+                    @{
+                        string cr = "";
+                        if(item.Courses!= null)
+                        {
+                            foreach (var course in item.Courses)
+                            {
+                                cr += course.Title + ";";
+                            }
+                            cr = cr.TrimEnd(';');
+                        }
+                        @cr
+                        }
+                 
+                    </td>
+
+                <td>
+                    <button onclick="editRow(@item.UserId)">Edit</button>
+                </td>
+                <td>
+                    <button onclick="openRemove(@item.UserId)">Remove</button>
+                </td>
+
+                </tr>   
+            }
+        
+         
+        </tbody>
+    </table>
+
+    <script>
+
+        function closeRemove(){
+                    window.location.href = "#closeRemoveModal";
+        }
+
+        function openRemove(id){
+        document.getElementById('userIdRemove').value = id;
+        window.location.href = "#openRemoveModal";
+
+        }
+    </script>
+<div id="openRemoveModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Подтвердите удаление репетитора из системы
+                </h3>
+                <a href="#closeRemoveModal" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/tutors/removeTutor">
+                    <input hidden="hidden" value="" id="userIdRemove" name="userIdRemove" />
+                    <br/>
+                    <input type="submit" value="Удалить"/>
+                    <input type="button" value="Отмена" onclick="closeRemove()">
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="openModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Баланс
+                </h3>
+                <a href="#closeModal" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/tutors/updateTutor">
+                    <input hidden="hidden" value="" id="userIdEdit" name="userIdEdit"/>
+                  <label>Имя</label><br/>
+                    <input id="firstNameEdit" name="firstNameEdit" type="text" value="" />
+                <br/>
+                <br/>
+                <label>Фамилия</label><br />
+                    <input id="lastNameEdit" name="lastNameEdit" type="text" value="" />
+                <br/>
+                <br/>
+                <label>Отчество</label><br />
+                    <input id="middleNameEdit" name="middleNameEdit" type="text" value="" />
+                <br/>
+                <br/>
+                <label>Дата рождения</label><br />
+                    <input id="birthDateEdit" name="birthDateEdit" type="text" value="" />
+                <br />
+                <br />
+                <label>Номер телефона</label><br />
+                    <input id="phoneEdit" name="phoneEdit" type="text" value="" />
+                <br />
+                <br />
+                <label>Почта</label><br/>
+                    <input id="emailEdit" name="emailEdit" type="text" value="" />
+                <br />
+                <br />
+                <label>Пароль</label><br />
+                    <input id="passwordEdit" name="passwordEdit" type="text" value="" />
+                <br />
+                <br />
+                <label>Курсы</label><br />
+                    <input id="coursesEdit" name="coursesEdit" type="text" value="" />
+                <br />
+                <br />
+                <input type="submit" value="Сохранить" />
+                <input type="submit" onclick="window.location.href='#closeModal'" value="Отмена" />
+    
+                
+                </form>
+              
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    function getUsers()
+    {
+        var model = @Html.Raw(Json.Serialize(Model));
+        console.log(model);
+        return model;
+    }
+    function editRow(userId) {
+        console.log(userId);
+
+    // Get the user data for the row with the specified userId
+    var user = getUsers().find(u => u.userId === userId);
+    console.log(user);
+
+    // Populate the form fields with the user data
+        document.getElementById("firstNameEdit").value = user.firstName;
+        document.getElementById("lastNameEdit").value = user.lastName;
+        document.getElementById("middleNameEdit").value = user.middleName;
+        document.getElementById("birthDateEdit").value = new Date(user.birthDate).toLocaleDateString();
+        document.getElementById("phoneEdit").value = user.phone;
+        document.getElementById("passwordEdit").value = user.password;
+        document.getElementById("userIdEdit").value = user.userId;
+        document.getElementById("emailEdit").value = user.email;
+
+        var c = "";
+                for (i = 0; i < user.courses.length; i++) {
+                c += user.courses[i].title + ';';
+                }
+
+        document.getElementById("coursesEdit").value = c;
+
+    window.location.href = "#openModal";
+}
+
+
+    function searchTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("table");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td");
+            for (j = 0; j < td.length; j++) {
+                txtValue = td[j].textContent || td[j].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    break;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+            
+        }
+    }
+
+    document.getElementById("search").onkeyup = searchTable;
+
+</script>
+                
+    <script>
+        function validateEmail(el)
+        {
+            console.log("dfdf");
+            var email = el.value;
+        var emails = @Html.Raw(JsonConvert.SerializeObject(Model.Select(m=>m.Email).ToArray()));
+        console.log(emails);
+
+            if(emails.includes(email)){
+                console.log("dfdfd");
+            document.getElementById('email_error').style.display = 'inline-block';
+
+            }else{
+            document.getElementById('email_error').style.display = 'none'
+        }
+
+        }
+    </script>

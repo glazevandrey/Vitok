@@ -4,6 +4,9 @@ using web_server.Models;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
+using Microsoft.AspNetCore.SignalR;
+using web_server;
+using System.Threading.Tasks;
 
 namespace web_app.Controllers
 {
@@ -12,6 +15,7 @@ namespace web_app.Controllers
     public class AccountController : Controller
     {
         IRequestService _requestService;
+
         public AccountController(IRequestService requestService)
         {
             _requestService = requestService;
@@ -24,7 +28,6 @@ namespace web_app.Controllers
             {
                 HttpContext.Response.Cookies.Delete(".AspNetCore.Application.Id");
             }
-
             return Redirect("/login");
         }
 
@@ -39,6 +42,7 @@ namespace web_app.Controllers
                 return Redirect("/account/logout");
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
+            ViewData["usertoken"] = user.UserId;
             return View(user);
         }
 
@@ -54,5 +58,6 @@ namespace web_app.Controllers
 
             return Redirect("/account");
         }
+
     }
 }

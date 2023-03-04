@@ -19,12 +19,14 @@ namespace web_server.Services
 
         public bool CheckIsActive(HttpContext context)
         {
-            //if (context.User.Identity.IsAuthenticated)
-            //{
-            //    return true;
-            //}
-            return true;
-            //return false;
+            if (context.User.Identity.IsAuthenticated)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
 
         }
         public string GetUserById(string args)

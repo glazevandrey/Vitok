@@ -24,7 +24,10 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            ViewData["count"] = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString()).LessonsCount;
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            ViewData["usertoken"] = user.UserId;
+
+            ViewData["count"] = user.LessonsCount;
             return View(TestData.Tariffs);
         }
     }

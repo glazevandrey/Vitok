@@ -9,6 +9,7 @@ using System;
 using System.Globalization;
 using web_server.DbContext;
 using System.Data;
+using web_app.Models;
 
 namespace web_app.Controllers
 {
@@ -25,25 +26,59 @@ namespace web_app.Controllers
         }
         public IActionResult Index([FromQuery] string date = null)
         {
-            CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-            var result = _requestService.SendGet(request, HttpContext);
 
             CustomRequestGet req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
-            if (res == null || result == null || !result.success || !res.success )
+
+            if (!res.success)
             {
                 return Redirect("/login");
             }
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            ViewData["usertoken"] = user.UserId;
+
+            var result = new ResponseModel();
+            if(user.Role == "Manager")
+            {
+                CustomRequestGet request = new GetAllSchedules();
+                result = _requestService.SendGet(request, HttpContext);
+
+                CustomRequestGet req3 = new GetAllTutorsRequest();
+                var res3 = _requestService.SendGet(req3, HttpContext);
+                ViewData["Tutors"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res3.result.ToString());
+            }
+            else
+            {
+                CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+                result = _requestService.SendGet(request, HttpContext);
+
+            }
+
+
+            if (result == null || !result.success || !res.success )
+            {
+                return Redirect("/login");
+            }
+
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
 
             ViewData["role"] = user.Role;
             ViewData["userid"] = user.UserId;
             ViewData["courses"] = TestData.Courses;
 
-            req = new GetReSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-            res = _requestService.SendGet(req, HttpContext);
+            if (user.Role == "Manager")
+            {
+                req = new GetAllReSchedules();
+                res = _requestService.SendGet(req, HttpContext);
+            }
+            else
+            {
+                req = new GetReSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+                res = _requestService.SendGet(req, HttpContext);
+
+            }
+          
 
             var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(res.result.ToString());
             ViewData["rescheduled"] = rescheduled;
@@ -58,10 +93,10 @@ namespace web_app.Controllers
         }
         
         [HttpPost("AddFreeTime", Name = "AddFreeTime")]
-        public IActionResult AddFreeTime([FromForm]string date2, [FromForm] string tutorId, [FromForm] string looped)
+        public IActionResult AddFreeTime([FromForm]string date2, [FromForm] string tutorIdFreeTime, [FromForm] string looped)
         {
             var loop = looped == "on" ? true : false;
-            var req = new CustomRequestPost("api/tutor/addtutorfreedate", $"{tutorId};{DateTime.Parse(date2).ToString("dd.MM.yyyy HH:mm")};{loop}");
+            var req = new CustomRequestPost("api/tutor/addtutorfreedate", $"{tutorIdFreeTime};{DateTime.Parse(date2).ToString("dd.MM.yyyy HH:mm")};{loop}");
             var res = _requestService.SendPost(req, HttpContext);
             return RedirectToAction("Index", "Schedule");
         }
@@ -78,10 +113,10 @@ namespace web_app.Controllers
         }
 
         [HttpPost("AddSchedule", Name = "AddSchedule")]
-        public IActionResult AddTutorSchedule([FromForm] string date3, [FromForm] string tutorId, [FromForm] string looped, [FromForm] string userId, [FromForm] string courses )
+        public IActionResult AddTutorSchedule([FromForm] string date3, [FromForm] string tutorIdChoosed, [FromForm] string looped, [FromForm] string userId, [FromForm] string courses )
         {
             var loop = looped == "on" ? true : false;
-            var req = new CustomRequestPost("api/tutor/addtutorschedule", $"{tutorId};{DateTime.Parse(date3).ToString("dd.MM.yyyy HH:mm")};{loop};{userId};{courses}");
+            var req = new CustomRequestPost("api/tutor/addtutorschedule", $"{tutorIdChoosed};{DateTime.Parse(date3).ToString("dd.MM.yyyy HH:mm")};{loop};{userId};{courses}");
             var res = _requestService.SendPost(req, HttpContext);
             return RedirectToAction("Index", "Schedule");
         }

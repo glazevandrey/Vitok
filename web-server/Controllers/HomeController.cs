@@ -33,7 +33,7 @@ namespace web_server.Controllers
             var json = _authService.LogIn(user, HttpContext);
             return json;
         }
-
+        
         [HttpPost("registeruser", Name = "registeruser")]
         public string RegisterUser()
         {
@@ -47,6 +47,18 @@ namespace web_server.Controllers
             var json = _authService.Register(user, HttpContext);
             return json;
         }
+
+        [HttpGet("getAllSchedules", Name = "getAllSchedules")]
+        public string GetAllSchedules()
+        {
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Schedules));
+        }
+        [HttpGet("getAllReSchedules", Name = "getAllReSchedules")]
+        public string GetAllReSchedules()
+        {
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.RescheduledLessons));
+        }
+        
         [HttpGet("getuser", Name = "getuser")]
         public string GetUser([FromQuery] string args)
         {
@@ -64,6 +76,12 @@ namespace web_server.Controllers
             }
 
             return json;
+        }
+
+        [HttpGet("getAllStudentsAndTutors", Name = "getAllStudentsAndTutors")]
+        public string GetAll([FromQuery] string args)
+        {
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.UserList));
         }
         [Authorize]
         [HttpGet("getuserbyid", Name = "getuserbyid")]
@@ -83,6 +101,19 @@ namespace web_server.Controllers
             }
 
             return json;
+        }
+        [Authorize]
+        [HttpGet("getschedulebyid", Name = "getschedulebyid")]
+        public string GetScheduleById([FromQuery] string args)
+        {
+            if (args == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+
+            var userSchedules = TestData.Schedules.Where(m=>m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
+            
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(userSchedules));
         }
 
         [HttpPost("adduserregistration", Name = "adduserregistration")]

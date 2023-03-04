@@ -30,6 +30,8 @@ namespace web_app.Controllers
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
             ViewData["role"] = user.Role;
             ViewData["tariffs"] = TestData.Tariffs;
+            ViewData["usertoken"] = user.UserId;
+
             return View(user);
         }
 

@@ -33,10 +33,7 @@
 
     <label>Дата рождения</label>
         @Html.TextBoxFor(m => m.BirthDate, new { @class = "form-control txtbox" })
-@*
-    <input type="date" id="birthday" name="birthday"
-           value="@DateTime.Now.ToString("yyyy-MM-dd")"
-           min="1910-01-01" max="@DateTime.Now.AddYears(5).ToString("yyyy-MM-dd")"/>*@
+
     <br />
     <br />
 
@@ -59,12 +56,14 @@
          var w_days = new List<DayOfWeek>()
                                 {
                                     DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
-                                 //   "Понедельник", "Вторник", "Среда" ,"Четверг" ,"Пятница" ,"Суббота" ,"Воскресенье"
                                 };
         if(Model.Role == "Tutor")
         {
           <label>Курсы</label>
-          foreach (var item in Model.Courses)
+            <br />
+            <br />
+
+            foreach (var item in Model.Courses)
             {
                 <label>Название</label>
                 <label>@item.Title</label>
@@ -72,6 +71,8 @@
                 <label>Цель</label>
                 <label>@item.Goal.Title</label>
                 <br/>
+                <br />
+
             }
             <br />
 

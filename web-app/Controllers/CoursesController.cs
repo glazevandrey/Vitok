@@ -23,7 +23,6 @@ namespace web_app.Controllers
         public IActionResult Index()
         {
 
-
             CustomRequestGet req = new GetCourses(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
             var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(res.result.ToString());
@@ -36,6 +35,7 @@ namespace web_app.Controllers
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
             ViewData["role"] = user.Role;
+            ViewData["usertoken"] = user.UserId;
 
             ViewData["goals"] = TestData.Goals;
             return View(courses);

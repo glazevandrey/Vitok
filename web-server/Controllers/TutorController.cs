@@ -32,6 +32,76 @@ namespace vitok.Controllers
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(
                 TestData.Tutors.FirstOrDefault(m => m.Id.ToString() == args)));
         }
+
+        [Authorize]
+        [HttpPost("addtutor", Name = "addtutor")]
+        public string AddTutor()
+        {
+            var form = Request.Form;
+            if (form.Keys.Count == 0)
+            {
+                return _jsonService.PrepareErrorJson("Tutor not found");
+            }
+            var raw = form.First().Key;
+            var model = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(raw.ToString());
+            model.Id = TestData.UserList.Last().Id + 1;
+            model.UserId = TestData.UserList.Last().UserId + 1;
+
+            TestData.UserList.Add(model);
+
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(model));
+        }
+
+        [Authorize]
+        [HttpPost("updatetutordata", Name = "updatetutordata")]
+        public string updatetutordata()
+        {
+            var form = Request.Form;
+            if (form == null || form.Keys.Count == 0)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
+            var old = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
+
+            old.FirstName = user.FirstName;
+            old.LastName = user.LastName;
+            old.MiddleName = user.MiddleName;
+            old.BirthDate = user.BirthDate;
+            old.About = user.About;
+            old.Email = user.Email;
+            old.Wish = user.Wish;
+            old.Courses = user.Courses;
+            old.Password = user.Password;
+            old.Phone = user.Phone;
+
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+        }
+
+        [Authorize]
+        [HttpPost("removeTutorServer", Name = "removeTutorServer")]
+        public string RemoveTutor()
+        {
+            var form = Request.Form;
+            if (form == null || form.Keys.Count == 0)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
+            if(user!= null)
+            {
+                TestData.Tutors.RemoveAll(m=>m.UserId == user.UserId);
+                if (TestData.UserList.FirstOrDefault(m=>m.UserId == user.UserId) != null)
+                {
+                    TestData.UserList.RemoveAll(m=>m.UserId == user.UserId);
+                    return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject("OK"));
+
+                }
+            }
+
+            return _jsonService.PrepareErrorJson(Newtonsoft.Json.JsonConvert.SerializeObject("BAD RESULT"));
+        }
+
         [Authorize]
         [HttpPost("addtutorfreedate", Name = "addtutorfreedate")]
         public string AddTutorFreeDate()

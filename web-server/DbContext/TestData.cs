@@ -29,7 +29,7 @@ namespace web_server.DbContext
         public static List<RescheduledLessons> RescheduledLessons = new List<RescheduledLessons>();
         public static List<User> UserList = new List<User>
             {
-             new User() {FirstName = "Сергей", LastName = "Петров", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"),
+             new User() {FirstName = "Сергей", LastName = "Глузер", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"),
                     Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(), UserId =0, Email = "b", Phone = "+79054769537",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
                         dateTimes = new List<DateTime>(){DateTime.Parse("10.03.2023 17:00"), DateTime.Parse("16.03.2023 19:00") }
@@ -73,6 +73,7 @@ namespace web_server.DbContext
                     UserId = 5
                 }
             };
+        public static List<Notifications> Notifications = new List<Notifications>();
 
         public static List<User> Tutors = UserList.Where(m => m.Role == "Tutor").ToList();
         public static List<User> Managers = UserList.Where(m=>m.Role == "Manager").ToList();
@@ -83,12 +84,22 @@ namespace web_server.DbContext
             new Schedule() { Id = 1, UserName ="Петр Иванов", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 3,
                 Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("10.02.2023 20:00") } }, Course = Courses[1]},
           new Schedule() { Id = 3, UserName ="Сергей Курочка", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 13:00") } }, Looped = false, Course = Courses[2]},
-         new Schedule() { Id = 4, UserName ="Сергей Курочка", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 17:00") } }, Looped = false, Course = Courses[1]}};
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 13:00") } }, Looped = true, Course = Courses[2]},
+            new Schedule() { Id = 5, UserName ="Сергей Курочка",TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("14.03.2023 10:00") } }, Looped = false, Course = Courses[0]},
+               new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.03.2023 7:00") } }, Looped = true, Course = Courses[1]},
+             new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
+
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.03.2023 7:00") } }, Looped = true, Course = Courses[1]},
+
+            new Schedule() { Id = 4, UserName ="Сергей Курочка", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
+
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("13.03.2023 17:00") } }, Looped = true, Course = Courses[2]}};
 
         public static List<ChatUser> ChatUsers { get; set; } = new List<ChatUser>();
     }
+
     public class RescheduledLessons
     {
         public int UserId { get; set; }
@@ -97,6 +108,19 @@ namespace web_server.DbContext
         public DateTime NewTime { get; set; }
         public string Reason { get; set; }
         public string Initiator { get; set; }
+    }
+   
+    public class Notifications
+    {
+        public int Id { get; set; }
+        public bool Readed { get; set; } = false;
+        public int UserIdTo { get; set; }
+        public string Message { get; set; }
+        public DateTime DateTime { get; set; }
+    }
+    public class NotificationTokens
+    {
+        public Dictionary<string, string> Tokens { get; set; } = new Dictionary<string, string>();
     }
     public class ChatUser
     {

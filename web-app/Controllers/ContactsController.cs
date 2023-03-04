@@ -20,6 +20,7 @@ namespace web_app.Controllers
         }
         public IActionResult Index()
         {
+
             CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var result = _requestService.SendGet(request, HttpContext);
 
@@ -32,6 +33,7 @@ namespace web_app.Controllers
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
             ViewData["role"] = user.Role;
+            ViewData["usertoken"] = user.UserId;
 
             if (result.success)
             {

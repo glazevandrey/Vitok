@@ -30,6 +30,8 @@ namespace web_app.Controllers
 
             ViewData["userid"] =user.UserId;
             ViewData["role"] = user.Role;
+            ViewData["usertoken"] = user.UserId;
+
             return View();
         }
     }

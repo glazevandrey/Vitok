@@ -1,0 +1,88 @@
+﻿@using web_server.Models
+@model List<User>;
+@{
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
+<script>
+
+    function balance(id){
+
+        window.location.hash = "#"+ id
+    }
+</script>
+
+<div>
+
+    @{
+        foreach (var item in Model)
+        {
+            <div id="students">
+            <img src="@item.PhotoUrl" width="50" height="50"/>
+            <label><b>@item.FirstName @item.LastName</b></label>
+            
+            <br/>
+            <br/>
+                @{
+                    Dictionary<int, string> keys = new Dictionary<int, string>();
+                    var schedules = ((List<Schedule>)ViewData["schedules"]).Where(m=>m.UserId == item.UserId);
+                    foreach (var lesson in schedules)
+                    {
+                        if (!keys.ContainsKey(lesson.TutorId))
+                        {
+                            keys.Add(lesson.TutorId, lesson.Course?.Title);
+                        }
+                    }
+
+                    foreach (var key in keys)
+                    {
+                        <label>Курс @key.Value с @schedules.FirstOrDefault(m=>m.TutorId == key.Key).TutorFullName</label>
+                        <br/>
+                    }
+
+                    <br/>
+                    <label>Осталось занятий: @item.LessonsCount</label>
+                    <br/>
+                    var idModal = "openModal" + item.UserId;
+                    var closeModal = "closeModal" + item.UserId;
+                }
+
+                <input type="button" onclick="balance('@idModal')" value="Посмотреть баланс" />
+
+
+            <div id="@idModal" class="modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">
+                                Баланс
+                            </h3>
+                            <a href="#@closeModal" title="Close" class="close">×</a>
+                        </div>
+                        <div class="modal-body">
+                            @{
+                   
+                                 foreach (var balance in item.BalanceHistory.CustomMessages)
+                                 {
+                                        <label><b>@balance.Key.ToString("dd MMMM ddd")</b></label>
+                                        <br/>
+                                        <label>@balance.Value</label>
+                                        <br/>
+                                        <br/>
+                                    }
+                            }
+                            <input hidden="hidden" value="" id="userIdBalance" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <br />
+                <br />
+            </div>
+        }
+    }
+
+</div>

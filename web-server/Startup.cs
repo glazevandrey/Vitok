@@ -134,6 +134,7 @@ namespace web_server
             });
             app.UseSignalR(routes =>
             {
+                routes.MapHub<NotifHub>("/notifHub");
                 routes.MapHub<Class>("/chatHub");
             });
         }
