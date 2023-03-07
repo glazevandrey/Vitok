@@ -4,7 +4,7 @@
         if(ViewData["role"].ToString() == "Student")
         {
              <li class="nav-item">
-            <a class="nav-link text-dark">Осталось занятий:</a>
+            <a class="nav-link text-dark">Осталось занятий: @ViewData["lessons"]</a>
              </li>
             <li class="nav-item">
                 <a class="nav-link text-dark" href="/schedule">Расписание</a>

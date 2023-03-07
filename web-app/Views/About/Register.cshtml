@@ -28,7 +28,7 @@
        }
 
      
-        document.getElementById('texdt;' + id).value = time;
+        document.getElementById('textTime;' + id).value = time;
 
     }
 
@@ -124,12 +124,12 @@
                         </p>
                         <form method="post" action="FromRegisterToLogin">
                             @{
-                                var texdt = $"texdt;{item.UserId}";
+                                var textTime = $"textTime;{item.UserId}";
                                 var tutor = $"tutor;{item.UserId}";
 
                                 <input hidden="hidden" class="course" name="course" id="course22" value="" />
 
-                                <input hidden="hidden" class="texdt" name="texdt" id="@texdt" value="" />
+                                <input hidden="hidden" class="textTime" name="textTime" id="@textTime" value="" />
                                 <input hidden="hidden" class="tutor" name="tutor" id="@tutor" value="@item.UserId" />
 
                                 <input type="submit" value="Записаться" />

@@ -23,6 +23,8 @@ namespace web_server.Models
         {
             { Constatnts.NOTIF_START_LESSON, false},
             { Constatnts.NOTIF_TOMORROW_LESSON, false},
+            { Constatnts.NOTIF_DONT_FORGET_SET_STATUS, false},
+
         };
         public int RescheduledId { get; set; } = -1;
         public List<RescheduledLessons> RescheduledLessons { get; set; } = new List<RescheduledLessons>();

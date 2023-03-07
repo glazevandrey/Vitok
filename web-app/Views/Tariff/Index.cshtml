@@ -1,6 +1,9 @@
 ﻿@using web_server.Models;
 @model List<Tariff>
 
+@{
+    Layout = "_Layout";
+}
 
 <label>Осталось: @ViewData["count"] занятий</label>
 <form method="get" action="/balance">

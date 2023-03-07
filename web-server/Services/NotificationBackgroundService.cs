@@ -19,98 +19,125 @@ namespace web_server.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            await Task.Run(() =>
             {
-                try
+                Thread.Sleep(10000);
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    // Получаем все занятия из базы данных
-                    var lessons = TestData.Schedules;
-
-                    // Обрабатываем каждое занятие
-                    foreach (var lesson in lessons)
+                    try
                     {
-                        // Проверяем статус занятия
-                        if (lesson.Status != Models.Status.Проведен)
+                        // Получаем все занятия из базы данных
+                        var lessons = TestData.Schedules;
+
+                        // Обрабатываем каждое занятие
+                        foreach (var lesson in lessons)
                         {
-                            if (!lesson.Looped)
+                            var lessonDate = new DateTime(); 
+
+                            if(lesson.StartDate == lessonDate)
                             {
-                                if (lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] == false)
-                                {
-                                    TimeSpan timeLeft = lesson.StartDate - DateTime.Now; // Время, оставшееся до конца занятия
-
-                                    if (timeLeft.TotalHours < 25)
-                                    {
-                                        TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
-                                        NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
-                                        NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
-                                    }
-                                }
-
-                                if (lesson.Tasks[Constatnts.NOTIF_START_LESSON] == false)
-                                {
-                                    TimeSpan timeLeft = DateTime.Now - lesson.StartDate; // Время, оставшееся до конца занятия
-
-                                    if (timeLeft.TotalSeconds < 20)
-                                    {
-                                        TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_START_LESSON] = true;
-                                        NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
-                                        NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
-                                    }
-                                }
-
+                                lessonDate = lesson.Date.dateTimes[0];
                             }
                             else
                             {
-                                if (lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] == false)
+                                lessonDate = lesson.StartDate;
+                            }
+
+
+                            // Проверяем статус занятия
+                            if (lesson.Status != Models.Status.Проведен)
+                            {
+                                if (!lesson.Looped)
                                 {
-                                    DayOfWeek desiredDayOfWeek = lesson.StartDate.DayOfWeek; // День недели занятия
-                                    TimeSpan desiredTime = lesson.StartDate.TimeOfDay; // Время начала занятия
-
-                                    DateTime now = DateTime.Now; // Текущее время
-                                    DateTime nextDesiredDay = now.AddDays(((int)desiredDayOfWeek - (int)now.DayOfWeek + 7) % 7); // Ближайший день с заданным днем недели
-                                    DateTime desiredDateTime = nextDesiredDay.Date + desiredTime; // Дата и время начала занятия
-
-                                    TimeSpan timeLeft = desiredDateTime - now; // Время, оставшееся до занятия
-
-                                    if (timeLeft.TotalHours < 25) // Если до занятия осталось 1 день или меньше и оно находится в промежутке между 50 минутами и часом
+                                    if (lesson.Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] == false)
                                     {
-                                        TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
-                                        NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
-                                        NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
+                                        TimeSpan timeLeft = DateTime.Now - lessonDate; // время после наачала занятия
+                                        if(timeLeft.TotalMinutes > 61)
+                                        {
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = true;
+                                            NotifHub.SendNotification(Constatnts.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hubContext);
+                                        }
+
+                                    }
+                                    if (lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] == false)
+                                    {
+                                        TimeSpan timeLeft = lessonDate - DateTime.Now; // Время, оставшееся до конца занятия
+
+                                        if (timeLeft.TotalHours < 25 && timeLeft.TotalHours > 24)
+                                        {
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
+                                            NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
+                                            NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
+                                        }
+                                    }
+
+                                    if (lesson.Tasks[Constatnts.NOTIF_START_LESSON] == false)
+                                    {
+                                        TimeSpan timeLeft = lessonDate - DateTime.Now; // Время, оставшееся до конца занятия
+
+                                        if (timeLeft.TotalSeconds < 5)
+                                        {
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_START_LESSON] = true;
+                                            NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
+                                            NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
+                                        }
                                     }
 
                                 }
-
-                                if (lesson.Tasks[Constatnts.NOTIF_START_LESSON] == false)
+                                else
                                 {
-                                    DayOfWeek desiredDayOfWeek = lesson.StartDate.DayOfWeek; // День недели занятия
-                                    TimeSpan desiredTime = lesson.StartDate.TimeOfDay; // Время начала занятия
-
-                                    DateTime now = DateTime.Now; // Текущее время
-                                    DateTime nextDesiredDay = now.AddDays(((int)desiredDayOfWeek - (int)now.DayOfWeek + 7) % 7); // Ближайший день с заданным днем недели
-                                    DateTime desiredDateTime = nextDesiredDay.Date + desiredTime; // Дата и время начала занятия
-
-                                    TimeSpan timeLeft = desiredDateTime - now; // Время, оставшееся до занятия
-
-                                    if (timeLeft.TotalSeconds < 20)
+                                    if (lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] == false)
                                     {
-                                        TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_START_LESSON] = true;
-                                        NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
-                                        NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
+                                        DayOfWeek desiredDayOfWeek = lessonDate.DayOfWeek; // День недели занятия
+                                        TimeSpan desiredTime = lessonDate.TimeOfDay; // Время начала занятия
+
+                                        DateTime now = DateTime.Now; // Текущее время
+                                        DateTime nextDesiredDay = now.AddDays(((int)desiredDayOfWeek - (int)now.DayOfWeek + 7) % 7); // Ближайший день с заданным днем недели
+                                        DateTime desiredDateTime = nextDesiredDay.Date + desiredTime; // Дата и время начала занятия
+
+                                        TimeSpan timeLeft = desiredDateTime - now; // Время, оставшееся до занятия
+
+                                        if (timeLeft.TotalHours < 25 && timeLeft.TotalHours > 0) // Если до занятия осталось 1 день или меньше и оно находится в промежутке между 50 минутами и часом
+                                        {
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
+                                            NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
+                                            NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
+                                        }
+
+                                    }
+
+                                    if (lesson.Tasks[Constatnts.NOTIF_START_LESSON] == false)
+                                    {
+                                        DayOfWeek desiredDayOfWeek = lessonDate.DayOfWeek; // День недели занятия
+                                        TimeSpan desiredTime = lessonDate.TimeOfDay; // Время начала занятия
+
+                                        DateTime now = DateTime.Now; // Текущее время
+                                        DateTime nextDesiredDay = now.AddDays(((int)desiredDayOfWeek - (int)now.DayOfWeek + 7) % 7); // Ближайший день с заданным днем недели
+                                        DateTime desiredDateTime = nextDesiredDay.Date + desiredTime; // Дата и время начала занятия
+
+                                        TimeSpan timeLeft = desiredDateTime - now; // Время, оставшееся до занятия
+
+                                        if (timeLeft.TotalSeconds < 5)
+                                        {
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_START_LESSON] = true;
+                                            NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
+                                            NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
+                                        }
                                     }
                                 }
                             }
                         }
+
+                         Task.Delay(TimeSpan.FromSeconds(20), stoppingToken);
                     }
 
-                    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                    catch (Exception ex)
+                    {
+                    }
                 }
 
-                catch (Exception ex)
-                {
-                }
-            }
-
+            });
+            
         }
     }
 }

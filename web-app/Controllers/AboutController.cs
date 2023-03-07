@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNet.SignalR.Client.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,6 @@ namespace web_app.Controllers
             int tutorId = 0;
             int courseId = 0;
 
-
             try
             {
                 courseId = Convert.ToInt32(form["course"]);
@@ -57,17 +57,22 @@ namespace web_app.Controllers
                 courseId = -1;
             }
 
+            var tutor = new User();
+
             if (form.Count != 0)
             {
                 tutorId = Convert.ToInt32(form["tutor"]);
 
                 CustomRequestGet req = new GetTutorByIdRequest(tutorId.ToString());
                 var response = _requestService.SendGet(req, HttpContext);
+
                 if (response.success == false)
                 {
                     return BadRequest("Что-то пошло не так =(");
                 }
-                var time = form["texdt"];
+
+                tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(response.result.ToString());
+                var time = form["textTime"];
                 var times = time.ToString().Split(',');
 
                 foreach (var item in times)
@@ -84,6 +89,18 @@ namespace web_app.Controllers
                 TutorId = tutorId
             };
 
+            //  пользователь уже зарегисттирован?
+            CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
+            var result = _requestService.SendGet(request,HttpContext);
+
+            if (result.success != false)
+            {
+                var req = new CustomRequestPost("api/home/addschedulefromuser", registration);
+                _requestService.SendPost(req, HttpContext);
+
+                return Redirect($"/login");
+            }
+
             CustomRequestPost requestPost = new CustomRequestPost("api/home/AddUserRegistration", data: registration);
             var res = _requestService.SendPost(requestPost, null);
             if (res.success == false)
@@ -91,7 +108,7 @@ namespace web_app.Controllers
                 return BadRequest("Что-то пошло не так =(");
             }
 
-            return Redirect($"/login?id={registration.UserId}");
+            return Redirect($"/login?id={registration.UserId}"); 
         }
 
         [HttpPost("details", Name = "details")]

@@ -431,7 +431,6 @@ table tr th:last-child {
                                         @{
                                             foreach (var model1 in Model.Schedules)
                                             {
-
                                                 var _date = s_date;
 
                                                 if (_date < model1.StartDate)
@@ -458,7 +457,7 @@ table tr th:last-child {
                                                     }
                                                                                                            
                                                 }
-                                                foreach (var m_date in model1.Date.dateTimes)
+                                            foreach (var m_date in model1.Date.dateTimes)
                                             {
                                                 if (m_date.DayOfWeek == day)
                                                 {
@@ -556,7 +555,7 @@ table tr th:last-child {
                                                                                 {
                                                                                     <script>console.log("inss");</script>
 
-                                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId && resc.OldTime == model1.Date.dateTimes[0])
+                                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
                                                                                     {
                                                                                         <script>console.log("insfgfgs");</script>
 
@@ -725,7 +724,7 @@ table tr th:last-child {
                                                                                 {
                                                                                     <script>console.log("inss");</script>
 
-                                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId && resc.OldTime == model1.Date.dateTimes[0])
+                                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
                                                                                     {
                                                                                         <script>console.log("insfgfgs");</script>
 

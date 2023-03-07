@@ -21,7 +21,7 @@ namespace web_server
 
             TestData.Notifications.Add(notif);
 
-            var connecedTokens = user.NotificationTokens.Tokens.Where(m => m.Value == "Connected");
+            var connecedTokens = user.NotificationTokens.Tokens.Where(m => m.Value == "Connected").ToList();
             foreach (var item in connecedTokens)
             {
                 hub.Clients.Client(item.Key).SendAsync("ReceiveNotification", message, false, notif.Id);

@@ -9,7 +9,6 @@ namespace web_server.Services
         public string Register(User user, HttpContext context);
         public string GetUserByToken(string token);
         public string GetUserById(string id);
-
         public bool CheckIsActive(HttpContext context);
 
     }

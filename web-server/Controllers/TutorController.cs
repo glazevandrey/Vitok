@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using web_server;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Services;
@@ -12,9 +14,13 @@ namespace vitok.Controllers
     [Route("api/[controller]")]
     public class TutorController : Controller
     {
+
         IJsonService _jsonService;
-        public TutorController(IJsonService jsonService)
+        private readonly IHubContext<NotifHub> _hubContext;
+
+        public TutorController(IJsonService jsonService, IHubContext<NotifHub>  hub)
         {
+            _hubContext = hub;
             _jsonService = jsonService;
         }
         [HttpGet("getall", Name = "GetAll")]
@@ -168,6 +174,11 @@ namespace vitok.Controllers
                     StartDate = dateTime
                 });
 
+                // отправка манагеру что новый урок у репетитора
+                NotifHub.SendNotification(Constatnts.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName)
+                    .Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
+
+                
                 return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
             }
             return _jsonService.PrepareErrorJson("Tutor not found");
@@ -193,12 +204,16 @@ namespace vitok.Controllers
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id));
             if (tutor != null)
             {
-                TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
-
-                if (TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id)) != null)
+               tutor.UserDates.dateTimes.Remove(dateTime);
+                var schedule = TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id));
+                if ( schedule!= null)
                 {
-                    TestData.Schedules.FirstOrDefault(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id)).RemoveDate = curr;
+                    schedule.RemoveDate = curr;
                 }
+
+                // отправка манагеру что удалено занятие
+                NotifHub.SendNotification(Constatnts.NOTIF_REMOVE_LESSON.Replace("{tutorName}", schedule.TutorFullName).Replace("{studentName}", schedule.UserName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
+
                 return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
             }
             return _jsonService.PrepareErrorJson("Tutor not found");
@@ -224,29 +239,42 @@ namespace vitok.Controllers
             var dateCurr = DateTime.Parse(split[4]);
 
             var model = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            var user = TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
+            var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
+            var schedule = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
 
             if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен)
             {
-                TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LessonsCount--;
-                TestData.UserList.FirstOrDefault(m => m.UserId == user_id).BalanceHistory.CustomMessages.Add(DateTime.Now, "-1 занятие");
+                user.LessonsCount--;
+                user.BalanceHistory.CustomMessages.Add(DateTime.Now, "-1 занятие");
 
 
+                tutor.Balance += 1000;
+                tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000 });
 
-                TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id).Balance += 1000;
-                TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id).BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000 });
-
-                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).Tasks[Constatnts.NOTIF_START_LESSON] = false;
-                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = false;
+                schedule.Tasks[Constatnts.NOTIF_START_LESSON] = false;
+                schedule.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = false;
+                schedule.Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = false;
+                
+                if(user.LessonsCount == 1)
+                {
+                    NotifHub.SendNotification(Constatnts.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext);
+                }
+                else if (user.LessonsCount == 0)
+                {
+                    NotifHub.SendNotification(Constatnts.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constatnts.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                        user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
+                }
 
             }
-
             if (model.Looped)
             {
-                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).ReadyDates.Add(dateCurr);
+                schedule.ReadyDates.Add(dateCurr);
             }
             else
             {
-                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date).Status = (Status)Enum.Parse(typeof(Status), status);
+                schedule.Status = (Status)Enum.Parse(typeof(Status), status);
             }
 
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(""));
@@ -290,6 +318,11 @@ namespace vitok.Controllers
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
 
+            // отправка студенту что перенос занятия
+            NotifHub.SendNotification(Constatnts.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
+                .Replace("{name}", tutor.FirstName + " " + tutor.LastName)
+                .Replace("{date}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
+
             if (Convert.ToBoolean(loop))
             {
                 var new_model = new Schedule
@@ -305,12 +338,19 @@ namespace vitok.Controllers
                     Looped = true,
                 };
 
+
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status = Status.Перенесен;
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).RescheduledId = new_model.Id;
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).RescheduledDate = cureDate;
 
                 TestData.Schedules.Add(new_model);
-            }
+
+                // отправка манагеру что постоянный перенос
+                NotifHub.SendNotification(Constatnts.NOTIF_REGULAR_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
+                    .Replace("{studentName}", user.FirstName + " " + user.LastName)
+                    .Replace("{oldDate}", oldDateTime.ToString("dd.MM.yyyy HH:mm"))
+                    .Replace("{newDate}", cureDate.ToString("dd.MM.yyyy HH:mm")), TestData.Managers.First().UserId.ToString(), _hubContext);
+               }
             else
             {
                 var model = new RescheduledLessons

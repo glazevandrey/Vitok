@@ -34,18 +34,7 @@ namespace web_app.Controllers
 
                 CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
                 var result = _requestService.SendGet(request);
-
-                //if (!result.success)
-                //{
-                //    return View();
-                //}
                 return Redirect("/account");
-
-                //ViewData["Auth"] = true;
-                //var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
-                //if (result != null)
-                //{
-                //}
             }
 
             return View();

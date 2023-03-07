@@ -14,13 +14,13 @@ namespace web_server.Controllers
     public class AccountController : Controller
     {
         IJsonService _jsonService;
-        NotificationBackgroundService f;
+        ILessonsService _lessonsService;
         private readonly IHubContext<NotifHub> _hubContext;
-        public AccountController(IJsonService jsonService, NotificationBackgroundService ff, IHubContext<NotifHub> hubContext)
+        public AccountController(IJsonService jsonService, IHubContext<NotifHub> hubContext, ILessonsService lessonsService)
         {
-            f = ff;
             _hubContext = hubContext;
             _jsonService = jsonService;
+            _lessonsService = lessonsService;
         }
         [Models.Authorize]
         [HttpGet]
@@ -71,37 +71,10 @@ namespace web_server.Controllers
 
             var args = form.First().Key.Split(";");
 
-            var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args[0]));
-            TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).LessonsCount += Convert.ToInt32(args[1]);
-            var scheduled = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
-            var trial = Convert.ToBoolean(args[2]);
-            TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).UsedTrial = true;
-            var tariff = TestData.Tariffs.FirstOrDefault(m => m.LessonsCount == Convert.ToInt32(args[1]));
-            if (tariff != null)
-            {
-                TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.CustomMessages.Add(DateTime.Now, $"Оплата тарифа: {tariff.Title}");
-            }
-            else
-            {
-                TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.CustomMessages.Add(DateTime.Now, $"Оплачено занятий: {args[1]}");
+            var json = _lessonsService.AddLessonsToUser(args);
 
-            }
-
-            for (int i = 0; i < Convert.ToInt32(args[1]); i++)
-            {
-
-                var waited = scheduled.Where(m => m.Status == Status.ОжидаетОплату).ToList();
-                if (waited.Count > 0)
-                {
-                    TestData.Schedules.FirstOrDefault(m => m.Id == waited.First().Id).Status = Status.Ожидает;
-                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).LessonsCount -= 1;
-                }
-            }
-
-
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+            return _jsonService.PrepareSuccessJson(json);
         }
-
 
         [Models.Authorize]
         [HttpGet("getreschedule", Name = "getreschedule")]
@@ -148,7 +121,6 @@ namespace web_server.Controllers
         [HttpGet("getschedule", Name = "getschedule")]
         public string GetSchedule([FromQuery] string args)
         {
-            NotifHub.SendNotification("ne lox", "0", _hubContext);
             if (args == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");

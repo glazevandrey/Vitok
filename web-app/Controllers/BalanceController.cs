@@ -31,6 +31,7 @@ namespace web_app.Controllers
             ViewData["role"] = user.Role;
             ViewData["tariffs"] = TestData.Tariffs;
             ViewData["usertoken"] = user.UserId;
+            ViewData["lessons"] = user.LessonsCount;
 
             return View(user);
         }

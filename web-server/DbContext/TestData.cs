@@ -7,7 +7,7 @@ namespace web_server.DbContext
 {
     public static class Constatnts
     {
-        #region Общие уведомления
+        #region Общие уведомления для репетитора и студента
         public const string NOTIF_START_LESSON = "У вас началось занятие!"; // в момент наступления занятия
         public const string NOTIF_TOMORROW_LESSON = "Завтра у вас занятие!"; // за день + на почту
         #endregion
@@ -15,6 +15,8 @@ namespace web_server.DbContext
         #region Уведомления Репетитора
         public const string NOTIF_DONT_FORGET_SET_STATUS = "Не забудьте отметить статус занятия!"; // окончание занятия
         public const string NOTIF_NEW_STUDENT_FOR_TUTOR = "У вас появился новый ученик {name}"; // новый ученик записался
+        public const string NOTIF_NEW_LESSON_TUTOR = "У вас новое занятие с учеником {name} на {date}"; // новый ученик записался
+
         #endregion
 
         #region Уведомления Ученика
@@ -62,7 +64,7 @@ namespace web_server.DbContext
                     }},
 
                 new User() {FirstName = "Иван", LastName = "Петров", About = "Почти лучший", BirthDate = DateTime.Parse("14.01.2002"),
-                    Courses = Courses.Where(m => m.Title == "ОГЭ").ToList(), UserId=1, Email = "a.glazev@mail.ru", Phone = "+79188703839",
+                    Courses = Courses.Where(m => m.Title == "ОГЭ").ToList(), UserId=1, Email = "a.@mail.ru", Phone = "+79188703839",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
                         dateTimes = new List<DateTime>(){DateTime.Parse("10.03.2023 15:00"), DateTime.Parse("13.02.2023 17:00") }
                     }},
@@ -110,26 +112,26 @@ namespace web_server.DbContext
                 StartDate = DateTime.Parse("09.02.2023 23:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("09.02.2023 23:00") } }, Course = Courses[0] },
 
 
-            new Schedule() { Id = 1, UserName ="Петр Иванов", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 3,
+            new Schedule() { Id = 1, UserName ="Петр Иванов", TutorFullName = "Сергей Глузер", TutorId = 0, UserId = 3,
              StartDate =    DateTime.Parse("10.02.2023 20:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("10.02.2023 20:00") } }, Course = Courses[1]},
 
 
-            new Schedule() { Id = 3, UserName ="Сергей Курочка", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
-            StartDate = DateTime.Parse("23.02.2023 13:00"),
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("23.02.2023 13:00") } }, Looped = true, Course = Courses[2]},
+            new Schedule() { Id = 3, UserName ="Сергей Курочка", TutorFullName = "Сергей Глузер", TutorId = 0, UserId = 4,
+            StartDate = DateTime.Parse("26.02.2023 13:00"),
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("26.02.2023 13:00") } }, Looped = true, Course = Courses[2]},
 
             new Schedule() { Id = 5, UserName ="Сергей Курочка",TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
-            StartDate = DateTime.Parse("05.03.2023 10:00"),
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("05.03.2023 10:00") } }, Looped = false, Course = Courses[0]},
+            StartDate = DateTime.Parse("05.03.2023 20:18"),
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("05.03.2023 20:18") } }, Looped = false, Course = Courses[0]},
 
             new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
                 StartDate=DateTime.Parse("17.03.2023 7:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.03.2023 7:00") } }, Looped = true, Course = Courses[1]},
 
-            new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
+            new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Сергей Глузер", TutorId = 0, UserId = 4,
                  StartDate = DateTime.Parse("17.03.2023 7:00"),
                 Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.03.2023 7:00") } }, Looped = true, Course = Courses[1]},
 
-            new Schedule() { Id = 4, UserName ="Сергей Курочка", TutorFullName = "Сергей Петров", TutorId = 0, UserId = 4,
+            new Schedule() { Id = 4, UserName ="Сергей Курочка", TutorFullName = "Сергей Глузер", TutorId = 0, UserId = 4,
                 StartDate = DateTime.Parse("13.03.2023 17:00"),
                 Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("13.03.2023 17:00") } }, Looped = true, Course = Courses[2]}};
 

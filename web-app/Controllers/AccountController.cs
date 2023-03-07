@@ -40,6 +40,8 @@ namespace web_app.Controllers
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
             ViewData["usertoken"] = user.UserId;
+            ViewData["lessons"] = user.LessonsCount;
+
             return View(user);
         }
 

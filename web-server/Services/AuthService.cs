@@ -115,7 +115,7 @@ namespace web_server.Services
 
                     TimerCallback tm = new TimerCallback(DeleteUnPaid);
 
-                    // TODO: !!!!!!!!!!!!!!! 24* 3600000!!!!!!!!!!!!!!!!!!!;
+                    // TODO: !!!!!!!!!!!!!!! 24 * 3600000!!!!!!!!!!!!!!!!!!!;
 
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 60000, 60000));
                     var timer = Program.Timers[id];

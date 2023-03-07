@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
 using web_server.DbContext;
@@ -12,12 +13,17 @@ namespace web_server.Controllers
     [Route("/api/[controller]")]
     public class HomeController : Controller
     {
+        private readonly IHubContext<NotifHub> _hubContext;
+
         IAuthService _authService;
         IJsonService _jsonService;
-        public HomeController(IAuthService authService, IJsonService jsonService)
+        ILessonsService _lessonsService;
+        public HomeController(IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService)
         {
+            _hubContext = hub;
             _authService = authService;
             _jsonService = jsonService;
+            _lessonsService = lessonsService;
         }
 
         [HttpPost("loginuser", Name = "loginuser")]
@@ -72,7 +78,6 @@ namespace web_server.Controllers
             if (check == false)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
-
             }
 
             return json;
@@ -120,13 +125,46 @@ namespace web_server.Controllers
         public string AddUserRegistration()
         {
             var form = Request.Form;
+            var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(form.First().Key);
+
             if (form.Keys.Count != 0)
             {
-                var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(form.First().Key);
                 TestData.Registations.Add(model);
                 var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(model));
                 return json;
             }
+
+            
+            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+        }
+        [Authorize]
+        [HttpPost("addschedulefromuser", Name = "addschedulefromuser")]
+        public string AddScheduleFromUser()
+        {
+            var form = Request.Form;
+            
+            var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(form.First().Key);
+            var user = TestData.UserList.FirstOrDefault(m=>m.UserId == model.UserId);
+            if (form.Keys.Count != 0)
+            {
+
+
+                var schedule = TestData.Schedules.FirstOrDefault(m=>m.StartDate.DayOfWeek == model.WantThis.dateTimes[0].DayOfWeek && m.StartDate.ToString("HH:mm") == model.WantThis.dateTimes[0].ToString("HH:mm"));
+                schedule.Course = model.Course;
+                schedule.UserId= model.UserId;
+                schedule.Status = user.LessonsCount == 0 ? Status.ОжидаетОплату : Status.Ожидает;
+                schedule.UserName = user.FirstName + " " + user.LastName;
+                schedule.CreatedDate = DateTime.Now;
+
+                var text = Constatnts.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
+
+                // отправка репетитору что у новое занятие
+                NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext);
+
+                var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(model));
+                return json;
+            }
+
 
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
