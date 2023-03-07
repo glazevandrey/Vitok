@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.IO;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
@@ -21,21 +22,23 @@ namespace web_app.Controllers
             _requestService = requestService;
         }
         [HttpGet]
-        public IActionResult Login([FromQuery] string id)
+        public IActionResult Login([FromQuery] string id, [FromQuery] string error)
         {
             if (id != null)
             {
                 ViewData["Id"] = id;
-
             }
 
             if (Request.Cookies.ContainsKey(".AspNetCore.Application.Id"))
             {
-
-                CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
-                var result = _requestService.SendGet(request);
                 return Redirect("/account");
             }
+
+            if(error!= null)
+            {
+                ViewData["error"] = error;
+            }
+            
 
             return View();
         }
@@ -43,30 +46,26 @@ namespace web_app.Controllers
         [HttpPost]
         public IActionResult LoginUser([FromForm] User user)
         {
-
-            if (user.Email == null && user.Password == null)
+            if (user.Email == null || user.Password == null)
             {
-                return BadRequest();
+                return RedirectToAction("login", new { error = "Необходимо заполнить оба поля" });
             }
 
             CustomRequestPost req = new CustomRequestPost("api/home/LoginUser", user);
             var response = _requestService.SendPost(req, HttpContext);
-            if (response == null)
+            if (!response.success)
             {
-                return BadRequest("Неудачная попытка входа");
+                return RedirectToAction("login", new { error = response.result });
             }
 
-
             HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", response.result.ToString(),
-              new CookieOptions
-              {
-                  MaxAge = TimeSpan.FromMinutes(60)
-              });
-            ViewData["Auth"] = true;
+            new CookieOptions
+            {
+                // TODO: сделать больше
+                MaxAge = TimeSpan.FromMinutes(60)
+            });
 
             return Redirect("/login");
         }
-
-
     }
 }

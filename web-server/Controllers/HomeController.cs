@@ -133,7 +133,6 @@ namespace web_server.Controllers
                 var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(model));
                 return json;
             }
-
             
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
@@ -169,16 +168,13 @@ namespace web_server.Controllers
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
         [HttpGet("getregistration", Name = "getregistration")]
-        public string GetRegistration([FromQuery] string args)
-        {
-            var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Registations.FirstOrDefault(m => m.UserId == Convert.ToInt32(args))));
-            return json;
-        }
+        public string GetRegistration([FromQuery] string args) =>
+                        _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Registations.FirstOrDefault(m => m.UserId == Convert.ToInt32(args))));
+
+
         [HttpPost("getcontacts", Name = "GetContacts")]
-        public string GetContacts()
-        {
-            var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Contacts));
-            return json;
-        }
+        public string GetContacts() =>
+            _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Contacts));
+
     }
 }

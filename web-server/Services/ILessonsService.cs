@@ -1,7 +1,9 @@
-﻿namespace web_server.Services
+﻿using web_server.Models;
+
+namespace web_server.Services
 {
     public interface ILessonsService
     {
-        public string AddLessonsToUser(string[] args);
+        public User AddLessonsToUser(string[] args);
     }
 }

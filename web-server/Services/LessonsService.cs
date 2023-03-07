@@ -7,7 +7,7 @@ namespace web_server.Services
 {
     public class LessonsService : ILessonsService
     {
-        public string AddLessonsToUser(string[] args)
+        public User AddLessonsToUser(string[] args)
         {
 
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args[0]));
@@ -40,7 +40,7 @@ namespace web_server.Services
                 }
             }
 
-            return Newtonsoft.Json.JsonConvert.SerializeObject(user);
+            return user;
         }
     }
 }

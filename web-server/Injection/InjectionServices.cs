@@ -11,6 +11,7 @@ namespace web_server.Injection
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ILessonsService, LessonsService>();
+            services.AddScoped<IAccountService, AccountService>();
 
             return services;
         }

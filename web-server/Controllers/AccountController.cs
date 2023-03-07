@@ -15,12 +15,14 @@ namespace web_server.Controllers
     {
         IJsonService _jsonService;
         ILessonsService _lessonsService;
+        IAccountService _accountService;
         private readonly IHubContext<NotifHub> _hubContext;
-        public AccountController(IJsonService jsonService, IHubContext<NotifHub> hubContext, ILessonsService lessonsService)
+        public AccountController(IJsonService jsonService, IHubContext<NotifHub> hubContext, ILessonsService lessonsService, IAccountService accountService)
         {
             _hubContext = hubContext;
             _jsonService = jsonService;
             _lessonsService = lessonsService;
+            _accountService = accountService;
         }
         [Models.Authorize]
         [HttpGet]
@@ -38,25 +40,16 @@ namespace web_server.Controllers
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
-            var old = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
 
-            old.FirstName = user.FirstName;
-            old.LastName = user.LastName;
-            old.BirthDate = user.BirthDate;
-            old.About = user.About;
-            old.Email = user.Email;
-            old.Wish = user.Wish;
-            old.Password = user.Password;
-            old.Phone = user.Phone;
+            var user = _accountService.SaveAccountInfo(form.First().Key);
+            if (user != null)
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+                return _jsonService.PrepareSuccessJson(json);
+            }
 
-
-
-            var index = TestData.UserList.FindIndex(m => m.UserId == user.UserId);
-            TestData.UserList[index] = old;
-
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.UserList[index]));
-        }
+            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+          }
 
 
         [Models.Authorize]
@@ -71,9 +64,14 @@ namespace web_server.Controllers
 
             var args = form.First().Key.Split(";");
 
-            var json = _lessonsService.AddLessonsToUser(args);
+            var user = _lessonsService.AddLessonsToUser(args);
+            if(user != null)
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+                return _jsonService.PrepareSuccessJson(json);
+            }
 
-            return _jsonService.PrepareSuccessJson(json);
+            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
 
         [Models.Authorize]
@@ -85,36 +83,19 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
             }
 
-            var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
-            if (user == null)
+            var list = _accountService.GetRescheduledLessons(args);
+            if (list != null && list.Count > 0)
             {
-                return null;
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+                return _jsonService.PrepareSuccessJson(json);
             }
 
-            var schedules = new List<RescheduledLessons>();
-            if (user.Role == "Tutor")
-            {
-                schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
-            }
-            else
-            {
-                schedules = TestData.RescheduledLessons.Where(m => m.UserId == user.UserId).ToList();
-            }
-
-            if (schedules == null || schedules.Count == 0)
-            {
-                schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
-
-            }
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(schedules));
+            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
 
 
         [HttpPost("MarkAsRead", Name = "MarkAsRead")]
-        public void MarkAsRead([FromForm] int id)
-        {
-            TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id)).Readed = true;
-        }
+        public void MarkAsRead([FromForm] int id) => TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id)).Readed = true;
 
 
         [Models.Authorize]
@@ -126,18 +107,14 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
             }
 
-            var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
-            if (user == null)
+            var list = _accountService.GetSchedules(args);
+            if (list != null && list.Count > 0)
             {
-                return null;
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+                return _jsonService.PrepareSuccessJson(json);
             }
-            var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
-            if (schedules == null || schedules.Count == 0)
-            {
-                schedules = TestData.Schedules.Where(m => m.TutorId == user.UserId).ToList();
 
-            }
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(schedules));
+            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
     }
 }

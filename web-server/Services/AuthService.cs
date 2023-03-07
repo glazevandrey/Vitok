@@ -77,7 +77,7 @@ namespace web_server.Services
                 return json;
             }
 
-            return _jsonService.PrepareErrorJson("Что-то пошло не так. Мы уже работаем над устранением неполадок!");
+            return _jsonService.PrepareErrorJson("Неверное имя пользователя или пароль");
         }
         public static void DeleteUnPaid(object obj)
         {
