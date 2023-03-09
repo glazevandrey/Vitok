@@ -9,11 +9,11 @@ namespace web_server.Injection
         {
             services.AddScoped<IJsonService, JsonService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ILessonsService, LessonsService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<ITutorService, TutorService>();
 
             return services;
         }

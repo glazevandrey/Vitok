@@ -9,7 +9,7 @@ using web_server.Models;
 namespace web_server
 {
     [web_server.Models.Authorize]
-    public class Class : Microsoft.AspNetCore.SignalR.Hub
+    public class ChatHub : Microsoft.AspNetCore.SignalR.Hub
     {
 
         public async Task SetChat(string userId, int with)
