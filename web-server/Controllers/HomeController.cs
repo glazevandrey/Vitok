@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
+using System.Reflection;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Services;
@@ -18,12 +19,14 @@ namespace web_server.Controllers
         IAuthService _authService;
         IJsonService _jsonService;
         ILessonsService _lessonsService;
-        public HomeController(IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService)
+        IScheduleService _scheduleService;
+        public HomeController(IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
         {
             _hubContext = hub;
             _authService = authService;
             _jsonService = jsonService;
             _lessonsService = lessonsService;
+            _scheduleService = scheduleService;
         }
 
         [HttpPost("loginuser", Name = "loginuser")]
@@ -107,6 +110,7 @@ namespace web_server.Controllers
 
             return json;
         }
+
         [Authorize]
         [HttpGet("getschedulebyid", Name = "getschedulebyid")]
         public string GetScheduleById([FromQuery] string args)
@@ -136,37 +140,23 @@ namespace web_server.Controllers
             
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
+
         [Authorize]
         [HttpPost("addschedulefromuser", Name = "addschedulefromuser")]
         public string AddScheduleFromUser()
         {
             var form = Request.Form;
-            
-            var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(form.First().Key);
-            var user = TestData.UserList.FirstOrDefault(m=>m.UserId == model.UserId);
-            if (form.Keys.Count != 0)
+
+            var schedule = _scheduleService.AddScheduleFromUser(form.First().Key);
+            if(schedule != null)
             {
-
-
-                var schedule = TestData.Schedules.FirstOrDefault(m=>m.StartDate.DayOfWeek == model.WantThis.dateTimes[0].DayOfWeek && m.StartDate.ToString("HH:mm") == model.WantThis.dateTimes[0].ToString("HH:mm"));
-                schedule.Course = model.Course;
-                schedule.UserId= model.UserId;
-                schedule.Status = user.LessonsCount == 0 ? Status.ОжидаетОплату : Status.Ожидает;
-                schedule.UserName = user.FirstName + " " + user.LastName;
-                schedule.CreatedDate = DateTime.Now;
-
-                var text = Constatnts.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
-
-                // отправка репетитору что у новое занятие
-                NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext);
-
-                var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(model));
+                var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(schedule));
                 return json;
             }
-
-
+          
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
+
         [HttpGet("getregistration", Name = "getregistration")]
         public string GetRegistration([FromQuery] string args) =>
                         _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Registations.FirstOrDefault(m => m.UserId == Convert.ToInt32(args))));

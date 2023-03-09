@@ -7,48 +7,6 @@ namespace web_server.Services
 {
     public class AccountService : IAccountService
     {
-        public List<RescheduledLessons> GetRescheduledLessons(string args)
-        {
-            var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
-            if (user == null)
-            {
-                return null;
-            }
-
-            var schedules = new List<RescheduledLessons>();
-            if (user.Role == "Tutor")
-            {
-                schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
-            }
-            else
-            {
-                schedules = TestData.RescheduledLessons.Where(m => m.UserId == user.UserId).ToList();
-            }
-
-            if (schedules == null || schedules.Count == 0)
-            {
-                schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
-            }
-
-            return schedules;
-        }
-
-        public List<Schedule> GetSchedules(string args)
-        {
-            var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
-            if (user == null)
-            {
-                return null;
-            }
-
-            var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
-            if (schedules == null || schedules.Count == 0)
-            {
-                schedules = TestData.Schedules.Where(m => m.TutorId == user.UserId).ToList();
-
-            }
-            return schedules;
-        }
 
         public User SaveAccountInfo(string args)
         {

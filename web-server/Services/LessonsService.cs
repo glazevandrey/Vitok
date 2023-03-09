@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using web_server.DbContext;
 using web_server.Models;
@@ -7,6 +8,32 @@ namespace web_server.Services
 {
     public class LessonsService : ILessonsService
     {
+        public List<RescheduledLessons> GetRescheduledLessons(string args)
+        {
+            var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var schedules = new List<RescheduledLessons>();
+            if (user.Role == "Tutor")
+            {
+                schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
+            }
+            else
+            {
+                schedules = TestData.RescheduledLessons.Where(m => m.UserId == user.UserId).ToList();
+            }
+
+            if (schedules == null || schedules.Count == 0)
+            {
+                schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
+            }
+
+            return schedules;
+        }
+
         public User AddLessonsToUser(string[] args)
         {
 

@@ -16,19 +16,13 @@ namespace web_server.Controllers
         IJsonService _jsonService;
         ILessonsService _lessonsService;
         IAccountService _accountService;
-        private readonly IHubContext<NotifHub> _hubContext;
-        public AccountController(IJsonService jsonService, IHubContext<NotifHub> hubContext, ILessonsService lessonsService, IAccountService accountService)
+        IScheduleService _scheduleService;
+        public AccountController(IJsonService jsonService, ILessonsService lessonsService, IAccountService accountService, IScheduleService scheduleService)
         {
-            _hubContext = hubContext;
             _jsonService = jsonService;
             _lessonsService = lessonsService;
             _accountService = accountService;
-        }
-        [Models.Authorize]
-        [HttpGet]
-        public string Index()
-        {
-            return "";
+            _scheduleService = scheduleService;
         }
 
         [Models.Authorize]
@@ -83,7 +77,7 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
             }
 
-            var list = _accountService.GetRescheduledLessons(args);
+            var list = _lessonsService.GetRescheduledLessons(args);
             if (list != null && list.Count > 0)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
@@ -107,7 +101,7 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
             }
 
-            var list = _accountService.GetSchedules(args);
+            var list = _scheduleService.GetSchedules(args);
             if (list != null && list.Count > 0)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
