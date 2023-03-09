@@ -18,7 +18,7 @@ namespace web_server.Services
         {
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(args);
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == model.UserId);
-           
+
             var schedule = TestData.Schedules.FirstOrDefault(m => m.StartDate.DayOfWeek == model.WantThis.dateTimes[0].DayOfWeek && m.StartDate.ToString("HH:mm") == model.WantThis.dateTimes[0].ToString("HH:mm"));
             schedule.Course = model.Course;
             schedule.UserId = model.UserId;
@@ -32,7 +32,7 @@ namespace web_server.Services
             NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext);
 
             return schedule;
-           
+
         }
 
         public Schedule ChangeStatus(string args)

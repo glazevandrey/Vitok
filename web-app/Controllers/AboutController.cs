@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.SignalR.Client.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,7 +90,7 @@ namespace web_app.Controllers
 
             //  пользователь уже зарегисттирован?
             CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
-            var result = _requestService.SendGet(request,HttpContext);
+            var result = _requestService.SendGet(request, HttpContext);
 
             if (result.success != false)
             {
@@ -108,7 +107,7 @@ namespace web_app.Controllers
                 return BadRequest("Что-то пошло не так =(");
             }
 
-            return Redirect($"/login?id={registration.UserId}"); 
+            return Redirect($"/login?id={registration.UserId}");
         }
 
         [HttpPost("details", Name = "details")]

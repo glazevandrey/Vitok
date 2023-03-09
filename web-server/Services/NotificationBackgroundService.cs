@@ -32,9 +32,9 @@ namespace web_server.Services
                         // Обрабатываем каждое занятие
                         foreach (var lesson in lessons)
                         {
-                            var lessonDate = new DateTime(); 
+                            var lessonDate = new DateTime();
 
-                            if(lesson.StartDate == lessonDate)
+                            if (lesson.StartDate == lessonDate)
                             {
                                 lessonDate = lesson.Date.dateTimes[0];
                             }
@@ -52,7 +52,7 @@ namespace web_server.Services
                                     if (lesson.Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] == false)
                                     {
                                         TimeSpan timeLeft = DateTime.Now - lessonDate; // время после наачала занятия
-                                        if(timeLeft.TotalMinutes > 61)
+                                        if (timeLeft.TotalMinutes > 61)
                                         {
                                             TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = true;
                                             NotifHub.SendNotification(Constatnts.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hubContext);
@@ -128,7 +128,7 @@ namespace web_server.Services
                             }
                         }
 
-                         Task.Delay(TimeSpan.FromSeconds(20), stoppingToken);
+                        Task.Delay(TimeSpan.FromSeconds(20), stoppingToken);
                     }
 
                     catch (Exception ex)
@@ -137,7 +137,7 @@ namespace web_server.Services
                 }
 
             });
-            
+
         }
     }
 }

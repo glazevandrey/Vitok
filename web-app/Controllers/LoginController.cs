@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.IO;
 using web_app.Models.Requests;
-using web_app.Models.Requests.Get;
 using web_app.Services;
 using web_server.Models;
 using web_server.Services;
@@ -34,11 +32,11 @@ namespace web_app.Controllers
                 return Redirect("/account");
             }
 
-            if(error!= null)
+            if (error != null)
             {
                 ViewData["error"] = error;
             }
-            
+
 
             return View();
         }

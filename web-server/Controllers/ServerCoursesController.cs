@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Linq;
 using web_server.DbContext;
-using web_server.Models;
 using web_server.Services;
 
 namespace web_server.Controllers
@@ -39,7 +37,7 @@ namespace web_server.Controllers
             var args = form.First().Key.Split(";");
 
             var json = _courseService.SetNewCourse(args);
-            if (json == null) 
+            if (json == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить курс");
             }

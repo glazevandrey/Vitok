@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
-using System.Reflection;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Services;
@@ -137,7 +136,7 @@ namespace web_server.Controllers
                 var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(model));
                 return json;
             }
-            
+
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
 
@@ -148,12 +147,12 @@ namespace web_server.Controllers
             var form = Request.Form;
 
             var schedule = _scheduleService.AddScheduleFromUser(form.First().Key);
-            if(schedule != null)
+            if (schedule != null)
             {
                 var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(schedule));
                 return json;
             }
-          
+
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
 

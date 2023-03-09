@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using web_server;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Services;
@@ -32,7 +28,7 @@ namespace vitok.Controllers
         public string GetAllTutors() =>
             _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Tutors));
 
- 
+
         [HttpGet("gettutor", Name = "gettutor")]
         public string GetTutor([FromQuery] string args) => _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(
                 TestData.Tutors.FirstOrDefault(m => m.Id.ToString() == args)));
@@ -48,7 +44,7 @@ namespace vitok.Controllers
             }
             var args = form.First().Key;
             var tutor = _tutorService.AddTutor(args);
-            if(tutor == null)
+            if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить репетитора");
             }
@@ -65,10 +61,10 @@ namespace vitok.Controllers
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
-           
+
             var args = form.First().Key;
             var tutor = _tutorService.UpdateTutor(args);
-            if(tutor == null)
+            if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка обновить данные репетитора");
             }
@@ -87,7 +83,7 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
             var args = form.First().Key;
-          
+
             bool removed = _tutorService.RemoveTutor(args);
             if (!removed)
             {
@@ -108,7 +104,7 @@ namespace vitok.Controllers
             }
             var args = form.First().Key;
             var tutor = _tutorService.AddTutorFreeDate(args);
-            if(tutor == null)
+            if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить свободные даты");
             }
@@ -126,9 +122,9 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Tutor not found");
             }
             var args = form.First().Key;
-            
+
             var tutor = _tutorService.AddTutorSchedule(args);
-            if(tutor == null)
+            if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить расписание");
             }
@@ -146,10 +142,10 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Tutor not found");
             }
             var args = form.First().Key;
-            
+
 
             var tutor = _tutorService.RemoveTutorSchedule(args);
-            if(tutor == null)
+            if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка удалить расписание у репетитора");
             }
@@ -170,7 +166,7 @@ namespace vitok.Controllers
             var args = form.First().Key;
 
             var schedule = _scheduleService.ChangeStatus(args);
-            if(schedule == null)
+            if (schedule == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка обновить статус занятия");
             }
@@ -191,7 +187,7 @@ namespace vitok.Controllers
 
             var rescheduled = _lessonsService.RescheduleLesson(args);
 
-            if(rescheduled == null)
+            if (rescheduled == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка перенести занятие");
             }

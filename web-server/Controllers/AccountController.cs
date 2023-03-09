@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using web_server.DbContext;
-using web_server.Models;
 using web_server.Services;
 
 namespace web_server.Controllers
@@ -43,7 +40,7 @@ namespace web_server.Controllers
             }
 
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
-          }
+        }
 
 
         [Models.Authorize]
@@ -59,7 +56,7 @@ namespace web_server.Controllers
             var args = form.First().Key.Split(";");
 
             var user = _lessonsService.AddLessonsToUser(args);
-            if(user != null)
+            if (user != null)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
                 return _jsonService.PrepareSuccessJson(json);
