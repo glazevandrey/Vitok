@@ -35,6 +35,57 @@ namespace web_server.Services
            
         }
 
+        public Schedule ChangeStatus(string args)
+        {
+            var split = args.Split(';');
+            var status = split[0];
+            var tutor_id = Convert.ToInt32(split[1]);
+            var user_id = Convert.ToInt32(split[2]);
+            var date = DateTime.Parse(split[3]);
+            var dateCurr = DateTime.Parse(split[4]);
+
+            var model = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            var user = TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
+            var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
+            var schedule = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+
+            if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен)
+            {
+                user.LessonsCount--;
+                user.BalanceHistory.CustomMessages.Add(DateTime.Now, "-1 занятие");
+
+
+                tutor.Balance += 1000;
+                tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000 });
+
+                schedule.Tasks[Constatnts.NOTIF_START_LESSON] = false;
+                schedule.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = false;
+                schedule.Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = false;
+
+                if (user.LessonsCount == 1)
+                {
+                    NotifHub.SendNotification(Constatnts.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext);
+                }
+                else if (user.LessonsCount == 0)
+                {
+                    NotifHub.SendNotification(Constatnts.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constatnts.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                        user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
+                }
+
+            }
+            if (model.Looped)
+            {
+                schedule.ReadyDates.Add(dateCurr);
+            }
+            else
+            {
+                schedule.Status = (Status)Enum.Parse(typeof(Status), status);
+            }
+
+            return schedule;
+        }
+
         public List<Schedule> GetSchedules(string args)
         {
             var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);

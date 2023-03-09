@@ -128,13 +128,13 @@ namespace web_app.Controllers
             {
                 var req = new CustomRequestPost("api/tutor/rescheduletutor", $"{status};{tutorStatus};" +
                 $"{DateTime.Parse(dateStatus).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime};{courseId};{currDate}");
-                var res = _requestService.SendPost(req, HttpContext);
+                _requestService.SendPost(req, HttpContext);
 
             }
             else
             {
                 var req = new CustomRequestPost("api/tutor/changeStatusServer", $"{status};{tutorStatus};{userStatus};{dateStatus};{currDate}");
-                var res = _requestService.SendPost(req, HttpContext);
+                _requestService.SendPost(req, HttpContext);
 
             }
 

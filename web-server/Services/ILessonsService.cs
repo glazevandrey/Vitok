@@ -8,6 +8,7 @@ namespace web_server.Services
     {
         public User AddLessonsToUser(string[] args);
         public List<RescheduledLessons> GetRescheduledLessons(string args);
+        public Schedule RescheduleLesson(string args);
 
     }
 }

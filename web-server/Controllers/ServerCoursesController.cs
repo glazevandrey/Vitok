@@ -11,12 +11,12 @@ namespace web_server.Controllers
     [Route("api/[controller]")]
     public class ServerCoursesController : Controller
     {
-        IAuthService _authService;
         IJsonService _jsonService;
-        public ServerCoursesController(IAuthService authService, IJsonService jsonService)
+        ICourseService _courseService;
+        public ServerCoursesController(IJsonService jsonService, ICourseService courseService)
         {
-            _authService = authService;
             _jsonService = jsonService;
+            _courseService = courseService;
         }
 
 
@@ -37,16 +37,14 @@ namespace web_server.Controllers
             }
 
             var args = form.First().Key.Split(";");
-            var course = new Course();
 
-            course.Title = args[0];
-            course.Id = TestData.Courses.Last().Id + 1;
-            course.Goal = TestData.Goals.FirstOrDefault(m => m.Id == Convert.ToInt32(args[1]));
+            var json = _courseService.SetNewCourse(args);
+            if (json == null) 
+            {
+                return _jsonService.PrepareErrorJson("Неудачная попытка добавить курс");
+            }
 
-            TestData.Courses.Add(course);
-
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(
-                            TestData.Courses.ToList()));
+            return _jsonService.PrepareSuccessJson(json);
         }
     }
 }

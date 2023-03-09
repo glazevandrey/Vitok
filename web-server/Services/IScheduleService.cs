@@ -7,5 +7,6 @@ namespace web_server.Services
     {
         public Schedule AddScheduleFromUser(string args);
         public List<Schedule> GetSchedules(string args);
+        public Schedule ChangeStatus(string args);
     }
 }
