@@ -33,6 +33,7 @@ namespace web_app.Controllers
             ViewData["role"] = user.Role;
             ViewData["lessons"] = user.LessonsCount;
             ViewData["usertoken"] = user.UserId;
+            ViewData["photoUrl"] = user.PhotoUrl;
 
             if (result.success)
             {

@@ -9,12 +9,7 @@ namespace web_server.Services
 {
     public class ScheduleService : IScheduleService
     {
-        private readonly IHubContext<NotifHub> _hubContext;
-        public ScheduleService(IHubContext<NotifHub> hubContext)
-        {
-            _hubContext = hubContext;
-        }
-        public Schedule AddScheduleFromUser(string args)
+        public Schedule AddScheduleFromUser(string args, IHubContext<NotifHub> _hubContext)
         {
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(args);
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == model.UserId);
@@ -35,7 +30,7 @@ namespace web_server.Services
 
         }
 
-        public Schedule ChangeStatus(string args)
+        public Schedule ChangeStatus(string args, IHubContext<NotifHub> _hubContext)
         {
             var split = args.Split(';');
             var status = split[0];

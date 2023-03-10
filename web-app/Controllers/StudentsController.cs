@@ -31,6 +31,7 @@ namespace web_app.Controllers
             }
             var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
             ViewData["usertoken"] = currUser.UserId;
+            ViewData["photoUrl"] = currUser.PhotoUrl;
 
             var req = new GetAllUsersRequest();
             var res = _requestService.SendGet(req, HttpContext);

@@ -108,6 +108,11 @@
     <header>
     </header>
   <div class="notification-wrapper">
+      <a href="/account">
+            <img id="avatar" width="50" height="50" src="@ViewData["photoUrl"]" />
+
+      </a>
+
   <button class="notification-icon" aria-label="Уведомления">
    <span id="icon-badge" class="icon-badge"></span>
     <span class="icon-bell"></span>
@@ -120,8 +125,10 @@
   </div>
 </div>
     @{
+        
         Html.RenderPartial("~/Views/Shared/_Notifications.cshtml");
-        }<div class="FullContent">
+     }
+        <div class="FullContent">
                     
             <div  class="CustomLeftnavbar">
             @{
@@ -137,15 +144,14 @@
             </div>
         </div> 
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </body>
 </html>
 
-        <script>
-           const notificationIcon = document.querySelector('.notification-icon');
-const notificationMenu = document.querySelector('.notification-menu');
+<script>
+    const notificationIcon = document.querySelector('.notification-icon');
+    const notificationMenu = document.querySelector('.notification-menu');
 
-notificationIcon.addEventListener('click', function () {
-  notificationMenu.classList.toggle('show');
-});
-        </script>
+    notificationIcon.addEventListener('click', function () {
+        notificationMenu.classList.toggle('show');
+    });
+</script>

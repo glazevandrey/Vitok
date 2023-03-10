@@ -29,7 +29,6 @@ namespace web_server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddCustomServices();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen();
             services.AddSignalR();
@@ -44,7 +43,6 @@ namespace web_server
           .AddCookie(options =>
           {
               options.LoginPath = "/Account/Login";
-              options.AccessDeniedPath = "/Home/Error";
           })
           .AddJwtBearer(options =>
           {
@@ -62,7 +60,10 @@ namespace web_server
                   ClockSkew = TimeSpan.Zero
               };
           });
+
             services.AddHostedService<NotificationBackgroundService>();
+            services.AddCustomServices();
+
 
         }
 
@@ -113,16 +114,12 @@ namespace web_server
                     }
                 }
 
-
-
-
                 await next();
             });
             //      app.UseMvc();
             app.UseAuthentication();
             app.UseCors(x => x
-                    //.WithOrigins("https://localhost:44340")// путь к нашему SPA клиенту
-                    .WithOrigins("http://localhost:23571")// путь к нашему SPA клиенту
+                    .WithOrigins("http://localhost:23571")
                     .AllowCredentials()
                     .AllowAnyMethod()
                     .AllowAnyHeader());
@@ -130,6 +127,7 @@ namespace web_server
             {
                 endpoints.MapControllers();
             });
+
             app.UseSignalR(routes =>
             {
                 routes.MapHub<NotifHub>("/notifHub");

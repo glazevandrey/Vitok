@@ -45,37 +45,4 @@
         });
     </script>
 
-@*<script>
-        var url3 = "http://localhost:23382/notifHub" + "?" + "token=" + "@ViewData["usertoken"]";
-
-    var notificationsConnection = new signalR.HubConnectionBuilder()
-            .configureLogging(signalR.LogLevel.Debug)
-            .withUrl(url3)
-            .configureLogging(signalR.LogLevel.Information)
-        .build();
-        
-    notificationsConnection.start().then(function () {
-        notificationsConnection.on("ReceiveNotification", function (message, readed,id)
-        {
-            var notification = $("<li data-id='"+ id + "'>").text(message);
-            $("#notif-list").append(notification);
-
-              notification.click(function () {
-        notification.addClass("read");
-        $.post("/Account/MarkAsRead", { id: notification.attr("data-id") });
-                });
-
-
-            if(readed === false){
-                    if (!document.getElementById("icon-badge").innerHTML) {
-                        document.getElementById("icon-badge").innerHTML = 1;
-                    } else {
-                        document.getElementById("icon-badge").innerHTML++;
-
-                    }
-            }
-               
-        });
-
-</script>
-*@</div>
+</div>

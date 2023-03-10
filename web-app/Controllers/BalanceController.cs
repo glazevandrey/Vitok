@@ -32,6 +32,7 @@ namespace web_app.Controllers
             ViewData["tariffs"] = TestData.Tariffs;
             ViewData["usertoken"] = user.UserId;
             ViewData["lessons"] = user.LessonsCount;
+            ViewData["photoUrl"] = user.PhotoUrl;
 
             return View(user);
         }

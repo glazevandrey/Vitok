@@ -281,7 +281,7 @@
             <div class="card mb-sm-3 mb-md-0 contacts_card">
                 <div class="card-header">
                     <div class="input-group">
-                        <input type="text" placeholder="Search..." name="" class="form-control search">
+                        <input type="text" placeholder="Поиск..." name="" class="form-control search">
                         <div class="input-group-prepend">
                             <span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
                         </div>
@@ -300,7 +300,9 @@
                 <div class="card-header msg_head">
                     <div class="d-flex bd-highlight">
                         <div class="user_info">
-                            <span>Chat with : <span id="chat-with-id"></span></span>
+                            <span hidden="hidden">Чат с: <span id="chat-with-name"></span></span>
+
+                            <span hidden="hidden">Чат с: <span id="chat-with-id"></span></span>
                         </div>
                     </div>
                 </div>
@@ -314,7 +316,7 @@
                         <div class="input-group-append">
                             <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
                         </div>
-                        <textarea name="" class="form-control type_msg" id="messageInput" placeholder="Type your message......">
+                        <textarea name="" class="form-control type_msg" id="messageInput" placeholder="Написать......">
                          </textarea>
                         <div class="input-group-append">
                             <span class="input-group-text send_btn" id="sendButton"><i class="fas fa-location-arrow"></i></span>
@@ -362,14 +364,14 @@
             e.preventDefault();
         }
     });
-    connection.on("UserList", (connectionId, userId) => {
+    connection.on("UserList", (connectionId, userId, photo) => {
         $('#onlineUsersList').append('<li class= "active" onclick=receiverId(' + "'" + connectionId + "'" + ')>' +
             '<div class="d-flex bd-highlight">' +
             '<div class="img_cont">' +
-            '<img src="http://www.findandsolve.com/icon.png" alt="find and solve" class="rounded-circle user_img">' +
+            '<img src='+photo+' alt="find and solve" class="rounded-circle user_img">' +
             '<span class="online_icon"></span></div>' +
             '<div class="user_info">' +
-            '<p>User id : ' + userId + '</p>></div> </div></li>'
+            '<p>' + userId + '</p>></div> </div></li>'
         )
     });
     connection.on("DisconnectUser", (connectionId) => {$('li:contains('+ connectionId +')').remove();});
@@ -384,8 +386,9 @@
             '<div class="img_cont_msg">' +
             '<img src="http://www.findandsolve.com/icon.png" alt="find and solve" class="rounded-circle user_img_msg"> </div> </div></li>')
     });
-    connection.on("ReceiveMessage", (message, senderId) => {
+    connection.on("ReceiveMessage", (message, senderId, senderName) => {
         $('#chat-with-id').text(senderId);
+        $('#chat-with-name').text(senderName);
         $('#messageListId').append('<li><div class="d-flex justify-content-start mb-4">' +
             '<div class="img_cont_msg">' +
             '<img src="http://www.findandsolve.com/icon.png" alt="find and solve" class="rounded-circle user_img_msg"> </div> ' +

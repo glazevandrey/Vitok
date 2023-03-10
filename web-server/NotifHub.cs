@@ -20,12 +20,19 @@ namespace web_server
             notif.DateTime = DateTime.Now;
 
             TestData.Notifications.Add(notif);
-
-            var connecedTokens = user.NotificationTokens.Tokens.Where(m => m.Value == "Connected").ToList();
-            foreach (var item in connecedTokens)
+            try
             {
-                hub.Clients.Client(item.Key).SendAsync("ReceiveNotification", message, false, notif.Id);
+                var connecedTokens = user.NotificationTokens.Tokens.Where(m => m.Value == "Connected").ToList();
+                foreach (var item in connecedTokens)
+                {
+                    hub.Clients.Client(item.Key).SendAsync("ReceiveNotification", message, false, notif.Id);
+                }
             }
+            catch (Exception ex)
+            {
+                return;
+            }
+           
         }
 
         public async Task SetNotifications(int userId)

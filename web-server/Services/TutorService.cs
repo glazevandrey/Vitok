@@ -9,11 +9,6 @@ namespace web_server.Services
 {
     public class TutorService : ITutorService
     {
-        private readonly IHubContext<NotifHub> _hubContext;
-        public TutorService(IHubContext<NotifHub> hubContext)
-        {
-            _hubContext = hubContext;
-        }
         public User AddTutor(string args)
         {
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(args.ToString());
@@ -50,7 +45,7 @@ namespace web_server.Services
             return tutor;
         }
 
-        public User AddTutorSchedule(string args)
+        public User AddTutorSchedule(string args, IHubContext<NotifHub> _hubContext)
         {
             var split = args.Split(';');
             var tutor_id = split[0];
@@ -102,7 +97,7 @@ namespace web_server.Services
             return false;
         }
 
-        public User RemoveTutorSchedule(string args)
+        public User RemoveTutorSchedule(string args, IHubContext<NotifHub> _hubContext)
         {
 
             var split = args.Split(';');

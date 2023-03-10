@@ -32,6 +32,10 @@ namespace web_server.Services
                         // Обрабатываем каждое занятие
                         foreach (var lesson in lessons)
                         {
+                            if(lesson.UserId == -1)
+                            {
+                                continue;
+                            }
                             var lessonDate = new DateTime();
 
                             if (lesson.StartDate == lessonDate)
@@ -55,6 +59,8 @@ namespace web_server.Services
                                         if (timeLeft.TotalMinutes > 61)
                                         {
                                             TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = true;
+                                            lesson.Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = true;
+
                                             NotifHub.SendNotification(Constatnts.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hubContext);
                                         }
 
@@ -66,6 +72,8 @@ namespace web_server.Services
                                         if (timeLeft.TotalHours < 25 && timeLeft.TotalHours > 24)
                                         {
                                             TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
+                                            lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
+
                                             NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
                                             NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
                                         }
@@ -78,6 +86,8 @@ namespace web_server.Services
                                         if (timeLeft.TotalSeconds < 5)
                                         {
                                             TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_START_LESSON] = true;
+                                            lesson.Tasks[Constatnts.NOTIF_START_LESSON] = true;
+
                                             NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
                                             NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
                                         }
@@ -100,6 +110,7 @@ namespace web_server.Services
                                         if (timeLeft.TotalHours < 25 && timeLeft.TotalHours > 0) // Если до занятия осталось 1 день или меньше и оно находится в промежутке между 50 минутами и часом
                                         {
                                             TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
+                                            lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true; 
                                             NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
                                             NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
                                         }
@@ -120,6 +131,8 @@ namespace web_server.Services
                                         if (timeLeft.TotalSeconds < 5)
                                         {
                                             TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_START_LESSON] = true;
+                                            lesson.Tasks[Constatnts.NOTIF_START_LESSON] = true;
+
                                             NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
                                             NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
                                         }
@@ -130,7 +143,6 @@ namespace web_server.Services
 
                         Task.Delay(TimeSpan.FromSeconds(20), stoppingToken);
                     }
-
                     catch (Exception ex)
                     {
                     }

@@ -78,6 +78,7 @@ namespace web_app.Services
             }
 
         }
+
         public ResponseModel SendPost(CustomRequestPost req) => SendPost(req, null);
 
         public ResponseModel SendPost(CustomRequestPost req, HttpContext context)
@@ -93,8 +94,9 @@ namespace web_app.Services
 
                 var json = JsonSerializer.Serialize(req.User);
                 byte[] byteArray = Encoding.UTF8.GetBytes(json);
+                 request.ContentType = "application/x-www-form-urlencoded";
 
-                request.ContentType = "application/x-www-form-urlencoded";
+                
                 request.Credentials = CredentialCache.DefaultNetworkCredentials;
                 if (context != null)
                 {
@@ -142,6 +144,7 @@ namespace web_app.Services
                     using var reqStream = request.GetRequestStream();
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
+                
 
                 using var response = request.GetResponse();
 

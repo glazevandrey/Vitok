@@ -376,14 +376,14 @@ table tr th:last-child {
 
                 <tr>
                 
-                <td>@item</td>
+                        <td >@item</td>
                         @{
                             foreach (var day in w_days)
                             {
                                 var btn = $"{countA}_{countB}";
                                 int s_day = -1;
                                 DateTime s_date;
-                                <td>
+                                <td style="width:100px; height:20px">
                                     @{
                                         var date = new DateTime();
                                         if (@countB == 1)
@@ -424,7 +424,7 @@ table tr th:last-child {
                             @{
                                         if (ViewData["role"].ToString() == "Tutor"/* || ViewData["role"].ToString() == "Manager"*/)
                                         {
-                                            <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day','@s_date')">clicked3</button>
+                                            <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:100px" onclick="clicked('@item','@s_day','@s_date')"></button>
                                         }
                             }
                                 <div>
@@ -447,12 +447,9 @@ table tr th:last-child {
                                                 }
                                                 if (model1.RescheduledDate != DateTime.Parse("01.01.0001 0:00:00"))
                                                 {
-                                                    <script>
-                                                        console.log("23 @_date - @model1.RescheduledDate");</script>
                                                     if (_date >= model1.RescheduledDate && model1.Looped == true)
                                                     {
-                                                        <script>
-                                                            console.log("54 @_date - @model1.RescheduledDate");</script>
+
                                                         continue;
                                                     }
                                                                                                            
@@ -470,7 +467,7 @@ table tr th:last-child {
                                                     }
                                                     if (m_date.Hour == DateTime.Parse(item).Hour)
                                                     {
-                                                            if (ViewData["role"].ToString() == "Tutor" /*|| ViewData["role"].ToString() == "Manager"*/)
+                                                        if (ViewData["role"].ToString() == "Tutor" /*|| ViewData["role"].ToString() == "Manager"*/)
                                                         {
                                                             if (string.IsNullOrEmpty(model1.UserName))
                                                             {                              
@@ -480,7 +477,7 @@ table tr th:last-child {
                                                                  </script>
 
                                                                btn = $"btn_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
-                                                                <button  class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:auto" onclick="clicked('@item','@s_day')">clicked3</button>
+                                                                    <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:100px" onclick="clicked('@item','@s_day')">clicked3</button>
 
                                                                 <script>
                                                                     document.getElementsByClassName('@btn')[0].style.backgroundColor = "turquoise";
@@ -566,7 +563,7 @@ table tr th:last-child {
                                                                                 }
                                                                             }
                                                                         }
-                                                                    <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;">@model1.UserName.ToString()</label>
+                                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;width:100px">@model1.UserName.ToString()</label>
                                                                     </div>
                                                                     if (model1.ReadyDates.Count > 0)
                                                                     {
@@ -614,7 +611,7 @@ table tr th:last-child {
                                                                                     text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
                                                                                 }
                                                                             </script>
-                                                                            <label style="background-color:yellow;" data-title="@text2">(!)</label>
+                                                                            <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
 
                                                                         }
 
@@ -647,7 +644,7 @@ table tr th:last-child {
                                                                             var name = e.target.innerHTML;
 
                                                                                 document.getElementById("removeTutorId").value = tutor_id;
-                                                                            document.getElementById("removeUserId").value = userid;
+                                                                                document.getElementById("removeUserId").value = userid;
                                                                                 document.getElementById("currRemoveDate").value = "@s_date";
 
                                                                             document.getElementById("removeDate").value = date;
@@ -707,32 +704,32 @@ table tr th:last-child {
                                                                     elem[0].parentNode.removeChild(elem[0]);
                                                             </script>
 
-                                                             var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.UserName};";
+                                                             var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.UserName}; ";
 
-                                                                            if(ViewData["role"].ToString() == "Manager")
-                                                                            {
-                                                                                textMouse += $"Репетитор: {model1.TutorFullName}";
-                                                                            }
+                                                            if(ViewData["role"].ToString() == "Manager")
+                                                            {
+                                                                textMouse += $"Репетитор: {model1.TutorFullName}";
+                                                            }
 
-                                                                            if(model1.Status == Status.Перенесен)
-                                                                            {
-                                                                                <script>console.log("IN!")</script>
-                                                                                var rescheduled = model1.RescheduledLessons;
-                                                                                <script>console.log("count @rescheduled.Count");</script>
+                                                            if(model1.Status == Status.Перенесен)
+                                                            {
+                                                                <script>console.log("IN!")</script>
+                                                                var rescheduled = model1.RescheduledLessons;
+                                                                <script>console.log("count @rescheduled.Count");</script>
 
-                                                                                foreach (var resc in rescheduled)
-                                                                                {
-                                                                                    <script>console.log("inss");</script>
+                                                                foreach (var resc in rescheduled)
+                                                                {
+                                                                    <script>console.log("inss");</script>
 
-                                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
-                                                                                    {
-                                                                                        <script>console.log("insfgfgs");</script>
+                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
+                                                                    {
+                                                                        <script>console.log("insfgfgs");</script>
 
-                                                                                        textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
-                                                                                        break;
-                                                                                    }
-                                                                                }
-                                                                            }
+                                                                        textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
 
                                                                 var label = $"label_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
 
@@ -759,7 +756,22 @@ table tr th:last-child {
                                                                         }
                                                                     </style>
 
-                                                                <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue">@model1.TutorFullName.ToString()</label>
+                                                                @if(ViewData["role"].ToString() == "Manager")
+                                                                {
+                                                                    if (string.IsNullOrEmpty(model1.UserName))
+                                                                    {
+                                                                        <label data-title="@textMouse" id="@label" class="@label"  style="width:100;background-color:turquoise"></label>
+                                                                    }
+                                                                    else{
+
+                                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;width:100px">@model1.UserName.ToString()</label>
+
+                                                                    }
+
+                                                                }else{
+                                                                    <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;width:100px">@model1.TutorFullName.ToString()</label>
+
+                                                                }
 
                                                                 if (model1.ReadyDates.Count > 0)
                                                                 {
@@ -807,12 +819,12 @@ table tr th:last-child {
                                                                                 text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
                                                                             }
                                                                         </script>
-                                                                        <label style="background-color:yellow;" data-title="@text2">(!)</label>
+                                                                        <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
 
                                                                     }
 
                                                                 }
-
+                                                                
                                                                 if (model1.RescheduledLessons.Count > 0)
                                                                 {
                                                                     foreach (var less in model1.RescheduledLessons)

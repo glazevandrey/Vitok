@@ -9,13 +9,6 @@ namespace web_server.Services
 {
     public class LessonsService : ILessonsService
     {
-        private readonly IHubContext<NotifHub> _hubContext;
-
-        public LessonsService(IHubContext<NotifHub> hubContext)
-        {
-            _hubContext = hubContext;
-        }
-
         public List<RescheduledLessons> GetRescheduledLessons(string args)
         {
             var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
@@ -77,7 +70,7 @@ namespace web_server.Services
             return user;
         }
 
-        public Schedule RescheduleLesson(string args)
+        public Schedule RescheduleLesson(string args, IHubContext<NotifHub> _hubContext)
         {
             var split = args.Split(';');
 

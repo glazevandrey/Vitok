@@ -146,7 +146,7 @@ namespace web_server.Controllers
         {
             var form = Request.Form;
 
-            var schedule = _scheduleService.AddScheduleFromUser(form.First().Key);
+            var schedule = _scheduleService.AddScheduleFromUser(form.First().Key, _hubContext);
             if (schedule != null)
             {
                 var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(schedule));

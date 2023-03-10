@@ -66,6 +66,7 @@ namespace web_app.Controllers
             ViewData["userid"] = user.UserId;
             ViewData["courses"] = TestData.Courses;
             ViewData["lessons"] = user.LessonsCount;
+            ViewData["photoUrl"] = user.PhotoUrl;
 
             if (user.Role == "Manager")
             {

@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.IO;
 using System.Linq;
 using web_server.DbContext;
 using web_server.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace web_server.Controllers
 {
@@ -42,7 +46,6 @@ namespace web_server.Controllers
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
 
-
         [Models.Authorize]
         [HttpPost("addlessons", Name = "addlessons")]
         public string AddLessons()
@@ -65,6 +68,20 @@ namespace web_server.Controllers
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
 
+        [HttpPost("savephoto", Name = "savephoto")]
+        public IActionResult SavePhoto([FromQuery]string id)
+        {
+            var file = Request.Form.Files[0];
+            if (file == null)
+            {
+            }
+
+            var savePath = _accountService.SavePhoto(file, id);
+
+
+            return Redirect("http://localhost:23571/account");
+        }
+
         [Models.Authorize]
         [HttpGet("getreschedule", Name = "getreschedule")]
         public string GetReSchedule([FromQuery] string args)
@@ -75,7 +92,7 @@ namespace web_server.Controllers
             }
 
             var list = _lessonsService.GetRescheduledLessons(args);
-            if (list != null && list.Count > 0)
+            if (list != null)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
                 return _jsonService.PrepareSuccessJson(json);
@@ -84,10 +101,9 @@ namespace web_server.Controllers
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
 
-
         [HttpPost("MarkAsRead", Name = "MarkAsRead")]
-        public void MarkAsRead([FromForm] int id) => TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id)).Readed = true;
-
+        public void MarkAsRead([FromForm] int id) =>
+            TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id)).Readed = true;
 
         [Models.Authorize]
         [HttpGet("getschedule", Name = "getschedule")]

@@ -18,7 +18,8 @@ namespace web_app.Controllers
         public IActionResult Index()
         {
             CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
-            var result = _requestService.SendGet(request);
+            var result = _requestService.SendGet(request, HttpContext);
+
             if (result.success == false)
             {
                 return Redirect("/login");
@@ -30,6 +31,7 @@ namespace web_app.Controllers
             ViewData["role"] = user.Role;
             ViewData["lessons"] = user.LessonsCount;
             ViewData["usertoken"] = user.UserId;
+            ViewData["photoUrl"] = user.PhotoUrl;
 
             return View();
         }

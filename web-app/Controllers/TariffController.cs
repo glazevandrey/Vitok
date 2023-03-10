@@ -28,6 +28,7 @@ namespace web_app.Controllers
             ViewData["role"] = user.Role;
             ViewData["lessons"] = user.LessonsCount;
             ViewData["count"] = user.LessonsCount;
+            ViewData["photoUrl"] = user.PhotoUrl;
 
             return View(TestData.Tariffs);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using web_server.Models;
 
 namespace web_server.DbContext
@@ -74,6 +75,7 @@ namespace web_server.DbContext
                     LastName = "Иванов",
                     Password = "448",
                     Role = "Student",
+                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
                     Email = "a@mail.ru",
                     Phone = "+79188793839",
                     UserId = 3
@@ -86,6 +88,7 @@ namespace web_server.DbContext
                     Password = "123123",
                     Role = "Student",
                     Email = "a",
+                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
                     Phone = "+79188793839",
                     UserId = 4
                 },
@@ -95,6 +98,7 @@ namespace web_server.DbContext
                     LastName = "Глазев",
                     LessonsCount = 0,
                     Password = "123",
+                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
                     Role = "Manager",
                     Email = "god",
                     Phone = "+79054769537",
@@ -169,7 +173,6 @@ namespace web_server.DbContext
     }
     public class Contact
     {
-        public string DisplayName { get; set; }
         public int UserId { get; set; }
     }
 

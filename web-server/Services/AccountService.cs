@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using Microsoft.AspNetCore.Http;
+using System.IO;
+using System;
+using System.Linq;
 using web_server.DbContext;
 using web_server.Models;
 
@@ -25,6 +28,20 @@ namespace web_server.Services
             TestData.UserList[index] = old;
 
             return user;
+        }
+
+        public string SavePhoto(IFormFile file, string id)
+        {
+            string imageName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/avatars", imageName);
+            using (var stream = new FileStream(savePath, FileMode.Create))
+            {
+                file.CopyTo(stream);
+            }
+
+            TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(id)).PhotoUrl = "http://localhost:23382/" + "avatars/" + imageName;
+
+            return savePath;
         }
     }
 }

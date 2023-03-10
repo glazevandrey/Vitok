@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Linq;
+using web_server;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Services;
@@ -15,13 +17,14 @@ namespace vitok.Controllers
         ILessonsService _lessonsService;
         ITutorService _tutorService;
         IScheduleService _scheduleService;
-
-        public TutorController(IJsonService jsonService, ILessonsService lessonsService, ITutorService tutorService, IScheduleService scheduleService)
+        IHubContext<NotifHub> _hubContext;
+        public TutorController(IJsonService jsonService, ILessonsService lessonsService, ITutorService tutorService, IScheduleService scheduleService, IHubContext<NotifHub> hubContext)
         {
             _jsonService = jsonService;
             _lessonsService = lessonsService;
             _tutorService = tutorService;
             _scheduleService = scheduleService;
+            _hubContext = hubContext;
         }
 
         [HttpGet("getall", Name = "GetAll")]
@@ -123,7 +126,7 @@ namespace vitok.Controllers
             }
             var args = form.First().Key;
 
-            var tutor = _tutorService.AddTutorSchedule(args);
+            var tutor = _tutorService.AddTutorSchedule(args, _hubContext);
             if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить расписание");
@@ -144,7 +147,7 @@ namespace vitok.Controllers
             var args = form.First().Key;
 
 
-            var tutor = _tutorService.RemoveTutorSchedule(args);
+            var tutor = _tutorService.RemoveTutorSchedule(args, _hubContext);
             if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка удалить расписание у репетитора");
@@ -165,7 +168,7 @@ namespace vitok.Controllers
 
             var args = form.First().Key;
 
-            var schedule = _scheduleService.ChangeStatus(args);
+            var schedule = _scheduleService.ChangeStatus(args, _hubContext);
             if (schedule == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка обновить статус занятия");
@@ -185,7 +188,7 @@ namespace vitok.Controllers
             }
             var args = form.First().Key;
 
-            var rescheduled = _lessonsService.RescheduleLesson(args);
+            var rescheduled = _lessonsService.RescheduleLesson(args, _hubContext);
 
             if (rescheduled == null)
             {

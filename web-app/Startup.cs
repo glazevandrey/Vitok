@@ -27,7 +27,6 @@ namespace web_app
             //   services.AddSignalR();
             // services.AddSession();
             services.AddScoped<IRequestService, RequestService>();
-            services.AddCustomServices();
             services.AddControllersWithViews();
             services.Configure<WebEncoderOptions>(options =>
             {
@@ -35,6 +34,8 @@ namespace web_app
             });
             //  services.AddSignalR();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddCustomServices();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

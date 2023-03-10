@@ -4,8 +4,45 @@
     ViewData["role"] = Model.Role;
     Layout = "_Layout";
 
+
 }
 
+<script>
+
+
+    function submitt(el){
+
+        if (el.value.includes('.jpg') || el.value.includes('.png') || el.value.includes('.jpeg')){
+            document.getElementById('submitError').hidden = 'hidden';
+
+            document.getElementById('form').submit();
+        }
+        else
+        {
+            document.getElementById('submitError').removeAttribute('hidden');
+
+        }
+    }
+</script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+
+<form class="col-xs-12" id="form" method="post" action="http://localhost:23382/api/account/savephoto?id=@Model.UserId" enctype="multipart/form-data">
+    <br/>
+    <label>Фотография</label>
+    <br />
+        <br/>
+    <img width="50" height="50" src="@Model.PhotoUrl"/>
+
+    <br /><br />
+    <label hidden="hidden" id="submitError" style="color:darkred">Доступные форматы файла: jpg, png, jpeg</label>
+    <br />
+    <br />
+    <div class="form-group">
+        <input type="file" onchange="submitt(this)" class="form-control" id="photoId" name="image" />
+    </div>
+  
+</form>
 
 <form method="post" action="/account/saveinfo">
 
@@ -24,11 +61,8 @@
     <br />
     <br />
 
-    <label>Фотография</label>
-    <img  width="100" height="100" src="@Model.PhotoUrl"/>
+    
     @Html.TextBoxFor(m => m.PhotoUrl, new { @class = "form-control txtbox", @hidden="hidden" })
-
-    <input type="button" value="Загрузить"/>
     <br />
         <br />
 

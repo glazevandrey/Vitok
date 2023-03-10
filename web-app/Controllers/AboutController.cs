@@ -45,16 +45,10 @@ namespace web_app.Controllers
             var form = Request.Form;
             var date = new UserDate();
             int tutorId = 0;
-            int courseId = 0;
+            int courseId = -1;
 
-            try
-            {
-                courseId = Convert.ToInt32(form["course"]);
-            }
-            catch (Exception ex)
-            {
-                courseId = -1;
-            }
+            Int32.TryParse(form["course"], out courseId);
+           
 
             var tutor = new User();
 
