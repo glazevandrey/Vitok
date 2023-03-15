@@ -21,7 +21,7 @@ namespace web_server.Services
             schedule.UserName = user.FirstName + " " + user.LastName;
             schedule.CreatedDate = DateTime.Now;
 
-            var text = Constatnts.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
+            var text = Constants.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
 
             // отправка репетитору что у новое занятие
             NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext);
@@ -53,18 +53,18 @@ namespace web_server.Services
                 tutor.Balance += 1000;
                 tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000 });
 
-                schedule.Tasks[Constatnts.NOTIF_START_LESSON] = false;
-                schedule.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = false;
-                schedule.Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = false;
+                schedule.Tasks[Constants.NOTIF_START_LESSON] = false;
+                schedule.Tasks[Constants.NOTIF_TOMORROW_LESSON] = false;
+                schedule.Tasks[Constants.NOTIF_DONT_FORGET_SET_STATUS] = false;
 
                 if (user.LessonsCount == 1)
                 {
-                    NotifHub.SendNotification(Constatnts.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constants.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext);
                 }
                 else if (user.LessonsCount == 0)
                 {
-                    NotifHub.SendNotification(Constatnts.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
-                    NotifHub.SendNotification(Constatnts.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
                         user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
                 }
 

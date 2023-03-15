@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
 using System.Threading;
@@ -34,7 +35,7 @@ namespace web_server.Services
             var id = split[0];
             var role = split[1];
             var user = new User();
-            if (role == "Tutor")
+            if (role == "Tutor" || role =="Manager")
             {
                 user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
             }
@@ -88,7 +89,7 @@ namespace web_server.Services
             Program.Timers.Remove(id);
         }
 
-        public string Register(User user, HttpContext context)
+        public string Register(User user, HttpContext context, IHubContext<NotifHub> _hubContext)
         {
             TestData.UserList.Add(user);
             var reg = TestData.Registations.FirstOrDefault(m => m.UserId == user.UserId);
@@ -119,6 +120,14 @@ namespace web_server.Services
 
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 60000, 60000));
                     var timer = Program.Timers[id];
+
+                    NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName+" " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).LastName), reg.TutorId.ToString(), _hubContext);
+             
+                    NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
+                        Replace("{studentName}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).LastName).
+                        Replace("{tutorName}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.TutorId).FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.TutorId).LastName),
+                        TestData.Managers.First().UserId.ToString(), _hubContext);
+
                 }
 
             }

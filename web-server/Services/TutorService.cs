@@ -74,7 +74,7 @@ namespace web_server.Services
                 });
 
                 // отправка манагеру что новый урок у репетитора
-                NotifHub.SendNotification(Constatnts.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName)
+                NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName)
                     .Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
             }
 
@@ -105,7 +105,7 @@ namespace web_server.Services
             var tutor_id = split[0];
             var user_id = split[1];
             var curr = DateTime.Parse(split[3]);
-
+            var manager_id = TestData.Managers.First().UserId;
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id));
             if (tutor != null)
             {
@@ -117,7 +117,7 @@ namespace web_server.Services
                 }
 
                 // отправка манагеру что удалено занятие
-                NotifHub.SendNotification(Constatnts.NOTIF_REMOVE_LESSON.Replace("{tutorName}", schedule.TutorFullName).Replace("{studentName}", schedule.UserName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
+                NotifHub.SendNotification(Constants.NOTIF_REMOVE_LESSON.Replace("{tutorName}", schedule.TutorFullName).Replace("{studentName}", schedule.UserName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), manager_id.ToString(), _hubContext);
             }
 
             return tutor;

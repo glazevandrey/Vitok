@@ -8,11 +8,9 @@ namespace web_app.Controllers
 {
     public class ChatController : Controller
     {
-        IJsonService _jsonService;
         IRequestService _requestService;
-        public ChatController(IJsonService jsonService, IRequestService requestService)
+        public ChatController(IRequestService requestService)
         {
-            _jsonService = jsonService;
             _requestService = requestService;
         }
         public IActionResult Index()
@@ -32,6 +30,7 @@ namespace web_app.Controllers
             ViewData["lessons"] = user.LessonsCount;
             ViewData["usertoken"] = user.UserId;
             ViewData["photoUrl"] = user.PhotoUrl;
+            ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
             return View();
         }

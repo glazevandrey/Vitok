@@ -6,7 +6,7 @@ using web_server.Models;
 
 namespace web_server.DbContext
 {
-    public static class Constatnts
+    public static class Constants
     {
         #region Общие уведомления для репетитора и студента
         public const string NOTIF_START_LESSON = "У вас началось занятие!"; // в момент наступления занятия
@@ -37,11 +37,15 @@ namespace web_server.DbContext
 
     public static class TestData
     {
-        public static List<Goal> Goals { get; set; } = new List<Goal>() { new Goal() { Id = 0, Title = "Сдать экзамен" }, new Goal() { Id = 1, Title = "Другое" } };
+        public static List<Goal> Goals { get; set; } = new List<Goal>() { new Goal() { Id = 0, Title = "Сдать экзамен" },
+            new Goal() { Id = 1, Title = "Изучить с нуля" }, new Goal() { Id = 2, Title = "Работать" }, new Goal() { Id = 3, Title = "Преодолеть языковой барьер" },
+            new Goal() { Id = 4, Title = "Проходить собеседование" }, new Goal() { Id = 5, Title = "Путешествовать" }, new Goal() { Id = 6, Title = "Повысить уровень" },
+            };
+
         public static List<Course> Courses { get; set; } = new List<Course>() {
-            new Course() {Id = 0, Title="ОГЭ" ,Goal = Goals.FirstOrDefault(m=>m.Title == "Сдать экзамен") },
-            new Course() {Id = 1, Title="ЕГЭ" ,Goal = Goals.FirstOrDefault(m=>m.Title == "Сдать экзамен") },
-            new Course() {Id = 2, Title="Общий английский" ,Goal = Goals.FirstOrDefault(m=>m.Title == "Другое") }
+            new Course() {Id = 0, Title="ОГЭ" ,Goals = Goals.Where(m=>m.Title == "Сдать экзамен").ToList() },
+            new Course() {Id = 1, Title="ЕГЭ" ,Goals = Goals.Where(m=>m.Title == "Сдать экзамен").ToList() },
+            new Course() {Id = 2, Title="Общий английский" ,Goals = Goals.Where(m=>m.Id >= 1).ToList() }
         };
 
         public static List<Tariff> Tariffs = new List<Tariff>()
@@ -61,15 +65,15 @@ namespace web_server.DbContext
              new User() {FirstName = "Сергей", LastName = "Глузер", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"),
                     Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(), UserId =0, Email = "b", Phone = "+79054769537",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
-                        dateTimes = new List<DateTime>(){DateTime.Parse("10.03.2023 17:00"), DateTime.Parse("16.03.2023 19:00") }
+                        dateTimes = new List<DateTime>(){ }
                     }},
 
                 new User() {FirstName = "Иван", LastName = "Петров", About = "Почти лучший", BirthDate = DateTime.Parse("14.01.2002"),
                     Courses = Courses.Where(m => m.Title == "ОГЭ").ToList(), UserId=1, Email = "a.@mail.ru", Phone = "+79188703839",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
-                        dateTimes = new List<DateTime>(){DateTime.Parse("10.03.2023 15:00"), DateTime.Parse("13.02.2023 17:00") }
+                        dateTimes = new List<DateTime>(){ }
                     }},
- new User
+                new User
                 {
                     FirstName = "Петр",
                     LastName = "Иванов",
@@ -80,7 +84,7 @@ namespace web_server.DbContext
                     Phone = "+79188793839",
                     UserId = 3
                 },
-                  new User
+                new User
                 {
                     FirstName = "Сергей",
                     LastName = "Курочка",
@@ -110,7 +114,7 @@ namespace web_server.DbContext
         public static List<User> Tutors = UserList.Where(m => m.Role == "Tutor").ToList();
         public static List<User> Managers = UserList.Where(m => m.Role == "Manager").ToList();
 
-        public static List<Schedule> Schedules = new List<Schedule>() { new Schedule() {Id = 2, UserId=-1, TutorFullName = "Сергей Петров", Course = Courses[1], TutorId = 0, Date = new UserDate(){ dateTimes = new List<DateTime>(){ DateTime.Parse("16.02.2023 19:00") } },StartDate =DateTime.Parse("16.02.2023 19:00")  },
+        public static List<Schedule> Schedules = new List<Schedule>() {
             new Schedule() { Id = 0, UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 1, UserId = 3,
 
                 StartDate = DateTime.Parse("09.02.2023 23:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("09.02.2023 23:00") } }, Course = Courses[0] },
@@ -182,6 +186,7 @@ namespace web_server.DbContext
         public string SenderId { get; set; }
         public string ReceiverId { get; set; }
         public string Message { get; set; }
+        public string FilePath { get; set; }
     }
 
     public class InChat

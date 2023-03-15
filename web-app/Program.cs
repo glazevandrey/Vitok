@@ -8,7 +8,7 @@ namespace web_app
     public class Program
     {
         public static HubConnection Conn;
-        public static string web_server_ip = "http://localhost:23382/";
+        public static string web_server_ip = "http://localhost:23382";
 
         public static void Main(string[] args)
         {

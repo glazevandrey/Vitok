@@ -55,7 +55,7 @@ namespace web_app.Controllers
             }
 
 
-            if (result == null || !result.success || !res.success)
+            if (!res.success)
             {
                 return Redirect("/login");
             }
@@ -67,6 +67,7 @@ namespace web_app.Controllers
             ViewData["courses"] = TestData.Courses;
             ViewData["lessons"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
+            ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
             if (user.Role == "Manager")
             {
@@ -151,6 +152,12 @@ namespace web_app.Controllers
         public IActionResult DownDate(string date)
         {
             var date2 = DateTime.Parse(date).AddDays(-7);
+            return RedirectToAction("Index", "Schedule", new { date = date2.ToString("dd.MM.yyyy") });
+        }
+        [HttpGet("SetDate", Name = "SetDate")]
+        public IActionResult SetDate(string date)
+        {
+            var date2 = DateTime.Parse(date);
             return RedirectToAction("Index", "Schedule", new { date = date2.ToString("dd.MM.yyyy") });
         }
         [HttpPost]

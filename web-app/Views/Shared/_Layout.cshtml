@@ -40,6 +40,7 @@
     .icon-badge {
         position: absolute;
         top: -8px;
+        display: none;
         right: -8px;
         padding: 4px;
         border-radius: 50%;
@@ -100,32 +101,72 @@
                 text-decoration: underline;
             }
 
-</style>
+    .dropdown {
+        display: inline-block;
+        position: relative;
+    }
 
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        width: auto;
+        overflow: auto;
+        box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
+    }
+
+        .dropdown-content a {
+            display: block;
+            color: #000000;
+            width: auto;
+            padding: 5px;
+            text-decoration: none;
+        }
+
+            .dropdown-content a:hover {
+                color: #FFFFFF;
+                background-color: #00A4BD;
+            }
+</style>
+<script>
+
+    $(document).ready(function() {
+  $("#header-link1").change(function(){
+    if ($(this).val()!='') {
+      window.location.href=$(this).val();
+    }
+  });
+}); 
+
+
+</script>
 <html lang="ru">
 <body>
 
     <header>
     </header>
   <div class="notification-wrapper">
-      <a href="/account">
-            <img id="avatar" width="50" height="50" src="@ViewData["photoUrl"]" />
+            <img id="avatar" width="30" height="30" src="@ViewData["photoUrl"]" />
+      
+        <span style="margin-left:10px; margin-right:10px">@ViewData["displayName"]</span>
 
-      </a>
-
-  <button class="notification-icon" aria-label="Уведомления">
+        <div class="dropdown">
+            <button>↓</button>
+          <div class="dropdown-content">
+          <a  href="~/account">Профиль</a>
+          <a href="~/account/logout">Выйти</a>
+          </div>
+        </div>
+        <button style="margin-left:10px; margin-right:10px" class="notification-icon" aria-label="Уведомления">
    <span id="icon-badge" class="icon-badge"></span>
     <span class="icon-bell"></span>
   </button>
   <div class="notification-menu">
     <ul id="notif-list" class="norif-list">
-       
     </ul>
 
   </div>
 </div>
     @{
-        
         Html.RenderPartial("~/Views/Shared/_Notifications.cshtml");
      }
         <div class="FullContent">
@@ -150,8 +191,29 @@
 <script>
     const notificationIcon = document.querySelector('.notification-icon');
     const notificationMenu = document.querySelector('.notification-menu');
-
+    console.log(parseInt($("#icon-badge").text()));
+    if (!isNaN(parseInt($("#icon-badge").text()))) {
+        $("#icon-badge").show();
+    }
     notificationIcon.addEventListener('click', function () {
         notificationMenu.classList.toggle('show');
+
+        var els = document.getElementById('notif-list').getElementsByTagName('li');
+        for (let i = 0; i < els.length; i++) {
+            if (!els[i].classList.contains('read')){
+                $.post("@web_app.Program.web_server_ip" +"/api/account/MarkAsRead", { id: els[i].getAttribute("data-id") });
+            }
+        }
+
+        $("#icon-badge").hide();
+
+    });
+
+
+    var dropdown = document.querySelector('.dropdown');
+    var dropdownContent = document.querySelector('.dropdown-content');
+
+    dropdown.addEventListener('click', function () {
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
     });
 </script>

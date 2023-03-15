@@ -34,7 +34,7 @@ namespace vitok.Controllers
 
         [HttpGet("gettutor", Name = "gettutor")]
         public string GetTutor([FromQuery] string args) => _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(
-                TestData.Tutors.FirstOrDefault(m => m.Id.ToString() == args)));
+                TestData.Tutors.FirstOrDefault(m => m.UserId.ToString() == args)));
 
         [Authorize]
         [HttpPost("addtutor", Name = "addtutor")]

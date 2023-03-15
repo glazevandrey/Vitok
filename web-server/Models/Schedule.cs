@@ -21,9 +21,9 @@ namespace web_server.Models
         public Status Status { get; set; } = Status.Ожидает;
         public Dictionary<string, bool> Tasks = new Dictionary<string, bool>()
         {
-            { Constatnts.NOTIF_START_LESSON, false},
-            { Constatnts.NOTIF_TOMORROW_LESSON, false},
-            { Constatnts.NOTIF_DONT_FORGET_SET_STATUS, false},
+            { Constants.NOTIF_START_LESSON, false},
+            { Constants.NOTIF_TOMORROW_LESSON, false},
+            { Constants.NOTIF_DONT_FORGET_SET_STATUS, false},
 
         };
         public int RescheduledId { get; set; } = -1;

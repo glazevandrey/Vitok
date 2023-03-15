@@ -52,7 +52,7 @@ namespace web_server.Controllers
             }
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
-            var json = _authService.Register(user, HttpContext);
+            var json = _authService.Register(user, HttpContext, _hubContext);
             return json;
         }
 

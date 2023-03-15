@@ -9,7 +9,7 @@ namespace web_server
     public class Program
     {
         public static Dictionary<int, Timer> Timers = new Dictionary<int, Timer>();
-        public static Dictionary<string, List<User>> ChatUsers = new Dictionary<string, List<User>>();
+        public static string web_app_ip = "http://localhost:23571";
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();

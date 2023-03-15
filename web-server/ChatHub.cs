@@ -3,7 +3,11 @@ using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Mail;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using web_server.DbContext;
 using web_server.Models;
@@ -34,12 +38,13 @@ namespace web_server
 
         public async Task GetMessages(string userId)
         {
-            await SetChat(TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.ContainsKey(Context.ConnectionId)).UserId.ToString(), Convert.ToInt32(userId));
+            var currChatUser = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.ContainsKey(Context.ConnectionId));
+            var currUser = TestData.UserList.FirstOrDefault(m => m.UserId == currChatUser.UserId);
+            await SetChat(currChatUser.UserId.ToString(), Convert.ToInt32(userId));
 
             var user = TestData.ChatUsers.FirstOrDefault(m => m.UserId == Convert.ToInt32(userId));
 
             if (user == null) { await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow"); return; }
-
             var messages = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.ContainsKey(Context.ConnectionId)).Messages.ToList();
             var result = new List<Messages>();
 
@@ -57,25 +62,40 @@ namespace web_server
                 }
             }
 
+
             foreach (var item in result)
             {
                 var user2 = TestData.UserList.FirstOrDefault(m=>m.UserId== user.UserId);
                 if (user.ConnectionTokens.ContainsKey(item.SenderId) || user.UserId == Convert.ToInt32(item.SenderId))
                 {
-                    await Clients.Clients(Context.ConnectionId).SendAsync("ReceiveMessage", item.Message, userId, user2.FirstName + " " + user2.LastName);
+                    if(item.FilePath == null)
+                    {
+                        await Clients.Clients(Context.ConnectionId).SendAsync("ReceiveMessage", item.Message, userId, user2.FirstName + " " + user2.LastName, null, user2.PhotoUrl);
+                    }
+                    else
+                    {
+                        await Clients.Clients(Context.ConnectionId).SendAsync("ReceiveMessage", item.Message, userId, user2.FirstName + " " + user2.LastName, item.FilePath, user2.PhotoUrl);
+                    }
                 }
                 else
                 {
-                    await Clients.Clients(Context.ConnectionId).SendAsync("OwnMessage", item.Message);
+                    if(item.FilePath == null)
+                    {
+                        await Clients.Clients(Context.ConnectionId).SendAsync("OwnMessage", item.Message, null, currUser.PhotoUrl);
+                    }
+                    else
+                    {
+                        await Clients.Clients(Context.ConnectionId).SendAsync("OwnMessage", item.Message, item.FilePath, currUser.PhotoUrl);
+                    }
                 }
             }
         }
 
-        public async Task SendMessage(string message, string token)
+        public async Task SendMessage(string message, string token, string filePath)
         {
             var user = TestData.ChatUsers.FirstOrDefault(m => m.UserId == Convert.ToInt32(token));
             var own = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.ContainsKey(Context.ConnectionId));
-
+            var ownPhoto = TestData.UserList.FirstOrDefault(m => m.UserId == own.UserId).PhotoUrl;
             if (user == null) { return; }
 
             var active = user.ConnectionTokens.Where(m => m.Value == "Connected").ToList();
@@ -84,18 +104,39 @@ namespace web_server
                 var user2 = TestData.UserList.FirstOrDefault(m=>m.UserId == user.UserId);
                 if (TestData.LiveChats.FirstOrDefault(m => m.UserId == token).WithUserId == own.UserId.ToString())
                 {
-                    await Clients.Clients(item.Key).SendAsync("ReceiveMessage", message, own.UserId, user2.FirstName + " " + user2.LastName);
+                    if(filePath == null)
+                    {
+                        await Clients.Clients(item.Key).SendAsync("ReceiveMessage", message, own.UserId, user2.FirstName + " " + user2.LastName, null, ownPhoto);
+                    }
+                    else
+                    {
+                        await Clients.Clients(item.Key).SendAsync("ReceiveMessage", message, own.UserId, user2.FirstName + " " + user2.LastName, filePath, ownPhoto);
+                    }
                 }
             }
 
-            user.Messages.Add(new Messages() { Message = message, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
+            if(filePath == null)
+            {
+                user.Messages.Add(new Messages() { Message = message, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
+                own.Messages.Add(new Messages() { Message = message, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
+            }
+            else
+            {
+                user.Messages.Add(new Messages() { Message = message, FilePath=filePath, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
+                own.Messages.Add(new Messages() { Message = message, FilePath = filePath, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
 
-
-            own.Messages.Add(new Messages() { Message = message, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
+            }
 
             foreach (var item in own.ConnectionTokens.Where(m => m.Value == "Connected"))
             {
-                await Clients.Clients(item.Key).SendAsync("OwnMessage", message, own.UserId);
+                if(filePath == null)
+                {
+                    await Clients.Clients(item.Key).SendAsync("OwnMessage", message, null, ownPhoto);
+                }
+                else
+                {
+                    await Clients.Clients(item.Key).SendAsync("OwnMessage", message, filePath, ownPhoto);
+                }
             }
         }
         public override Task OnConnectedAsync()
@@ -136,7 +177,12 @@ namespace web_server
 
             return base.OnConnectedAsync();
         }
-
+        public async Task SendMessageWithFile(FileAttachment attachment, string to, string message)
+        {
+            var fileBytes = Convert.FromBase64String(attachment.content);
+            File.WriteAllBytes($"wwwroot/files/{attachment.fileName}", fileBytes);
+            await SendMessage(message,to, $"{attachment.fileName}");
+        }
         public async Task SetNewContact(int userId)
         {
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
@@ -147,21 +193,63 @@ namespace web_server
             {
                 userSchediles = TestData.Schedules.Where(m => m.UserId == userId).ToList();
             }
-            else
+            else if (user.Role == "Tutor")
             {
                 userSchediles = TestData.Schedules.Where(m => m.TutorId == userId).ToList();
+            }
+            else
+            {
+                userSchediles = TestData.Schedules;
             }
 
             var manager = TestData.Managers.First();
             if(manager.UserId != userId)
             {
                 TestData.ChatUsers.FirstOrDefault(m => m.UserId == manager.UserId)?.Contacts?.Add(new Contact() { UserId = userId });
-                var active = TestData.ChatUsers.FirstOrDefault(m => m.UserId == manager.UserId).ConnectionTokens.Where(m=>m.Value == "Connected");
-                foreach (var item in active)
+                var active = TestData.ChatUsers.FirstOrDefault(m => m.UserId == manager.UserId)?.ConnectionTokens?.Where(m=>m.Value == "Connected");
+
+                if(active != null)
                 {
-                    await Clients.Client(item.Key).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
+                    foreach (var item in active)
+                    {
+                        await Clients.Client(item.Key).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
+                    }
+                }
+            }
+
+            var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId);
+
+            if (user.Role == "Manager")
+            {   
+                foreach (var item in userSchediles)
+                {
+                    var student = TestData.UserList.FirstOrDefault(m=>m.UserId == item.UserId);
+                    var tutor = TestData.UserList.FirstOrDefault(m => m.UserId == item.TutorId);
+
+                    var userContct = new Contact()
+                    {
+                        UserId = item.UserId
+                    };
+
+                    var tutorContact = new Contact()
+                    {
+                       UserId = item.TutorId
+                    };
+
+
+                    if (chatUser.Contacts.FirstOrDefault(m=>m.UserId == userContct.UserId) == null)
+                    {
+                        chatUser.Contacts.Add(userContct);
+                    }
+
+
+                    if (chatUser.Contacts.FirstOrDefault(m => m.UserId == tutorContact.UserId) == null)
+                    {
+                        chatUser.Contacts.Add(tutorContact);
+                    }
                 }
 
+                return;
             }
 
             foreach (var item in userSchediles)
@@ -170,8 +258,9 @@ namespace web_server
                 {
                     UserId = item.TutorId
                 };
+
                
-                if(user.UserId != item.UserId)
+                if (user.UserId != item.UserId)
                 {
                     if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId) == null)
                     {
@@ -180,9 +269,9 @@ namespace web_server
 
                     if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId).Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
                     {
-                        var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId);
-
+                        chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId);
                         chatUser.Contacts.Add(contact);
+
                         foreach (var token in chatUser.ConnectionTokens.Where(m=>m.Value == "Connected"))
                         {
                             await Clients.Client(token.Key).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
@@ -208,7 +297,7 @@ namespace web_server
 
                     if (tutor.Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
                     {
-                        var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.TutorId);
+                        chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.TutorId);
 
                         chatUser.Contacts.Add(contact);
 
@@ -225,7 +314,6 @@ namespace web_server
                
 
             }
-
 
             var contact2 = new Contact()
             {
@@ -250,11 +338,11 @@ namespace web_server
         }
         public override Task OnDisconnectedAsync(Exception ex)
         {
-            //var connectionId = Context.ConnectionId;
-            //var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
+            var connectionId = Context.ConnectionId;
+            var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
 
-            //TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens[connectionId] = "Disconnected";
-            //Clients.All.SendAsync("DisconnectUser", connectionId);
+            TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens[connectionId] = "Disconnected";
+            Clients.All.SendAsync("DisconnectUser", connectionId);
 
             return Task.CompletedTask;
         }

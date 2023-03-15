@@ -1,0 +1,76 @@
+﻿@using web_server.Models;
+@model User
+@{
+    Layout = "_Layout";
+}
+<style>
+    label {
+        display: block;
+    }
+
+        label > span {
+            display: inline-block;
+            width: 170px;
+        }
+
+        label > input {
+            display: inline-block;
+            width: 170px;
+        }
+</style>
+
+            <fieldset disabled="disabled">
+                <legend>Информация о студенте</legend>
+
+                <div class="container" align="center">
+
+                <label>
+                <span>Фамилия</span>
+                <input id="lastName" name="lastName" value="@Model.LastName" />
+                </label>
+                <br />
+                <br />
+
+                <label>
+                <span>Имя</span>
+                <input name="firstName" id="firstName" value="@Model.FirstName" />
+                    <br />             <br />
+
+                </label>
+                <label>
+                <span>Отчество</span>
+                <input id="middleName" name="middleName" value="@Model.MiddleName" />
+                    <br />             <br />
+
+                </label>
+                <label>
+                <span>Дата рождения</span>
+                <input name="birthDate" id="birthDate" value="@Model.BirthDate.ToShortDateString()" />
+                    <br /><br />
+
+                </label>
+
+                <br/>
+                <label>
+
+                <span>Почта</span>
+
+                <input name="email" id="email" value="@Model.Email" />
+                    <br />             <br />
+
+                </label>
+            <label>
+                <span>Пароль</span>
+                <input name="password" id="password" value="@Model.Password" />
+                <br />             <br />
+
+            </label>
+                        <label>
+                <span>Телефон</span>
+                <input name="phone" id="phone" value="@Model.Phone" />
+                <br />             <br />
+
+            </label>
+                </div>
+            </fieldset>
+            <br/>

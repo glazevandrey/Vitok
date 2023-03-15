@@ -1,0 +1,43 @@
+
+<div style="padding-top:50px;"></div>
+<div style="padding:50px;">
+   
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4">
+                <div>
+                    <label id="error" style="color:darkred" hidden="hidden">Неверное имя пользователя или пароль</label>
+                    <br/>
+                                        <br/>
+
+                    <form method='post' action="/login/">
+                        <div>
+                            <input name="__RequestVerificationToken" type="hidden" value="CfDJ8JgbSXyDi1BOu-EMI5rbrHD8POgDt-j9F58YSbr-3PERjsdMCJxoVyadNqKhL40vxnTXdtG7nGbgO7kG02zMNOgfUApMA3hew4QA5Rg0XcAZgIk4bekZqWGypOAdlQEQqRGHM1vEteFDCG5EgVwUaM8" />
+                            <div>
+                                <label>Логин</label><br />
+                            </div>
+                            <div>
+                                <input class="form-control txtbox" id="Email" name="Email" type="text" value="" />
+                            </div>
+                            <div style="padding-top:20px;"></div>
+                            <div>
+                                <label>Пароль</label><br />
+                            </div>
+                            <div>
+                                <input class="form-control txtbox" id="Password" name="Password" type="password" />
+                            </div>
+                        </div>
+                        <div style="padding-left:35%;width:40%;">
+                            <div style="padding-top:20px;">
+                                <input class="btn btn-primary btn-lg rph-login-button" type="submit" value="Login" />
+                            </div>
+                        </div>
+                        </form>
+                </div>
+            </div>
+        </div>
+    <br />
+    <br/>
+    <br/>
+            <a href="/registration">Нет аккаунта? Зарегистрируйся!</a>
+</div>
+

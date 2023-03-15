@@ -36,23 +36,55 @@
         return time;
     }
 </script>
+<select id="searchInput" onchange="searchTable(this)">
+    <option value="" disabled selected>Курс</option>
+    @{
+        foreach (var course in (List<Course>)ViewData["courses"])
+        {
+            <option value="@course.Title">@course.Title</option>
+        }
+    }
+</select>
+<input type="reset" onclick="document.getElementById('searchInput').value = ''; document.getElementById('searchInput').onchange();" />
+<br/>
+<br/>
+<div id="tutors">
 
 @{
+    
     foreach (var item in Model)
     {
-        <label>@item.FirstName</label>
-        <label>@item.LastName</label>
-        <label>@item.UserId</label>
-        var modalId = "modal" + item.UserId;
+        <div class="tutor">
+             
+        @{
+            <img style="float:left" src="@item.PhotoUrl" width="100" height="100" />
+                    <label><b>@item.FirstName</b></label>
+                    var modalId = "modal" + item.UserId;
+                    <br/>
+                    <label>Курсы: </label>
+                    <div id="tutorCourses">
 
+                        @{
+                            var courses = "";
+                            foreach (var course in item.Courses)
+                            {
+                                courses += course.Title + ";";
+                            }
+                            courses = courses.TrimEnd(';');
+                            <label>@courses</label>
+                            <br/>
+                        }
+                </div>
         var openmodal = "openModal" + modalId;
         var closemodal = "closeModal" + modalId;
         var url = "/about/details?id=" + item.UserId;
-        <form method="post" action="@url">
+       <form method="post" action="@url">
             <button>Подробнее</button>
         </form>
+        <button onclick="window.location.href='#@openmodal'">Выбрать время</button>
+                }
+            </div>
 
-        <a href="#@openmodal">Выбрать время</a>
         <div id="@openmodal" class="modal">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -107,7 +139,7 @@
                                 <br/>
 
 
-                                <label>Выберите желаемый курс, либо оставьте поле пустым</label>
+                                <label>Выберите желаемый курс</label>
                                 <select onchange="selectChanged(this)">
                                 <option value=""></option>
                                 @{
@@ -129,8 +161,8 @@
 
                                 <input hidden="hidden" class="course" name="course" id="course22" value="" />
 
-                                <input hidden="hidden" class="textTime" name="textTime" id="@textTime" value="" />
-                                <input hidden="hidden" class="tutor" name="tutor" id="@tutor" value="@item.UserId" />
+                                <input  hidden="hidden" class="textTime" name="textTime" id="@textTime" value="" />
+                                <input  hidden="hidden" class="tutor" name="tutor" id="@tutor" value="@item.UserId" />
 
                                 <input type="submit" value="Записаться" />
                             }
@@ -141,6 +173,40 @@
             </div>
         </div>
         <br />
+        <br />
+    }
+}
+
+</div>
+
+<script>
+    function searchTable(el) {
+        var input, filter, table, tr, td, i, txtValue;
+        input = el.value;
+        filter = input.toUpperCase();
+        table = document.getElementById("tutors");
+        tr = table.getElementsByClassName("tutor");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("label");
+            for (j = 0; j < td.length; j++) {
+                txtValue = td[j].textContent || td[j].innerText || td[j].innerHTML;
+
+                if(filter){
+                     if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    break;
+                } else {
+                    tr[i].style.display = "none";
+                }
+                }else{
+                    tr[i].style.display = "";
+                }
+               
+            }
+
+        }
     }
 
-}
+    document.getElementById("searchInput").onkeyup = searchTable;
+
+</script>

@@ -8,7 +8,7 @@
 
 
     <script>
-        var url3 = "http://localhost:23382/notifHub" + "?" + "token=" + "@ViewData["usertoken"]";
+        var url3 = "@web_app.Program.web_server_ip" + "/notifHub" + "?" + "token=" + "@ViewData["usertoken"]";
 
         var notificationsConnection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
@@ -18,23 +18,22 @@
 
         notificationsConnection.start().then(function () {
             notificationsConnection.on("ReceiveNotification", function (message, read, id) {
-                console.log(id);
                 var notification = $("<li id='li_" + id +"' data-id='" + id + "'>").text(message);
                 $("#notif-list").append(notification);
 
-                
                 if (read === false) {
                     notification.click(function () {
                         if(!$("#li_" + id).hasClass('read')){
-                            notification.addClass("read");
-                            console.log(notification.attr("data-id"));
-
-                            $.post("http://localhost:23382/api/account/MarkAsRead", { id: notification.attr("data-id") });
-                            $("#icon-badge").text(parseInt($("#icon-badge").text()) - 1);
-                        }
+                           
+                        };
+                       
                  
 
                 });
+
+
+                
+                    $("#icon-badge").show();
                     if (!$("#icon-badge").text()) {
                         $("#icon-badge").text(1);
                     } else {

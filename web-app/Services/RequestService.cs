@@ -61,11 +61,11 @@ namespace web_app.Services
                     string url = "";
                     if (request.Args == null)
                     {
-                        url = Program.web_server_ip + request.Address;
+                        url = Program.web_server_ip + "/"+ request.Address;
                     }
                     else
                     {
-                        url = Program.web_server_ip + request.Address + $"?args={request.Args}";
+                        url = Program.web_server_ip + "/" + request.Address + $"?args={request.Args}";
                     }
                     var responseString = client.GetStringAsync(url).Result;
                     return Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(responseString);
@@ -87,7 +87,7 @@ namespace web_app.Services
             {
                 string url = "";
 
-                url = Program.web_server_ip + req.Address;
+                url = Program.web_server_ip+ "/" + req.Address;
 
                 var request = WebRequest.Create(url);
                 request.Method = "POST";

@@ -250,7 +250,7 @@
                 <br/>
                 <br/>
                 <label>Дата рождения</label><br />
-                    <input id="birthDateEdit" name="birthDateEdit" type="text" value="" />
+                    <input id="birthDateEdit" name="birthDateEdit" type="date" value="" />
                 <br />
                 <br />
                 <label>Номер телефона</label><br />
@@ -300,7 +300,7 @@
         document.getElementById("firstNameEdit").value = user.firstName;
         document.getElementById("lastNameEdit").value = user.lastName;
         document.getElementById("middleNameEdit").value = user.middleName;
-        document.getElementById("birthDateEdit").value = new Date(user.birthDate).toLocaleDateString();
+        document.getElementById("birthDateEdit").value = new Date(user.birthDate).toLocaleDateString("ru-RU");
         document.getElementById("phoneEdit").value = user.phone;
         document.getElementById("passwordEdit").value = user.password;
         document.getElementById("userIdEdit").value = user.userId;

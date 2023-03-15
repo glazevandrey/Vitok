@@ -79,7 +79,7 @@ namespace web_server.Controllers
             var savePath = _accountService.SavePhoto(file, id);
 
 
-            return Redirect("http://localhost:23571/account");
+            return Redirect($"{Program.web_app_ip}/account");
         }
 
         [Models.Authorize]
@@ -115,13 +115,10 @@ namespace web_server.Controllers
             }
 
             var list = _scheduleService.GetSchedules(args);
-            if (list != null && list.Count > 0)
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
-                return _jsonService.PrepareSuccessJson(json);
-            }
-
-            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+           
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+            return _jsonService.PrepareSuccessJson(json);
+            
         }
     }
 }

@@ -32,6 +32,7 @@ namespace web_app.Controllers
             var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
             ViewData["usertoken"] = currUser.UserId;
             ViewData["photoUrl"] = currUser.PhotoUrl;
+            ViewData["displayName"] = currUser.FirstName + " " + currUser.LastName;
 
             var req = new GetAllUsersRequest();
             var res = _requestService.SendGet(req, HttpContext);
@@ -58,6 +59,40 @@ namespace web_app.Controllers
 
             ViewData["schedules"] = schedules;
             return View(users);
+        }
+
+        [HttpGet("info", Name = "info")]
+        public IActionResult Info([FromQuery] string id)
+        {
+            CustomRequestGet req4 = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+            var res4 = _requestService.SendGet(req4, HttpContext);
+
+            if (!res4.success)
+            {
+                return Redirect("/login");
+            }
+            var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
+            ViewData["usertoken"] = currUser.UserId;
+            ViewData["photoUrl"] = currUser.PhotoUrl;
+            ViewData["role"] = "Manager";
+
+
+
+
+            var req = new GetUserById(id+";Manager");
+            var data = _requestService.SendGet(req, HttpContext);
+            if (!data.success)
+            {
+                return Redirect("/login");
+            }
+
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data.result.ToString());
+
+
+
+
+
+            return View(user);
         }
     }
 }

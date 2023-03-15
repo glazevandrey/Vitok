@@ -100,7 +100,7 @@ namespace web_server.Services
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
 
             // отправка студенту что перенос занятия
-            NotifHub.SendNotification(Constatnts.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
+            NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
                 .Replace("{name}", tutor.FirstName + " " + tutor.LastName)
                 .Replace("{date}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
 
@@ -127,7 +127,7 @@ namespace web_server.Services
                 TestData.Schedules.Add(new_model);
 
                 // отправка манагеру что постоянный перенос
-                NotifHub.SendNotification(Constatnts.NOTIF_REGULAR_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
+                NotifHub.SendNotification(Constants.NOTIF_REGULAR_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
                     .Replace("{studentName}", user.FirstName + " " + user.LastName)
                     .Replace("{oldDate}", oldDateTime.ToString("dd.MM.yyyy HH:mm"))
                     .Replace("{newDate}", cureDate.ToString("dd.MM.yyyy HH:mm")), TestData.Managers.First().UserId.ToString(), _hubContext);

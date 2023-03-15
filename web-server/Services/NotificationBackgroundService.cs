@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Linq;
@@ -11,10 +12,11 @@ namespace web_server.Services
     public class NotificationBackgroundService : BackgroundService
     {
         private readonly IHubContext<NotifHub> _hubContext;
-
-        public NotificationBackgroundService(IHubContext<NotifHub> hubContext)
+        ISenderService _senderService;
+        public NotificationBackgroundService(IHubContext<NotifHub> hubContext, ISenderService senderService)
         {
             _hubContext = hubContext;
+            _senderService = senderService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -53,50 +55,67 @@ namespace web_server.Services
                             {
                                 if (!lesson.Looped)
                                 {
-                                    if (lesson.Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] == false)
+                                    if (lesson.Tasks[Constants.NOTIF_DONT_FORGET_SET_STATUS] == false)
                                     {
                                         TimeSpan timeLeft = DateTime.Now - lessonDate; // время после наачала занятия
                                         if (timeLeft.TotalMinutes > 61)
                                         {
-                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = true;
-                                            lesson.Tasks[Constatnts.NOTIF_DONT_FORGET_SET_STATUS] = true;
-
-                                            NotifHub.SendNotification(Constatnts.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hubContext);
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constants.NOTIF_DONT_FORGET_SET_STATUS] = true;
+                                            lesson.Tasks[Constants.NOTIF_DONT_FORGET_SET_STATUS] = true;
+                                            var email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_DONT_FORGET_SET_STATUS);
+                                            NotifHub.SendNotification(Constants.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hubContext);
                                         }
 
                                     }
-                                    if (lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] == false)
+                                    if (lesson.Tasks[Constants.NOTIF_TOMORROW_LESSON] == false)
                                     {
                                         TimeSpan timeLeft = lessonDate - DateTime.Now; // Время, оставшееся до конца занятия
 
                                         if (timeLeft.TotalHours < 25 && timeLeft.TotalHours > 24)
                                         {
-                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
-                                            lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constants.NOTIF_TOMORROW_LESSON] = true;
+                                            lesson.Tasks[Constants.NOTIF_TOMORROW_LESSON] = true;
 
-                                            NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
-                                            NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
+
+
+                                            NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
+                                            var email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_TOMORROW_LESSON);
+
+                                            NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
+                                            email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.UserId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_TOMORROW_LESSON);
+
                                         }
                                     }
 
-                                    if (lesson.Tasks[Constatnts.NOTIF_START_LESSON] == false)
+                                    if (lesson.Tasks[Constants.NOTIF_START_LESSON] == false)
                                     {
                                         TimeSpan timeLeft = lessonDate - DateTime.Now; // Время, оставшееся до конца занятия
 
                                         if (timeLeft.TotalSeconds < 5)
                                         {
-                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_START_LESSON] = true;
-                                            lesson.Tasks[Constatnts.NOTIF_START_LESSON] = true;
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constants.NOTIF_START_LESSON] = true;
+                                            lesson.Tasks[Constants.NOTIF_START_LESSON] = true;
 
-                                            NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
-                                            NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
+                                            NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
+                                            var email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_START_LESSON);
+
+
+                                            NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
+                                            email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.UserId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_START_LESSON);
+
+
                                         }
                                     }
 
                                 }
                                 else
                                 {
-                                    if (lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] == false)
+                                    if (lesson.Tasks[Constants.NOTIF_TOMORROW_LESSON] == false)
                                     {
                                         DayOfWeek desiredDayOfWeek = lessonDate.DayOfWeek; // День недели занятия
                                         TimeSpan desiredTime = lessonDate.TimeOfDay; // Время начала занятия
@@ -109,15 +128,22 @@ namespace web_server.Services
 
                                         if (timeLeft.TotalHours < 25 && timeLeft.TotalHours > 0) // Если до занятия осталось 1 день или меньше и оно находится в промежутке между 50 минутами и часом
                                         {
-                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true;
-                                            lesson.Tasks[Constatnts.NOTIF_TOMORROW_LESSON] = true; 
-                                            NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
-                                            NotifHub.SendNotification(Constatnts.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constants.NOTIF_TOMORROW_LESSON] = true;
+                                            lesson.Tasks[Constants.NOTIF_TOMORROW_LESSON] = true; 
+
+
+                                            NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hubContext);
+                                            var email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_TOMORROW_LESSON);
+
+                                            NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hubContext);
+                                            email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.UserId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_TOMORROW_LESSON);
                                         }
 
                                     }
 
-                                    if (lesson.Tasks[Constatnts.NOTIF_START_LESSON] == false)
+                                    if (lesson.Tasks[Constants.NOTIF_START_LESSON] == false)
                                     {
                                         DayOfWeek desiredDayOfWeek = lessonDate.DayOfWeek; // День недели занятия
                                         TimeSpan desiredTime = lessonDate.TimeOfDay; // Время начала занятия
@@ -130,11 +156,16 @@ namespace web_server.Services
 
                                         if (timeLeft.TotalSeconds < 5)
                                         {
-                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constatnts.NOTIF_START_LESSON] = true;
-                                            lesson.Tasks[Constatnts.NOTIF_START_LESSON] = true;
+                                            TestData.Schedules.FirstOrDefault(m => m.Id == lesson.Id).Tasks[Constants.NOTIF_START_LESSON] = true;
+                                            lesson.Tasks[Constants.NOTIF_START_LESSON] = true;
 
-                                            NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
-                                            NotifHub.SendNotification(Constatnts.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
+                                            NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hubContext);
+                                            var email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_START_LESSON);
+
+                                            NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.UserId.ToString(), _hubContext);
+                                            email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.UserId).Email;
+                                            _senderService.SendMessage(email, Constants.NOTIF_START_LESSON);
                                         }
                                     }
                                 }

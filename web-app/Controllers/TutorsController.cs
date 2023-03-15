@@ -36,7 +36,7 @@ namespace web_app.Controllers
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
             ViewData["photoUrl"] = user.PhotoUrl;
-
+            ViewData["displayName"] = user.FirstName + " " + user.LastName;
             ViewData["usertoken"] = user.UserId;
 
             var req2 = new GetAllUsersRequest();

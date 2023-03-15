@@ -24,6 +24,9 @@ table tr td:last-child,
 table tr th:last-child {
   border-right: 0;
 }
+form{
+    display:inline-block
+}
 </style>
 
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
@@ -41,14 +44,18 @@ table tr th:last-child {
                 </div>
                 <div class="modal-body">
 
-                <label>Добавить свободный xас</label>
+                <label>Добавить свободный час</label>
+                <br/>
                 <a href="#addhour">Добавить</a>
-            </div>
-                   <br/>
-                   <br/>
+                
+                <br/>
+                <br/>
 
-                <label>Добавить занитяе</label>
+                <label>Добавить занятие</label>
+                <br/>
                 <a href="#choosestudent">Добавить</a>
+                </div>
+
             </div>
         </div>
  </div>
@@ -67,18 +74,10 @@ table tr th:last-child {
                     <script>
                         function changesStatus(value){
                             if(value.value === 'Перенесен'){
-                                $('#reason-label').removeAttr('hidden');
-                                $('#reason').removeAttr('hidden');
-
-                                $('#date-label').removeAttr('hidden');
-                                $('#newDate').removeAttr('hidden');
-                                $('#newTime').removeAttr('hidden');
-                                $('#looped2').removeAttr('hidden');
-
-                                $('#label-looped').removeAttr('hidden');
-
-                                $('#who-label').removeAttr('hidden');
-                                $('#initiator').removeAttr('hidden');
+                                document.getElementById('rescheduleDiv').style.display = 'block';
+      
+                            }else{
+                                document.getElementById('rescheduleDiv').style.display = 'none';
                             }
                         }
                     </script>
@@ -87,10 +86,19 @@ table tr th:last-child {
                     <input disabled="disabled" type="text" id="currstatus" name="currstatus" />
                     <br/>
                     <br />
-
+                    <script>
+                        function validAndSubmit(){
+                            var valid =document.getElementById('timeError').style.display;
+                            console.log(valid);
+                            if(valid == 'none')
+                            {
+                                document.getElementById('rescheduleForm').submit();
+                            }
+                        }
+                    </script>
                     <label>Изменить статус занятия:</label>
                     <br />
-                    <form method="post" action="/schedule/changeStatus">
+                    <form method="post" id="rescheduleForm" action="/schedule/changeStatus">
                         @{
                             <select name="status" id="status" onchange="changesStatus(this)">
                                 @{
@@ -102,45 +110,65 @@ table tr th:last-child {
                             </select>
                            
                         }
+
                         <br/>
-                        <input hidden="hidden" type="text" id="courseId" name="courseId" />
-                        <input hidden="hidden" type="text" id="currDate" name="currDate" />
-                        <input hidden="hidden" type="text" id="startDate" name="startDate" />
+                        <div id="rescheduleDiv" style="display:none">
+                            <input hidden="hidden" type="text" id="courseId" name="courseId" />
+                            <input hidden="hidden" type="text" id="currDate" name="currDate" />
+                            <input hidden="hidden" type="text" id="startDate" name="startDate" />
+                           
+                            <br />
+                            <label  id="label-looped" for="looped2">Постоянный перенос?</label>
+                            <br />
+                            <input type="checkbox" id="looped2" name="looped" />
 
-                        <label hidden="hidden" id="label-looped" for="looped2">Постоянный перенос?</label>
-                        <input hidden="hidden" type="checkbox" id="looped2" name="looped" />
+                            <br />
+                            <label id="reason-label">Причина:</label>
+                            <br />
+                            <input type="text" id="reason" name="reason" />
+                            <br />
+                            <label id="date-label">Новая дата:</label>
+                            <script>
 
-                         <br/>
-                        <label hidden="hidden" id="reason-label">Причина:</label>
+                                function timeCheck(el) {
+                                    var err = document.getElementById('timeError');
+                                    if (!el.value.includes(':00')) {
 
-                        <input hidden="hidden" type="text" id="reason" name="reason" />
+                                        err.style.display = 'block';
+                                        err.innerText = 'Время должно заканчиваться на 00 (напр. 18:00)'
+                                    } else {
+                                        err.style.display = 'none';
+                                    }
+                                }
+                            </script>
+                            <br />
+                            <label style="display:none;color:darkred" id="timeError"></label>
+                            <input  type="date" id="newDate" name="newDate" />
+                            <input type="time" id="newTime" onchange="timeCheck(this)" name="newTime" />
+                            <br />
+
+                            <label id="who-label" >Кто перенес:</label>
+                            <br />
+                            <select  name="initiator" id="initiator">
+                                <option value="Репетитор">Репетитор</option>
+                                <option value="Студент" id="studentId">Студент</option>
+
+                            </select>
+                            <br />
+
+                            <input hidden="hidden" type="text" value="st" id="dateStatus" name="dateStatus" />
+
+                            <input hidden="hidden" type="text" value="st" id="userStatus" name="userStatus" />
+
+                            <input hidden="hidden" type="text" value="st" id="tutorStatus" name="tutorStatus" />
+
+
+
+
+                        </div>
                         <br/>
-                        <label hidden="hidden" id="date-label">Новая дата:</label>
-
-                        <input hidden="hidden" type="date" id="newDate" name="newDate" />
-                        <input hidden="hidden" type="time" id="newTime" name="newTime" />
-
-                        <br />
-
-
-
-                        <label id="who-label" hidden="hidden">Кто перенес:</label>
-
-                        <select hidden="hidden" name="initiator" id="initiator">
-                            <option value="Репетитор">Репетитор</option>
-                            <option value="Студент" id="studentId">Студент</option>
-
-                        </select>
-                        <br/>
-
-                        <input hidden="hidden" type="text" value="st" id="dateStatus" name="dateStatus" />
-
-                        <input hidden="hidden" type="text" value="st" id="userStatus" name="userStatus" />
-
-                        <input hidden="hidden" type="text" value="st" id="tutorStatus" name="tutorStatus" />
-                        <input type="submit" value="ОК" />
-                        <input type="button" value="Отмена" onclick ="closeModalWindow()" />
-
+                        <input type="button" onclick="validAndSubmit()" value="ОК" />
+                        <input type="button" value="Отмена" onclick="closeModalWindow()" />
                     </form>
                 </div>
             </div>
@@ -234,7 +262,6 @@ table tr th:last-child {
                     <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
                 </div>
                 <div class="modal-body">
-
                     @*@if (ViewData["role"].ToString() == "Manager")
                     {
                         <br />
@@ -282,7 +309,7 @@ table tr th:last-child {
                     @{
                         foreach (web_server.Models.Course item in (List<web_server.Models.Course>)ViewData["courses"])
                         {
-                            <option value="@item.Id">Название: @item.Title Цель: @item.Goal.Title</option>
+                            <option value="@item.Id">Название: @item.Title</option>
                         }
                     }
 
@@ -340,6 +367,28 @@ table tr th:last-child {
             <input hidden="hidden" id="date" name="date" value="@Model.Date"/>
             <input type="submit"  value=">>" />
         </form>
+
+            <form method="get" id="dateForm" action="/schedule/setDate">
+                <input name="date" onchange="document.getElementById('dateForm').submit();" id="date" type="date"/>
+            </form>
+            @{
+                <br/>   
+                if(ViewData["role"].ToString() == "Manager" || ViewData["role"].ToString() == "Tutor")
+                {
+                    <button style="background-color:turquoise;color:turquoise; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:50px;height:20px"></button>
+                    <label>-свободное время</label>
+                    <br/>
+                }
+
+                <button style="background-color:lightblue;color:lightblue; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:50px;height:20px"></button>
+                <label>-в эту дату есть занятие</label>
+                <br/>
+                <button style="background-color:gray;color:gray; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:50px;height:20px"></button>
+                <label>-занятие перенесено</label>
+                <br/>
+                <button style="background-color:darkblue;color:darkblue; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:50px;height:20px"></button>
+                <label>-занятие проведено</label>
+            }           
     </div>
     <br/>
     <table cellpadding="0" cellspacing="0">
@@ -536,7 +585,7 @@ table tr th:last-child {
 
                                                                         @{
 
-                                                                            var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.UserName};";
+                                                                            var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goals[0]?.Title}; Имя и фамилия: {model1.UserName};";
 
                                                                             if(ViewData["role"].ToString() == "Manager")
                                                                             {
@@ -544,9 +593,7 @@ table tr th:last-child {
                                                                             }
                                                                             if(model1.Status == Status.Перенесен)
                                                                             {
-                                                                                <script>console.log("IN!")</script>
                                                                                 var rescheduled = model1.RescheduledLessons;
-                                                                                <script>console.log("count @rescheduled.Count");</script>
 
                                                                                 foreach (var resc in rescheduled)
                                                                                 {
@@ -704,7 +751,7 @@ table tr th:last-child {
                                                                     elem[0].parentNode.removeChild(elem[0]);
                                                             </script>
 
-                                                             var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.UserName}; ";
+                                                                var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goals[0]?.Title}; Имя и фамилия: {model1.UserName}; ";
 
                                                             if(ViewData["role"].ToString() == "Manager")
                                                             {
@@ -713,17 +760,12 @@ table tr th:last-child {
 
                                                             if(model1.Status == Status.Перенесен)
                                                             {
-                                                                <script>console.log("IN!")</script>
                                                                 var rescheduled = model1.RescheduledLessons;
-                                                                <script>console.log("count @rescheduled.Count");</script>
 
                                                                 foreach (var resc in rescheduled)
                                                                 {
-                                                                    <script>console.log("inss");</script>
-
                                                                     if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
                                                                     {
-                                                                        <script>console.log("insfgfgs");</script>
 
                                                                         textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
                                                                         break;
@@ -760,7 +802,7 @@ table tr th:last-child {
                                                                 {
                                                                     if (string.IsNullOrEmpty(model1.UserName))
                                                                     {
-                                                                        <label data-title="@textMouse" id="@label" class="@label"  style="width:100;background-color:turquoise"></label>
+                                                                        <label data-title="@textMouse" id="@label" class="@label"  style="width:100px;height:20px;background-color:turquoise"></label>
                                                                     }
                                                                     else{
 

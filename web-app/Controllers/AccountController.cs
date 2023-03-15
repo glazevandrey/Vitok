@@ -42,6 +42,7 @@ namespace web_app.Controllers
             ViewData["usertoken"] = user.UserId;
             ViewData["lessons"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
+            ViewData["displayName"] = user.FirstName + " " + user.LastName;
             return View(user);
         }
 

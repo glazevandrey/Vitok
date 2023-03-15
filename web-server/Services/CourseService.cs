@@ -13,7 +13,7 @@ namespace web_server.Services
 
             course.Title = args[0];
             course.Id = TestData.Courses.Last().Id + 1;
-            course.Goal = TestData.Goals.FirstOrDefault(m => m.Id == Convert.ToInt32(args[1]));
+            course.Goals = TestData.Goals.Where(m => m.Id == Convert.ToInt32(args[1])).ToList();
 
             TestData.Courses.Add(course);
 

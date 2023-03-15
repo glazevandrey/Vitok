@@ -31,8 +31,11 @@ namespace web_server
             services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen();
-            services.AddSignalR();
-            services.AddControllers();
+            services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+                o.MaximumReceiveMessageSize = 31457280; // bytes
+            }); services.AddControllers();
             services.AddAuthentication(options =>
             {
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -52,7 +55,7 @@ namespace web_server
               {
                   ValidateIssuer = true,
                   ValidateAudience = true,
-                  ValidAudience = "http://localhost:23571/",
+                  ValidAudience = Program.web_app_ip+"/",
                   ValidIssuer = "http://localhost:35944/",
                   IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes("YourKey-2374-OFFKDI940NG7:56753253-tyuw-5769-0921-kfirox29zoxv"))
                   ,
@@ -60,9 +63,9 @@ namespace web_server
                   ClockSkew = TimeSpan.Zero
               };
           });
+            services.AddCustomServices();
 
             services.AddHostedService<NotificationBackgroundService>();
-            services.AddCustomServices();
 
 
         }
@@ -119,7 +122,7 @@ namespace web_server
             //      app.UseMvc();
             app.UseAuthentication();
             app.UseCors(x => x
-                    .WithOrigins("http://localhost:23571")
+                    .WithOrigins(Program.web_app_ip)
                     .AllowCredentials()
                     .AllowAnyMethod()
                     .AllowAnyHeader());

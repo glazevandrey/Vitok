@@ -64,8 +64,6 @@ namespace web_app
             //});
             app.Use(async (context, next) =>
             {
-
-                // ...
                 var token = context.Request.Cookies[".AspNetCore.Application.Id"];
                 if (!string.IsNullOrEmpty(token))
                     context.Request.Headers.Add("Authorization", "Bearer " + token);
