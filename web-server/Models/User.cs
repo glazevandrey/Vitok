@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using web_server.DbContext;
 
 namespace web_server.Models
 {

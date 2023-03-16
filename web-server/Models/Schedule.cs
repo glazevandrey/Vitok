@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using web_server.DbContext;
 
 namespace web_server.Models
 {
@@ -19,6 +18,7 @@ namespace web_server.Models
         public UserDate Date { get; set; }
         public DateTime StartDate { get; set; }
         public Status Status { get; set; } = Status.Ожидает;
+
         public Dictionary<string, bool> Tasks = new Dictionary<string, bool>()
         {
             { Constants.NOTIF_START_LESSON, false},
@@ -26,7 +26,6 @@ namespace web_server.Models
             { Constants.NOTIF_DONT_FORGET_SET_STATUS, false},
 
         };
-        public int RescheduledId { get; set; } = -1;
         public List<RescheduledLessons> RescheduledLessons { get; set; } = new List<RescheduledLessons>();
         public DateTime RescheduledDate { get; set; }
 

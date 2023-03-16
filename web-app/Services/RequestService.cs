@@ -10,7 +10,7 @@ using System.Web.Http;
 using web_app.Models;
 using web_app.Models.Requests;
 using web_server.Models;
-using web_server.Services;
+using web_server.Services.Interfaces;
 
 namespace web_app.Services
 {

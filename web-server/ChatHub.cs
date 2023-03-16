@@ -346,7 +346,6 @@ namespace web_server
 
             return Task.CompletedTask;
         }
-
         public async Task OnlineUsers()
         {
             var connectionId = Context.ConnectionId;

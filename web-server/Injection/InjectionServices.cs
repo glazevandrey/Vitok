@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using web_server.Services;
+using web_server.Services.Interfaces;
 
 namespace web_server.Injection
 {

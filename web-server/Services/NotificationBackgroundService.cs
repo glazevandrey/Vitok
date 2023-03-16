@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using web_server.DbContext;
+using web_server.Models;
+using web_server.Services.Interfaces;
 
 namespace web_server.Services
 {
@@ -64,6 +66,7 @@ namespace web_server.Services
                                             lesson.Tasks[Constants.NOTIF_DONT_FORGET_SET_STATUS] = true;
                                             var email = TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
                                             _senderService.SendMessage(email, Constants.NOTIF_DONT_FORGET_SET_STATUS);
+
                                             NotifHub.SendNotification(Constants.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hubContext);
                                         }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using web_server.DbContext;
 using web_server.Models;
+using web_server.Services.Interfaces;
 
 namespace web_server.Services
 {
@@ -121,7 +122,6 @@ namespace web_server.Services
 
 
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status = Status.Перенесен;
-                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).RescheduledId = new_model.Id;
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).RescheduledDate = cureDate;
 
                 TestData.Schedules.Add(new_model);

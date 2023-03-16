@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using web_server.Models;
 
-namespace web_server.Services
+namespace web_server.Services.Interfaces
 {
     public interface IAuthService
     {

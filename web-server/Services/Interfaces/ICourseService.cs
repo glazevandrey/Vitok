@@ -1,4 +1,4 @@
-﻿namespace web_server.Services
+﻿namespace web_server.Services.Interfaces
 {
     public interface ICourseService
     {

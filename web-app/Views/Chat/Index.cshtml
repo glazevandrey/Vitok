@@ -383,7 +383,6 @@
 
 
     var url = "@web_app.Program.web_server_ip"+"/chatHub" + "?" + "token=" + "@ViewData["userid"]";
-    console.log(url);
     const connection = new signalR.HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl(url)

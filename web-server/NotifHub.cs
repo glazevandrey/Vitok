@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.DbContext;
+using web_server.Models;
 
 namespace web_server
 {
@@ -34,7 +35,6 @@ namespace web_server
             }
            
         }
-
         public async Task SetNotifications(int userId)
         {
             var notifs = TestData.Notifications.Where(m => m.UserIdTo == userId).ToList();
@@ -65,7 +65,6 @@ namespace web_server
 
             await SetNotifications(userId);
         }
-
         public override Task OnDisconnectedAsync(Exception ex)
         {
             var connectionId = Context.ConnectionId;

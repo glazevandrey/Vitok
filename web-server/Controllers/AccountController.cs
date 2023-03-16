@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using web_server.DbContext;
-using web_server.Services;
+using web_server.Services.Interfaces;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace web_server.Controllers
@@ -72,12 +72,8 @@ namespace web_server.Controllers
         public IActionResult SavePhoto([FromQuery]string id)
         {
             var file = Request.Form.Files[0];
-            if (file == null)
-            {
-            }
 
-            var savePath = _accountService.SavePhoto(file, id);
-
+            _accountService.SavePhoto(file, id);
 
             return Redirect($"{Program.web_app_ip}/account");
         }

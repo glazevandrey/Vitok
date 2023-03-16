@@ -2,6 +2,7 @@
 using System;
 using System.Net;
 using System.Runtime.Loader;
+using web_server.Services.Interfaces;
 
 namespace web_server.Services
 {
