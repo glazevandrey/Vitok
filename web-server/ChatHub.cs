@@ -223,7 +223,7 @@ namespace web_server
             {   
                 foreach (var item in userSchediles)
                 {
-                    if (item.UserId == -1 || item.TutorId== -1)
+                    if (item.UserId == -1 || item.TutorId == -1)
                     {
                         continue;
                     }
