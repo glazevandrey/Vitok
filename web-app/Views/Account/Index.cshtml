@@ -8,11 +8,18 @@
 }
 
 <script>
-
+    var url = "@web_app.Program.web_server_ip" + "/chatHub" + "?" + "token=" + "@ViewData["userid"]";
+    const connection = new signalR.HubConnectionBuilder()
+        .configureLogging(signalR.LogLevel.Debug)
+        .withUrl(url)
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+    connection.start().then(() => {
+    });
 
     function submitt(el){
 
-        if (el.value.includes('.jpg') || el.value.includes('.png') || el.value.includes('.jpeg')){
+        if (el.value.includes('.jpg') || el.value.includes('.png') || el.value.includes('.jpeg') || el.value.includes('.JPG') || el.value.includes('.PNG') || el.value.includes('.JPEG')) {
             document.getElementById('submitError').hidden = 'hidden';
 
             document.getElementById('form').submit();

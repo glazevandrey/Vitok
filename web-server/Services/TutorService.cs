@@ -36,7 +36,7 @@ namespace web_server.Services
                     Date = new UserDate() { dateTimes = new List<DateTime>() { dateTime } },
                     Looped = Convert.ToBoolean(split[2]),
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
-                    TutorId = tutor.Id,
+                    TutorId = tutor.UserId,
                     UserId = -1,
                     StartDate = dateTime,
                 });

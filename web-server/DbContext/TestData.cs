@@ -32,16 +32,18 @@ namespace web_server.DbContext
         public static List<InChat> LiveChats { get; set; } = new List<InChat>();
         public static List<Registration> Registations = new List<Registration>();
         public static List<RescheduledLessons> RescheduledLessons = new List<RescheduledLessons>();
+
+        // все пользователи
         public static List<User> UserList = new List<User>
             {
              new User() {FirstName = "Сергей", LastName = "Глузер", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"),
-                    Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(), UserId =0, Email = "b", Phone = "+79054769537",
+                    Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(), UserId =0, Email = "sergey@mail.ru", Phone = "+79054769537",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
                         dateTimes = new List<DateTime>(){ }
                     }},
 
                 new User() {FirstName = "Иван", LastName = "Петров", About = "Почти лучший", BirthDate = DateTime.Parse("14.01.2002"),
-                    Courses = Courses.Where(m => m.Title == "ОГЭ").ToList(), UserId=1, Email = "a.@mail.ru", Phone = "+79188703839",
+                    Courses = Courses.Where(m => m.Title == "ОГЭ").ToList(), UserId=1, Email = "ivan@mail.ru", Phone = "+79188703839",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
                         dateTimes = new List<DateTime>(){ }
                     }},
@@ -52,7 +54,7 @@ namespace web_server.DbContext
                     Password = "448",
                     Role = "Student",
                      PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
-                    Email = "a@mail.ru",
+                    Email = "petr@mail.ru",
                     Phone = "+79188793839",
                     UserId = 3
                 },
@@ -63,7 +65,7 @@ namespace web_server.DbContext
                     LessonsCount = 2,
                     Password = "123123",
                     Role = "Student",
-                    Email = "a",
+                    Email = "kurochka@mail.ru",
                      PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
                     Phone = "+79188793839",
                     UserId = 4
@@ -76,7 +78,7 @@ namespace web_server.DbContext
                     Password = "123",
                      PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
                     Role = "Manager",
-                    Email = "god",
+                    Email = "god@mail.ru",
                     Phone = "+79054769537",
                     UserId = 5
                 }

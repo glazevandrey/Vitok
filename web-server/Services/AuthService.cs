@@ -72,7 +72,7 @@ namespace web_server.Services
                 context.Response.Cookies.Append(".AspNetCore.Application.Id", userToken,
                     new CookieOptions
                     {
-                        MaxAge = TimeSpan.FromMinutes(60)
+                        MaxAge = TimeSpan.FromMinutes(1160)
                     });
 
                 var json = _jsonService.PrepareSuccessJson(@"""" + userToken + @"""");
@@ -119,7 +119,7 @@ namespace web_server.Services
 
                     // TODO: !!!!!!!!!!!!!!! 24 * 3600000!!!!!!!!!!!!!!!!!!!;
 
-                    Program.Timers.Add(id, new System.Threading.Timer(tm, id, 60000, 60000));
+                    Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24* 3600000, 24* 3600000));
                     var timer = Program.Timers[id];
 
                     NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName+" " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).LastName), reg.TutorId.ToString(), _hubContext);

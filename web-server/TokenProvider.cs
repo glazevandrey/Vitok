@@ -45,7 +45,7 @@ namespace web_server
                     audience: Program.web_app_ip + "/",
                     claims: GetUserClaims(user).Claims,
                     notBefore: DateTime.Now,
-                    expires: new DateTimeOffset(DateTime.Now.AddMinutes(2)).DateTime,
+                    expires: new DateTimeOffset(DateTime.Now.AddMinutes(1160)).DateTime,
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key),
                                         SecurityAlgorithms.HmacSha256)
                 );

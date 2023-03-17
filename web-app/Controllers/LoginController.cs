@@ -60,7 +60,7 @@ namespace web_app.Controllers
             new CookieOptions
             {
                 // TODO: сделать больше
-                MaxAge = TimeSpan.FromMinutes(60)
+                MaxAge = TimeSpan.FromMinutes(1160)
             });
 
             return Redirect("/login");

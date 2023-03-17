@@ -223,9 +223,14 @@ namespace web_server
             {   
                 foreach (var item in userSchediles)
                 {
+                    if (item.UserId == -1 || item.TutorId== -1)
+                    {
+                        continue;
+                    }
                     var student = TestData.UserList.FirstOrDefault(m=>m.UserId == item.UserId);
                     var tutor = TestData.UserList.FirstOrDefault(m => m.UserId == item.TutorId);
 
+                
                     var userContct = new Contact()
                     {
                         UserId = item.UserId
