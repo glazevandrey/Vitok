@@ -1,7 +1,6 @@
-﻿using System.Net.Mail;
-using System;
+﻿using System;
 using System.Net;
-using System.Runtime.Loader;
+using System.Net.Mail;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
@@ -18,15 +17,15 @@ namespace web_server.Services
 
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress(fromEmail, "Администрация Vitok");
-            mail.To.Add(new MailAddress(address)); 
+            mail.To.Add(new MailAddress(address));
             mail.Subject = "Уведомление от платформы Vitok";
             mail.Body = message2;
 
             SmtpClient client = new SmtpClient();
             client.Host = "smtp.mail.ru";
-            client.Port = 587; 
+            client.Port = 587;
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential(fromEmail, password); 
+            client.Credentials = new NetworkCredential(fromEmail, password);
             try
             {
                 client.Send(mail);

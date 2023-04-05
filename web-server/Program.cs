@@ -2,16 +2,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
 using System.Threading;
-using web_server.Models;
 
 namespace web_server
 {
     public class Program
     {
         public static Dictionary<int, Timer> Timers = new Dictionary<int, Timer>();
-        public static string web_app_ip = "http://localhost:23571";
+        public static string web_app_ip = "";
+        public static bool BackInAir = false;
         public static void Main(string[] args)
         {
+            web_app_ip = "http://localhost:23571";
+
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -20,6 +22,7 @@ namespace web_server
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls("http://localhost:23382");
                 });
     }
 }

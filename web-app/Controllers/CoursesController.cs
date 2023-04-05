@@ -20,7 +20,7 @@ namespace web_app.Controllers
             _jsonService = jsonService;
             _requestService = requestService;
         }
-        public IActionResult Index()
+        public IActionResult Index(string editError = null)
         {
 
             CustomRequestGet req = new GetCourses(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
@@ -37,10 +37,14 @@ namespace web_app.Controllers
             ViewData["role"] = user.Role;
             ViewData["lessons"] = user.LessonsCount;
             ViewData["usertoken"] = user.UserId;
-                        ViewData["photoUrl"] = user.PhotoUrl;
+            ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
             ViewData["goals"] = TestData.Goals;
+            if (editError != null)
+            {
+                ViewData["error"] = editError;
+            }
             return View(courses);
         }
 
@@ -49,6 +53,28 @@ namespace web_app.Controllers
         {
             CustomRequestPost req = new CustomRequestPost("api/servercourses/setnewcourse", $"{title};{goalId}");
             _requestService.SendPost(req, HttpContext);
+            return RedirectToAction("Index", "Courses");
+        }
+        [HttpPost("editCourse", Name = "editCourse")]
+        public IActionResult EditCourse([FromForm] string courseIdEdit, [FromForm] string courseTitle, [FromForm] string goalEditId)
+        {
+            CustomRequestPost req = new CustomRequestPost("api/servercourses/editCourseServer", $"{courseIdEdit};{courseTitle};{goalEditId}");
+            _requestService.SendPost(req, HttpContext);
+            return RedirectToAction("Index", "Courses");
+        }
+        [HttpPost("removeCourse", Name = "removeCourse")]
+        public IActionResult RemoveCourse([FromForm] string courseId)
+        {
+            CustomRequestPost req = new CustomRequestPost("api/servercourses/removeCourseServer", $"{courseId}");
+            var res = _requestService.SendPost(req, HttpContext);
+            if (!res.success)
+            {
+                return RedirectToAction("Index", "Courses", new
+                {
+                    editError = "Ошибка при удалении. У одного или нескольких участников платформы указан выбранный курс." +
+                    "Чтобы удалить курс, необходимо чтобы ни один из пользователей не ссылался на него."
+                });
+            }
             return RedirectToAction("Index", "Courses");
         }
     }

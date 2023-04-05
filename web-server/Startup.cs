@@ -55,7 +55,7 @@ namespace web_server
               {
                   ValidateIssuer = true,
                   ValidateAudience = true,
-                  ValidAudience = Program.web_app_ip+"/",
+                  ValidAudience = Program.web_app_ip + "/",
                   ValidIssuer = "http://localhost:35944/",
                   IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes("YourKey-2374-OFFKDI940NG7:56753253-tyuw-5769-0921-kfirox29zoxv"))
                   ,
@@ -102,18 +102,42 @@ namespace web_server
 
                 if (!string.IsNullOrEmpty(token))
                 {
-                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+                    if (context.Request.Headers["Authorization"].Count > 0)
+                    {
+                        context.Request.Headers["Authorization"] = "Bearer " + token;
+                    }
+                    else
+                    {
+                        context.Request.Headers.Add("Authorization", "Bearer " + token);
+
+                    }
+
                 }
                 else
                 {
                     token = context.Request.Headers[".AspNetCore.Application.Id"];
                     if (token != null && token != "")
                     {
-                        context.Request.Headers.Add("Authorization", "Bearer " + token);
+                        if (context.Request.Headers["Authorization"].Count > 0)
+                        {
+                            context.Request.Headers["Authorization"] = "Bearer " + token;
+                        }
+                        else
+                        {
+                            context.Request.Headers.Add("Authorization", "Bearer " + token);
+
+                        }
                     }
                     if (context.Request.Query.ContainsKey("token"))
                     {
-                        context.Request.Headers.Add("Authorization", "Bearer " + TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(context.Request.Query["token"])).ActiveToken);
+                        if (context.Request.Headers["Authorization"].Count > 0)
+                        {
+                            context.Request.Headers["Authorization"] = "Bearer " + TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(context.Request.Query["token"])).ActiveToken;
+                        }
+                        else
+                        {
+                            context.Request.Headers.Add("Authorization", "Bearer " + TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(context.Request.Query["token"])).ActiveToken);
+                        }
                     }
                 }
 

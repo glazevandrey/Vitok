@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.IO;
 using System.Linq;
 using web_server.DbContext;
+using web_server.Models;
 using web_server.Services.Interfaces;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace web_server.Controllers
 {
@@ -69,7 +66,7 @@ namespace web_server.Controllers
         }
 
         [HttpPost("savephoto", Name = "savephoto")]
-        public IActionResult SavePhoto([FromQuery]string id)
+        public IActionResult SavePhoto([FromQuery] string id)
         {
             var file = Request.Form.Files[0];
 
@@ -97,9 +94,35 @@ namespace web_server.Controllers
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
 
+        [Authorize]
+        [HttpPost("TutorWithdraw")]
+        public string TutorWithdraw()
+        {
+            var args = Request.Form.First().Key?.Split(";");
+            if (args == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
+            }
+
+            var res = _accountService.Withdraw(args[0], args[1]);
+            if (res == false)
+            {
+                return _jsonService.PrepareErrorJson("Недостаточно средств");
+            }
+            return _jsonService.PrepareSuccessJson("true");
+        }
+
         [HttpPost("MarkAsRead", Name = "MarkAsRead")]
-        public void MarkAsRead([FromForm] int id) =>
-            TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id)).Readed = true;
+        public void MarkAsRead([FromForm] int id)
+        {
+            var sc = TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id));
+            if (sc == null)
+            {
+                return;
+            }
+
+            sc.Readed = true;
+        }
 
         [Models.Authorize]
         [HttpGet("getschedule", Name = "getschedule")]
@@ -111,10 +134,10 @@ namespace web_server.Controllers
             }
 
             var list = _scheduleService.GetSchedules(args);
-           
+
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
             return _jsonService.PrepareSuccessJson(json);
-            
+
         }
     }
 }

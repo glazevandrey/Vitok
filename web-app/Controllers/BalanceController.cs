@@ -19,7 +19,7 @@ namespace web_app.Controllers
             _jsonService = jsonService;
             _requestService = requestService;
         }
-        public IActionResult Index()
+        public IActionResult Index([FromQuery] string error = null)
         {
             CustomRequestGet req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
@@ -28,13 +28,17 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+
             ViewData["role"] = user.Role;
             ViewData["tariffs"] = TestData.Tariffs;
             ViewData["usertoken"] = user.UserId;
             ViewData["lessons"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
-
+            if (error != null)
+            {
+                ViewData["error"] = error;
+            }
             return View(user);
         }
 
@@ -44,6 +48,23 @@ namespace web_app.Controllers
             CustomRequestPost req = new CustomRequestPost("api/account/addlessons", $"{userId};{count};{isTrialPay}");
             _requestService.SendPost(req, HttpContext);
 
+            return RedirectToAction("Index", "Balance");
+        }
+
+        [HttpPost("withdrawbalance", Name = "withdrawbalance")]
+        public IActionResult WithdrawBalance([FromForm] string tutorId, [FromForm] string count)
+        {
+            if (string.IsNullOrEmpty(count) || count[0] == '0')
+            {
+                return RedirectToAction("Index", "Balance");
+            }
+
+            CustomRequestPost req = new CustomRequestPost("api/account/tutorWithdraw", $"{tutorId};{count}");
+            var res = _requestService.SendPost(req, HttpContext);
+            if (!res.success)
+            {
+                return RedirectToAction("Index", "Balance", new { error = "Недостаточно средств для вывода." });
+            }
             return RedirectToAction("Index", "Balance");
         }
     }

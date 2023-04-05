@@ -7,6 +7,7 @@ namespace web_server.Services.Interfaces
     {
         public User SaveAccountInfo(string args);
         public string SavePhoto(IFormFile file, string id);
+        public bool Withdraw(string tutorid, string count);
 
     }
 }

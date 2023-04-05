@@ -6,7 +6,6 @@ using web_app.Models;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Services.Interfaces;
 
@@ -23,14 +22,18 @@ namespace web_app.Controllers
             _jsonService = jsonService;
             _requestService = requestService;
         }
-        public IActionResult Index([FromQuery] string date = null)
+        public IActionResult Index([FromQuery] string date = null, [FromQuery] string error = null)
         {
-
             CustomRequestGet req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
 
             if (!res.success)
             {
+                if (Request.Cookies.ContainsKey(".AspNetCore.Application.Id"))
+                {
+                    return Redirect("/account/logout");
+
+                }
                 return Redirect("/login");
             }
 
@@ -54,7 +57,6 @@ namespace web_app.Controllers
 
             }
 
-
             if (!res.success)
             {
                 return Redirect("/login");
@@ -64,10 +66,12 @@ namespace web_app.Controllers
 
             ViewData["role"] = user.Role;
             ViewData["userid"] = user.UserId;
-            ViewData["courses"] = TestData.Courses;
+            ViewData["courses"] = user.Courses != null ? user.Courses : new List<Course>();
             ViewData["lessons"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
+
+
 
             if (user.Role == "Manager")
             {
@@ -85,19 +89,55 @@ namespace web_app.Controllers
             var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(res.result.ToString());
             ViewData["rescheduled"] = rescheduled;
 
+
+            CustomRequestGet request2 = new GetAllUsersRequest();
+            var result2 = _requestService.SendGet(request2, HttpContext);
+            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString());
+            Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
+            foreach (var item in users)
+            {
+                if (item.StartWaitPayment != DateTime.MinValue)
+                {
+                    keyValuePairs.Add(item.UserId, item.StartWaitPayment);
+                }
+            }
+
+            if (user.Role == "Student")
+            {
+                ViewData["firstPay"] = user.WasFirstPayment;
+            }
+            else
+            {
+                var dic = new Dictionary<int, bool>();
+                foreach (var item in users)
+                {
+                    if (!dic.ContainsKey(item.UserId))
+                    {
+                        dic.Add(item.UserId, item.WasFirstPayment);
+                    }
+                }
+                ViewData["firstPay"] = dic;
+            }
+
+
+            ViewData["waited"] = keyValuePairs;
             var modl = new DisplayModelShedule()
             {
                 Date = date == null ? DateTime.Now : DateTime.Parse(date),
                 Schedules = model
             };
 
+            if (error != null)
+            {
+                ViewData["error"] = error;
+            }
             return View(modl);
         }
 
         [HttpPost("AddFreeTime", Name = "AddFreeTime")]
-        public IActionResult AddFreeTime([FromForm] string date2, [FromForm] string tutorIdFreeTime, [FromForm] string looped)
+        public IActionResult AddFreeTime([FromForm] string date2, [FromForm] string tutorIdFreeTime)
         {
-            var loop = looped == "on" ? true : false;
+            bool loop = true;
             var req = new CustomRequestPost("api/tutor/addtutorfreedate", $"{tutorIdFreeTime};{DateTime.Parse(date2).ToString("dd.MM.yyyy HH:mm")};{loop}");
             var res = _requestService.SendPost(req, HttpContext);
             return RedirectToAction("Index", "Schedule");
@@ -117,25 +157,55 @@ namespace web_app.Controllers
         [HttpPost("AddSchedule", Name = "AddSchedule")]
         public IActionResult AddTutorSchedule([FromForm] string date3, [FromForm] string tutorIdChoosed, [FromForm] string looped, [FromForm] string userId, [FromForm] string courses)
         {
+
+            var date1 = DateTime.Parse(date3);
+            var date2 = DateTime.Now;
+            if (date1 <= date2)
+            {
+                return RedirectToAction("Index", "Schedule", new { error = "Нельзя создать занятие на дату которая меньше текущей." });
+            }
+
             var loop = looped == "on" ? true : false;
             var req = new CustomRequestPost("api/tutor/addtutorschedule", $"{tutorIdChoosed};{DateTime.Parse(date3).ToString("dd.MM.yyyy HH:mm")};{loop};{userId};{courses}");
             var res = _requestService.SendPost(req, HttpContext);
+            if (!res.success)
+            {
+                return RedirectToAction("Index", "Schedule", new { error = res.result.ToString() });
+            }
             return RedirectToAction("Index", "Schedule");
         }
         [HttpPost("changeStatus", Name = "changeStatus")]
-        public IActionResult changeStatus([FromForm] string status, [FromForm] string dateStatus, [FromForm] string userStatus, [FromForm] string tutorStatus, [FromForm] string newDate, [FromForm] string reason, [FromForm] string initiator, [FromForm] string newTime, [FromForm] string looped, [FromForm] string courseId, [FromForm] string currDate)
+        public IActionResult changeStatus([FromForm] string status, [FromForm] string userMakeWarn, [FromForm] string dateStatus, [FromForm] string userStatus, [FromForm] string tutorStatus, [FromForm] string newDate, [FromForm] string reason, [FromForm] string initiator, [FromForm] string newTime, [FromForm] string looped, [FromForm] string courseId, [FromForm] string currDate)
         {
             bool loop = looped == "on" ? true : false;
+            bool warn = userMakeWarn == "on" ? true : false;
             if (status == "Перенесен")
             {
+                var date1 = DateTime.Parse(newDate + " " + newTime + ":00");
+                var date2 = DateTime.Now;
+                if (date1 <= date2)
+                {
+                    return RedirectToAction("Index", "Schedule", new { error = "Нельзя перенести занятие на дату которая меньше текущей." });
+                }
+
                 var req = new CustomRequestPost("api/tutor/rescheduletutor", $"{status};{tutorStatus};" +
-                $"{DateTime.Parse(dateStatus).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime};{courseId};{currDate}");
-                _requestService.SendPost(req, HttpContext);
+                $"{DateTime.Parse(dateStatus).ToString("dd.MM.yyyy HH:mm")};{loop};{userStatus};{newDate};{reason};{initiator};{newTime + ":00"};{courseId};{currDate}");
+                var res = _requestService.SendPost(req, HttpContext);
+                if (!res.success)
+                {
+                    return RedirectToAction("Index", "Schedule", new { error = res.result.ToString() });
+                }
 
             }
             else
             {
-                var req = new CustomRequestPost("api/tutor/changeStatusServer", $"{status};{tutorStatus};{userStatus};{dateStatus};{currDate}");
+                // TODO: REMOVE AND
+                if (DateTime.Parse(currDate) > DateTime.Now.AddMinutes(55) && tutorStatus != 1.ToString())
+                {
+                    return RedirectToAction("Index", "Schedule", new { error = "Нельзя провести занятие если его дата меньше текущей с учетом времени занятия." });
+                }
+
+                var req = new CustomRequestPost("api/tutor/changeStatusServer", $"{status};{tutorStatus};{userStatus};{dateStatus};{currDate};{warn}");
                 _requestService.SendPost(req, HttpContext);
 
             }

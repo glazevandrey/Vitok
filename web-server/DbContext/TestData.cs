@@ -1,12 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Permissions;
 using web_server.Models;
 
 namespace web_server.DbContext
 {
-
+    public class UserCredit
+    {
+        public int Id { get; set; }
+        public double Amount { get; set; }
+        public int TutorId { get; set; }
+    }
+    public class UserMoney
+    {
+        public int Id { get; set; }
+        public int Count { get; set; }
+        public double Cost { get; set; }
+    }
     public static class TestData
     {
         public static List<Goal> Goals { get; set; } = new List<Goal>() { new Goal() { Id = 0, Title = "Сдать экзамен" },
@@ -36,25 +46,29 @@ namespace web_server.DbContext
         // все пользователи
         public static List<User> UserList = new List<User>
             {
-             new User() {FirstName = "Сергей", LastName = "Глузер", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"),
-                    Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(), UserId =0, Email = "sergey@mail.ru", Phone = "+79054769537",
+             new User() {FirstName = "Сергей", LastName = "Глузер",MiddleName="Сергеевич", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"),
+                    Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(), UserId =0,WasFirstPayment = true, Email = "sergey@mail.ru", Phone = "+79054769537",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
                         dateTimes = new List<DateTime>(){ }
                     }},
 
-                new User() {FirstName = "Иван", LastName = "Петров", About = "Почти лучший", BirthDate = DateTime.Parse("14.01.2002"),
-                    Courses = Courses.Where(m => m.Title == "ОГЭ").ToList(), UserId=1, Email = "ivan@mail.ru", Phone = "+79188703839",
+                new User() {FirstName = "Иван", MiddleName="Сергеевич", LastName = "Петров", About = "Почти лучший", BirthDate = DateTime.Parse("14.01.2002"),
+                    Courses = Courses.Where(m => m.Title == "ОГЭ").ToList(), UserId=1,WasFirstPayment = true, Email = "ivan@mail.ru", Phone = "+79188703839",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor", UserDates= new UserDate(){
                         dateTimes = new List<DateTime>(){ }
                     }},
                 new User
                 {
                     FirstName = "Петр",
+                    MiddleName = "Андреевич",
                     LastName = "Иванов",
-                    Password = "448",
+                    Password = "123",
                     Role = "Student",
+                    WasFirstPayment = true,
+                    StartWaitPayment = DateTime.Now,
                      PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
                     Email = "petr@mail.ru",
+                    BirthDate = DateTime.Parse("14.04.2000"),
                     Phone = "+79188793839",
                     UserId = 3
                 },
@@ -62,20 +76,27 @@ namespace web_server.DbContext
                 {
                     FirstName = "Сергей",
                     LastName = "Курочка",
+                    MiddleName = "Андреевич",
                     LessonsCount = 2,
+                    Money = new List<UserMoney>(){ new UserMoney() { Id = 0, Cost = 1000, Count = 2} },
+                    BirthDate = DateTime.Parse("12.05.1999"),
                     Password = "123123",
+                    WasFirstPayment = true,
                     Role = "Student",
                     Email = "kurochka@mail.ru",
-                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
+                    PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
                     Phone = "+79188793839",
                     UserId = 4
                 },
                   new User
                 {
                     FirstName = "Андрей",
+                    MiddleName = "Анатольевич",
                     LastName = "Глазев",
+                    BirthDate = DateTime.Parse("02.03.1994"),
                     LessonsCount = 0,
                     Password = "123",
+                    WasFirstPayment = true,
                      PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
                     Role = "Manager",
                     Email = "god@mail.ru",
@@ -91,31 +112,33 @@ namespace web_server.DbContext
         public static List<Schedule> Schedules = new List<Schedule>() {
             new Schedule() { Id = 0, UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 1, UserId = 3,
 
-                StartDate = DateTime.Parse("09.02.2023 23:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("09.02.2023 23:00") } }, Course = Courses[0] },
+                StartDate = DateTime.Parse("19.04.2023 23:00"), WaitPaymentDate = DateTime.Parse("19.04.2023 23:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("09.04.2023 23:00") } }, Course = Courses[0] },
 
 
             new Schedule() { Id = 1, UserName ="Петр Иванов", TutorFullName = "Сергей Глузер", TutorId = 0, UserId = 3,
-             StartDate =    DateTime.Parse("10.02.2023 20:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("10.02.2023 20:00") } }, Course = Courses[1]},
+             StartDate =    DateTime.Parse("10.04.2023 20:00"), WaitPaymentDate =  DateTime.Parse("10.04.2023 20:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("10.04.2023 20:00") } }, Course = Courses[1]},
 
 
             new Schedule() { Id = 3, UserName ="Сергей Курочка", TutorFullName = "Сергей Глузер", TutorId = 0, UserId = 4,
-            StartDate = DateTime.Parse("26.02.2023 13:00"),
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("26.02.2023 13:00") } }, Looped = true, Course = Courses[2]},
+            StartDate = DateTime.Parse("26.04.2023 13:00"),
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("26.04.2023 13:00") } }, Looped = true, Course = Courses[2]},
 
             new Schedule() { Id = 5, UserName ="Сергей Курочка",TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
-            StartDate = DateTime.Parse("05.03.2023 20:18"),
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("05.03.2023 20:18") } }, Looped = false, Course = Courses[0]},
+            StartDate = DateTime.Parse("05.04.2023 20:00"),
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("05.04.2023 20:00") } }, Looped = false, Course = Courses[0]},
 
             new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Иван Петров", TutorId = 1, UserId = 4,
-                StartDate=DateTime.Parse("17.03.2023 7:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.03.2023 7:00") } }, Looped = true, Course = Courses[1]},
+                StartDate=DateTime.Parse("17.04.2023 7:00"), Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.04.2023 7:00") } }, Looped = true, Course = Courses[1]},
 
             new Schedule() { Id = 3, UserName ="Сергей Курочка",TutorFullName = "Сергей Глузер", TutorId = 0, UserId = 4,
-                 StartDate = DateTime.Parse("17.03.2023 7:00"),
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.03.2023 7:00") } }, Looped = true, Course = Courses[1]},
+                 StartDate = DateTime.Parse("17.04.2023 7:00"),
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("17.04.2023 7:00") } }, Looped = true, Course = Courses[1]},
 
             new Schedule() { Id = 4, UserName ="Сергей Курочка", TutorFullName = "Сергей Глузер", TutorId = 0, UserId = 4,
-                StartDate = DateTime.Parse("13.03.2023 17:00"),
-                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("13.03.2023 17:00") } }, Looped = true, Course = Courses[2]}};
+                StartDate = DateTime.Parse("13.04.2023 17:00"), CreatedDate = DateTime.Now,
+                Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("13.04.2023 17:00") } }, Looped = true, Course = Courses[2]}
+
+        };
 
         public static List<ChatUser> ChatUsers { get; set; } = new List<ChatUser>();
     }

@@ -80,9 +80,9 @@
 
                                     foreach (var balance in item.BalanceHistory.CustomMessages)
                                     {
-                                        <label><b>@balance.Key.ToString("dd MMMM ddd")</b></label>
+                                        <label><b>@balance.MessageKey.ToString("dd MMMM ddd")</b></label>
                                         <br />
-                                        <label>@balance.Value</label>
+                                        <label>@balance.MessageValue</label>
                                         <br />
                                         <br />
                                     }

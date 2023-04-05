@@ -66,5 +66,15 @@ namespace web_app.Controllers
             }
             return View();
         }
+
+
+        [HttpPost("rejection", Name = "rejection")]
+        public IActionResult Rejection([FromForm] string userIdReject, [FromForm] string tutorIdReject)
+        {
+            var req = new CustomRequestPost("api/tutor/rejectStudent", $"{tutorIdReject};{userIdReject}");
+            _requestService.SendPost(req, HttpContext);
+
+            return RedirectToAction("Index", "Contacts");
+        }
     }
 }

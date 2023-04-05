@@ -137,13 +137,11 @@
                                 
                                 <br />
                                 <br/>
-
-
+                                <br/>
                                 <label>Выберите желаемый курс</label>
-                                <select onchange="selectChanged(this)">
-                                <option value=""></option>
+                                <select id="courseChange" onchange="selectChanged(this)">
                                 @{
-                                foreach (var course in (List<Course>)ViewData["courses"])
+                                foreach (var course in item.Courses)
                                 {
                                     <option value="@course.Id">@course.Title</option>
                                 }
@@ -154,7 +152,8 @@
 
 
                         </p>
-                        <form method="post" action="FromRegisterToLogin">
+                      
+                        <form method="post" action="FromRegisterToLogin" id="form1">
                             @{
                                 var textTime = $"textTime;{item.UserId}";
                                 var tutor = $"tutor;{item.UserId}";
@@ -168,6 +167,7 @@
                             }
 
                         </form>
+
                     </div>
                 </div>
             </div>

@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace web_server.Models
 {
     public class NotificationTokens
     {
-        public Dictionary<string, string> Tokens { get; set; } = new Dictionary<string, string>();
+        [Key]
+        public int Id { get; set; }
+        public string TokenKey { get; set; }
+        public string TokenValue { get; set; }
     }
 }

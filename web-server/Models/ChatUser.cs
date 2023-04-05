@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace web_server.Models
 {
     public class ChatUser
     {
+        [Key]
+        public int Id { get; set; }
         public int UserId { get; set; }
         public Dictionary<string, string> ConnectionTokens { get; set; }
         public List<Messages> Messages { get; set; } = new List<Messages>();

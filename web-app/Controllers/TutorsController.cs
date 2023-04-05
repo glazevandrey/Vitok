@@ -96,9 +96,6 @@ namespace web_app.Controllers
 
             }
 
-
-
-
             var user = new User()
             {
                 FirstName = firstNameEdit,

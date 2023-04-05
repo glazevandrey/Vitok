@@ -78,7 +78,7 @@ namespace web_app.Controllers
                 }
             }
 
-            var hub = new HubConnectionBuilder().WithUrl(Program.web_server_ip+"/chatHub").Build();
+            var hub = new HubConnectionBuilder().WithUrl(Program.web_server_ip + "/chatHub").Build();
             hub.StartAsync();
 
             HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", response.result.ToString(),

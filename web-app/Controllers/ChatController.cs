@@ -2,7 +2,6 @@
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
-using web_server.Services;
 
 namespace web_app.Controllers
 {

@@ -48,7 +48,7 @@ namespace web_app.Controllers
             int courseId = -1;
 
             Int32.TryParse(form["course"], out courseId);
-           
+
 
             var tutor = new User();
 
@@ -66,6 +66,10 @@ namespace web_app.Controllers
 
                 tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(response.result.ToString());
                 var time = form["textTime"];
+                if (string.IsNullOrEmpty(time))
+                {
+                    return Redirect("/about/tutors");
+                }
                 var times = time.ToString().Split(',');
 
                 foreach (var item in times)
@@ -88,6 +92,8 @@ namespace web_app.Controllers
 
             if (result.success != false)
             {
+                var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
+                registration.UserId = user.UserId;
                 var req = new CustomRequestPost("api/home/addschedulefromuser", registration);
                 _requestService.SendPost(req, HttpContext);
 

@@ -23,21 +23,22 @@ namespace web_server
             TestData.Notifications.Add(notif);
             try
             {
-                var connecedTokens = user.NotificationTokens.Tokens.Where(m => m.Value == "Connected").ToList();
+                var connecedTokens = user.NotificationTokens.Where(m => m.TokenValue == "Connected").ToList();
                 foreach (var item in connecedTokens)
                 {
-                    hub.Clients.Client(item.Key).SendAsync("ReceiveNotification", message, false, notif.Id);
+                    hub.Clients.Client(item.TokenKey).SendAsync("ReceiveNotification", message, false, notif.Id);
                 }
             }
             catch (Exception ex)
             {
                 return;
             }
-           
+
         }
         public async Task SetNotifications(int userId)
         {
             var notifs = TestData.Notifications.Where(m => m.UserIdTo == userId).ToList();
+            notifs.Reverse();
             foreach (var item in notifs)
             {
                 await Clients.Client(Context.ConnectionId).SendAsync("ReceiveNotification", item.Message, item.Readed, item.Id);
@@ -54,13 +55,13 @@ namespace web_server
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
 
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
-            if (!user.NotificationTokens.Tokens.ContainsKey(connectionId))
+            if (user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId) == null)
             {
-                TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.Tokens.Add(connectionId, "Connected");
+                TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.Add(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" });
             }
             else
             {
-                TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.Tokens[connectionId] = "Connected";
+                TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId).TokenValue = "Connected";
             }
 
             await SetNotifications(userId);
@@ -70,7 +71,7 @@ namespace web_server
             var connectionId = Context.ConnectionId;
             var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
 
-            TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.Tokens[connectionId] = "Disconnected";
+            TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId).TokenValue = "Disconnected";
 
             return Task.CompletedTask;
         }

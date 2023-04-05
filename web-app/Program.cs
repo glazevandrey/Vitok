@@ -8,11 +8,13 @@ namespace web_app
     public class Program
     {
         public static HubConnection Conn;
-        public static string web_server_ip = "http://localhost:23382";
+        public static string web_server_ip = "";
 
         public static void Main(string[] args)
         {
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("ru-RU");
+
+            web_server_ip = "http://localhost:23382";
 
             CreateHostBuilder(args).Build().Run();
         }
@@ -22,6 +24,7 @@ namespace web_app
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls("http://localhost:23571");
                 });
     }
 }

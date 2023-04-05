@@ -27,7 +27,16 @@ namespace web_app.Controllers
 
             if (!res4.success)
             {
-                return Redirect("/login");
+                if (!string.IsNullOrEmpty(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]))
+                {
+                    return Redirect("/login");
+
+                }
+                else
+                {
+                    return Redirect("/logout");
+
+                }
             }
             var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
             ViewData["usertoken"] = currUser.UserId;
@@ -79,7 +88,7 @@ namespace web_app.Controllers
 
 
 
-            var req = new GetUserById(id+";Manager");
+            var req = new GetUserById(id + ";Manager");
             var data = _requestService.SendGet(req, HttpContext);
             if (!data.success)
             {

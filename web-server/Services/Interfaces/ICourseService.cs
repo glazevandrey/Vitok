@@ -3,5 +3,8 @@
     public interface ICourseService
     {
         public string SetNewCourse(string[] args);
+        public string RemoveCourse(string args);
+        public string EditCourse(string[] args);
+
     }
 }

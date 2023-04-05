@@ -1,4 +1,5 @@
 ﻿@using web_server.Models;
+@using web_app.Models;
 @model User
 
 @{
@@ -7,6 +8,7 @@
 
 @{
 
+    <link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
     <script>
 
@@ -30,19 +32,95 @@
             
         }
         function selectChanged(el) {
-                    document.getElementById('count2').value = el.value;
-            document.getElementById('countView').value = el.value * 1000;
+
+            var spl = el.value.split(';');
+                    document.getElementById('count2').value = spl[0];
+            document.getElementById('countView').value = spl[0] * spl[1];
         }
     </script>
-    if (Model.Role == "Tutor")
+    <script>
+    
+    function checkmoney(el){
+            if (Number(el.value) > Number(document.getElementById('balance_input').value)){
+                document.getElementById('withdraw_btn').disabled = 'disabled';
+                document.getElementById('error').removeAttribute('hidden');
+
+
+            }else{
+                document.getElementById('withdraw_btn').removeAttribute('disabled');
+                document.getElementById('error').hidden = "hidden";
+
+
+            }
+    }
+    function closeModal(){
+            document.getElementById('count').value = '';
+             document.getElementById('withdraw_btn').removeAttribute('disabled');
+                document.getElementById('error').hidden = "hidden";
+        window.location.href = '#';
+    }
+    </script>
+
+    <div id="withdrawModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Вывод Средств</h3>
+                    <a onclick="closeModal()" title="Close" class="close">×</a>
+                </div>
+                <div class="modal-body">
+
+                    <form method="post" action="/balance/withdrawbalance">
+                    <label id="error" style="color:darkred" hidden="hidden">Недостаточно средств для вывода</label>
+                    <br/>
+                        <br />
+                        <label>Количество:</label>
+                        <input id="count" name="count" min="0" max="99999" type="number" onkeyup="checkmoney(this)" placeholder="0"/>
+                        <input hidden="hidden" name="tutorId" id="tutorId" value="@Model.UserId"/>
+                        <br />
+                        <br/>
+                        <div align="center">
+                            <input type="submit" id="withdraw_btn" value="Вывести" />
+
+                        </div>
+
+                    </form>
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    if (Model.Role == "Tutor" || Model.Role == "Manager")
     {
         <div id="balance">
+            
+
             <label>Ваш баланс: </label>
             <input disabled="disabled" id="balance_input" value="@Model.Balance" />
+            <br/>
+            <br/>
+            <a href="#withdrawModal">Вывод средств</a>
         </div>
     }
     else
     {
+
+
+        if(Model.Credit.Count > 0)
+        {
+            var cred = Model.Credit.Count;
+                    <br/>
+                    <label style="color:darkred">ВНИМАНИЕ! У вас имеется задолжность за: @cred занятие(й).</label>
+
+                    <br />
+
+                    <br />
+                }
+            
         <div id="count">
             <label>Осталось: </label>
             <input disabled="disabled" id="balance_input" value="@Model.LessonsCount занятий" />
@@ -52,7 +130,7 @@
         <br />
         <div id="purchase">
 
-
+         
             <form method="post" action="/balance/setLessons">
                 <input hidden="hidden" name="userId" id="userId" value="@Model.UserId" />
                 <input hidden="hidden" name="isTrialPay" id="isTrialPay" value="false" />
@@ -87,7 +165,7 @@
 
                         foreach (Tariff item in (List<Tariff>)ViewData["tariffs"])
                         {
-                            <option value="@item.LessonsCount">@item.Title</option>
+                            <option value="@item.LessonsCount;@Math.Abs(item.Amount/item.LessonsCount)">@item.Title</option>
                         }
                     }
 
@@ -129,28 +207,54 @@
 <div id="history">
     <label align="center">История</label>
     <br/>
-@{
+    @{
+
+        var sortedM  = Model.BalanceHistory.CustomMessages.OrderBy(m=>m.MessageKey).Reverse();
+        var sortedCModel = Model.BalanceHistory.CashFlow.OrderBy(m=>m.Date).Reverse();
+        var list = new List<DisplayBalance>();
+        // var list = new Dictionary<int, List<string>>();
+        int id = 0;
         if(Model.Role == "Tutor")
         {
-            foreach (var item in Model.BalanceHistory.CashFlow)
+
+            foreach (var item in sortedCModel)
             {
-                <label><b>@item.Date.ToString("dd MMMM ddd")</b></label>
-                <br/>
-                <label>@item.Amount</label>
-                <br/>
-                <br/>
+                //<label><b>@item.Date.ToString("dd MMMM ddd HH:mm")</b></label>
+                //<br/>
+                //<label>@item.Amount</label>
+                //<br/>
+                //<br/>
+                list.Add(new DisplayBalance() { Id = id, DateTime = item.Date, Message = item.Amount.ToString() });
+                id++;
             }
         }
-        else
+
+        foreach (var item in sortedM)
         {
-            foreach (var item in Model.BalanceHistory.CustomMessages)
-            {
-                        <label><b>@item.Key.ToString("dd MMMM ddd")</b></label>
-                            <br/>
-                        <label>@item.Value</label>
-                            <br/>
-                            <br/>
-            }
+            //<label><b>@item.MessageKey.ToString("dd MMMM ddd HH:mm")</b></label>
+            //<br />
+            //<label>@item.MessageValue</label>
+            //<br />
+            //<br />
+            list.Add(new DisplayBalance() { Id = id, DateTime = item.MessageKey, Message = item.MessageValue.ToString() });
+
+            id++;
+        }
+        list = list.OrderBy(m=>m.DateTime).Reverse().ToList();
+       
+        foreach (var item in list)
+        {
+            <label><b>@item.DateTime.ToString("dd MMMM ddd HH:mm")</b></label>
+            <br/>
+            <label>@item.Message</label>
+            <br/>
+            <br/>
+        }
+    }
+    @{
+        if(ViewData["error"] != null)
+        {
+            <script>alert('@ViewData["error"].ToString()')</script>
         }
     }
     </div>

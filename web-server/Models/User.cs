@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using web_server.DbContext;
 
 namespace web_server.Models
 {
@@ -7,14 +9,14 @@ namespace web_server.Models
     {
 
         // общие поля
-        public int Id { get; set; }
+        [Key]
         public int UserId { get; set; }
         public string Password { get; set; }
         public string FirstName { get; set; }
         public string PhotoUrl { get; set; } = "https://static3.vivoo.ru/datas/photos/800x800/d6/96/04f0912d55d8dc01ed36d15927dd.jpg?1";
         public string MiddleName { get; set; }
         public string LastName { get; set; }
-        public NotificationTokens NotificationTokens { get; set; } = new NotificationTokens();
+        public List<NotificationTokens> NotificationTokens { get; set; } = new List<NotificationTokens>();
         public DateTime BirthDate { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
@@ -25,7 +27,13 @@ namespace web_server.Models
 
         // поля студента
         public string Wish { get; set; }
+        public DateTime StartWaitPayment { get; set; }
+        public bool WasFirstPayment { get; set; } = false;
         public int LessonsCount { get; set; }
+        public int SkippedInThisMonth { get; set; } = 0;
+        public List<UserMoney> Money { get; set; } = new List<UserMoney>();
+        public List<UserCredit> Credit { get; set; } = new List<UserCredit>();
+
         public bool UsedTrial { get; set; } = false;
 
         // поля Репетитора

@@ -35,6 +35,9 @@ namespace web_server.Services
 
             return schedules;
         }
+
+
+
         public User AddLessonsToUser(string[] args)
         {
 
@@ -47,26 +50,77 @@ namespace web_server.Services
             {
                 TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).UsedTrial = true;
             }
+
             var lessonCount = Convert.ToInt32(args[1]);
             var tariff = TestData.Tariffs.FirstOrDefault(m => m.LessonsCount == lessonCount);
+            if (user.WasFirstPayment == false)
+            {
+                user.WasFirstPayment = true;
+            }
+
             if (tariff != null)
             {
-                TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.CustomMessages.Add(DateTime.Now, $"Оплата тарифа: {tariff.Title}");
+                var one = tariff.Amount / tariff.LessonsCount;
+
+                var needed = user.Money.FirstOrDefault(m => m.Cost == one);
+                if (needed == null)
+                {
+                    var id = user.Money.FirstOrDefault() != null ? user.Money.FirstOrDefault().Id : 0;
+
+                    user.Money.Add(new UserMoney() { Id = id, Cost = one, Count = lessonCount });
+                }
+                else
+                {
+                    user.Money.FirstOrDefault(m => m.Cost == one).Count += lessonCount;
+                }
+
+                TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата тарифа: {tariff.Title}" });
             }
             else
             {
-                TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.CustomMessages.Add(DateTime.Now, $"Оплачено занятий: {lessonCount}");
+                if (isTrial)
+                {
+                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплачено пробное занятие" });
+                }
+                else
+                {
+                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплачено занятий: {lessonCount}" });
+                }
+                var id = user.Money.FirstOrDefault() != null ? user.Money.FirstOrDefault().Id : 0;
+
+                user.Money.Add(new UserMoney() { Id = id, Cost = 1000, Count = lessonCount });
             }
 
-            for (int i = 0; i < Convert.ToInt32(args[1]); i++)
+
+            var manager = TestData.Managers.First();
+            foreach (var item in user.Money)
             {
-                var waited = schedules.Where(m => m.Status == Status.ОжидаетОплату).ToList();
-                if (waited.Count > 0)
+                if (user.Credit.Count == 0)
                 {
-                    schedules.FirstOrDefault(m => m.Id == waited.First().Id).Status = Status.Ожидает;
-                    user.LessonsCount -= 1;
+                    break;
+                }
+
+                foreach (var credit in user.Credit)
+                {
+                    var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == credit.TutorId);
+
+                    var f_tut = Math.Abs(item.Cost / 60 * 100);
+                    var f_manag = Math.Abs(item.Cost / 40 * 100);
+
+                    tutor.Balance += f_tut;
+                    tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(f_tut) });
+
+                    manager.Balance = f_manag;
                 }
             }
+
+            var waited = schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
+            foreach (var item in waited)
+            {
+                TestData.Schedules.FirstOrDefault(m => m.Id == item.Id).WaitPaymentDate = DateTime.MinValue;
+            }
+
+            user.StartWaitPayment = DateTime.MinValue;
 
             return user;
         }
@@ -100,13 +154,16 @@ namespace web_server.Services
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
 
-            // отправка студенту что перенос занятия
-            NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
-                .Replace("{name}", tutor.FirstName + " " + tutor.LastName)
-                .Replace("{date}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
+
+
 
             if (Convert.ToBoolean(loop))
             {
+                var alredyUsed = TestData.Schedules.Where(m => m.TutorId == tutor_id && m.StartDate.DayOfWeek == newDateTime.DayOfWeek && m.StartDate.Hour == newDateTime.Hour).ToList();
+                if (alredyUsed.Count != 0)
+                {
+                    return null;
+                }
                 var new_model = new Schedule
                 {
                     TutorId = tutor_id,
@@ -120,22 +177,38 @@ namespace web_server.Services
                     Looped = true,
                 };
 
-
+                if (TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status == Status.ОжидаетОплату)
+                {
+                    new_model.Status = Status.ОжидаетОплату;
+                }
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status = Status.Перенесен;
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).RescheduledDate = cureDate;
+                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).NewDate = newDateTime;
 
                 TestData.Schedules.Add(new_model);
 
                 // отправка манагеру что постоянный перенос
                 NotifHub.SendNotification(Constants.NOTIF_REGULAR_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
                     .Replace("{studentName}", user.FirstName + " " + user.LastName)
-                    .Replace("{oldDate}", oldDateTime.ToString("dd.MM.yyyy HH:mm"))
-                    .Replace("{newDate}", cureDate.ToString("dd.MM.yyyy HH:mm")), TestData.Managers.First().UserId.ToString(), _hubContext);
+                    .Replace("{oldDate}", cureDate.ToString("dd.MM.yyyy HH:mm"))
+                    .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")), TestData.Managers.First().UserId.ToString(), _hubContext);
 
+
+                // отправка студенту что перенос занятия
+                NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT_REGULAR
+                    .Replace("{name}", tutor.FirstName + " " + tutor.LastName)
+                    .Replace("{dateOld}", cureDate.ToString("dd.MM.yyyy HH:mm"))
+                    .Replace("{dateNew}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
                 return new_model;
             }
             else
             {
+                var alredyUsed = TestData.Schedules.Where(m => m.TutorId == tutor_id && m.StartDate == newDateTime).ToList();
+                if (alredyUsed.Count != 0)
+                {
+                    return null;
+                }
+
                 var model = new RescheduledLessons
                 {
                     Initiator = initiator,
@@ -160,12 +233,30 @@ namespace web_server.Services
                 };
 
                 var re_less = new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason, TutorId = tutor_id, UserId = user_id };
+                if (TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status == Status.ОжидаетОплату)
+                {
+                    new_model.Status = Status.ОжидаетОплату;
+                }
+                else
+                {
+                    TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status = Status.Перенесен; ;
 
-                TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).Status = Status.Перенесен;
+                }
 
                 TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).RescheduledLessons.Add(re_less);
 
                 TestData.Schedules.Add(new_model);
+
+                NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
+                   .Replace("{name}", tutor.FirstName + " " + tutor.LastName)
+                   .Replace("{dateOld}", cureDate.ToString("dd.MM.yyyy HH:mm"))
+                   .Replace("{dateNew}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext);
+
+                // отправка манагеру что разовый перенос
+                NotifHub.SendNotification(Constants.NOTIF_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
+                    .Replace("{studentName}", user.FirstName + " " + user.LastName)
+                    .Replace("{oldDate}", cureDate.ToString("dd.MM.yyyy HH:mm"))
+                    .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")), TestData.Managers.First().UserId.ToString(), _hubContext);
 
                 return new_model;
             }

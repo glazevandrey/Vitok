@@ -19,7 +19,8 @@
 
     function submitt(el){
 
-        if (el.value.includes('.jpg') || el.value.includes('.png') || el.value.includes('.jpeg') || el.value.includes('.JPG') || el.value.includes('.PNG') || el.value.includes('.JPEG')) {
+        console.log(el.value);
+        if (el.value.includes('.jpg') || el.value.includes('.JPG') || el.value.includes('.png') || el.value.includes('.PNG') || el.value.includes('.jpeg') || el.value.includes('.JPEG')) {
             document.getElementById('submitError').hidden = 'hidden';
 
             document.getElementById('form').submit();
@@ -27,12 +28,9 @@
         else
         {
             document.getElementById('submitError').removeAttribute('hidden');
-
         }
     }
 </script>
-<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 
 <form class="col-xs-12" id="form" method="post" action="@web_app.Program.web_server_ip/api/account/savephoto?id=@Model.UserId" enctype="multipart/form-data">
     <br/>
@@ -51,6 +49,12 @@
   
 </form>
 <br/>
+<script>
+    $(document).ready(function () {
+        var birthDate = '@Model.BirthDate.ToString("yyyy-MM-dd")';
+        $('#BirthDate').val(birthDate);
+    });
+</script>
 <form method="post" action="/account/saveinfo">
 
     @Html.TextBoxFor(m => m.UserId, new { @class = "form-control txtbox", @hidden="hidden" })
@@ -74,7 +78,7 @@
         <br />
 
     <label>Дата рождения</label>
-    @Html.TextBoxFor(m => m.BirthDate, "{0:dd.MM.yyyy}",new { @class = "form-control txtbox" })
+    @Html.TextBoxFor(m => m.BirthDate, new { @class = "form-control txtbox", @type="date", @id="BirthDate", @min="1920-01-01", @max="2050-12-31" })
 
     <br />
     <br />
@@ -115,27 +119,40 @@
             <label>Свободное время по МСК</label>
             <br/>
             <br />
-
-            foreach (var day in w_days)
-            {
-                <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
-                <br />
-                <br />
-
-                foreach (var time in Model.UserDates.dateTimes)
+            <table border="1">
+            @{
+             foreach (var day in w_days)
                 {
-                    if (time.DayOfWeek == day)
-                    {
-                        <label> @time.ToString("HH:mm") </label>
+                <tr>
+                <td>
+                <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                </td>
+                            @{
+                                Model.UserDates.dateTimes = Model.UserDates.dateTimes.OrderBy(m => m.TimeOfDay).ToList();
+                                foreach (var time in Model.UserDates.dateTimes)
+                                {
+                                if (time.DayOfWeek == day)
+                                {
+                                        <td><label> @time.ToString("HH:mm") </label></td>
 
-                        
 
-                    }
+
+                                }
                 }
-                <br />
-                <br />
+                }
+                
+              
+                </tr>
+                //<br />
+                //<br />
 
+               
+
+                }
             }
+               
+            </table>
+          
 
             <br />
 
@@ -154,5 +171,10 @@
     <br />
     <input type="submit" value="Сохранить"/>
 </form>
-
+@{
+    if(ViewData["error"] != null)
+    {
+        <script>alert(@ViewData["error"].ToString())</script>
+    }
+}
 <a href="/account/logout">выйти</a>

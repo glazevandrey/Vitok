@@ -1,0 +1,462 @@
+﻿@using System.Globalization;
+@using web_server.Models;
+@using web_app.Models;
+
+@model DisplayModelShedule
+@{
+    Layout = "_Layout";
+}
+<style>
+    table {
+        border-collapse: collapse;
+    }
+
+        table td, table th {
+            border: 1px solid black;
+        }
+
+        table tr:first-child th {
+            border-top: 0;
+        }
+
+        table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        table tr td:first-child,
+        table tr th:first-child {
+            border-left: 0;
+        }
+
+        table tr td:last-child,
+        table tr th:last-child {
+            border-right: 0;
+        }
+
+ /*   form {
+        display: inline-block
+    }*/
+
+    thead,
+tfoot {
+    background-color: #3f87a6;
+    color: #fff;
+}
+
+tbody {
+    background-color: #e4f0f5;
+}
+
+caption {
+    padding: 10px;
+    caption-side: bottom;
+}
+
+table {
+    border-collapse: collapse;
+    border: 2px solid rgb(200, 200, 200);
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+}
+
+td,
+th {
+    border: 1px solid rgb(190, 190, 190);
+    padding: 5px 10px;
+}
+
+td {
+    text-align: center;
+}
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
+
+<div oncontextmenu="return false;">
+    <script>
+
+        function setDate(el){
+            document.getElementById('setdate').value = el.value;
+            document.getElementById('setDateForm').submit();
+        }
+
+    </script>
+    <table>
+        <thead>
+            <tr style="height:20px">
+                <th colspan="25">
+                  Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")
+                </th>
+            </tr>
+        </thead>
+       <tbody>
+        <tr>
+              <td>
+              <div>
+                <form method="get" action="/manageschool/downDateM" style="display: inline-block;">
+                  <input hidden="hidden" id="date" name="date" value="@Model.Date" />
+                  <input type="submit" value="<" />
+                </form>
+                <input id="main-date" class="main-date" disabled="disabled" type="text" value="@Model.Date.ToString("dd MMM")" style="display: inline-block; width: 80px;" />
+                <form method="get" action="/manageschool/upDateM" style="display: inline-block;">
+                  <input hidden="hidden" id="date" name="date" value="@Model.Date" />
+                  <input type="submit" value=">" />
+                </form>
+                        <form method="get" action="/manageschool/setDateM" id="setDateForm" style="display: inline-block;">
+                            <input hidden="hidden" id="setdate" name="setdate" value="@Model.Date" />
+                            <input type="date" min="1920-01-01" max="2050-12-31" onchange="setDate(this)" value="&#128197;" />
+                        </form>
+              </div>
+            </td>
+
+            @{
+                
+                var w_days = new List<DayOfWeek>()
+            {
+            DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+            };
+
+                var hours = new List<string>()
+            {
+            "0", "1", "2", "3", "4", "5", "6", "7","8", "9","10", "11","12", "13","14", "15","16", "17",
+            "18", "19","20", "21","22", "23"
+            };
+
+                foreach (var hour in hours)
+                {
+                    <td>
+                       @hour
+                        </td>
+                    }
+                }
+
+        </tr>
+            @{
+                var tutors = new List<User>();
+                tutors = (List<User>)ViewData["Tutors"];
+                int countA = 0, countB = 0;
+
+                foreach (var tutor in tutors)
+                {
+
+                    <tr>
+                    <td>@tutor.FirstName @tutor.LastName</td>
+                    @{
+                            var tutor_schedule = Model.Schedules.Where(m => m.TutorId == tutor.UserId);
+                            var tutor_reschedule = new List<RescheduledLessons>();
+                            tutor_reschedule = (List<RescheduledLessons>)ViewData["rescheduled"];
+                            foreach (var hour in hours)
+                            {
+                                <td>
+                                
+                                @{
+                                        var date = DateTime.ParseExact(Model.Date.ToString("dd.MM.yyyy") + " " + hour, "dd.MM.yyyy H", CultureInfo.InvariantCulture);
+
+                                        foreach (var schedule in tutor_schedule)
+                                        {
+
+                                            if (date < schedule.StartDate)
+                                            {
+                                                continue;
+                                            }
+
+                                            if (schedule.RemoveDate != DateTime.Parse("01.01.0001 0:00:00"))
+                                            {
+                                                if (date >= schedule.RemoveDate)
+                                                {
+                                                    continue;
+                                                }
+                                            }
+                                            if (schedule.RescheduledDate != DateTime.Parse("01.01.0001 0:00:00"))
+                                            {
+                                                if (date > schedule.RescheduledDate && schedule.Looped == true)
+                                                {
+                                                    continue;
+                                                }
+
+                                            }
+                                                if (schedule.Date.dateTimes[0].DayOfWeek == date.DayOfWeek)
+                                                {
+                                                    if (schedule.Looped != true)
+                                                    {
+                                                        if (schedule.Date.dateTimes[0] != date)
+                                                        {
+                                                            continue;
+                                                        }    
+                                                    }
+
+                                                    if (schedule.Date.dateTimes[0].Hour == date.Hour)
+                                                    {
+                                                        var textMouse = $"Курс: {schedule.Course?.Title}; Цель: {schedule.Course?.Goals[0]?.Title}; Имя и фамилия: {schedule.UserName}; ";
+                                                        textMouse += $"Репетитор: {schedule.TutorFullName}";
+                                                        if (schedule.Status == Status.Перенесен || schedule.RescheduledLessons.Count > 0)
+                                                        {
+                                                            var rescheduled = schedule.RescheduledLessons;
+
+                                                            foreach (var resc in rescheduled)
+                                                            {
+                                                                if (resc.TutorId == schedule.TutorId && resc.UserId == schedule.UserId)
+                                                                {
+
+                                                                    textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if(schedule.RescheduledDate == date)
+                                                            {
+                                                                    textMouse += $"Постоянный перенос на: {schedule.NewDate.ToString("dd.MM.yyyy HH:mm")}";
+                                                            }
+                                                        }
+
+                                                        var label = $"label_{schedule.UserId}_{schedule.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
+                                                        <style>
+                                                            label[data-title] {
+                                                                position: relative;
+                                                                display: inline-block;
+                                                                cursor: pointer;
+                                                                border-bottom: 1px dashed #000;
+                                                            }
+
+                                                                label[data-title]:hover:before {
+                                                                    content: attr(data-title);
+                                                                    position: absolute;
+                                                                    width: 150px;
+                                                                    color: #fff;
+                                                                    height: auto;
+                                                                    word-wrap: break-word;
+                                                                    background: #000;
+                                                                    padding: 5px;
+                                                                    border-radius: 4px;
+                                                                    bottom: 25px;
+                                                                    left: 50px;
+                                                                }
+                                                        </style>
+
+                                                        if (string.IsNullOrEmpty(schedule.UserName))
+                                                        {
+                                                            <label data-title="@textMouse" id="@label" class="@label" style="width:100px;height:20px;background-color:turquoise"></label>
+                                                        }
+                                                        else
+                                                        {
+
+                                                            <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;width:100px">@schedule.UserName.ToString()</label>
+
+                                                        }
+
+                                                    if (!schedule.Looped)
+                                                    {
+                                                        var text4 = "Разовое занятие";
+                                                        <label style="background-color:orange;width:100px" data-title="@text4">(*)</label>
+
+                                                    }
+                                                        if (schedule.ReadyDates.Count > 0)
+                                                        {
+
+                                                            foreach (var readyDate in schedule.ReadyDates)
+                                                            {
+
+                                                                if (readyDate == date)
+                                                                {
+                                                                    <script>
+                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                        document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                    </script>
+                                                                }
+                                                            }
+
+                                                        }
+                                                        else
+                                                        {
+                                                            if (schedule.Status == Status.Проведен)
+                                                            {
+                                                                <script>
+                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                    document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                </script>
+
+                                                            }
+                                                        }
+                                                    if (schedule.WaitPaymentDate != DateTime.MinValue)
+                                                    {
+
+                                                        if (((Dictionary<int, DateTime>)ViewData["waited"]).Count != 0)
+                                                        {
+                                                            if (((Dictionary<int, DateTime>)ViewData["waited"]).ContainsKey(schedule.UserId))
+                                                            {
+                                                                var time = ((Dictionary<int, DateTime>)ViewData["waited"])[schedule.UserId];
+                                                                if (schedule.Looped)
+                                                                {
+                                                                    if (schedule.WaitPaymentDate == date)
+                                                                    {
+                                                                        if (schedule.ReadyDates.Count > 0)
+                                                                        {
+                                                                            if (date > schedule.ReadyDates.Last())
+                                                                            {
+                                                                                <script>
+
+                                                                                    @{
+                                                                                        var text2 = "Занятие не оплачено.";
+
+                                                                                        DateTime now = DateTime.Now;
+                                                                                        DateTime target = time.AddHours(24);
+
+                                                                                        TimeSpan diff = target - now;
+
+                                                                                        double totalSeconds = diff.TotalSeconds;
+                                                                                        if (schedule.ReadyDates.Count == 0)
+                                                                                        {
+                                                                                            text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                                        }
+                                                                                    }
+
+                                                                                </script>
+
+                                                                                <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+
+                                                                            <script>
+
+                                                                                @{
+                                                                                    var text2 = "";
+
+                                                                                    DateTime now = DateTime.Now;
+                                                                                    DateTime target = time.AddHours(24);
+
+                                                                                    TimeSpan diff = target - now;
+
+                                                                                    double totalSeconds = diff.TotalSeconds;
+
+                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                                }
+
+                                                                            </script>
+                                                                            <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (schedule.ReadyDates.Count > 0)
+                                                                    {
+                                                                        if (date > schedule.ReadyDates.Last())
+                                                                        {
+                                                                            <script>
+
+                                                                                @{
+                                                                                    var text2 = "";
+
+                                                                                    DateTime now = DateTime.Now;
+                                                                                    DateTime target = time.AddHours(24);
+
+                                                                                    TimeSpan diff = target - now;
+
+                                                                                    double totalSeconds = diff.TotalSeconds;
+
+                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                                }
+
+                                                                            </script>
+                                                                            <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (schedule.Status != Status.Проведен)
+                                                                        {
+                                                                            <script>
+
+                                                                                @{
+                                                                                    var text2 = "";
+
+                                                                                    DateTime now = DateTime.Now;
+                                                                                    DateTime target = time.AddHours(24);
+
+                                                                                    TimeSpan diff = target - now;
+
+                                                                                    double totalSeconds = diff.TotalSeconds;
+
+                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                                }
+
+                                                                            </script>
+                                                                            <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
+
+                                                                        }
+
+                                                                    }
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+
+
+                                                    if (schedule.SkippedDates.Count > 0)
+                                                    {
+                                                        foreach (var skip in schedule.SkippedDates)
+                                                        {
+                                                            if (skip == date)
+                                                            {
+                                                                <script>
+                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "darkred";
+                                                                    document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                </script>
+                                                            }
+                                                        }
+                                                    }
+
+
+                                                    if (schedule.RescheduledDate != DateTime.Parse("01.01.0001 0:00:00"))
+                                                    {
+                                                        if (schedule.RescheduledDate == date)
+                                                        {
+                                                            <script>
+                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
+                                                                document.getElementsByClassName('@label')[0].style.color = "white";
+                                                            </script>
+                                                        }
+                                                    }
+                                                        if (schedule.RescheduledLessons.Count > 0)
+                                                        {
+                                                            foreach (var less in schedule.RescheduledLessons)
+                                                            {
+                                                                if (less.OldTime == date)
+                                                                {
+                                                                    <script>
+                                                                            document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
+                                                                        document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                    </script>
+                                                                }
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+                                          
+                                        }
+                                        countA++;
+
+
+                                }
+                                 
+                                </td>
+                            }
+                            countB++;
+                    }
+                
+                    </tr>
+                }
+        }
+        </tbody>
+
+    </table>
+
+
+</div>

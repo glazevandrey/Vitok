@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using web_app.Models.Requests;
+using web_app.Models.Requests.Get;
 using web_app.Services;
 using web_server.Models;
 using web_server.Services.Interfaces;
@@ -20,7 +21,7 @@ namespace web_app.Controllers
             _requestService = requestService;
         }
         [HttpGet]
-        public IActionResult Login([FromQuery] string id, [FromQuery] string error)
+        public IActionResult Login([FromQuery] string id, [FromQuery] string error, [FromQuery] string role)
         {
             if (id != null)
             {
@@ -29,7 +30,15 @@ namespace web_app.Controllers
 
             if (Request.Cookies.ContainsKey(".AspNetCore.Application.Id"))
             {
-                return Redirect("/account");
+                if (role == "Manager")
+                {
+                    return Redirect("/manageschool");
+
+                }
+                else
+                {
+                    return Redirect("/schedule");
+                }
             }
 
             if (error != null)
@@ -63,7 +72,14 @@ namespace web_app.Controllers
                 MaxAge = TimeSpan.FromMinutes(1160)
             });
 
-            return Redirect("/login");
+            HttpContext.Request.Headers.Add(".AspNetCore.Application.Id", response.result.ToString());
+
+            var req2 = new GetUserByToken(response.result.ToString());
+            var res2 = _requestService.SendGet(req2, HttpContext);
+            user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res2.result.ToString());
+            return RedirectToAction("login", new { role = user.Role });
+
+
         }
     }
 }

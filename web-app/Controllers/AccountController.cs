@@ -29,7 +29,7 @@ namespace web_app.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index([FromQuery] string error = null)
         {
             CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
             var result = _requestService.SendGet(request, HttpContext);
@@ -45,22 +45,35 @@ namespace web_app.Controllers
             ViewData["lessons"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
+
+            if (error != null)
+            {
+                ViewData["error"] = error;
+            }
             return View(user);
         }
 
         [HttpPost("saveinfo", Name = "saveinfo")]
         public IActionResult SaveInfo([FromForm] User user)
         {
+            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
+            {
+                return RedirectToAction("Index", "Account", new { error = "Неудачная попытка сохранить данные" });
+            }
+
+            user.FirstName = user.FirstName.Trim();
+            user.LastName = user.LastName.Trim();
+
             CustomRequestPost req = new CustomRequestPost("api/account/saveuserinfo", user);
             var response = _requestService.SendPost(req, HttpContext);
             if (response == null)
             {
-                return BadRequest("Неудачная попытка сохранить данные");
+                return RedirectToAction("Index", "Account", new { error = "Неудачная попытка сохранить данные" });
             }
 
             return Redirect("/account");
         }
-    
+
 
     }
 }

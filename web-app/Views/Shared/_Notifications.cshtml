@@ -1,11 +1,7 @@
 ﻿<div>
 
-@{
-    string url2 = "https://cdn.jsdelivr.net/npm/@aspnet/signalr@1.0.0-rc1-update1/dist/browser/signalr.min.js";
-}
 
-<script src="@url2"></script>
-
+    <script src="~/js/signalR/signalr.min.js"></script>
 
     <script>
         var url3 = "@web_app.Program.web_server_ip" + "/notifHub" + "?" + "token=" + "@ViewData["usertoken"]";

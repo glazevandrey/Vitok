@@ -19,15 +19,18 @@ namespace web_server.Models
         public DateTime StartDate { get; set; }
         public Status Status { get; set; } = Status.Ожидает;
 
-        public Dictionary<string, bool> Tasks = new Dictionary<string, bool>()
+        public List<NotificationTask> Tasks = new List<NotificationTask>()
         {
-            { Constants.NOTIF_START_LESSON, false},
-            { Constants.NOTIF_TOMORROW_LESSON, false},
-            { Constants.NOTIF_DONT_FORGET_SET_STATUS, false},
-
+            new NotificationTask() { NotifKey = Constants.NOTIF_START_LESSON, NotifValue = false },
+            new NotificationTask() { NotifKey = Constants.NOTIF_TOMORROW_LESSON, NotifValue = false },
+            new NotificationTask() { NotifKey = Constants.NOTIF_DONT_FORGET_SET_STATUS, NotifValue = false }
         };
+
+        public List<DateTime> SkippedDates { get; set; } = new List<DateTime>();
         public List<RescheduledLessons> RescheduledLessons { get; set; } = new List<RescheduledLessons>();
         public DateTime RescheduledDate { get; set; }
+        public DateTime NewDate { get; set; }
+        public DateTime WaitPaymentDate { get; set; }
 
         public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
         public DateTime RemoveDate { get; set; }

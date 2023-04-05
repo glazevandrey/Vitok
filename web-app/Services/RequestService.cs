@@ -42,6 +42,7 @@ namespace web_app.Services
 
             return new OkObjectResult(json);
         }
+
         public ResponseModel SendGet(CustomRequestGet request, HttpContext context)
         {
             try
@@ -54,14 +55,19 @@ namespace web_app.Services
                         {
                             client.DefaultRequestHeaders.Add(".AspNetCore.Application.Id", context.Request.Cookies[".AspNetCore.Application.Id"]);
                             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + context.Request.Cookies[".AspNetCore.Application.Id"]);
+                        }
 
+                        if (context.Request.Headers.ContainsKey(".AspNetCore.Application.Id"))
+                        {
+                            client.DefaultRequestHeaders.Add(".AspNetCore.Application.Id", context.Request.Headers[".AspNetCore.Application.Id"][0]);
+                            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + context.Request.Headers[".AspNetCore.Application.Id"][0]);
                         }
                     }
 
                     string url = "";
                     if (request.Args == null)
                     {
-                        url = Program.web_server_ip + "/"+ request.Address;
+                        url = Program.web_server_ip + "/" + request.Address;
                     }
                     else
                     {
@@ -87,16 +93,16 @@ namespace web_app.Services
             {
                 string url = "";
 
-                url = Program.web_server_ip+ "/" + req.Address;
+                url = Program.web_server_ip + "/" + req.Address;
 
                 var request = WebRequest.Create(url);
                 request.Method = "POST";
 
                 var json = JsonSerializer.Serialize(req.User);
                 byte[] byteArray = Encoding.UTF8.GetBytes(json);
-                 request.ContentType = "application/x-www-form-urlencoded";
+                request.ContentType = "application/x-www-form-urlencoded";
 
-                
+
                 request.Credentials = CredentialCache.DefaultNetworkCredentials;
                 if (context != null)
                 {
@@ -144,7 +150,7 @@ namespace web_app.Services
                     using var reqStream = request.GetRequestStream();
                     reqStream.Write(byteArray, 0, byteArray.Length);
                 }
-                
+
 
                 using var response = request.GetResponse();
 

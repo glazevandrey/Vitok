@@ -61,12 +61,14 @@ namespace web_server.Controllers
         {
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Schedules));
         }
+
         [HttpGet("getAllReSchedules", Name = "getAllReSchedules")]
         public string GetAllReSchedules()
         {
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.RescheduledLessons));
         }
 
+        [Authorize]
         [HttpGet("getuser", Name = "getuser")]
         public string GetUser([FromQuery] string args)
         {
@@ -90,6 +92,7 @@ namespace web_server.Controllers
         {
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.UserList));
         }
+
         [Authorize]
         [HttpGet("getuserbyid", Name = "getuserbyid")]
         public string GetUserById([FromQuery] string args)

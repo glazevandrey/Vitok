@@ -36,7 +36,7 @@ namespace web_server.Services
             var id = split[0];
             var role = split[1];
             var user = new User();
-            if (role == "Tutor" || role =="Manager")
+            if (role == "Tutor" || role == "Manager")
             {
                 user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
             }
@@ -92,16 +92,29 @@ namespace web_server.Services
 
         public string Register(User user, HttpContext context, IHubContext<NotifHub> _hubContext)
         {
+            user.StartWaitPayment = DateTime.Now;
             TestData.UserList.Add(user);
             var reg = TestData.Registations.FirstOrDefault(m => m.UserId == user.UserId);
             if (reg != null)
             {
+                var nearest = reg.WantThis.dateTimes[0];
+
+                if (reg.WantThis.dateTimes.Count > 1)
+                {
+                    foreach (var item in reg.WantThis.dateTimes)
+                    {
+                        if (item < nearest)
+                        {
+                            nearest = item;
+                        }
+                    }
+                }
 
                 foreach (var item in reg.WantThis.dateTimes)
                 {
                     var id = TestData.Schedules.Last().Id + 1;
 
-                    TestData.Schedules.Add(new Schedule()
+                    var sch = new Schedule()
                     {
                         Id = id,
                         TutorId = reg.TutorId,
@@ -111,19 +124,24 @@ namespace web_server.Services
                         UserName = TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName,
                         Date = new UserDate() { dateTimes = new System.Collections.Generic.List<DateTime>() { item } },
                         CreatedDate = DateTime.Now,
-                        Looped = false,
-                        Status = Status.ОжидаетОплату
-                    });
+                        StartDate = item,
+                        Looped = true,
+                        Status = Status.Ожидает
+                    };
+
+                    if (nearest == item)
+                    {
+                        sch.WaitPaymentDate = nearest;
+                    }
+                    TestData.Schedules.Add(sch);
 
                     TimerCallback tm = new TimerCallback(DeleteUnPaid);
 
-                    // TODO: !!!!!!!!!!!!!!! 24 * 3600000!!!!!!!!!!!!!!!!!!!;
-
-                    Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24* 3600000, 24* 3600000));
+                    Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24 * 3600000, 24 * 3600000));
                     var timer = Program.Timers[id];
 
-                    NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName+" " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).LastName), reg.TutorId.ToString(), _hubContext);
-             
+                    NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).LastName), reg.TutorId.ToString(), _hubContext);
+
                     NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
                         Replace("{studentName}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).LastName).
                         Replace("{tutorName}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.TutorId).FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.TutorId).LastName),

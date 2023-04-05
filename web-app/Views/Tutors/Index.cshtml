@@ -7,7 +7,6 @@
 }
 
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
 <style>
@@ -25,83 +24,106 @@
         width: 170px;
     }
 </style>
-    
-<form method="post" action="/tutors/addnewtutor">
 
-            <fieldset>
-                <legend>Добавить нового репетитора</legend>
+<script>
+    function closeModal(){
+        window.location.hash = "#closeModal";
+    }
+</script>
+<div id="openModalAdd" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Выберите действие</h3>
+                <a onclick="closeModal()" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
 
-                <div class="container" align="center">
+                <form id="addForm"method="post" action="/tutors/addnewtutor">
 
-                <label>
-                <span>Фамилия</span>
-                <input id="lastName" name="lastName" value="" />
-                </label>
-                <br />
-                <br />
+                    <fieldset>
+                        <legend>Добавить нового репетитора</legend>
 
-                <label>
-                <span>Имя</span>
-                <input name="firstName" id="firstName" value="" />
-                    <br />             <br />
+                        <div class="container" align="center">
 
-                </label>
-                <label>
-                <span>Отчество</span>
-                <input id="middleName" name="middleName" value="" />
-                    <br />             <br />
+                            <label>
+                                <span>Фамилия</span>
+                                <input id="lastName" name="lastName" value="" />
+                            </label>
+                            <br />
+                            <br />
 
-                </label>
-                <label>
-                <span>Дата рождения</span>
-                <input name="birthDate" id="birthDate" value="" />
-                    <br />             <br />
+                            <label>
+                                <span>Имя</span>
+                                <input name="firstName" id="firstName" value="" />
+                                <br />             <br />
 
-                </label>
+                            </label>
+                            <label>
+                                <span>Отчество</span>
+                                <input id="middleName" name="middleName" value="" />
+                                <br />             <br />
 
-            <label style="display:none; color:darkred" id="email_error">Такая почта уже используется</label>
-<br/>
-                <label>
-                    
-                <span>Почта</span>
-                
-                <input name="email" id="email" onchange="validateEmail(this)" value="" />
-                    <br />             <br />
+                            </label>
+                            <label>
+                                <span>Дата рождения</span>
+                                <input name="birthDate" id="birthDate" value="" />
+                                <br />             <br />
 
-                </label>
-            <label>
-                <span>Пароль</span>
-                <input name="password" id="password" value="" />
-                <br />             <br />
+                            </label>
 
-            </label>
-                        <label>
-                <span>Телефон</span>
-                <input name="phone" id="phone" value="" />
-                <br />             <br />
+                            <label style="display:none; color:darkred" id="email_error">Такая почта уже используется</label>
+                            <br />
+                            <label>
 
-            </label>
-            <label>
-                <span>Курсы</span>
-                <input name="courses" id="courses" placeholder="(напр. ЕГЭ;Общий ангийский;ОГЭ)" value="" />
-                <br />             <br />
+                                <span>Почта</span>
 
-            </label>
+                                <input name="email" id="email" onchange="validateEmail(this)" value="" />
+                                <br />             <br />
 
-                </div>
-            </fieldset>
-            <br/>
+                            </label>
+                            <label>
+                                <span>Пароль</span>
+                                <input name="password" id="password" value="" />
+                                <br />             <br />
 
-    <div align="center">
-        <input type="submit" value="Добавить нового репетитора" />
+                            </label>
+                            <label>
+                                <span>Телефон</span>
+                                <input name="phone" id="phone" value="" />
+                                <br />             <br />
 
+                            </label>
+                            <label>
+                                <span>Курсы</span>
+                                <input name="courses" id="courses" placeholder="(напр. ЕГЭ;Общий ангийский;ОГЭ)" value="" />
+                                <br />             <br />
+
+                            </label>
+
+                        </div>
+                    </fieldset>
+                    <br />
+
+                    <div align="center">
+                        <input type="submit" onclick="closeModal()" value="Добавить" />
+
+                    </div>
+
+                </form>
+
+
+            </div>
+
+        </div>
     </div>
-
-        </form>
+</div>
         <br/>
 
         <br/>
 <input type="text" id="search" placeholder="Search...">
+<input type="button" value="Добавить нового репетитора" onclick="window.location.hash = '#openModalAdd';" />
+
 <br/>
          <table id="table">
         <thead>
@@ -250,7 +272,7 @@
                 <br/>
                 <br/>
                 <label>Дата рождения</label><br />
-                    <input id="birthDateEdit" name="birthDateEdit" type="date" value="" />
+                    <input id="birthDateEdit" min="1920-01-01" max="2050-12-31" name="birthDateEdit" type="date" value="" />
                 <br />
                 <br />
                 <label>Номер телефона</label><br />
@@ -286,21 +308,21 @@
     function getUsers()
     {
         var model = @Html.Raw(Json.Serialize(Model));
-        console.log(model);
         return model;
     }
     function editRow(userId) {
-        console.log(userId);
 
     // Get the user data for the row with the specified userId
     var user = getUsers().find(u => u.userId === userId);
-    console.log(user);
 
     // Populate the form fields with the user data
         document.getElementById("firstNameEdit").value = user.firstName;
         document.getElementById("lastNameEdit").value = user.lastName;
         document.getElementById("middleNameEdit").value = user.middleName;
-        document.getElementById("birthDateEdit").value = new Date(user.birthDate).toLocaleDateString("ru-RU");
+        const birthDate = new Date(user.birthDate);
+        const formattedDate = `${birthDate.getFullYear()}-${(birthDate.getMonth() + 1).toString().padStart(2, '0')}-${birthDate.getDate().toString().padStart(2, '0')}`;
+        document.getElementById("birthDateEdit").value = formattedDate;
+        //document.getElementById("birthDateEdit").value = new Date(user.birthDate);
         document.getElementById("phoneEdit").value = user.phone;
         document.getElementById("passwordEdit").value = user.password;
         document.getElementById("userIdEdit").value = user.userId;

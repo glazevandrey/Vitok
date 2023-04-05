@@ -3,37 +3,58 @@
 @{
     Layout = "_Layout";
 }
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
 
 <div>
-    <form method="post" action="/courses/savenew">
+
+    <div id="openModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Добавить курс
+                </h3>
+                <a onclick="#" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+                
+                  <form method="post" action="/courses/savenew">
         
-    <label>Название:</label>
-    <input name="title" id="title" type="text" value=""/>
-    <br/>
-        <br />
-        <label>Цель:</label>
+                    <label>Название:</label>
+                    <input name="title" id="title" type="text" value=""/>
+                    <br/>
+                        <br />
+                        <label>Цель:</label>
 
-    <select name="goalId" id="goalId">
-        <option value=""></option>
-        @foreach (Goal item in (List<Goal>)ViewData["goals"])
-        {
-            <option value="@item.Id">@item.Title</option>
-        }
+                    <select name="goalId" id="goalId">
+                        <option value=""></option>
+                        @foreach (Goal item in (List<Goal>)ViewData["goals"])
+                        {
+                            <option value="@item.Id">@item.Title</option>
+                        }
 
-    </select>
-    <br />
-    <br />
-    <input type="submit" value="Сохранить"/>
-    <br />
-    <br />
+                    </select>
+                    <br />
+                    <br />
+                    <input type="submit" value="Сохранить"/>
+                        <input type="button" onclick="window.location.href='#'" value="отмена" />
 
-    </form>
+                    <br />
+                    <br />
+
+                   </form>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
     <br />
-    <br />
-    <input type="text" id="search" placeholder="Search...">
+    <input type="text" id="search" placeholder="Поиск...">
+    <input type="button" value="Добавить курс" onclick="window.location.hash='#openModal'" />
+
     <br/>
     <table id="table">
         <thead>
@@ -48,7 +69,12 @@
                     <td>
                     @item.Title
                     </td>
-
+                    <td>
+                        <button onclick="openEdit('@item.Id', '@item.Title', '@item.Goals[0].Id')">Edit</button>
+                    </td>
+                    <td>
+                        <button onclick="openRemove('@item.Id')">Remove</button>
+                    </td>
                 </tr>   
             
             }
@@ -57,8 +83,89 @@
         </tbody>
     </table>    
 </div>
+<div id="openRemoveModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Подтвердите удаление курса из системы
+                </h3>
+                <a href="#closeRemoveModal" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/courses/removeCourse">
+                    <input hidden="hidden" value="" id="courseId" name="courseId" />
+                    <br />                    <br />
 
+                    <input type="submit" value="Удалить"/>
+                    <input type="button" value="Отмена" onclick="closeRemove()">
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="openEditModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Изменение курса
+                </h3>
+                <a href="#closeEditModal" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/courses/editCourse">
+                    <input hidden="hidden" value="" id="courseIdEdit" name="courseIdEdit" />
+                    <input value="" id="courseTitle" name="courseTitle" />
+                    <select name="goalEditId" id="goalEditId">
+        <option value=""></option>
+        @foreach (Goal item in (List<Goal>)ViewData["goals"])
+        {
+            <option value="@item.Id">@item.Title</option>
+        }
+
+    </select>
+                    <br /><br />
+
+                    <input type="submit" value="Изменить"/>
+                    <input type="button" value="Отмена" onclick="closeEdit()">
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@{
+
+    if(ViewData["error"] != null)
+    {
+        <script>alert('@ViewData["error"].ToString()')</script>
+    }
+}
 <script>
+
+    function closeRemove(){
+        window.location.hash = "#closeRemoveModal";
+
+    }
+    function closeEdit() {
+        window.location.hash = "#closeEditModal";
+
+    }
+    function openEdit(id, title, goal){
+        document.getElementById('courseTitle').value = title;
+        document.getElementById('goalEditId').value = goal; 
+        document.getElementById('courseIdEdit').value = id;
+        window.location.hash = "#openEditModal";
+
+    }
+    function openRemove(id) {
+        document.getElementById('courseId').value = id;
+        window.location.hash = "#openRemoveModal";
+    }
+
     function searchTable() {
         var input, filter, table, tr, td, i, txtValue;
         input = document.getElementById("search");

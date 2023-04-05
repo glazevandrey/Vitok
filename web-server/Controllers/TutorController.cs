@@ -114,6 +114,24 @@ namespace vitok.Controllers
 
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
         }
+        [Authorize]
+        [HttpPost("rejectStudent", Name = "rejectStudent")]
+        public string RejectStudent()
+        {
+            var form = Request.Form;
+            if (form.Keys.Count == 0)
+            {
+                return _jsonService.PrepareErrorJson("Tutor not found");
+            }
+            var args = form.First().Key.Split(";");
+            var success = _tutorService.RejectStudent(args, _hubContext);
+            if (!success)
+            {
+                return _jsonService.PrepareErrorJson("Неудачная попытка добавить свободные даты");
+            }
+
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(true));
+        }
 
         [Authorize]
         [HttpPost("addtutorschedule", Name = "addtutorschedule")]
@@ -192,11 +210,12 @@ namespace vitok.Controllers
 
             if (rescheduled == null)
             {
-                return _jsonService.PrepareErrorJson("Неудачная попытка перенести занятие");
+                return _jsonService.PrepareErrorJson("Выбранная дата занята или некорректна.");
             }
 
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(rescheduled));
         }
+
 
         [HttpPost("removetutortime", Name = "removetotortime")]
         public string RemoveTutorTime()

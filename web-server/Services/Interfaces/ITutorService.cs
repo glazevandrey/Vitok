@@ -12,6 +12,8 @@ namespace web_server.Services.Interfaces
         public User AddTutorSchedule(string args, IHubContext<NotifHub> _hubContext);
         public User RemoveTutorSchedule(string args, IHubContext<NotifHub> _hubContext);
         public User RemoveTutorTime(string args);
+        public bool RejectStudent(string[] args, IHubContext<NotifHub> _hubContext);
+
 
     }
 }
