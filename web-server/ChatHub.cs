@@ -266,6 +266,12 @@ namespace web_server
 
             foreach (var item in userSchediles)
             {
+
+                if(item.UserId == -1)
+                {
+                    continue;
+                }
+
                 var contact = new Contact()
                 {
                     UserId = item.TutorId
