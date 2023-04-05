@@ -39,7 +39,6 @@ form{
 <label>Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")</label>
 
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <div oncontextmenu="return false;">
     <div id="openmodal" class="modal">
         <div class="modal-dialog">
@@ -194,12 +193,11 @@ form{
                             <br />
                             <label style="display:none;color:darkred" id="timeError">*Некорректная дата</label>
                             <br/>
-                            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                            <link rel="stylesheet" href="~/css/flatpickr/flatpickr.min.css">
                             <input type="date" id="newDate" min="2002-01-01" max="2050-12-31" name="newDate" />
 
                             <input type="text" style="width:40px" id="newTime" name="newTime">
                             <label>:00</label>
-                            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
                             <script>
                              flatpickr("#newTime", {
                               enableTime: true,
@@ -1118,6 +1116,9 @@ form{
 
                                                                     }
                                                                 }
+
+
+
                                                                 if (model1.WaitPaymentDate != DateTime.MinValue)
                                                                 {
 
@@ -1256,6 +1257,20 @@ form{
                                                                 }
 
 
+
+                                                                if (model1.SkippedDates.Count > 0)
+                                                                {
+                                                                    foreach (var skip in model1.SkippedDates)
+                                                                    {
+                                                                        if (skip == _date)
+                                                                        {
+                                                                            <script>
+                                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "darkred";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "white";
+                                                                            </script>
+                                                                        }
+                                                                    }
+                                                                }
 
                                                                 if (model1.RescheduledDate != DateTime.Parse("01.01.0001 0:00:00"))
                                                                 {

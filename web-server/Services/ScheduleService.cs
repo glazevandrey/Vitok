@@ -183,6 +183,16 @@ namespace web_server.Services
                     }
                     else
                     {
+                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
+                    Replace("{userName}", user.FirstName + " " + user.LastName).
+                    Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
+                    TestData.Managers.First().UserId.ToString(), _hubContext);
+
+                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
+                   Replace("{userName}", user.FirstName + " " + user.LastName).
+                   Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
+                  user_id.ToString(), _hubContext);
+
                         // уведомления что ученик пропустил. менеджеру и ученику. Осталось одно бесплатное
 
                     }
@@ -190,7 +200,19 @@ namespace web_server.Services
                 }
                 else
                 {
+
+                    NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
+                  Replace("{userName}", user.FirstName + " " + user.LastName).
+                  Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
+                  TestData.Managers.First().UserId.ToString(), _hubContext);
+
+                    NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
+               Replace("{userName}", user.FirstName + " " + user.LastName).
+               Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
+              user_id.ToString(), _hubContext);
+
                     // уведомление ученику и менеджеру что не предупредил
+
                     if (user.LessonsCount > 0)
                     {
                         user.LessonsCount--;

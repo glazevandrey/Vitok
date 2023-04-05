@@ -385,6 +385,10 @@ namespace web_server
             var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId);
             foreach (var item in chatUser.Contacts)
             {
+                if(item.UserId == -1)
+                {
+                    continue;
+                }
                 var user = TestData.UserList.FirstOrDefault(m => m.UserId == item.UserId);
 
                 await Clients.Clients(Context.ConnectionId).SendAsync("UserList", item.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);

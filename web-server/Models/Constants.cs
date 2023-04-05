@@ -5,6 +5,9 @@
         #region Общие уведомления для репетитора и студента
         public const string NOTIF_START_LESSON = "У вас началось занятие!"; // в момент наступления занятия
         public const string NOTIF_TOMORROW_LESSON = "Завтра у вас занятие!"; // за день + на почту
+        public const string NOTIF_USER_SKIPP_LAST_ONE = "Ученик {userName} пропустил занятие у репетитора {tutorName} запланированное на {date}. Остался один бесплатный пропуск."; // за день + на почту
+        public const string NOTIF_USER_SKIPP_NO_WARN = "Ученик {userName} пропустил занятие у репетитора {tutorName} запланированное на {date} без предупреждения."; // за день + на почту
+
         #endregion
 
         #region Уведомления Репетитора

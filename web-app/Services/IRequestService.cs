@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using web_app.Models;
 using web_app.Models.Requests;
-
 namespace web_app.Services
 {
     public interface IRequestService
