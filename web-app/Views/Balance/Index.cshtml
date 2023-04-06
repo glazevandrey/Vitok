@@ -18,7 +18,7 @@
             document.getElementById('countView').value =  250;
 
 }
-        function clicked() {
+        function clicked() {    
 
         document.getElementById('count2').value++;
         document.getElementById('count2').onchange(document.getElementById('count2'));
@@ -214,7 +214,7 @@
         var list = new List<DisplayBalance>();
         // var list = new Dictionary<int, List<string>>();
         int id = 0;
-        if(Model.Role == "Tutor")
+        if(Model.Role == "Tutor" || Model.Role == "Manager")
         {
 
             foreach (var item in sortedCModel)

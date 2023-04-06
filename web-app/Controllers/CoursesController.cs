@@ -23,8 +23,9 @@ namespace web_app.Controllers
         public IActionResult Index(string editError = null)
         {
 
-            CustomRequestGet req = new GetCourses(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-            var res = _requestService.SendGet(req, HttpContext);
+            CustomRequestGet req = new GetCourses();
+            var res = _requestService.SendGet(req);
+      
             var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(res.result.ToString());
 
             req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);

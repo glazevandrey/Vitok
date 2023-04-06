@@ -11,6 +11,10 @@ namespace web_server
     {
         public static void SendNotification(string message, string to, IHubContext<NotifHub> hub)
         {
+            if(to == (-1).ToString())
+            {
+                return;
+            }
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(to));
 
             var notif = new Notifications();

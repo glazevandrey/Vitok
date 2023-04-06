@@ -300,17 +300,20 @@ td {
 
                                                                                     @{
                                                                                         var text2 = "Занятие не оплачено.";
-
-                                                                                        DateTime now = DateTime.Now;
-                                                                                        DateTime target = time.AddHours(24);
-
-                                                                                        TimeSpan diff = target - now;
-
-                                                                                        double totalSeconds = diff.TotalSeconds;
-                                                                                        if (schedule.ReadyDates.Count == 0)
+                                                                                        var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                        if (mod[schedule.UserId] == false)
                                                                                         {
+                                                                                            DateTime now = DateTime.Now;
+                                                                                            DateTime target = time.AddHours(24);
+
+                                                                                            TimeSpan diff = target - now;
+
+                                                                                            double totalSeconds = diff.TotalSeconds;
+
                                                                                             text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
                                                                                         }
+
                                                                                     }
 
                                                                                 </script>
@@ -324,17 +327,23 @@ td {
                                                                             <script>
 
                                                                                 @{
-                                                                                    var text2 = "";
+                                                                                    var text2 = "Занятие не оплачено.";
+                                                                                    var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                    if (mod[schedule.UserId] == false)
+                                                                                    {
+                                                                                        DateTime now = DateTime.Now;
+                                                                                        DateTime target = time.AddHours(24);
 
-                                                                                    DateTime now = DateTime.Now;
-                                                                                    DateTime target = time.AddHours(24);
+                                                                                        TimeSpan diff = target - now;
 
-                                                                                    TimeSpan diff = target - now;
+                                                                                        double totalSeconds = diff.TotalSeconds;
 
-                                                                                    double totalSeconds = diff.TotalSeconds;
+                                                                                        text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
 
-                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                                    }
+
                                                                                 }
+
 
                                                                             </script>
                                                                             <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
@@ -350,17 +359,23 @@ td {
                                                                             <script>
 
                                                                                 @{
-                                                                                    var text2 = "";
+                                                                                    var text2 = "Занятие не оплачено.";
+                                                                                    var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                    if (mod[schedule.UserId] == false)
+                                                                                    {
+                                                                                        DateTime now = DateTime.Now;
+                                                                                        DateTime target = time.AddHours(24);
 
-                                                                                    DateTime now = DateTime.Now;
-                                                                                    DateTime target = time.AddHours(24);
+                                                                                        TimeSpan diff = target - now;
 
-                                                                                    TimeSpan diff = target - now;
+                                                                                        double totalSeconds = diff.TotalSeconds;
 
-                                                                                    double totalSeconds = diff.TotalSeconds;
+                                                                                        text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
 
-                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                                    }
+
                                                                                 }
+
 
                                                                             </script>
                                                                             <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
@@ -373,17 +388,23 @@ td {
                                                                             <script>
 
                                                                                 @{
-                                                                                    var text2 = "";
+                                                                                    var text2 = "Занятие не оплачено.";
+                                                                                    var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                    if (mod[schedule.UserId] == false)
+                                                                                    {
+                                                                                        DateTime now = DateTime.Now;
+                                                                                        DateTime target = time.AddHours(24);
 
-                                                                                    DateTime now = DateTime.Now;
-                                                                                    DateTime target = time.AddHours(24);
+                                                                                        TimeSpan diff = target - now;
 
-                                                                                    TimeSpan diff = target - now;
+                                                                                        double totalSeconds = diff.TotalSeconds;
 
-                                                                                    double totalSeconds = diff.TotalSeconds;
+                                                                                        text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
 
-                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                                                    }
+
                                                                                 }
+
 
                                                                             </script>
                                                                             <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
@@ -396,6 +417,123 @@ td {
 
                                                         }
                                                     }
+
+                                                    //if (schedule.WaitPaymentDate != DateTime.MinValue)
+                                                    //{
+
+                                                    //    if (((Dictionary<int, DateTime>)ViewData["waited"]).Count != 0)
+                                                    //    {
+                                                    //        if (((Dictionary<int, DateTime>)ViewData["waited"]).ContainsKey(schedule.UserId))
+                                                    //        {
+                                                    //            var time = ((Dictionary<int, DateTime>)ViewData["waited"])[schedule.UserId];
+                                                    //            if (schedule.Looped)
+                                                    //            {
+                                                    //                if (schedule.WaitPaymentDate == date)
+                                                    //                {
+                                                    //                    if (schedule.ReadyDates.Count > 0)
+                                                    //                    {
+                                                    //                        if (date > schedule.ReadyDates.Last())
+                                                    //                        {
+                                                    //                            <script>
+
+                                                    //                                @{
+                                                    //                                    var text2 = "Занятие не оплачено.";
+
+                                                    //                                    DateTime now = DateTime.Now;
+                                                    //                                    DateTime target = time.AddHours(24);
+
+                                                    //                                    TimeSpan diff = target - now;
+
+                                                    //                                    double totalSeconds = diff.TotalSeconds;
+                                                    //                                    if (schedule.ReadyDates.Count == 0)
+                                                    //                                    {
+                                                    //                                        text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                    //                                    }
+                                                    //                                }
+
+                                                    //                            </script>
+
+                                                    //                            <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
+                                                    //                        }
+                                                    //                    }
+                                                    //                    else
+                                                    //                    {
+
+                                                    //                        <script>
+
+                                                    //                            @{
+                                                    //                                var text2 = "";
+
+                                                    //                                DateTime now = DateTime.Now;
+                                                    //                                DateTime target = time.AddHours(24);
+
+                                                    //                                TimeSpan diff = target - now;
+
+                                                    //                                double totalSeconds = diff.TotalSeconds;
+
+                                                    //                                text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                    //                            }
+
+                                                    //                        </script>
+                                                    //                        <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
+                                                    //                    }
+                                                    //                }
+                                                    //            }
+                                                    //            else
+                                                    //            {
+                                                    //                if (schedule.ReadyDates.Count > 0)
+                                                    //                {
+                                                    //                    if (date > schedule.ReadyDates.Last())
+                                                    //                    {
+                                                    //                        <script>
+
+                                                    //                            @{
+                                                    //                                var text2 = "";
+
+                                                    //                                DateTime now = DateTime.Now;
+                                                    //                                DateTime target = time.AddHours(24);
+
+                                                    //                                TimeSpan diff = target - now;
+
+                                                    //                                double totalSeconds = diff.TotalSeconds;
+
+                                                    //                                text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                    //                            }
+
+                                                    //                        </script>
+                                                    //                        <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
+                                                    //                    }
+                                                    //                }
+                                                    //                else
+                                                    //                {
+                                                    //                    if (schedule.Status != Status.Проведен)
+                                                    //                    {
+                                                    //                        <script>
+
+                                                    //                            @{
+                                                    //                                var text2 = "";
+
+                                                    //                                DateTime now = DateTime.Now;
+                                                    //                                DateTime target = time.AddHours(24);
+
+                                                    //                                TimeSpan diff = target - now;
+
+                                                    //                                double totalSeconds = diff.TotalSeconds;
+
+                                                    //                                text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+                                                    //                            }
+
+                                                    //                        </script>
+                                                    //                        <label style="background-color:yellow;width:100px" data-title="@text2">(!)</label>
+
+                                                    //                    }
+
+                                                    //                }
+                                                    //            }
+                                                    //        }
+
+                                                    //    }
+                                                    //}
 
 
                                                     if (schedule.SkippedDates.Count > 0)

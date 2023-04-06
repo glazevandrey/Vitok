@@ -2,6 +2,6 @@
 {
     public class GetCourses : CustomRequestGet
     {
-        public GetCourses(string token) : base("api/servercourses/getcourses", token) { }
+        public GetCourses() : base("api/ServerCourses/getcourses", null) { }
     }
 }

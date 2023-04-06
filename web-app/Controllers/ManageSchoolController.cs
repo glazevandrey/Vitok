@@ -72,6 +72,17 @@ namespace web_app.Controllers
             }
             ViewData["waited"] = keyValuePairs;
 
+
+            var dic = new Dictionary<int, bool>();
+            foreach (var item in users)
+            {
+                if (!dic.ContainsKey(item.UserId))
+                {
+                    dic.Add(item.UserId, item.WasFirstPayment);
+                }
+            }
+            ViewData["firstPay"] = dic;
+
             var modl = new DisplayModelShedule()
             {
                 Date = date == null ? DateTime.Now : DateTime.Parse(date),

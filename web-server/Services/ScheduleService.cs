@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,12 +60,13 @@ namespace web_server.Services
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
             var schedule = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
             var manager = TestData.Managers.First();
+            user.LessonsCount--;
+
             if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен)
             {
 
                 if (user.LessonsCount != 0)
                 {
-                    user.LessonsCount--;
                     user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = "-1 занятие" });
 
 
@@ -89,6 +91,7 @@ namespace web_server.Services
                         tutor.Balance += for_tutor;
                         tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
 
+                        manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
                         manager.Balance += for_manager;
 
                     }
@@ -113,19 +116,29 @@ namespace web_server.Services
                 {
                     NotifHub.SendNotification(Constants.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext);
                 }
-                else if (user.LessonsCount == 0)
+                else if (user.LessonsCount <= 0)
                 {
                     if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
                     {
                         user.StartWaitPayment = DateTime.Now;
                     }
-
-                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == user.UserId && m.Status == Status.Ожидает).ToList());
+                    var ff = TestData.Schedules.Where(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue).ToList();
+                    if (ff.Count > 0)
+                    {
+                        foreach (var item in ff)
+                        {
+                            item.WaitPaymentDate = DateTime.MinValue;
+                        }
+                    }
+                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == user.UserId && m.Status == Status.Ожидает).Reverse().ToList());
 
 
                     foreach (var item in sorted)
                     {
-                        TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId).WaitPaymentDate = item.Nearest;
+
+                        var sch = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+
+                        sch.WaitPaymentDate = item.Nearest;
                     }
 
                     NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
@@ -135,16 +148,18 @@ namespace web_server.Services
             }
             else if ((Status)Enum.Parse(typeof(Status), status) == Status.Пропущен)
             {
-                schedule.SkippedDates.Add(dateCurr);
-
+              
+               
                 if (warn)
                 {
+                    user.LessonsCount++;
                     user.SkippedInThisMonth++;
                     if (user.SkippedInThisMonth == 3)
                     {
+                        user.LessonsCount--;
+
                         if (user.LessonsCount > 0)
                         {
-                            user.LessonsCount--;
                             user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = "-1 занятие" });
 
 
@@ -167,9 +182,11 @@ namespace web_server.Services
                                 }
 
                                 tutor.Balance += for_tutor;
-                                tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000 });
+                                tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
 
                                 manager.Balance += for_manager;
+                                manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_manager) });
+
 
                             }
 
@@ -181,26 +198,40 @@ namespace web_server.Services
                         }
 
                     }
-                    else
+                   
+                    if (user.SkippedInThisMonth == 1)
                     {
-                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
-                    Replace("{userName}", user.FirstName + " " + user.LastName).
-                    Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
-                    TestData.Managers.First().UserId.ToString(), _hubContext);
+                     
+                                NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
+                      Replace("{userName}", user.FirstName + " " + user.LastName).
+                      Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
+                      TestData.Managers.First().UserId.ToString(), _hubContext);
 
-                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
-                   Replace("{userName}", user.FirstName + " " + user.LastName).
-                   Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
-                  user_id.ToString(), _hubContext);
+                                NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
+                           Replace("{userName}", user.FirstName + " " + user.LastName).
+                           Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
+                          user_id.ToString(), _hubContext);
 
                         // уведомления что ученик пропустил. менеджеру и ученику. Осталось одно бесплатное
 
+
+                    }
+
+                    if(user.SkippedInThisMonth == 2)
+                    {
+
+                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_SKIP.
+                   Replace("{userName}", user.FirstName + " " + user.LastName),
+                  TestData.Managers.First().UserId.ToString(), _hubContext);
+
+                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_SKIP.
+                   Replace("{userName}", user.FirstName + " " + user.LastName),
+                  user_id.ToString(), _hubContext);
                     }
 
                 }
                 else
                 {
-
                     NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
                   Replace("{userName}", user.FirstName + " " + user.LastName).
                   Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
@@ -213,9 +244,6 @@ namespace web_server.Services
 
                     // уведомление ученику и менеджеру что не предупредил
 
-                    if (user.LessonsCount > 0)
-                    {
-                        user.LessonsCount--;
                         user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = "-1 занятие" });
 
 
@@ -236,20 +264,66 @@ namespace web_server.Services
                                     break;
                                 }
                             }
-
                             tutor.Balance += for_tutor;
-                            tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = 1000 });
+                            tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
 
                             manager.Balance += for_manager;
+                            manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_manager) });
 
+
+                        }
+                        else
+                        {
+                            user.Credit.Add(new UserCredit() { Id = user.Credit.Count == 0 ? 0 : user.Credit.Last().Id + 1, Amount = 1000, TutorId = tutor_id });
                         }
 
 
-                    }
-                    else
+
+
+                }
+
+
+
+
+                if (schedule.Looped)
+                {
+                    schedule.SkippedDates.Add(dateCurr);
+                }
+                else
+                {
+                    schedule.SkippedDates.Add(dateCurr);
+                    schedule.Status = Status.Пропущен;
+                }
+
+                if (user.LessonsCount <= 0)
+                {
+                    if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
                     {
-                        user.Credit.Add(new UserCredit() { Id = user.Credit.Count == 0 ? 0 : user.Credit.Last().Id + 1, Amount = 1000, TutorId = tutor_id });
+                        user.StartWaitPayment = DateTime.Now;
                     }
+
+                    var ff = TestData.Schedules.Where(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue).ToList();
+                    if (ff.Count > 0)
+                    {
+                        foreach (var item in ff)
+                        {
+                            item.WaitPaymentDate = DateTime.MinValue;
+                        }
+                    }
+                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == user.UserId && m.Status == Status.Ожидает).Reverse().ToList());
+
+
+                    foreach (var item in sorted)
+                    {
+
+                        var sch = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+
+                        sch.WaitPaymentDate = item.Nearest;
+                    }
+
+                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                        user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
                 }
             }
 
@@ -274,7 +348,7 @@ namespace web_server.Services
             return schedules;
         }
 
-        public List<SortedModel> SortSchedulesForUnpaid(List<Schedule> schedules2)
+        public static List<SortedModel> SortSchedulesForUnpaid(List<Schedule> schedules2)
         {
             Dictionary<int, List<Schedule>> curr = new Dictionary<int, List<Schedule>>();
 
@@ -291,82 +365,144 @@ namespace web_server.Services
             }
 
             var result = new List<SortedModel>();
+            var date2 = DateTime.MinValue;
 
             foreach (var item in curr)
             {
                 var model3 = new SortedModel() { TutorId = -1 };
                 foreach (var cur in item.Value)
                 {
+                    
                     if (model3.TutorId == -1)
                     {
 
-                        var date2 = DateTime.Now;
                         if (cur.Looped)
                         {
+                            
                             if (cur.ReadyDates.Count > 0)
                             {
                                 date2 = cur.ReadyDates.Last().AddDays(7);
+                                model3.TutorId = item.Key;
+                                model3.ScheduleId = cur.Id;
+                                model3.Nearest = date2;
                             }
-                            else
+
+                            if (cur.RescheduledLessons.Count > 0)
                             {
-                                if (cur.RescheduledLessons.Count > 0)
+                                if (date2 < cur.RescheduledLessons.Last().NewTime)
                                 {
                                     date2 = cur.RescheduledLessons.Last().NewTime;
+                                    model3.TutorId = item.Key;
+                                    model3.ScheduleId = cur.Id;
+                                    model3.Nearest = date2;
                                 }
-                                else if (cur.RescheduledDate != DateTime.MinValue)
-                                {
+                            }
+                            if (cur.RescheduledDate != DateTime.MinValue)
+                            {
+                                if (date2 < cur.RescheduledDate)
+                                { 
                                     date2 = cur.RescheduledDate;
+                                    model3.TutorId = item.Key;
+                                    model3.ScheduleId = cur.Id;
+                                    model3.Nearest = date2;
                                 }
-                                else
+                            }
+                            
+                            if(cur.SkippedDates.Count > 0)
+                            {
+                                if (date2 < cur.SkippedDates.Last().AddDays(7))
                                 {
-                                    date2 = cur.StartDate;
+                                    date2 = cur.SkippedDates.Last().AddDays(7);
+                                    model3.TutorId = item.Key;
+                                    model3.ScheduleId = cur.Id;
+                                    model3.Nearest = date2;
                                 }
+
+                            }
+
+                            if (date2 < cur.StartDate)
+                            {
+                                date2 = cur.StartDate;
+                                model3.TutorId = item.Key;
+                                model3.ScheduleId = cur.Id;
+                                model3.Nearest = date2;
 
                             }
                         }
                         else
                         {
-                            date2 = cur.StartDate;
+                            if(cur.Status == Status.Ожидает)
+                            {
+                                date2 = cur.StartDate;
+                                model3.TutorId = item.Key;
+                                model3.ScheduleId = cur.Id;
+                                model3.Nearest = date2;
+                            }
+                         
                         }
-                        model3.TutorId = item.Key;
-                        model3.Nearest = date2;
+
+                    
                     }
                     else
                     {
-                        var date2 = DateTime.Now;
                         if (cur.Looped)
                         {
                             if (cur.ReadyDates.Count > 0)
                             {
-
-                                date2 = cur.ReadyDates.Last().AddDays(7);
+                                if ((cur.ReadyDates.Last().AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
+                                {
+                                    date2 = cur.ReadyDates.Last().AddDays(7);
+                                    model3.TutorId = item.Key;
+                                    model3.ScheduleId = cur.Id;
+                                    model3.Nearest = date2;
+                                }
                             }
-                            else
+
+                            if (cur.RescheduledLessons.Count > 0)
                             {
-                                if (cur.RescheduledLessons.Count > 0)
+                                if ((cur.RescheduledLessons.Last().NewTime - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
                                     date2 = cur.RescheduledLessons.Last().NewTime;
+                                    model3.TutorId = item.Key;
+                                    model3.ScheduleId = cur.Id;
+                                    model3.Nearest = date2;
                                 }
-                                else if (cur.RescheduledDate != DateTime.MinValue)
+                            }
+                            if (cur.RescheduledDate != DateTime.MinValue)
+                            {
+                                if ((cur.RescheduledDate - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
                                     date2 = cur.RescheduledDate;
+                                    model3.TutorId = item.Key;
+                                    model3.ScheduleId = cur.Id;
+                                    model3.Nearest = date2;
                                 }
-                                else
+                            }
+
+                            if (cur.SkippedDates.Count > 0)
+                            {
+                                if ((cur.SkippedDates.Last().AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
-                                    date2 = cur.StartDate;
+                                    date2 = cur.SkippedDates.Last().AddDays(7);
+                                    model3.TutorId = item.Key;
+                                    model3.ScheduleId = cur.Id;
+                                    model3.Nearest = date2;
                                 }
 
                             }
+
                         }
                         else
                         {
-                            date2 = cur.StartDate;
-                        }
+                            if (((cur.StartDate - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration()) && cur.Status == Status.Ожидает)
+                            {
+                                
+                                date2 = cur.StartDate;
+                                model3.TutorId = item.Key;
+                                model3.ScheduleId = cur.Id;
+                                model3.Nearest = date2;
 
-                        if (model3.Nearest > date2)
-                        {
-                            model3.Nearest = date2;
-                            model3.ScheduleId = cur.Id;
+                            }
                         }
                     }
                 }

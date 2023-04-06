@@ -7,6 +7,7 @@
         public const string NOTIF_TOMORROW_LESSON = "Завтра у вас занятие!"; // за день + на почту
         public const string NOTIF_USER_SKIPP_LAST_ONE = "Ученик {userName} пропустил занятие у репетитора {tutorName} запланированное на {date}. Остался один бесплатный пропуск."; // за день + на почту
         public const string NOTIF_USER_SKIPP_NO_WARN = "Ученик {userName} пропустил занятие у репетитора {tutorName} запланированное на {date} без предупреждения."; // за день + на почту
+        public const string NOTIF_USER_SKIPP_NO_SKIP = "У ученика {userName} закончились бесплатные пропуски! В следующий раз будет списана плата или начислен долг."; // за день + на почту
 
         #endregion
 
