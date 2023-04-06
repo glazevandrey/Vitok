@@ -23,7 +23,11 @@ namespace web_app.Controllers
             }
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<web_server.Models.User>(result.result.ToString());
-
+            if(user.Role == "Student")
+            {
+                var req5 = new CustomRequestPost("api/account/removeFirstLogin", user.UserId.ToString());
+                _requestService.SendPost(req5, HttpContext);
+            }
             ViewData["userid"] = user.UserId;
             ViewData["role"] = user.Role;
             ViewData["lessons"] = user.LessonsCount;

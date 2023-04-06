@@ -28,7 +28,7 @@ namespace web_server
         }
         public string LoginUser(string email, string Password)
         {
-            var user = TestData.UserList.SingleOrDefault(x => x.Email == email);
+            var user = TestData.UserList.FirstOrDefault(x => x.Email == email);
 
             if (user == null)
                 return null;

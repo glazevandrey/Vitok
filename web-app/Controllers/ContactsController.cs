@@ -35,7 +35,10 @@ namespace web_app.Controllers
             ViewData["usertoken"] = user.UserId;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
-
+            if (user.FirstLogin == true && user.Role == "Student")
+            {
+                ViewData["firstLogin"] = true;
+            }
             if (result.success)
             {
                 var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());

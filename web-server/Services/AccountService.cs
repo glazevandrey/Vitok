@@ -11,6 +11,11 @@ namespace web_server.Services
 {
     public class AccountService : IAccountService
     {
+        public bool RemoveFirstLogin(string args)
+        {
+            TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args)).FirstLogin = false;
+            return true;
+        }
 
         public User SaveAccountInfo(string args)
         {

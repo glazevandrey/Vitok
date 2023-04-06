@@ -29,6 +29,7 @@ namespace web_server.Models
         public string Wish { get; set; }
         public DateTime StartWaitPayment { get; set; }
         public bool WasFirstPayment { get; set; } = false;
+        public bool FirstLogin { get; set; } = true;
         public int LessonsCount { get; set; }
         public int SkippedInThisMonth { get; set; } = 0;
         public List<UserMoney> Money { get; set; } = new List<UserMoney>();

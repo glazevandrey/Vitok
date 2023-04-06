@@ -10,7 +10,15 @@
                 <a class="nav-link text-dark" href="/schedule">Расписание</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/chat">Чаты</a>
+                @{
+                    if(ViewData["firstLogin"] != null && (bool)ViewData["firstLogin"] == true)
+                    {
+                        <a class="nav-link text-dark" href="/chat">Чаты</a><label style="color:darkred">(+1)</label>
+                    }else{
+                        <a class="nav-link text-dark" href="/chat">Чаты</a>
+                    }
+                
+            }
             </li>
             <li class="nav-item">
                 <a class="nav-link text-dark" href="/contacts">Репетиторы</a>

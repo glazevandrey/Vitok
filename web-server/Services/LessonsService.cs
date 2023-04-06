@@ -98,8 +98,7 @@ namespace web_server.Services
 
 
                 if(user.Credit.Count != 0)
-                {
-                       
+                {      
                     foreach (var item in user.Money)
                     {
 
@@ -110,8 +109,6 @@ namespace web_server.Services
 
                         for (int i = 0; i < item.Count; i++)
                         {
-                        
-
                             var count = user.Credit.Count;
                             if (count == 0)
                             {
@@ -125,12 +122,18 @@ namespace web_server.Services
 
                             tutor.Balance += f_tut;
                             tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(f_tut) });
+                            tutor.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" });
+
+
 
                             manager.Balance += f_manag;
                             manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(f_manag) });
+                            manager.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}"});
 
                             item.Count--;
-                            user.Credit.Remove(user.Credit.First());
+                            user.BalanceHistory.CustomMessages.Add(new CustomMessage() {  MessageKey = DateTime.Now, MessageValue = $"Погашен долг за 1 занятие с репетитором {tutor.FirstName} {tutor.LastName}"});
+
+                        user.Credit.Remove(user.Credit.First());
                         }
                        
                     
@@ -139,27 +142,27 @@ namespace web_server.Services
                 }
 
 
-            foreach (var item in user.Money)
-            {
-                if (user.Credit.Count == 0)
-                {
-                    break;
-                }
+            //foreach (var item in user.Money)
+            //{
+            //    if (user.Credit.Count == 0)
+            //    {
+            //        break;
+            //    }
 
-                foreach (var credit in user.Credit)
-                {
-                    var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == credit.TutorId);
+            //    foreach (var credit in user.Credit)
+            //    {
+            //        var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == credit.TutorId);
 
-                    var f_tut = Math.Abs(item.Cost / 100 * 60);
-                    var f_manag = Math.Abs(item.Cost / 100 * 40);
+            //        var f_tut = Math.Abs(item.Cost / 100 * 60);
+            //        var f_manag = Math.Abs(item.Cost / 100 * 40);
 
-                    tutor.Balance += f_tut;
-                    tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(f_tut) });
+            //        tutor.Balance += f_tut;
+            //        tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(f_tut) });
 
-                    manager.Balance = f_manag;
-                }
+            //        manager.Balance = f_manag;
+            //    }
                 
-            }
+            //}
 
             var waited = schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
             foreach (var item in waited)
@@ -167,7 +170,10 @@ namespace web_server.Services
                 TestData.Schedules.FirstOrDefault(m => m.Id == item.Id).WaitPaymentDate = DateTime.MinValue;
             }
 
-            user.StartWaitPayment = DateTime.MinValue;
+            if(user.Credit.Count == 0)
+            {
+                user.StartWaitPayment = DateTime.MinValue;
+            }
 
             return user;
         }

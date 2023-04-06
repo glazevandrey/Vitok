@@ -35,6 +35,10 @@ namespace web_app.Controllers
             ViewData["lessons"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
+            if (user.FirstLogin == true && user.Role == "Student")
+            {
+                ViewData["firstLogin"] = true;
+            }
             if (error != null)
             {
                 ViewData["error"] = error;

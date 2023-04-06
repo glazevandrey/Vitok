@@ -42,6 +42,27 @@ namespace web_server.Controllers
 
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
+        [Models.Authorize]
+        [HttpPost("removeFirstLogin", Name = "removeFirstLogin")]
+        public string RemoveFirstLogin()
+        {
+            var form = Request.Form;
+            if (form == null || form.Keys.Count == 0)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+
+            var args = form.First().Key;
+
+            var user = _accountService.RemoveFirstLogin(args);
+            if (user == false)
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
+                return _jsonService.PrepareSuccessJson(json);
+            }
+
+            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+        }
 
         [Models.Authorize]
         [HttpPost("addlessons", Name = "addlessons")]

@@ -60,14 +60,21 @@ namespace web_server.Services
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
             var schedule = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
             var manager = TestData.Managers.First();
-            user.LessonsCount--;
+
+            if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен && (user.LessonsCount == 0 || user.Credit.Count > 0))
+            {
+                return null;
+            }
+
 
             if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен)
             {
+                user.LessonsCount--;
 
-                if (user.LessonsCount != 0)
+
+                if (user.LessonsCount >= 0)
                 {
-                    user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = "-1 занятие" });
+                    user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
 
 
                     if (user.Money.Count > 0)
@@ -90,15 +97,18 @@ namespace web_server.Services
 
                         tutor.Balance += for_tutor;
                         tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
-
+                        tutor.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}"});
+                      
                         manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
+                        manager.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
+
                         manager.Balance += for_manager;
 
                     }
 
 
                 }
-
+                
                 schedule.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON).NotifValue = false;
                 schedule.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_TOMORROW_LESSON).NotifValue = false;
                 schedule.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_DONT_FORGET_SET_STATUS).NotifValue = false;
@@ -145,6 +155,7 @@ namespace web_server.Services
                     NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
                         user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
                 }
+
             }
             else if ((Status)Enum.Parse(typeof(Status), status) == Status.Пропущен)
             {
@@ -152,7 +163,6 @@ namespace web_server.Services
                
                 if (warn)
                 {
-                    user.LessonsCount++;
                     user.SkippedInThisMonth++;
                     if (user.SkippedInThisMonth == 3)
                     {
@@ -160,7 +170,7 @@ namespace web_server.Services
 
                         if (user.LessonsCount > 0)
                         {
-                            user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = "-1 занятие" });
+                            user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
 
 
                             if (user.Money.Count > 0)
@@ -183,9 +193,10 @@ namespace web_server.Services
 
                                 tutor.Balance += for_tutor;
                                 tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
-
+                                tutor.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}"});
                                 manager.Balance += for_manager;
                                 manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_manager) });
+                                manager.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
 
 
                             }
@@ -232,6 +243,10 @@ namespace web_server.Services
                 }
                 else
                 {
+
+                    user.LessonsCount--;
+
+
                     NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
                   Replace("{userName}", user.FirstName + " " + user.LastName).
                   Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
@@ -244,10 +259,10 @@ namespace web_server.Services
 
                     // уведомление ученику и менеджеру что не предупредил
 
-                        user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = "-1 занятие" });
+                        user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
 
 
-                        if (user.Money.Count > 0)
+                        if (user.Money.Where(m=>m.Count > 0).ToList().Count > 0)
                         {
                             var for_tutor = 0.0;
                             var for_manager = 0.0;
@@ -264,15 +279,19 @@ namespace web_server.Services
                                     break;
                                 }
                             }
-                            tutor.Balance += for_tutor;
-                            tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
 
-                            manager.Balance += for_manager;
-                            manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_manager) });
+                        tutor.Balance += for_tutor;
+                        tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
+                        tutor.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" });
+                       
+                        manager.Balance += for_manager;
+                        manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_manager) });
+                        manager.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
 
 
-                        }
-                        else
+
+                    }
+                    else
                         {
                             user.Credit.Add(new UserCredit() { Id = user.Credit.Count == 0 ? 0 : user.Credit.Last().Id + 1, Amount = 1000, TutorId = tutor_id });
                         }
@@ -325,6 +344,7 @@ namespace web_server.Services
                     NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
                         user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
                 }
+
             }
 
 

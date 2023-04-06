@@ -30,7 +30,10 @@ namespace web_app.Controllers
             ViewData["count"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
-
+            if (user.FirstLogin == true && user.Role == "Student")
+            {
+                ViewData["firstLogin"] = true;
+            }
             return View(TestData.Tariffs);
         }
     }

@@ -144,14 +144,16 @@ namespace web_server
             }
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
             var photo = TestData.UserList.FirstOrDefault(m => m.UserId == userId).PhotoUrl;
+            var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
+
             if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId) == null)
             {
-                var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
                 TestData.ChatUsers.Add(new ChatUser() { UserId = userId, ConnectionTokens = new System.Collections.Generic.Dictionary<string, string>() { { connectionId, "Connected" } } });
-
+                TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).Messages.Add(new Messages() { Id = 0, MessageTime = DateTime.Now, ReceiverId = userId.ToString(), SenderId = TestData.Managers.First().UserId.ToString(), Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!" });
                 SetNewContact(userId);
 
             }
+           
             else
             {
                 TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens.Add(connectionId, "Connected");
