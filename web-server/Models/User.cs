@@ -41,5 +41,5 @@ namespace web_server.Models
         public List<Course> Courses { get; set; }
         public string About { get; set; }
         public UserDate UserDates { get; set; }
-    }
+    }   
 }
