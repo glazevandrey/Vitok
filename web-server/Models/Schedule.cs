@@ -42,5 +42,6 @@ namespace web_server.Models
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public bool WasWarn {get;set;}
+        public int InitPaid { get; set; } = 0;
     }
 }

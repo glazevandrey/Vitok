@@ -10,6 +10,8 @@ namespace web_server.DbContext
         public int Id { get; set; }
         public double Amount { get; set; }
         public int TutorId { get; set; }
+        public int ScheduleId { get; set; }
+        public DateTime ScheduleSkippedDate { get; set; }
         public bool Repaid { get; set; }
     }
     public class UserMoney
@@ -78,8 +80,8 @@ namespace web_server.DbContext
                     FirstName = "Сергей",
                     LastName = "Курочка",
                     MiddleName = "Андреевич",
-                    LessonsCount = 2,
-                    Money = new List<UserMoney>(){ new UserMoney() { Id = 0, Cost = 1000, Count = 2} },
+                    LessonsCount = 1,
+                    Money = new List<UserMoney>(){ new UserMoney() { Id = 0, Cost = 1000, Count = 1} },
                     BirthDate = DateTime.Parse("12.05.1999"),
                     Password = "123123",
                     WasFirstPayment = true,

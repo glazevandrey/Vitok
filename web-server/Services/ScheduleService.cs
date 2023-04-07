@@ -65,7 +65,7 @@ namespace web_server.Services
                 return "Не удалось поменять статус занятия. Ученик не произвел оплату.";
             }
 
-
+            int initPay = 0;
             if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен)
             {
                 user.LessonsCount--;
@@ -168,7 +168,7 @@ namespace web_server.Services
                     if (user.SkippedInThisMonth == 3)
                     {
                         user.LessonsCount--;
-
+                        warn = false;
                         if (user.LessonsCount > 0)
                         {
                             user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
@@ -188,10 +188,11 @@ namespace web_server.Services
                                         for_tutor = Math.Abs(item.Cost / 100 * 60);
                                         for_manager = Math.Abs(item.Cost / 100 * 40);
                                         user.Money.FirstOrDefault(m => m.Cost == item.Cost).Count--;
+                                        initPay = (int)Math.Abs(item.Cost);
                                         break;
                                     }
                                 }
-
+                                
                                 tutor.Balance += for_tutor;
                                 tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" } });
                                 manager.Balance += for_manager;
@@ -204,7 +205,7 @@ namespace web_server.Services
                         }
                         else
                         {
-                            user.Credit.Add(new UserCredit() { Id = user.Credit.Where(m => m.Repaid == false).ToList().Count == 0 ? 0 : user.Credit.Last().Id + 1, Amount = 1000, TutorId = tutor_id });
+                            user.Credit.Add(new UserCredit() { Id = user.Credit.Where(m => m.Repaid == false).ToList().Count == 0 ? 0 : user.Credit.Last().Id + 1, Amount = 1000, TutorId = tutor_id, ScheduleId = schedule.Id, ScheduleSkippedDate = dateCurr });
                         }
 
                     }
@@ -280,19 +281,19 @@ namespace web_server.Services
                         var for_tutor = 0.0;
                         var for_manager = 0.0;
 
-                        var f = user.Money.OrderBy(m => m.Cost).ToList();
+                        var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m=>m.Count > 0);
 
                         foreach (var item in f)
                         {
-                            if (item.Count != 0)
+                            if (item.Count > 0)
                             {
                                 for_tutor = Math.Abs(item.Cost / 100 * 60);
                                 for_manager = Math.Abs(item.Cost / 100 * 40);
-                                user.Money.FirstOrDefault(m => m.Cost == item.Cost).Count--;
+                                user.Money.FirstOrDefault(m => m.Cost == item.Cost && item.Count > 0).Count--;
+                                initPay = (int)Math.Abs(item.Cost);
                                 break;
                             }
                         }
-
                         tutor.Balance += for_tutor;
                         tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" } });
 
@@ -304,21 +305,18 @@ namespace web_server.Services
                     }
                     else
                     {
-                        user.Credit.Add(new UserCredit() { Id = user.Credit.Where(m => m.Repaid == false).ToList().Count == 0 ? 0 : user.Credit.Last().Id + 1, Amount = 1000, TutorId = tutor_id });
+                        user.Credit.Add(new UserCredit() { Id = user.Credit.Where(m => m.Repaid == false).ToList().Count == 0 ? 0 : user.Credit.Last().Id + 1, Amount = 1000, TutorId = tutor_id, ScheduleId = schedule.Id, ScheduleSkippedDate = dateCurr });
                     }
-
-
-
-
                 }
+
 
                 if (schedule.Looped)
                 {
-                    schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr , WasWarn = warn});
+                    schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr , WasWarn = warn, InitPaid = initPay});
                 }
                 else
                 {
-                    schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr, WasWarn = warn });
+                    schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr, WasWarn = warn, InitPaid = initPay });
                     schedule.Status = Status.Пропущен;
                 }
 

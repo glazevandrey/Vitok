@@ -92,8 +92,15 @@ namespace web_server.Services
 
                 var id = user.Money.FirstOrDefault() != null ? user.Money.FirstOrDefault().Id : 0;
 
-                user.Money.Add(new UserMoney() { Id = id, Cost = 1000, Count = lessonCount });
-                // user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = lessonCount * 1000 }, CustomMessages = new CustomMessage() { MessageValue = $"Пополнение баланса на: {lessonCount} занятия" } });
+                if(user.Money.FirstOrDefault(m=>m.Cost == 1000) != null)
+                {
+                    user.Money.FirstOrDefault(m=>m.Cost == 1000).Count+= lessonCount;
+
+                }
+                else
+                {
+                    user.Money.Add(new UserMoney() { Id = id, Cost = 1000, Count = lessonCount });
+                }
             }
 
 
@@ -134,7 +141,9 @@ namespace web_server.Services
                         how_minus++;
                         user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"Погашен долг за 1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
 
-                        user.Credit.Where(m => m.Repaid == false).First().Repaid = true;
+                        var credit = user.Credit.Where(m => m.Repaid == false).First();
+                        credit.Repaid = true;
+                        credit.Amount = item.Cost;
                     }
 
                     item.Count -= how_minus;

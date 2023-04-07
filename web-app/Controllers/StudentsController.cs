@@ -216,15 +216,258 @@ namespace web_app.Controllers
                                 }
                             }
 
-
-                            foreach (var skip in item.SkippedDates)
+                            foreach (var skiped in item.SkippedDates)
                             {
-                                
-                            }
+                                var ready = skiped.Date;
+                                var credit = user.Credit.FirstOrDefault(m => m.ScheduleId == item.Id && m.ScheduleSkippedDate == ready);
+                                if (credit == null)
+                                {
+                                    continue;
+                                }
+                                if (item.SkippedDates[0].WasWarn == true)
+                                {
+                                    continue;
+                                }
+                                if (ready > date2 && (date2 != DateTime.MaxValue))
+                                {
+                                    continue;
+                                }
 
+                                if (credit == null)
+                                {
+                                    if (keys.ContainsKey(date))
+                                    {
+                                        if (keys[date].FirstOrDefault(m=>m.LessonDate == ready) != null)
+                                        {
+                                            continue;
+                                        }
+
+                                        keys[date].Add(new StudentPayment()
+                                        {
+                                            LessonAmount = item.SkippedDates[0].InitPaid,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        });
+                                    }
+                                    else
+                                    {
+                                        
+                                        keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
+                                        {
+                                            LessonAmount = item.SkippedDates[0].InitPaid,
+                                            PaymentDate = date,
+                                            PaymentAmount = list2[j].CashFlow.Amount,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        }});
+                                    }
+
+                                    continue;
+                                }
+
+                                var paid = credit.Repaid;
+                                var amount = credit.Amount;
+
+                                if (ready >= date && ready < date2)
+                                {
+                                    if (keys.Count == 0)
+                                    {
+                                        keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
+                                        {
+                                            LessonAmount =  paid == true ? (int)Math.Abs(amount) : 0,
+                                            PaymentDate = date,
+                                            PaymentAmount = list2[j].CashFlow.Amount,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        } });
+                                    }
+                                    else
+                                    {
+                                        if (keys.ContainsKey(date))
+                                        {
+                                            if (keys[date].FirstOrDefault(m => m.LessonDate == ready) != null)
+                                            {
+                                                continue;
+                                            }
+                                            keys[date].Add(new StudentPayment()
+                                            {
+                                                LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
+
+                                                StudentName = item.UserName,
+                                                LessonDate = ready
+                                            });
+                                        }
+                                        else
+                                        {
+                                            keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
+                                        {
+                                            LessonAmount =  paid == true ? (int)Math.Abs(amount) : 0,
+                                             PaymentDate = date,
+                                        PaymentAmount = list2[j].CashFlow.Amount,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        } });
+                                        }
+
+
+                                    }
+                                }
+                                else if (ready >= date2 && (date2 != DateTime.MinValue))
+                                {
+                                    if (keys.ContainsKey(date))
+                                    {if (keys[date].FirstOrDefault(m => m.LessonDate == ready) != null)
+                                        {
+                                            continue;
+                                        }
+                                        keys[date].Add(new StudentPayment()
+                                        {
+                                            LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        });
+                                    }
+                                    else
+                                    {
+                                        keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
+                                        {
+                                            LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
+                                            PaymentDate = date,
+                                            PaymentAmount = list2[j].CashFlow.Amount,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        }});
+                                    }
+
+                                }
+                            }
                         }
                         else
                         {
+
+                            if (item.Status == Status.Пропущен)
+                            {
+                                var ready = item.SkippedDates[0].Date;
+                                var credit = user.Credit.FirstOrDefault(m => m.ScheduleId == item.Id && m.ScheduleSkippedDate == ready);
+                                
+                               
+                                if (item.SkippedDates[0].WasWarn == true)
+                                {
+                                    continue;
+                                }
+
+                                if(credit == null)
+                                {
+                                    if (keys.ContainsKey(date))
+                                    {if (keys[date].FirstOrDefault(m => m.LessonDate == ready) != null)
+                                        {
+                                            continue;
+                                        }
+                                        keys[date].Add(new StudentPayment()
+                                        {
+                                            LessonAmount = item.SkippedDates[0].InitPaid,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        });
+                                    }
+                                    else
+                                    {
+                                        keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
+                                        {
+                                            LessonAmount = item.SkippedDates[0].InitPaid,
+                                            PaymentDate = date,
+                                            PaymentAmount = list2[j].CashFlow.Amount,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        }});
+                                    }
+
+                                    continue;
+                                }
+
+                                if (ready > date2 && (date2 != DateTime.MaxValue))
+                                {
+                                    continue;
+                                }
+
+
+
+                                var paid = credit.Repaid;
+                                var amount = credit.Amount;
+
+                                if (ready >= date && ready < date2)
+                                {
+                                    if (keys.Count == 0)
+                                    {
+                                        keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
+                                        {
+                                            LessonAmount =  paid == true ? (int)Math.Abs(amount) : 0,
+                                            PaymentDate = date,
+                                            PaymentAmount = list2[j].CashFlow.Amount,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        } });
+                                    }
+                                    else
+                                    {
+                                        if (keys.ContainsKey(date))
+                                        {if (keys[date].FirstOrDefault(m => m.LessonDate == ready) != null)
+                                            {
+                                                continue;
+                                            }
+                                            keys[date].Add(new StudentPayment()
+                                            {
+                                                LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
+
+                                                StudentName = item.UserName,
+                                                LessonDate = ready
+                                            });
+                                        }
+                                        else
+                                        {
+                                            keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
+                                        {
+                                            LessonAmount =  paid == true ? (int)Math.Abs(amount) : 0,
+                                             PaymentDate = date,
+                                        PaymentAmount = list2[j].CashFlow.Amount,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        } });
+                                        }
+
+
+                                    }
+                                }
+                                else if (ready >= date2 && (date2 != DateTime.MinValue))
+                                {
+                                    if (keys.ContainsKey(date))
+                                    {if (keys[date].FirstOrDefault(m => m.LessonDate == ready) != null)
+                                        {
+                                            continue;
+                                        }
+                                        keys[date].Add(new StudentPayment()
+                                        {
+                                            LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
+                                            StudentName = item.UserName,
+                                            LessonDate = ready
+                                        });
+                                    }
+                                    else
+                                    {
+                                        keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
+                                    {
+                                        LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
+                                        PaymentDate = date,
+                                        PaymentAmount = list2[j].CashFlow.Amount,
+                                        StudentName = item.UserName,
+                                        LessonDate = ready
+                                    }});
+                                    }
+
+                                }
+
+                            }
+
+
                             if (item.Status == Status.Проведен)
                             {
                                 var ready = item.EndDate;
@@ -248,7 +491,10 @@ namespace web_app.Controllers
                                     else
                                     {
                                         if (keys.ContainsKey(date))
-                                        {
+                                        {if (keys[date].FirstOrDefault(m => m.LessonDate == ready) != null)
+                                            {
+                                                continue;
+                                            }
                                             keys[date].Add(new StudentPayment()
                                             {
                                                 LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
@@ -275,7 +521,10 @@ namespace web_app.Controllers
                                 else if (ready >= date2 && (date2 != DateTime.MinValue))
                                 {
                                     if (keys.ContainsKey(date))
-                                    {
+                                    {if (keys[date].FirstOrDefault(m => m.LessonDate == ready) != null)
+                                        {
+                                            continue;
+                                        }
                                         keys[date].Add(new StudentPayment()
                                         {
                                             LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,

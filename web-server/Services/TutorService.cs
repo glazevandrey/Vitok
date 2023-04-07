@@ -79,48 +79,6 @@ namespace web_server.Services
                     StartDate = dateTime
                 };
 
-                //  var waited = TestData.Schedules.FirstOrDefault(m => m.UserId == Convert.ToInt32(user_id) && m.TutorId == Convert.ToInt32(tutor_id) && m.WaitPaymentDate != DateTime.MinValue);
-                //if (waited != null)
-                //{
-                //    if (dateTime < waited.WaitPaymentDate)
-                //    {
-                //        waited.WaitPaymentDate = DateTime.MinValue;
-
-
-                //        if (user.LessonsCount == 0)
-                //        {
-
-
-                //            //if (sch.Looped)
-                //            //{
-                //            //    if (sch.ReadyDates.Count > 0)
-                //            //    {
-                //            //        sch.WaitPaymentDate = sch.ReadyDates.Last().AddDays(7);
-                //            //    }
-                //            //    else
-                //            //    {
-                //            //        if (sch.RescheduledLessons.Count > 0)
-                //            //        {
-                //            //            sch.WaitPaymentDate = sch.RescheduledLessons.Last().NewTime;
-                //            //        }
-                //            //        else if (sch.RescheduledDate != DateTime.MinValue)
-                //            //        {
-                //            //            sch.WaitPaymentDate = sch.RescheduledDate;
-                //            //        }
-                //            //        else
-                //            //        {
-                //            //            sch.WaitPaymentDate = sch.StartDate;
-                //            //        }
-
-                //            //    }
-                //            //}
-                //            //else
-                //            //{
-                //            //    sch.WaitPaymentDate = sch.StartDate;
-                //            //}
-                //        }
-                //    }
-                //}
 
                 TestData.Schedules.Add(sch);
 
