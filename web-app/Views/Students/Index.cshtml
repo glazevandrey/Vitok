@@ -78,11 +78,16 @@
                             <div class="modal-body">
                                 @{
 
-                                    foreach (var balance in item.BalanceHistory.CustomMessages)
+                                    foreach (var balance in item.BalanceHistory)
                                     {
-                                        <label><b>@balance.MessageKey.ToString("dd MMMM ddd")</b></label>
+                                        <label><b>@balance.Date.ToString("dd MMMM ddd")</b></label>
                                         <br />
-                                        <label>@balance.MessageValue</label>
+                                        <label>@balance.CustomMessages.MessageValue</label>
+                                        <br />
+                                        if(balance.CashFlow != null)
+                                        {
+                                            <label>@balance.CashFlow.ToString()</label>
+                                        }
                                         <br />
                                         <br />
                                     }

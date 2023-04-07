@@ -74,7 +74,7 @@ namespace web_server.Services
 
                 if (user.LessonsCount >= 0)
                 {
-                    user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
+                    user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
 
 
                     if (user.Money.Count > 0)
@@ -96,11 +96,9 @@ namespace web_server.Services
                         }
 
                         tutor.Balance += for_tutor;
-                        tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
-                        tutor.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}"});
+                        tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) },  CustomMessages = new CustomMessage() { MessageValue = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}" } });
                       
-                        manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
-                        manager.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
+                        manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" } });
 
                         manager.Balance += for_manager;
 
@@ -170,7 +168,7 @@ namespace web_server.Services
 
                         if (user.LessonsCount > 0)
                         {
-                            user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
+                            user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
 
 
                             if (user.Money.Count > 0)
@@ -192,11 +190,9 @@ namespace web_server.Services
                                 }
 
                                 tutor.Balance += for_tutor;
-                                tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
-                                tutor.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}"});
+                                tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" } });
                                 manager.Balance += for_manager;
-                                manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_manager) });
-                                manager.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
+                                manager.BalanceHistory.Add(new BalanceHistory() {  CashFlow= new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" } });
 
 
                             }
@@ -273,7 +269,7 @@ namespace web_server.Services
 
                     // уведомление ученику и менеджеру что не предупредил
 
-                        user.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
+                        user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
 
 
                         if (user.Money.Where(m=>m.Count > 0).ToList().Count > 0)
@@ -295,12 +291,10 @@ namespace web_server.Services
                             }
 
                         tutor.Balance += for_tutor;
-                        tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_tutor) });
-                        tutor.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" });
+                        tutor.BalanceHistory.Add(new BalanceHistory() {  CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" } });
                        
                         manager.Balance += for_manager;
-                        manager.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(for_manager) });
-                        manager.BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
+                        manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" } });
 
 
 

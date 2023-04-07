@@ -22,7 +22,7 @@ namespace web_server.Models
         public string Phone { get; set; }
         public string Role { get; set; }
         public string ActiveToken { get; set; }
-        public BalanceHistory BalanceHistory { get; set; } = new BalanceHistory();
+        public List<BalanceHistory> BalanceHistory { get; set; } = new List<BalanceHistory>();
         public double Balance { get; set; }
 
         // поля студента

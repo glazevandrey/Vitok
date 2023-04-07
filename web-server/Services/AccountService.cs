@@ -106,12 +106,14 @@ namespace web_server.Services
 
         public bool Withdraw(string tutorid, string count)
         {
-            if (TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).Balance < Convert.ToDouble(count))
+            if (TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).Balance < Convert.ToDouble(count))
             {
                 return false;
             }
-            TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).Balance -= Convert.ToInt32(count);
-            TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).BalanceHistory.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Вывод средств: {count} p." });
+            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).Balance -= Convert.ToInt32(count);
+            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessages = new CustomMessage() { MessageValue = $"Вывод средств" } });
+
+            //.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Вывод средств: {count} p." });
 
             return true;
         }
