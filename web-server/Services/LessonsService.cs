@@ -76,18 +76,18 @@ namespace web_server.Services
                 }
 
                 TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory()
-                { CustomMessages = new CustomMessage() { MessageValue = $"Оплата тарифа: {tariff.Title}" } });
+                { CashFlow = new CashFlow() { Amount = (int)Math.Abs(tariff.Amount), Count = lessonCount} ,  CustomMessages = new CustomMessage() { MessageValue = $"Оплата тарифа: {tariff.Title}" } });
 
             }
             else
             {
                 if (isTrial)
                 {
-                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { Date = DateTime.Now.AddDays(2), CashFlow = new CashFlow() { Amount = 250 }, CustomMessages = new CustomMessage() { MessageValue = $"Оплачено пробное занятие" } });
+                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { Date = DateTime.Now.AddDays(2), CashFlow = new CashFlow() { Amount = 250, Count = 1 }, CustomMessages = new CustomMessage() { MessageValue = $"Оплачено пробное занятие" } });
                 }
                 else
                 {
-                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = 1000 * lessonCount }, CustomMessages = new CustomMessage() { MessageValue = $"Оплачено занятий: {lessonCount}" } });
+                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = 1000 * lessonCount, Count = lessonCount }, CustomMessages = new CustomMessage() { MessageValue = $"Оплачено занятий: {lessonCount}" } });
                 }
 
                 var id = user.Money.FirstOrDefault() != null ? user.Money.FirstOrDefault().Id : 0;

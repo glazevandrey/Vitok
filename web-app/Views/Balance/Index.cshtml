@@ -219,7 +219,7 @@
              <br/>
              <label>@item.CustomMessages.MessageValue</label>
                 <br />
-                if(item.CashFlow != null)
+                if(item.CashFlow != null && Model.Role != "Student")
                 {
                     <label>@item.CashFlow.Amount</label>
                 }
@@ -229,47 +229,7 @@
 
         }
 
-        //var sortedM  = Model.BalanceHistory.OrderBy(m=>m.MessageKey).Reverse();
-        //var sortedCModel = Model.BalanceHistory.CashFlow.OrderBy(m=>m.Date).Reverse();
-        //var list = new List<DisplayBalance>();
-        //// var list = new Dictionary<int, List<string>>();
-        //int id = 0;
-        //if(Model.Role == "Tutor" || Model.Role == "Manager")
-        //{
-
-        //    foreach (var item in sortedCModel)
-        //    {
-        //        //<label><b>@item.Date.ToString("dd MMMM ddd HH:mm")</b></label>
-        //        //<br/>
-        //        //<label>@item.Amount</label>
-        //        //<br/>
-        //        //<br/>
-        //        list.Add(new DisplayBalance() { Id = id, DateTime = item.Date, Message = item.Amount.ToString() });
-        //        id++;
-        //    }
-        //}
-
-        //foreach (var item in sortedM)
-        //{
-        //    //<label><b>@item.MessageKey.ToString("dd MMMM ddd HH:mm")</b></label>
-        //    //<br />
-        //    //<label>@item.MessageValue</label>
-        //    //<br />
-        //    //<br />
-        //    list.Add(new DisplayBalance() { Id = id, DateTime = item.MessageKey, Message = item.MessageValue.ToString() });
-
-        //    id++;
-        //}
-        //list = list.OrderBy(m=>m.DateTime).Reverse().ToList();
        
-        //foreach (var item in list)
-        //{
-        //    <label><b>@item.DateTime.ToString("dd MMMM ddd HH:mm")</b></label>
-        //    <br/>
-        //    <label>@item.Message</label>
-        //    <br/>
-        //    <br/>
-        //}
     }
     @{
         if(ViewData["error"] != null)

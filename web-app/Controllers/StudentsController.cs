@@ -164,7 +164,7 @@ namespace web_app.Controllers
 
                                         keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = 1000,
+                                            LessonAmount = list2[j].CashFlow.Amount/list2[j].CashFlow.Count,
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
@@ -177,7 +177,7 @@ namespace web_app.Controllers
                                         {
                                             keys[date].Add(new StudentPayment()
                                             {
-                                                LessonAmount = 1000,
+                                                LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
                                                 StudentName = item.UserName,
                                                 LessonDate = ready
                                             });
@@ -195,8 +195,8 @@ namespace web_app.Controllers
                                     {
                                         keys[date].Add(new StudentPayment()
                                         {
-                                            LessonAmount = 1000,
-                                           
+                                            LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
+
                                             StudentName = item.UserName,
                                             LessonDate = ready
                                         });
@@ -205,7 +205,7 @@ namespace web_app.Controllers
                                     {
                                         keys.Add( date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = 1000,
+                                            LessonAmount = list2[j].CashFlow.Amount/list2[j].CashFlow.Count,
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
@@ -214,6 +214,12 @@ namespace web_app.Controllers
                                     }
                             
                                 }
+                            }
+
+
+                            foreach (var skip in item.SkippedDates)
+                            {
+
                             }
 
                         }
@@ -232,7 +238,7 @@ namespace web_app.Controllers
                                     {
                                         keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = 1000,
+                                            LessonAmount = list2[j].CashFlow.Amount/list2[j].CashFlow.Count,
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
@@ -245,7 +251,7 @@ namespace web_app.Controllers
                                         {
                                             keys[date].Add(new StudentPayment()
                                             {
-                                                LessonAmount = 1000,
+                                                LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
 
                                                 StudentName = item.UserName,
                                                 LessonDate = ready
@@ -255,7 +261,7 @@ namespace web_app.Controllers
                                         {
                                             keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = 1000,
+                                            LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
                                              PaymentDate = date,
                                         PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
@@ -272,8 +278,7 @@ namespace web_app.Controllers
                                     {
                                         keys[date].Add(new StudentPayment()
                                         {
-                                            LessonAmount = 1000,
-
+                                            LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
                                             StudentName = item.UserName,
                                             LessonDate = ready
                                         });
@@ -282,7 +287,7 @@ namespace web_app.Controllers
                                     {
                                         keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                     {
-                                        LessonAmount = 1000,
+                                        LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
                                         PaymentDate = date,
                                         PaymentAmount = list2[j].CashFlow.Amount,
                                         StudentName = item.UserName,

@@ -13,7 +13,7 @@ namespace web_server.Models
         public int UserId { get; set; }
         public string Password { get; set; }
         public string FirstName { get; set; }
-        public string PhotoUrl { get; set; } = "https://static3.vivoo.ru/datas/photos/800x800/d6/96/04f0912d55d8dc01ed36d15927dd.jpg?1";
+        public string PhotoUrl { get; set; } = "/default_img.jpg";
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public List<NotificationTokens> NotificationTokens { get; set; } = new List<NotificationTokens>();

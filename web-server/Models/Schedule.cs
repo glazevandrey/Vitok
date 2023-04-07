@@ -36,4 +36,11 @@ namespace web_server.Models
         public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
         public DateTime RemoveDate { get; set; }
     }
+    public class SkippedDate
+    {
+        [Key]
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public bool WasWarn {get;set;}
+    }
 }
