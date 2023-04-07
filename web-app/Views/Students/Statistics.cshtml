@@ -1,0 +1,37 @@
+﻿@using web_app.Models;
+@using web_server.Models;
+@model List<StudentPayment>;
+
+@{
+    Layout = "_Layout";
+    User user = (User)ViewData["user"];
+}
+
+
+<h2>Payments</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Payment Date</th>
+            <th>Payment Amount</th>
+            <th>Lesson Date</th>
+            <th>Lesson Amount</th>
+            <th>Debt Lessons</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payment in Model)
+        {
+            <tr>
+                <td>@payment.StudentName</td>
+                <td>@payment.PaymentDate.ToShortDateString()</td>
+                <td>@payment.PaymentAmount</td>
+                <td>@payment.LessonDate.ToShortDateString()</td>
+                <td>@payment.LessonAmount</td>
+                <td>@payment.DebtLessons</td>
+            </tr>
+        }
+    </tbody>
+</table>

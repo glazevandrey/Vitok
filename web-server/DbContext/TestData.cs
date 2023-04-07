@@ -10,6 +10,7 @@ namespace web_server.DbContext
         public int Id { get; set; }
         public double Amount { get; set; }
         public int TutorId { get; set; }
+        public bool Repaid { get; set; }
     }
     public class UserMoney
     {

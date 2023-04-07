@@ -42,7 +42,7 @@ namespace web_server.Services
         {
 
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args[0]));
-            
+
             user.LessonsCount += Convert.ToInt32(args[1]);
 
             var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
@@ -75,94 +75,73 @@ namespace web_server.Services
                     user.Money.FirstOrDefault(m => m.Cost == one).Count += lessonCount;
                 }
 
-                TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() 
-                { CustomMessages = new CustomMessage() { MessageValue = $"Оплата тарифа: {tariff.Title}"} });
+                TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory()
+                { CustomMessages = new CustomMessage() { MessageValue = $"Оплата тарифа: {tariff.Title}" } });
 
             }
             else
             {
                 if (isTrial)
                 {
-                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"Оплачено пробное занятие" } });
+                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { Date = DateTime.Now.AddDays(2), CashFlow = new CashFlow() { Amount = 250 }, CustomMessages = new CustomMessage() { MessageValue = $"Оплачено пробное занятие" } });
                 }
                 else
                 {
-                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"Оплачено занятий: {lessonCount}" } });
+                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = 1000 * lessonCount }, CustomMessages = new CustomMessage() { MessageValue = $"Оплачено занятий: {lessonCount}" } });
                 }
 
                 var id = user.Money.FirstOrDefault() != null ? user.Money.FirstOrDefault().Id : 0;
 
                 user.Money.Add(new UserMoney() { Id = id, Cost = 1000, Count = lessonCount });
+                // user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = lessonCount * 1000 }, CustomMessages = new CustomMessage() { MessageValue = $"Пополнение баланса на: {lessonCount} занятия" } });
             }
 
 
             var manager = TestData.Managers.First();
 
+            int how_minus = 0;
+            if (user.Credit.Where(m => m.Repaid == false).ToList().Count != 0)
+            {
+                foreach (var item in user.Money)
+                {
 
-                if(user.Credit.Count != 0)
-                {      
-                    foreach (var item in user.Money)
+                    if (item.Count == 0)
                     {
-
-                        if (item.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        for (int i = 0; i < item.Count; i++)
-                        {
-                            var count = user.Credit.Count;
-                            if (count == 0)
-                            {
-                                break;
-                            }
-
-                            var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == user.Credit.First().TutorId);
-
-                            var f_tut = Math.Abs(item.Cost / 100 * 60);
-                            var f_manag = Math.Abs(item.Cost / 100 * 40);
-
-                            tutor.Balance += f_tut;
-                            tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_tut) },  CustomMessages = new CustomMessage() { MessageValue = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" } });
-
-
-
-                            manager.Balance += f_manag;
-                            manager.BalanceHistory.Add(new BalanceHistory() { CashFlow  = new CashFlow() { Amount = (int)Math.Abs(f_manag) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" } });
-
-                            item.Count--;
-                            user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"Погашен долг за 1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
-
-                        user.Credit.Remove(user.Credit.First());
-                        }
-                       
-                    
+                        continue;
                     }
-             
+
+                    for (int i = 0; i <= item.Count; i++)
+                    {
+                        var count = user.Credit.Where(m => m.Repaid == false).ToList().Count;
+                        if (count == 0)
+                        {
+                            break;
+                        }
+
+                        var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == user.Credit.First().TutorId);
+
+                        var f_tut = Math.Abs(item.Cost / 100 * 60);
+                        var f_manag = Math.Abs(item.Cost / 100 * 40);
+
+                        tutor.Balance += f_tut;
+                        tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_tut) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" } });
+
+
+
+                        manager.Balance += f_manag;
+                        manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_manag) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" } });
+
+                        how_minus++;
+                        user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"Погашен долг за 1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
+
+                        user.Credit.Where(m => m.Repaid == false).First().Repaid = true;
+                    }
+
+                    item.Count -= how_minus;
+
                 }
 
-
-            //foreach (var item in user.Money)
-            //{
-            //    if (user.Credit.Count == 0)
-            //    {
-            //        break;
-            //    }
-
-            //    foreach (var credit in user.Credit)
-            //    {
-            //        var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == credit.TutorId);
-
-            //        var f_tut = Math.Abs(item.Cost / 100 * 60);
-            //        var f_manag = Math.Abs(item.Cost / 100 * 40);
-
-            //        tutor.Balance += f_tut;
-            //        tutor.BalanceHistory.CashFlow.Add(new CashFlow() { Date = DateTime.Now, Amount = (int)Math.Abs(f_tut) });
-
-            //        manager.Balance = f_manag;
-            //    }
-                
-            //}
+            }
 
             var waited = schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
             foreach (var item in waited)
@@ -170,7 +149,7 @@ namespace web_server.Services
                 TestData.Schedules.FirstOrDefault(m => m.Id == item.Id).WaitPaymentDate = DateTime.MinValue;
             }
 
-            if(user.Credit.Count == 0)
+            if (user.Credit.Where(m => m.Repaid == false).ToList().Count == 0)
             {
                 user.StartWaitPayment = DateTime.MinValue;
             }
@@ -317,27 +296,27 @@ namespace web_server.Services
                     .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")), TestData.Managers.First().UserId.ToString(), _hubContext);
 
 
-                
-            if (user.LessonsCount <= 0)
-            {
-                if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
-                {
-                    user.StartWaitPayment = DateTime.Now;
-                }
-                var ff = TestData.Schedules.Where(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue).ToList();
-                if (ff.Count > 0)
-                {
-                    foreach (var item in ff)
-                    {
-                        item.WaitPaymentDate = DateTime.MinValue;
-                    }
-                }
-              
 
-                NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
-                NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
-                    user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
-            }
+                if (user.LessonsCount <= 0)
+                {
+                    if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
+                    {
+                        user.StartWaitPayment = DateTime.Now;
+                    }
+                    var ff = TestData.Schedules.Where(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue).ToList();
+                    if (ff.Count > 0)
+                    {
+                        foreach (var item in ff)
+                        {
+                            item.WaitPaymentDate = DateTime.MinValue;
+                        }
+                    }
+
+
+                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                        user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
+                }
 
                 CalculateNoPaidWarn(user, _hubContext);
                 return new_model;

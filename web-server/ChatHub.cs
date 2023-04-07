@@ -153,7 +153,7 @@ namespace web_server
                 SetNewContact(userId);
 
             }
-           
+
             else
             {
                 TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens.Add(connectionId, "Connected");
@@ -269,7 +269,7 @@ namespace web_server
             foreach (var item in userSchediles)
             {
 
-                if(item.UserId == -1)
+                if (item.UserId == -1)
                 {
                     continue;
                 }
@@ -393,7 +393,7 @@ namespace web_server
             var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId);
             foreach (var item in chatUser.Contacts)
             {
-                if(item.UserId == -1)
+                if (item.UserId == -1)
                 {
                     continue;
                 }

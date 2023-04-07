@@ -11,7 +11,7 @@ namespace web_server
     {
         public static void SendNotification(string message, string to, IHubContext<NotifHub> hub)
         {
-            if(to == (-1).ToString())
+            if (to == (-1).ToString())
             {
                 return;
             }
@@ -59,6 +59,10 @@ namespace web_server
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
 
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
+            if (user == null)
+            {
+                return;
+            }
             if (user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId) == null)
             {
                 TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.Add(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" });

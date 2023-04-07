@@ -110,9 +110,9 @@
     {
 
 
-        if(Model.Credit.Count > 0)
+        if (Model.Credit.Where(m => m.Repaid == false).ToList().Count > 0)
         {
-            var cred = Model.Credit.Count;
+            var cred = Model.Credit.Where(m=>m.Repaid == false).ToList().Count;
                     <br/>
                     <label style="color:darkred">ВНИМАНИЕ! У вас имеется задолжность за: @cred занятие(й).</label>
 

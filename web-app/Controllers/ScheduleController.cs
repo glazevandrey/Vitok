@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using web_app.Models;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
 using web_app.Services;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Services.Interfaces;
 
@@ -107,10 +105,10 @@ namespace web_app.Controllers
             if (user.Role == "Student")
             {
                 ViewData["firstPay"] = user.WasFirstPayment;
-                    if (user.FirstLogin == true)
-                    {
-                        ViewData["firstLogin"] = true;
-                    }
+                if (user.FirstLogin == true)
+                {
+                    ViewData["firstLogin"] = true;
+                }
             }
             else
             {
@@ -215,7 +213,7 @@ namespace web_app.Controllers
                 var res = _requestService.SendPost(req, HttpContext);
                 if (!res.success)
                 {
-                    return RedirectToAction("Index", "Schedule", new {error= res.result.ToString()});
+                    return RedirectToAction("Index", "Schedule", new { error = res.result.ToString() });
                 }
 
             }

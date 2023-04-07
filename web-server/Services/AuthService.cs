@@ -93,7 +93,7 @@ namespace web_server.Services
         public string Register(User user, HttpContext context, IHubContext<NotifHub> _hubContext)
         {
             user.StartWaitPayment = DateTime.Now;
-            if(TestData.UserList.FirstOrDefault(m=>m.Email == user.Email) != null)
+            if (TestData.UserList.FirstOrDefault(m => m.Email == user.Email) != null)
             {
                 return null;
             }

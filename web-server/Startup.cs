@@ -136,7 +136,7 @@ namespace web_server
                         }
                         else
                         {
-                            context.Request.Headers.Add("Authorization", "Bearer " + TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(context.Request.Query["token"])).ActiveToken);
+                            context.Request.Headers.Add("Authorization", "Bearer " + TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(context.Request.Query["token"]))?.ActiveToken);
                         }
                     }
                 }

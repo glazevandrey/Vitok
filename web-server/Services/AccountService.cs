@@ -13,7 +13,7 @@ namespace web_server.Services
     {
         public bool RemoveFirstLogin(string args)
         {
-            TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args)).FirstLogin = false;
+            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args)).FirstLogin = false;
             return true;
         }
 

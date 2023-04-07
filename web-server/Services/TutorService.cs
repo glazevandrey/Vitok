@@ -57,7 +57,7 @@ namespace web_server.Services
             var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id));
             var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(user_id));
             var course = TestData.Courses.FirstOrDefault(m => m.Id == Convert.ToInt32(course_id));
-            if (user.Credit.Count >= 3)
+            if (user.Credit.Where(m => m.Repaid == false).ToList().Count >= 3)
             {
                 return null;
             }
@@ -127,7 +127,7 @@ namespace web_server.Services
                 var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
                 foreach (var item in list)
                 {
-                    if(item.WaitPaymentDate != DateTime.MinValue)
+                    if (item.WaitPaymentDate != DateTime.MinValue)
                     {
                         item.WaitPaymentDate = DateTime.MinValue;
                     }

@@ -17,6 +17,7 @@ namespace web_server.Models
         public bool Looped { get; set; } = true;
         public UserDate Date { get; set; }
         public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public Status Status { get; set; } = Status.Ожидает;
 
         public List<NotificationTask> Tasks = new List<NotificationTask>()

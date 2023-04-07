@@ -25,7 +25,7 @@ namespace web_app.Controllers
 
             CustomRequestGet req = new GetCourses();
             var res = _requestService.SendGet(req);
-      
+
             var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(res.result.ToString());
 
             req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
