@@ -186,13 +186,13 @@ namespace vitok.Controllers
 
             var args = form.First().Key;
 
-            var schedule = _scheduleService.ChangeStatus(args, _hubContext);
-            if (schedule == null)
+            var result = _scheduleService.ChangeStatus(args, _hubContext);
+            if (result != "OK")
             {
-                return _jsonService.PrepareErrorJson("Неудачная попытка обновить статус занятия");
+                return _jsonService.PrepareErrorJson(result);
             }
 
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(schedule));
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(result));
         }
 
         [Authorize]

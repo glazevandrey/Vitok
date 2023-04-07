@@ -212,7 +212,11 @@ namespace web_app.Controllers
                 }
 
                 var req = new CustomRequestPost("api/tutor/changeStatusServer", $"{status};{tutorStatus};{userStatus};{dateStatus};{currDate};{warn}");
-                _requestService.SendPost(req, HttpContext);
+                var res = _requestService.SendPost(req, HttpContext);
+                if (!res.success)
+                {
+                    return RedirectToAction("Index", "Schedule", new {error= res.result.ToString()});
+                }
 
             }
 

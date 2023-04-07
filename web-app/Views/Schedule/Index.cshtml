@@ -532,14 +532,14 @@ form{
                                                     continue;
                                                 }
 
-                                                if (model1.RemoveDate != DateTime.Parse("01.01.0001 0:00:00"))
+                                                if (model1.RemoveDate != DateTime.MinValue)
                                                 {
                                                     if (_date >= model1.RemoveDate)
                                                     {
                                                         continue;
                                                     }
                                                 }
-                                                if (model1.RescheduledDate != DateTime.Parse("01.01.0001 0:00:00"))
+                                                if (model1.RescheduledDate != DateTime.MinValue)
                                                 {
                                                     if (_date > model1.RescheduledDate && model1.Looped == true)
                                                     {

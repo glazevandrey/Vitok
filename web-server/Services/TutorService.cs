@@ -79,48 +79,70 @@ namespace web_server.Services
                     StartDate = dateTime
                 };
 
-                var waited = TestData.Schedules.FirstOrDefault(m => m.UserId == Convert.ToInt32(user_id) && m.TutorId == Convert.ToInt32(tutor_id) && m.WaitPaymentDate != DateTime.MinValue);
-                if (waited != null)
-                {
-                    if (dateTime < waited.WaitPaymentDate)
-                    {
-                        waited.WaitPaymentDate = DateTime.MinValue;
+                //  var waited = TestData.Schedules.FirstOrDefault(m => m.UserId == Convert.ToInt32(user_id) && m.TutorId == Convert.ToInt32(tutor_id) && m.WaitPaymentDate != DateTime.MinValue);
+                //if (waited != null)
+                //{
+                //    if (dateTime < waited.WaitPaymentDate)
+                //    {
+                //        waited.WaitPaymentDate = DateTime.MinValue;
 
-                        if (user.LessonsCount == 0)
-                        {
-                            if (sch.Looped)
-                            {
-                                if (sch.ReadyDates.Count > 0)
-                                {
-                                    sch.WaitPaymentDate = sch.ReadyDates.Last().AddDays(7);
-                                }
-                                else
-                                {
-                                    if (sch.RescheduledLessons.Count > 0)
-                                    {
-                                        sch.WaitPaymentDate = sch.RescheduledLessons.Last().NewTime;
-                                    }
-                                    else if (sch.RescheduledDate != DateTime.MinValue)
-                                    {
-                                        sch.WaitPaymentDate = sch.RescheduledDate;
-                                    }
-                                    else
-                                    {
-                                        sch.WaitPaymentDate = sch.StartDate;
-                                    }
 
-                                }
-                            }
-                            else
-                            {
-                                sch.WaitPaymentDate = sch.StartDate;
-                            }
-                        }
-                    }
-                }
+                //        if (user.LessonsCount == 0)
+                //        {
 
+
+                //            //if (sch.Looped)
+                //            //{
+                //            //    if (sch.ReadyDates.Count > 0)
+                //            //    {
+                //            //        sch.WaitPaymentDate = sch.ReadyDates.Last().AddDays(7);
+                //            //    }
+                //            //    else
+                //            //    {
+                //            //        if (sch.RescheduledLessons.Count > 0)
+                //            //        {
+                //            //            sch.WaitPaymentDate = sch.RescheduledLessons.Last().NewTime;
+                //            //        }
+                //            //        else if (sch.RescheduledDate != DateTime.MinValue)
+                //            //        {
+                //            //            sch.WaitPaymentDate = sch.RescheduledDate;
+                //            //        }
+                //            //        else
+                //            //        {
+                //            //            sch.WaitPaymentDate = sch.StartDate;
+                //            //        }
+
+                //            //    }
+                //            //}
+                //            //else
+                //            //{
+                //            //    sch.WaitPaymentDate = sch.StartDate;
+                //            //}
+                //        }
+                //    }
+                //}
 
                 TestData.Schedules.Add(sch);
+
+                var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
+                foreach (var item in list)
+                {
+                    if(item.WaitPaymentDate != DateTime.MinValue)
+                    {
+                        item.WaitPaymentDate = DateTime.MinValue;
+                    }
+                }
+                var sorted = ScheduleService.SortSchedulesForUnpaid(list);
+
+
+                foreach (var item in sorted)
+                {
+
+                    var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+
+                    sch2.WaitPaymentDate = item.Nearest;
+                }
+
 
                 // отправка что новый урок у репетитора
                 var type = Convert.ToBoolean(split[2]) == true ? "постоянное" : "разовое";
@@ -159,7 +181,32 @@ namespace web_server.Services
                 TestData.RescheduledLessons.Remove(item);
             }
 
+
+
+            var list = TestData.Schedules.Where(m => m.UserId == userId && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
+            foreach (var item in list)
+            {
+                if (item.WaitPaymentDate != DateTime.MinValue)
+                {
+                    item.WaitPaymentDate = DateTime.MinValue;
+                }
+            }
+            var sorted = ScheduleService.SortSchedulesForUnpaid(list);
+
+
+            foreach (var item in sorted)
+            {
+
+                var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+
+                sch2.WaitPaymentDate = item.Nearest;
+            }
+
+
             var managerId = TestData.Managers.First().UserId;
+
+
+
             NotifHub.SendNotification(Constants.NOTIF_TUTOR_REJECT_USER_FMANAGER
                 .Replace("{tutorName}", tutorName.FirstName + " " + tutorName.LastName)
                 .Replace("{userName}", userName.FirstName + " " + userName.LastName), managerId.ToString(), _hubContext);
@@ -206,6 +253,27 @@ namespace web_server.Services
                 {
                     schedule.RemoveDate = curr;
                 }
+
+
+                var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
+                foreach (var item in list)
+                {
+                    if (item.WaitPaymentDate != DateTime.MinValue)
+                    {
+                        item.WaitPaymentDate = DateTime.MinValue;
+                    }
+                }
+                var sorted = ScheduleService.SortSchedulesForUnpaid(list);
+
+
+                foreach (var item in sorted)
+                {
+
+                    var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+
+                    sch2.WaitPaymentDate = item.Nearest;
+                }
+
 
                 string type = schedule.Looped == true ? "постоянное" : "разовое";
 

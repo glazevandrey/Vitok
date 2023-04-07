@@ -8,6 +8,6 @@ namespace web_server.Services.Interfaces
     {
         public Schedule AddScheduleFromUser(string args, IHubContext<NotifHub> _hubContext);
         public List<Schedule> GetSchedules(string args);
-        public Schedule ChangeStatus(string args, IHubContext<NotifHub> _hubContext);
+        public string ChangeStatus(string args, IHubContext<NotifHub> _hubContext);
     }
 }

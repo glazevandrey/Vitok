@@ -332,16 +332,7 @@ namespace web_server.Services
                         item.WaitPaymentDate = DateTime.MinValue;
                     }
                 }
-                var sorted = ScheduleService.SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == user.UserId && m.Status == Status.Ожидает).Reverse().ToList());
-
-
-                foreach (var item in sorted)
-                {
-
-                    var sch = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
-
-                    sch.WaitPaymentDate = item.Nearest;
-                }
+              
 
                 NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
                 NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
@@ -369,15 +360,24 @@ namespace web_server.Services
                         item.WaitPaymentDate = DateTime.MinValue;
                     }
                 }
-                var sorted = ScheduleService.SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == user.UserId && m.Status == Status.Ожидает).Reverse().ToList());
+
+                var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
+                foreach (var item in list)
+                {
+                    if (item.WaitPaymentDate != DateTime.MinValue)
+                    {
+                        item.WaitPaymentDate = DateTime.MinValue;
+                    }
+                }
+                var sorted = ScheduleService.SortSchedulesForUnpaid(list);
 
 
                 foreach (var item in sorted)
                 {
 
-                    var sch = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+                    var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
 
-                    sch.WaitPaymentDate = item.Nearest;
+                    sch2.WaitPaymentDate = item.Nearest;
                 }
 
                 NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext);

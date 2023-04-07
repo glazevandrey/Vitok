@@ -45,7 +45,7 @@ namespace web_server.Services
             return schedule;
 
         }
-        public Schedule ChangeStatus(string args, IHubContext<NotifHub> _hubContext)
+        public string ChangeStatus(string args, IHubContext<NotifHub> _hubContext)
         {
             var split = args.Split(';');
             var status = split[0];
@@ -63,7 +63,7 @@ namespace web_server.Services
 
             if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен && (user.LessonsCount == 0 || user.Credit.Count > 0))
             {
-                return null;
+                return "Не удалось поменять статус занятия. Ученик не произвел оплату.";
             }
 
 
@@ -140,7 +140,7 @@ namespace web_server.Services
                             item.WaitPaymentDate = DateTime.MinValue;
                         }
                     }
-                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == user.UserId && m.Status == Status.Ожидает).Reverse().ToList());
+                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).Reverse().ToList());
 
 
                     foreach (var item in sorted)
@@ -329,7 +329,7 @@ namespace web_server.Services
                             item.WaitPaymentDate = DateTime.MinValue;
                         }
                     }
-                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == user.UserId && m.Status == Status.Ожидает).Reverse().ToList());
+                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).Reverse().ToList());
 
 
                     foreach (var item in sorted)
@@ -348,7 +348,7 @@ namespace web_server.Services
             }
 
 
-            return schedule;
+            return "OK";
         }
 
         public List<Schedule> GetSchedules(string args)
