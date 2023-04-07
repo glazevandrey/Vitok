@@ -240,6 +240,20 @@ namespace web_server.Services
                   user_id.ToString(), _hubContext);
                     }
 
+                    if(user.SkippedInThisMonth >= 3)
+                    {
+
+                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_WARN.
+                      Replace("{userName}", user.FirstName + " " + user.LastName).
+                      Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
+                      TestData.Managers.First().UserId.ToString(), _hubContext);
+
+                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_WARN.
+                   Replace("{userName}", user.FirstName + " " + user.LastName).
+                   Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
+                  user_id.ToString(), _hubContext);
+                    }
+
                 }
                 else
                 {
@@ -300,9 +314,6 @@ namespace web_server.Services
 
 
                 }
-
-
-
 
                 if (schedule.Looped)
                 {
