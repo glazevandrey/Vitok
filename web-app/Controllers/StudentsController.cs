@@ -219,7 +219,7 @@ namespace web_app.Controllers
 
                             foreach (var skip in item.SkippedDates)
                             {
-
+                                
                             }
 
                         }

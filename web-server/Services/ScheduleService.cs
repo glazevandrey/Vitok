@@ -314,11 +314,11 @@ namespace web_server.Services
 
                 if (schedule.Looped)
                 {
-                    schedule.SkippedDates.Add(dateCurr);
+                    schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr , WasWarn = warn});
                 }
                 else
                 {
-                    schedule.SkippedDates.Add(dateCurr);
+                    schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr, WasWarn = warn });
                     schedule.Status = Status.Пропущен;
                 }
 
@@ -438,9 +438,9 @@ namespace web_server.Services
 
                             if (cur.SkippedDates.Count > 0)
                             {
-                                if (date2 < cur.SkippedDates.Last().AddDays(7))
+                                if (date2 < cur.SkippedDates.Last().Date.AddDays(7))
                                 {
-                                    date2 = cur.SkippedDates.Last().AddDays(7);
+                                    date2 = cur.SkippedDates.Last().Date.AddDays(7);
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
                                     model3.Nearest = date2;
@@ -509,9 +509,9 @@ namespace web_server.Services
 
                             if (cur.SkippedDates.Count > 0)
                             {
-                                if ((cur.SkippedDates.Last().AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
+                                if ((cur.SkippedDates.Last().Date.AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
-                                    date2 = cur.SkippedDates.Last().AddDays(7);
+                                    date2 = cur.SkippedDates.Last().Date.AddDays(7);
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
                                     model3.Nearest = date2;

@@ -540,7 +540,7 @@ td {
                                                     {
                                                         foreach (var skip in schedule.SkippedDates)
                                                         {
-                                                            if (skip == date)
+                                                            if (skip.Date == date)
                                                             {
                                                                 <script>
                                                                         document.getElementsByClassName('@label')[0].style.backgroundColor = "darkred";

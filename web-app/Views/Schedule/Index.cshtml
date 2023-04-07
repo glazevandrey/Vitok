@@ -823,7 +823,7 @@ form{
                                                                     {
                                                                         foreach (var skip in model1.SkippedDates)
                                                                         {
-                                                                            if(skip == _date)
+                                                                            if(skip.Date == _date)
                                                                             {
                                                                                 <script>
                                                                                         document.getElementsByClassName('@label')[0].style.backgroundColor = "darkred";
@@ -1262,7 +1262,7 @@ form{
                                                                 {
                                                                     foreach (var skip in model1.SkippedDates)
                                                                     {
-                                                                        if (skip == _date)
+                                                                        if (skip.Date == _date)
                                                                         {
                                                                             <script>
                                                                                     document.getElementsByClassName('@label')[0].style.backgroundColor = "darkred";

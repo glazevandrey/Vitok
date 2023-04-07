@@ -27,7 +27,7 @@ namespace web_server.Models
             new NotificationTask() { NotifKey = Constants.NOTIF_DONT_FORGET_SET_STATUS, NotifValue = false }
         };
 
-        public List<DateTime> SkippedDates { get; set; } = new List<DateTime>();
+        public List<SkippedDate> SkippedDates { get; set; } = new List<SkippedDate>();
         public List<RescheduledLessons> RescheduledLessons { get; set; } = new List<RescheduledLessons>();
         public DateTime RescheduledDate { get; set; }
         public DateTime NewDate { get; set; }
