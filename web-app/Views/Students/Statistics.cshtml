@@ -78,6 +78,8 @@ td {
             <th>Сумма оплаты</th>
             <th>Дата занятия</th>
             <th>Стоимость занятия</th>
+            <th>Тип занятия</th>
+
         </tr>
     </thead>
     <tbody>
@@ -113,6 +115,18 @@ td {
 
                         <td>@payment.LessonDate.ToString("dd.MM.yyyy HH:mm")</td>
                         <td>@payment.LessonAmount</td>
+                       
+                        @{
+                            if (payment.LessonLooped)
+                            {
+                                <td> Повторяющееся</td>
+                            }
+                            else
+                            {
+                                <td>Разовое</td>
+                            }
+                        }
+                        
                     </tr>
 
                 }

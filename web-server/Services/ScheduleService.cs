@@ -90,6 +90,7 @@ namespace web_server.Services
                                 for_tutor = Math.Abs(item.Cost / 100 * 60);
                                 for_manager = Math.Abs(item.Cost / 100 * 40);
                                 user.Money.FirstOrDefault(m => m.Cost == item.Cost).Count--;
+                                schedule.PaidLessons.Add(dateCurr, (int)Math.Abs(item.Cost));
                                 break;
                             }
                         }

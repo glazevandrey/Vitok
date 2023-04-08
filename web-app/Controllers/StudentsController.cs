@@ -170,7 +170,7 @@ namespace web_app.Controllers
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
                                             LessonLooped = item.Looped
                                         } });
                                     }
