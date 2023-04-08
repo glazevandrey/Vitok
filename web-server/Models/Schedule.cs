@@ -32,7 +32,7 @@ namespace web_server.Models
         public DateTime RescheduledDate { get; set; }
         public DateTime NewDate { get; set; }
         public DateTime WaitPaymentDate { get; set; }
-        public Dictionary<DateTime, int> PaidLessons { get; set; } = new Dictionary<DateTime, int>()
+        public Dictionary<DateTime, int> PaidLessons { get; set; } = new Dictionary<DateTime, int>();
         public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
         public DateTime RemoveDate { get; set; }
     }
