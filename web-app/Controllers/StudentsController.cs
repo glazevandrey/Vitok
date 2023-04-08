@@ -80,6 +80,27 @@ namespace web_app.Controllers
         [HttpGet("statistics", Name = "statistics")]
         public IActionResult Statistics([FromQuery] string userid)
         {
+
+            CustomRequestGet req4 = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+            var res4 = _requestService.SendGet(req4, HttpContext);
+
+            if (!res4.success)
+            {
+                if (!string.IsNullOrEmpty(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]))
+                {
+                    return Redirect("/login");
+
+                }
+                else
+                {
+                    return Redirect("/logout");
+
+                }
+            }
+
+            var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
+
+
             CustomRequestGet req = new GetUserById(userid + ";" + "Manager");
             var res = _requestService.SendGet(req, HttpContext);
             if (!res.success)
@@ -88,12 +109,13 @@ namespace web_app.Controllers
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
 
-            ViewData["role"] = user.Role;
+            ViewData["role"] = currUser.Role;
             ViewData["tariffs"] = TestData.Tariffs;
-            ViewData["usertoken"] = user.UserId;
-            ViewData["lessons"] = user.LessonsCount;
-            ViewData["photoUrl"] = user.PhotoUrl;
-            ViewData["displayName"] = user.FirstName + " " + user.LastName;
+            ViewData["usertoken"] = currUser.UserId;
+            ViewData["lessons"] = currUser.LessonsCount;
+            ViewData["photoUrl"] = currUser.PhotoUrl;
+            ViewData["displayName"] = currUser.FirstName + " " + currUser.LastName;
+
             if (user.FirstLogin == true && user.Role == "Student")
             {
                 ViewData["firstLogin"] = true;

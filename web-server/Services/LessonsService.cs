@@ -117,7 +117,7 @@ namespace web_server.Services
                         continue;
                     }
 
-                    for (int i = 0; i <= item.Count; i++)
+                    for (int i = 0; i < item.Count; i++)
                     {
                         var count = user.Credit.Where(m => m.Repaid == false).ToList().Count;
                         if (count == 0)

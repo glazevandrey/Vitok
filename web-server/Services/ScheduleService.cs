@@ -81,7 +81,7 @@ namespace web_server.Services
                         var for_tutor = 0.0;
                         var for_manager = 0.0;
 
-                        var f = user.Money.OrderBy(m => m.Cost).ToList();
+                        var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
 
                         foreach (var item in f)
                         {
@@ -89,7 +89,7 @@ namespace web_server.Services
                             {
                                 for_tutor = Math.Abs(item.Cost / 100 * 60);
                                 for_manager = Math.Abs(item.Cost / 100 * 40);
-                                user.Money.FirstOrDefault(m => m.Cost == item.Cost).Count--;
+                                user.Money.FirstOrDefault(m => m.Cost == item.Cost && m.Cost > 0).Count--;
                                 schedule.PaidLessons.Add(dateCurr, (int)Math.Abs(item.Cost));
                                 break;
                             }
@@ -170,7 +170,7 @@ namespace web_server.Services
                     {
                         user.LessonsCount--;
                         warn = false;
-                        if (user.LessonsCount > 0)
+                        if (user.LessonsCount >= 0)
                         {
                             user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
 
