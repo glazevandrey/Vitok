@@ -81,11 +81,11 @@
 </table>
 <script>
       function printTable() {
-      var table = document.getElementById("myTable");
-      var newWin = window.open("", "Print-Window");
+      var table = document.getElementById('myTable');
+      var newWin = window.open('', 'Print-Window');
       newWin.document.write("<html><head><title>Таблица</title><link rel='stylesheet' href='/css/table.css' media='print'></head><body>");
       newWin.document.write(table.outerHTML);
-      newWin.document.write("</body></html>");
+      newWin.document.write('</body></html>');
       newWin.print();
       newWin.close();
     }
