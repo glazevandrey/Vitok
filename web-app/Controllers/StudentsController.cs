@@ -42,7 +42,9 @@ namespace web_app.Controllers
 
                 }
             }
+
             var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
+            
             ViewData["usertoken"] = currUser.UserId;
             ViewData["photoUrl"] = currUser.PhotoUrl;
             ViewData["displayName"] = currUser.FirstName + " " + currUser.LastName;
@@ -169,6 +171,7 @@ namespace web_app.Controllers
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
                                             LessonDate = ready
+                                            LessonLooped = item.Looped
                                         } });
                                     }
                                     else
@@ -179,7 +182,8 @@ namespace web_app.Controllers
                                             {
                                                 LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
                                                 StudentName = item.UserName,
-                                                LessonDate = ready
+                                                LessonDate = ready,
+                                                LessonLooped = item.Looped
                                             });
                                         }
                                         else
@@ -196,7 +200,7 @@ namespace web_app.Controllers
                                         keys[date].Add(new StudentPayment()
                                         {
                                             LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
-
+                                            LessonLooped = item.Looped,
                                             StudentName = item.UserName,
                                             LessonDate = ready
                                         });
@@ -207,6 +211,7 @@ namespace web_app.Controllers
                                         {
                                             LessonAmount = list2[j].CashFlow.Amount/list2[j].CashFlow.Count,
                                             PaymentDate = date,
+                                            LessonLooped = item.Looped,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
                                             LessonDate = ready
@@ -246,6 +251,7 @@ namespace web_app.Controllers
                                         {
                                             LessonAmount = item.SkippedDates[0].InitPaid,
                                             StudentName = item.UserName,
+                                            LessonLooped = item.Looped,
                                             LessonDate = ready
                                         });
                                     }
@@ -258,6 +264,7 @@ namespace web_app.Controllers
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
+                                            LessonLooped = item.Looped,
                                             LessonDate = ready
                                         }});
                                     }
@@ -278,6 +285,7 @@ namespace web_app.Controllers
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
+                                            LessonLooped = item.Looped,
                                             LessonDate = ready
                                         } });
                                     }
@@ -292,7 +300,7 @@ namespace web_app.Controllers
                                             keys[date].Add(new StudentPayment()
                                             {
                                                 LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
-
+                                                LessonLooped = item.Looped,
                                                 StudentName = item.UserName,
                                                 LessonDate = ready
                                             });
@@ -305,7 +313,8 @@ namespace web_app.Controllers
                                              PaymentDate = date,
                                         PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         } });
                                         }
 
@@ -323,7 +332,8 @@ namespace web_app.Controllers
                                         {
                                             LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         });
                                     }
                                     else
@@ -334,7 +344,8 @@ namespace web_app.Controllers
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         }});
                                     }
 
@@ -366,7 +377,8 @@ namespace web_app.Controllers
                                         {
                                             LessonAmount = item.SkippedDates[0].InitPaid,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         });
                                     }
                                     else
@@ -377,7 +389,8 @@ namespace web_app.Controllers
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         }});
                                     }
 
@@ -404,7 +417,8 @@ namespace web_app.Controllers
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         } });
                                     }
                                     else
@@ -417,7 +431,7 @@ namespace web_app.Controllers
                                             keys[date].Add(new StudentPayment()
                                             {
                                                 LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
-
+                                                LessonLooped = item.Looped,
                                                 StudentName = item.UserName,
                                                 LessonDate = ready
                                             });
@@ -430,7 +444,8 @@ namespace web_app.Controllers
                                              PaymentDate = date,
                                         PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         } });
                                         }
 
@@ -448,7 +463,8 @@ namespace web_app.Controllers
                                         {
                                             LessonAmount = paid == true ? (int)Math.Abs(amount) : 0,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         });
                                     }
                                     else
@@ -459,7 +475,8 @@ namespace web_app.Controllers
                                         PaymentDate = date,
                                         PaymentAmount = list2[j].CashFlow.Amount,
                                         StudentName = item.UserName,
-                                        LessonDate = ready
+                                        LessonDate = ready,
+                                        LessonLooped = item.Looped
                                     }});
                                     }
 
@@ -485,7 +502,8 @@ namespace web_app.Controllers
                                             PaymentDate = date,
                                             PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         } });
                                     }
                                     else
@@ -500,7 +518,8 @@ namespace web_app.Controllers
                                                 LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
 
                                                 StudentName = item.UserName,
-                                                LessonDate = ready
+                                                LessonDate = ready,
+                                                LessonLooped = item.Looped
                                             });
                                         }
                                         else
@@ -511,7 +530,8 @@ namespace web_app.Controllers
                                              PaymentDate = date,
                                         PaymentAmount = list2[j].CashFlow.Amount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         } });
                                         }
                                        
@@ -529,7 +549,8 @@ namespace web_app.Controllers
                                         {
                                             LessonAmount = list2[j].CashFlow.Amount / list2[j].CashFlow.Count,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = ready,
+                                            LessonLooped = item.Looped
                                         });
                                     }
                                     else
@@ -540,7 +561,8 @@ namespace web_app.Controllers
                                         PaymentDate = date,
                                         PaymentAmount = list2[j].CashFlow.Amount,
                                         StudentName = item.UserName,
-                                        LessonDate = ready
+                                        LessonDate = ready,
+                                        LessonLooped = item.Looped
                                     }});
                                     }
                                   
@@ -556,6 +578,10 @@ namespace web_app.Controllers
             return View(keys);
         }
 
+        private void SetLkeys(Dictionary<DateTime, List<StudentPayment>> keys, string date, string ready, Schedule item, BalanceHistory list2)
+        {
+
+        }
         [HttpGet("info", Name = "info")]
         public IActionResult Info([FromQuery] string id)
         {
@@ -582,46 +608,6 @@ namespace web_app.Controllers
             }
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data.result.ToString());
-
-
-            //foreach (var item in ff)
-            //{
-            //    var date = item.Date;
-            //    if(date < startDate)
-            //    {
-            //        continue;
-            //    }
-
-            //    int count = Math.Abs(item.CashFlow.Amount / 1000);
-
-
-
-            //    foreach (var lesson in schedules)
-            //    {
-            //        foreach (var da in lesson.ReadyDates)
-            //        {
-            //            if(da > date)
-            //            {
-            //                if(list.Count == 0)
-            //                {
-            //                    var sch = new StudentPayment()
-            //                    {
-            //                        LessonAmount = 1000,
-            //                        PaymentDate = date,
-            //                        PaymentAmount = item.CashFlow.Amount,
-            //                        StudentName = lesson.UserName,
-            //                        LessonDate = da
-            //                    };
-            //                }
-
-            //            }
-            //        }
-
-            //    }
-
-            //}
-
-
 
             return View(user);
         }

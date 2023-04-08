@@ -9,6 +9,7 @@ namespace web_app.Models
         public decimal PaymentAmount { get; set; }
         public DateTime LessonDate { get; set; }
         public decimal LessonAmount { get; set; }
+        public bool LessonLooped { get; set; }
         public int DebtLessons { get; set; }
     }
 }
