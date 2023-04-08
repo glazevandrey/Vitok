@@ -19,13 +19,16 @@ namespace web_server.Controllers
         IJsonService _jsonService;
         ILessonsService _lessonsService;
         IScheduleService _scheduleService;
-        public HomeController(IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
+        IStatisticsService _statisticsService;
+
+        public HomeController(IStatisticsService statisticsService ,IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
         {
             _hubContext = hub;
             _authService = authService;
             _jsonService = jsonService;
             _lessonsService = lessonsService;
             _scheduleService = scheduleService;
+            _statisticsService = statisticsService;
         }
 
         [HttpPost("loginuser", Name = "loginuser")]
@@ -112,6 +115,28 @@ namespace web_server.Controllers
 
             return json;
         }
+
+
+
+        [Authorize]
+        [HttpGet("getstatistics", Name = "getstatistics")]
+        public string Getstatistics([FromQuery] string args)
+        {
+            if (args == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+
+            var data = _statisticsService.FormingStatData(args);
+            if (data == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+
+            }
+
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(data));
+        }
+
 
         [Authorize]
         [HttpGet("getschedulebyid", Name = "getschedulebyid")]

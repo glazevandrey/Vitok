@@ -6,9 +6,9 @@ namespace web_app.Models
     {
         public string StudentName { get; set; }
         public DateTime PaymentDate { get; set; }
-        public decimal PaymentAmount { get; set; }
+        public string PaymentAmount { get; set; }
         public DateTime LessonDate { get; set; }
-        public decimal LessonAmount { get; set; }
+        public int LessonAmount { get; set; }
         public bool LessonLooped { get; set; }
         public int DebtLessons { get; set; }
     }

@@ -15,6 +15,7 @@ namespace web_server.Injection
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<ITutorService, TutorService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
             services.AddTransient<ISenderService, SenderService>();
 
             return services;
