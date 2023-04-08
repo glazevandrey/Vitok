@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using web_app.Models;
 using web_server.DbContext;
 using web_server.Models;
@@ -502,7 +503,34 @@ namespace web_server.Services
                 }
 
             }
-            return keys;
+
+            var hh = new Dictionary<DateTime, List<StudentPayment>>(keys);
+
+
+
+            foreach (var item in keys)
+            {
+                var ordered = item.Value.OrderBy(m => m.LessonDate).ToList();
+                var first = ordered.FirstOrDefault();
+
+                if (first.PaymentDate == DateTime.MinValue) // Если первый элемент имеет PaymentAmount = "0"
+                {
+                    var next = ordered.FirstOrDefault(m => m.PaymentDate != DateTime.MinValue);
+                    
+                    if (next != null) // Если следующий элемент существует
+                    {
+                        first.PaymentAmount = next.PaymentAmount; // Изменить PaymentAmount первого элемента
+                        first.PaymentDate = next.PaymentDate; // Изменить PaymentDate первого элемента
+                        next.PaymentAmount = null; // Установить PaymentAmount следующего элемента в "0"
+                        next.PaymentDate = DateTime.MinValue; // Установить PaymentDate следующего элемента в минимальное значение
+                    }
+                }
+
+                hh[item.Key] = ordered.ToList();
+            }
+            
+
+            return hh;
         }
     }
 }

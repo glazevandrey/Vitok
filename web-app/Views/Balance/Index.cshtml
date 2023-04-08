@@ -34,7 +34,7 @@
         function selectChanged(el) {
 
             var spl = el.value.split(';');
-                    document.getElementById('count2').value = spl[0];
+                    document.getElementById('count3').value=spl[0];
             document.getElementById('countView').value = spl[0] * spl[1];
         }
     </script>
@@ -179,7 +179,7 @@
 
                 <label>Выберите количество занятий (вне пакета)</label>
                 <input id="count2" onchange="changed2(this)" name="count" type="text" value="0" /><button type="button" style="width:50px;" onclick="clicked()">+</button>
-        
+                <input id="count3" hidden="hidden" name="count3" value="0" />
 
 
 

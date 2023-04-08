@@ -47,21 +47,21 @@ namespace web_app.Controllers
         }
 
         [HttpPost("setLessons", Name = "setLessons")]
-        public IActionResult SetLessons([FromForm] string userId, [FromForm] string count, [FromForm] string isTrialPay)
+        public IActionResult SetLessons([FromForm] string userId, [FromForm] string count, [FromForm] string isTrialPay, [FromForm] string count3)
         {
-            if(count == 0.ToString())
+            if(count == 0.ToString() && count3 == 0.ToString())
             {
                 return RedirectToAction("Index", "Balance", new { error = "Нельзя пополнить счет на 0 занятий" });
 
             }
-            CustomRequestPost req = new CustomRequestPost("api/account/addlessons", $"{userId};{count};{isTrialPay}");
+            CustomRequestPost req = new CustomRequestPost("api/account/addlessons", $"{userId};{(count == "0" ? count3 : count)};{isTrialPay}");
             _requestService.SendPost(req, HttpContext);
 
             return RedirectToAction("Index", "Balance");
         }
 
         [HttpPost("withdrawbalance", Name = "withdrawbalance")]
-        public IActionResult WithdrawBalance([FromForm] string tutorId, [FromForm] string count)
+        public IActionResult WithdrawBalance([FromForm] string tutorId, [FromForm] string count, [FromForm] string count3)
         {
             if (string.IsNullOrEmpty(count) || count[0] == '0')
             {
