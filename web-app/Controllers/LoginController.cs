@@ -60,7 +60,7 @@ namespace web_app.Controllers
 
             CustomRequestPost req = new CustomRequestPost("api/home/LoginUser", user);
             var response = _requestService.SendPost(req, HttpContext);
-            if (!response.success)
+            if (!response.success || response == null)
             {
                 return RedirectToAction("login", new { error = response.result });
             }
@@ -76,7 +76,14 @@ namespace web_app.Controllers
 
             var req2 = new GetUserByToken(response.result.ToString());
             var res2 = _requestService.SendGet(req2, HttpContext);
-            user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res2.result.ToString());
+            try
+            {
+                user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res2.result.ToString());
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("login");
+            }
             return RedirectToAction("login", new { role = user.Role });
 
 

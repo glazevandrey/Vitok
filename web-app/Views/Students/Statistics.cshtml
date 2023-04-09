@@ -6,6 +6,13 @@
     Layout = "_Layout";
     User user = (User)ViewData["user"];
 }
+<head>
+    <script type="text/javascript" src="~/js/xlsDownloader.js"></script>
+    <script type="text/javascript" src="~/pdf/pdfmake.min.js"></script>
+    <script type="text/javascript" src="~/pdf/vfs_fonts.js"></script>
+
+
+</head>
 <style id="tableStyle" type="text/css">
     table {
         border-collapse: collapse;
@@ -68,14 +75,17 @@
 
 
 </style>
+
+
 <div>
-    <h2>Статистика студента</h2>
+    <h2>Статистика студента @ViewData["statuser"].ToString()</h2>
     <button onclick="printTable()">[Печать]</button>
+    <button onclick="downloadPDF()">[PDF]</button>
+    <button onclick="downloadXLS()">[EXCEL]</button>
 
 </div>
 
 <div id="tab2">
-<link rel="stylesheet" href="~/table.css" media="print">
     <table class="table" id="myTable">
         <thead>
             <tr>
@@ -124,7 +134,7 @@
                             @{
                                 if (payment.LessonLooped)
                                 {
-                                    <td> Повторяющееся</td>
+                                    <td>Повторяющееся</td>
                                 }
                                 else
                                 {
@@ -143,6 +153,7 @@
     </table>
 
 </div>
+
 <script type="text/javascript">
     function printTable() {
         const table = document.getElementById('myTable');
@@ -152,5 +163,57 @@
         newWin.focus();
         newWin.print();
         newWin.close();
+    }
+
+
+</script>
+           
+<script>
+    function downloadPDF() {
+        const table = document.getElementById('myTable');
+
+        const parseTable = (table) => {
+            const rows = table.querySelectorAll('tr');
+            return Array.from(rows, row => {
+                const columns = row.querySelectorAll('th,td');
+                return Array.from(columns, column => column.textContent.trim());
+            });
+        }
+
+        const tableData = parseTable(table);
+
+        const docDefinition = {
+            content: [
+                { text: 'Статистика ученика @ViewData["statuser"].ToString()', style: 'header' },
+                {
+                    table: {
+                        headerRows: 1,
+                        widths: Array(tableData[0].length).fill('*'),
+                        body: tableData
+                    }
+                }
+            ],
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10]
+                }
+            }
+        };
+
+        pdfMake.createPdf(docDefinition).download('СтатистикаУченика_@ViewData["statuser"].ToString().Replace(" ", string.Empty)_.pdf');
+
+
+    }
+
+    function downloadXLS() {
+        const table = document.getElementById('myTable');
+        const sheetName = 'Sheet1';
+        const sheet = XLSX.utils.table_to_sheet(table, {sheet: sheetName});
+        const book = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(book, sheet, sheetName);
+        const fileName = 'СтатистикаУченика_@ViewData["statuser"].ToString().Replace(" ", string.Empty)_.xls';
+        XLSX.writeFile(book, fileName);
     }
 </script>

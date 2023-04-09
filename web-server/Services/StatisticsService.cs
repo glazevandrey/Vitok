@@ -17,7 +17,7 @@ namespace web_server.Services
             var user = TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args));
             var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId);
 
-            var startDate = DateTime.Parse("20.03.2023 12:00");
+            var startDate = DateTime.Parse("01." + DateTime.Now.Month + "." + DateTime.Now.Year + " 12:00");
             user.BalanceHistory.Reverse();
             var keys = new Dictionary<DateTime, List<StudentPayment>>();
             var balanceHistories = user.BalanceHistory.GroupBy(x => x.Date.ToShortDateString()).ToList();

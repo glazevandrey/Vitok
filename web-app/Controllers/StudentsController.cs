@@ -1,8 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CsvHelper;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 using web_app.Models;
 using web_app.Models.Requests;
 using web_app.Models.Requests.Get;
@@ -18,11 +25,14 @@ namespace web_app.Controllers
     public class StudentsController : Controller
     {
         IJsonService _jsonService;
+        private readonly IWebHostEnvironment _env;
+
         IRequestService _requestService;
-        public StudentsController(IJsonService jsonService, IRequestService requestService)
+        public StudentsController(IJsonService jsonService, IRequestService requestService, IWebHostEnvironment env)
         {
             _jsonService = jsonService;
             _requestService = requestService;
+            _env = env;
         }
         public IActionResult Index()
         {
@@ -130,10 +140,11 @@ namespace web_app.Controllers
             }
 
             var data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<DateTime, List<StudentPayment>>>(res2.result.ToString());
+            ViewData["statuser"] = user.FirstName + " " + user.LastName;
             return View(data);
         }
 
-      
+
         [HttpGet("info", Name = "info")]
         public IActionResult Info([FromQuery] string id)
         {
