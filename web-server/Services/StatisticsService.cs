@@ -77,11 +77,13 @@ namespace web_server.Services
                         {
                             foreach (var ready in item.ReadyDates)
                             {
-                                if (ready > date2 && (date2 != DateTime.MaxValue))
+
+                                var date4 = ready.Date;
+                                if (date4 > date2 && (date2 != DateTime.MaxValue))
                                 {
                                     continue;
                                 }
-                                if (ready >= date && ready <= date2)
+                                if (date4 >= date && date4 <= date2)
                                 {
 
                                     if (keys.Count == 0)
@@ -89,11 +91,11 @@ namespace web_server.Services
 
                                         keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = item.PaidLessons[ready],
+                                            LessonAmount = item.PaidLessons.FirstOrDefault(m=>m.PaidDate == date4).PaidCount,
                                             PaymentDate = date,
                                             PaymentAmount = paymentAmount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready,
+                                            LessonDate = date4,
                                             LessonLooped = item.Looped
                                         } });
                                     }
@@ -103,41 +105,41 @@ namespace web_server.Services
                                         {
                                             keys[date].Add(new StudentPayment()
                                             {
-                                                LessonAmount = item.PaidLessons[ready],
+                                                LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == date4).PaidCount,
                                                 StudentName = item.UserName,
-                                                LessonDate = ready,
+                                                LessonDate = date4,
                                                 LessonLooped = item.Looped
                                             });
                                         }
                                         else
                                         {
-                                            keys.Add(date, new List<StudentPayment>() { new StudentPayment() { LessonAmount = 1000, PaymentDate = date, PaymentAmount = paymentAmount, StudentName = item.UserName, LessonDate = ready } });
+                                            keys.Add(date, new List<StudentPayment>() { new StudentPayment() { LessonAmount = 1000, PaymentDate = date, PaymentAmount = paymentAmount, StudentName = item.UserName, LessonDate = date4 } });
                                         }
 
                                     }
                                 }
-                                else if (ready >= date2 && (date2 != DateTime.MinValue))
+                                else if (date4 >= date2 && (date2 != DateTime.MinValue))
                                 {
                                     if (keys.ContainsKey(date))
                                     {
                                         keys[date].Add(new StudentPayment()
                                         {
-                                            LessonAmount = item.PaidLessons[ready],
+                                            LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == date4).PaidCount,
                                             LessonLooped = item.Looped,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = date4
                                         });
                                     }
                                     else
                                     {
                                         keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = item.PaidLessons[ready],
+                                            LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == date4).PaidCount,
                                             PaymentDate = date,
                                             LessonLooped = item.Looped,
                                             PaymentAmount = paymentAmount,
                                             StudentName = item.UserName,
-                                            LessonDate = ready
+                                            LessonDate = date4
                                         } });
                                     }
 
@@ -425,7 +427,7 @@ namespace web_server.Services
                                     {
                                         keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = item.PaidLessons[ready],
+                                            LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == ready).PaidCount,
                                             PaymentDate = date,
                                             PaymentAmount = paymentAmount,
                                             StudentName = item.UserName,
@@ -443,7 +445,7 @@ namespace web_server.Services
                                             }
                                             keys[date].Add(new StudentPayment()
                                             {
-                                                LessonAmount = item.PaidLessons[ready],
+                                                LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == ready).PaidCount,
 
                                                 StudentName = item.UserName,
                                                 LessonDate = ready,
@@ -454,7 +456,7 @@ namespace web_server.Services
                                         {
                                             keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = item.PaidLessons[ready],
+                                            LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == ready).PaidCount,
                                              PaymentDate = date,
                                         PaymentAmount = paymentAmount,
                                             StudentName = item.UserName,
@@ -476,7 +478,7 @@ namespace web_server.Services
                                         }
                                         keys[date].Add(new StudentPayment()
                                         {
-                                            LessonAmount = item.PaidLessons[ready],
+                                            LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == ready).PaidCount,
                                             StudentName = item.UserName,
                                             LessonDate = ready,
                                             LessonLooped = item.Looped
@@ -486,7 +488,7 @@ namespace web_server.Services
                                     {
                                         keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                     {
-                                            LessonAmount = item.PaidLessons[ready],
+                                            LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == ready).PaidCount,
                                         PaymentDate = date,
                                         PaymentAmount = paymentAmount,
                                         StudentName = item.UserName,

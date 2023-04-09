@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
+using web_server.Database;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -15,15 +16,16 @@ namespace web_server.Controllers
     public class HomeController : Controller
     {
         private readonly IHubContext<NotifHub> _hubContext;
-
+        DataContext _data;
         IAuthService _authService;
         IJsonService _jsonService;
         ILessonsService _lessonsService;
         IScheduleService _scheduleService;
         IStatisticsService _statisticsService;
 
-        public HomeController(IStatisticsService statisticsService ,IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
+        public HomeController(DataContext data, IStatisticsService statisticsService ,IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
         {
+            _data = data;
             _hubContext = hub;
             _authService = authService;
             _jsonService = jsonService;
@@ -35,6 +37,8 @@ namespace web_server.Controllers
         [HttpPost("loginuser", Name = "loginuser")]
         public string LoginUser()
         {
+
+            var f =_data.UserDates.ToList();
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
             {

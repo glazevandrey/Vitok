@@ -1,7 +1,6 @@
-﻿@    using System.Globalization;
-@    using web_server.Models;
-@    using web_app.Models;
-    using web_server.Models.DBModels;
+﻿@using System.Globalization;
+@using web_server.Models;
+@using web_server.Models.DBModels;
 
 @model DisplayModelShedule
 @{
@@ -260,7 +259,7 @@ td {
                                                             foreach (var readyDate in schedule.ReadyDates)
                                                             {
 
-                                                                if (readyDate == date)
+                                                                if (readyDate.Date == date)
                                                                 {
                                                                     <script>
                                                                         document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
@@ -295,7 +294,7 @@ td {
                                                                     {
                                                                         if (schedule.ReadyDates.Count > 0)
                                                                         {
-                                                                            if (date > schedule.ReadyDates.Last())
+                                                                            if (date > schedule.ReadyDates.Last().Date)
                                                                             {
                                                                                 <script>
 
@@ -355,7 +354,7 @@ td {
                                                                 {
                                                                     if (schedule.ReadyDates.Count > 0)
                                                                     {
-                                                                        if (date > schedule.ReadyDates.Last())
+                                                                        if (date > schedule.ReadyDates.Last().Date)
                                                                         {
                                                                             <script>
 

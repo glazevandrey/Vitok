@@ -10,11 +10,7 @@ namespace web_server.Models
     {
         [Key]
         public int Id { get; set; }
-
-        [ForeignKey("User")]
         public int UserId { get; set; }
-
-        [ForeignKey("User")]
         public int TutorId { get; set; }
         public string TutorFullName { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -38,8 +34,14 @@ namespace web_server.Models
         public DateTime RescheduledDate { get; set; }
         public DateTime NewDate { get; set; }
         public DateTime WaitPaymentDate { get; set; }
-        public Dictionary<DateTime, int> PaidLessons { get; set; } = new Dictionary<DateTime, int>();
-        public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
+        public List<PaidLesson> PaidLessons { get; set; } = new List<PaidLesson>();
+        public List<ReadyDate> ReadyDates { get; set; } = new List<ReadyDate>();
         public DateTime RemoveDate { get; set; }
+    }
+    public class ReadyDate 
+    {
+        [Key]
+        public int Id { get; set;}
+        public DateTime Date { get; set; }
     }
 }

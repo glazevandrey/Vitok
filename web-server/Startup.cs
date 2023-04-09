@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Linq;
+using web_server.Database;
 using web_server.DbContext;
 using web_server.Injection;
 using web_server.Services;
@@ -36,6 +38,11 @@ namespace web_server
                 o.EnableDetailedErrors = true;
                 o.MaximumReceiveMessageSize = 31457280; // bytes
             }); services.AddControllers();
+
+            string connection = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
+
             services.AddAuthentication(options =>
             {
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -43,6 +50,7 @@ namespace web_server
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+
           .AddCookie(options =>
           {
               options.LoginPath = "/Account/Login";

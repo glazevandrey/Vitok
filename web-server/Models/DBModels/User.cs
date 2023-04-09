@@ -7,8 +7,6 @@ namespace web_server.Models.DBModels
 {
     public class User : TransferModel
     {
-
-        // общие поля
         [Key]
         public int UserId { get; set; }
         public string Password { get; set; }
@@ -34,7 +32,6 @@ namespace web_server.Models.DBModels
         public int SkippedInThisMonth { get; set; } = 0;
         public List<UserMoney> Money { get; set; } = new List<UserMoney>();
         public List<UserCredit> Credit { get; set; } = new List<UserCredit>();
-
         public bool UsedTrial { get; set; } = false;
 
         // поля Репетитора

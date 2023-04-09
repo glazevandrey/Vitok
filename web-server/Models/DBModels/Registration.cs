@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using web_server.Models.DBModels;
 
-namespace web_server.Models
+namespace web_server.Models.DBModels
 {
     public class Registration : TransferModel
     {

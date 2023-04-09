@@ -93,11 +93,10 @@ namespace web_server.DbContext
                     UserId = 5
                 }
             };
-        public static List<Notifications> Notifications = new List<Notifications>();
 
+        public static List<Notifications> Notifications = new List<Notifications>();
         public static List<User> Tutors = UserList.Where(m => m.Role == "Tutor").ToList();
         public static List<User> Managers = UserList.Where(m => m.Role == "Manager").ToList();
-
         public static List<Schedule> Schedules = new List<Schedule>() {
             new Schedule() { Id = 0, UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 1, UserId = 3,
 
@@ -128,7 +127,6 @@ namespace web_server.DbContext
                 Date = new UserDate() { dateTimes = new List<DateTime>() { DateTime.Parse("13.04.2023 17:00") } }, Looped = true, Course = Courses[2]}
 
         };
-
         public static List<ChatUser> ChatUsers { get; set; } = new List<ChatUser>();
     }
 }

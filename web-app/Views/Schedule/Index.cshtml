@@ -1,6 +1,5 @@
-﻿@    using web_server.Models;
-@    using web_app.Models;
-    using web_server.Models.DBModels;
+﻿@using web_server.Models;
+@using web_server.Models.DBModels;
 
 @model DisplayModelShedule
 @{
@@ -658,7 +657,7 @@ form{
                                                                         var date2 = s_date;
                                                                         foreach (var readyDate in model1.ReadyDates)
                                                                          {
-                                                                                     if (readyDate == date2)
+                                                                                     if (readyDate.Date == date2)
                                                                                     {
                                                                                         <script>
                                                                                         document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
@@ -695,7 +694,7 @@ form{
                                                                                     {
                                                                                         if (model1.ReadyDates.Count > 0)
                                                                                         {
-                                                                                            if (s_date > model1.ReadyDates.Last())
+                                                                                            if (s_date > model1.ReadyDates.Last().Date)
                                                                                             {
                                                                                                 <script>
 
@@ -755,7 +754,7 @@ form{
                                                                                 {
                                                                                     if (model1.ReadyDates.Count > 0)
                                                                                     {
-                                                                                        if (s_date > model1.ReadyDates.Last())
+                                                                                        if (s_date > model1.ReadyDates.Last().Date)
                                                                                         {
                                                                                             <script>
 
@@ -1096,7 +1095,7 @@ form{
                                                                     foreach (var readyDate in model1.ReadyDates)
                                                                     {
 
-                                                                        if (readyDate == date3)
+                                                                        if (readyDate.Date == date3)
                                                                         {
                                                                             <script>
                                                                                 document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
@@ -1134,7 +1133,7 @@ form{
                                                                                 {
                                                                                     if (model1.ReadyDates.Count > 0)
                                                                                     {
-                                                                                        if (s_date > model1.ReadyDates.Last())
+                                                                                        if (s_date > model1.ReadyDates.Last().Date)
                                                                                         {
                                                                                             <script>
 
@@ -1193,7 +1192,7 @@ form{
                                                                             {
                                                                                 if (model1.ReadyDates.Count > 0)
                                                                                 {
-                                                                                    if (s_date > model1.ReadyDates.Last())
+                                                                                    if (s_date > model1.ReadyDates.Last().Date)
                                                                                     {
                                                                                         <script>
 

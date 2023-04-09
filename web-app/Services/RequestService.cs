@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Web.Http;
 using web_app.Requests;
-using web_server.Models;
+using web_server.Models.DBModels;
 using web_server.Services.Interfaces;
 
 namespace web_app.Services

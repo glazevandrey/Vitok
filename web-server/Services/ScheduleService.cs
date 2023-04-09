@@ -91,7 +91,7 @@ namespace web_server.Services
                                 for_tutor = Math.Abs(item.Cost / 100 * 60);
                                 for_manager = Math.Abs(item.Cost / 100 * 40);
                                 user.Money.FirstOrDefault(m => m.Cost == item.Cost && m.Cost > 0).Count--;
-                                schedule.PaidLessons.Add(dateCurr, (int)Math.Abs(item.Cost));
+                                schedule.PaidLessons.Add( new PaidLesson() {  PaidDate = dateCurr, PaidCount = (int)Math.Abs(item.Cost) });
                                 break;
                             }
                         }
@@ -114,7 +114,7 @@ namespace web_server.Services
 
                 if (model.Looped)
                 {
-                    schedule.ReadyDates.Add(dateCurr);
+                    schedule.ReadyDates.Add(new ReadyDate() { Date = dateCurr });
                 }
                 else
                 {
@@ -409,7 +409,7 @@ namespace web_server.Services
 
                             if (cur.ReadyDates.Count > 0)
                             {
-                                date2 = cur.ReadyDates.Last().AddDays(7);
+                                date2 = cur.ReadyDates.Last().Date.AddDays(7);
                                 model3.TutorId = item.Key;
                                 model3.ScheduleId = cur.Id;
                                 model3.Nearest = date2;
@@ -477,9 +477,9 @@ namespace web_server.Services
                         {
                             if (cur.ReadyDates.Count > 0)
                             {
-                                if ((cur.ReadyDates.Last().AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
+                                if ((cur.ReadyDates.Last().Date.AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
-                                    date2 = cur.ReadyDates.Last().AddDays(7);
+                                    date2 = cur.ReadyDates.Last().Date.AddDays(7);
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
                                     model3.Nearest = date2;
