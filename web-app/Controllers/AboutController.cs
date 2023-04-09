@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using web_app.Models.Requests;
-using web_app.Models.Requests.Get;
+using web_app.Requests.Get;
+using web_app.Requests;
 using web_app.Services;
 using web_server.DbContext;
 using web_server.Models;

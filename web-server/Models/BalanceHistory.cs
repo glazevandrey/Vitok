@@ -9,8 +9,7 @@ namespace web_server.Models
         public int Id { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
         public CashFlow CashFlow { get; set; }
-
-        public CustomMessage CustomMessages { get; set; }
+        public string CustomMessage { get; set; }
 
     }
 }

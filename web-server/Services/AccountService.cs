@@ -111,7 +111,7 @@ namespace web_server.Services
                 return false;
             }
             TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).Balance -= Convert.ToInt32(count);
-            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessages = new CustomMessage() { MessageValue = $"Вывод средств" } });
+            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessage= $"Вывод средств"  });
 
             //.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Вывод средств: {count} p." });
 

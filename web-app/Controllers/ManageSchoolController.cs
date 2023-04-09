@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using web_app.Models;
-using web_app.Models.Requests;
-using web_app.Models.Requests.Get;
+using web_app.Requests.Get;
+using web_app.Requests;
 using web_app.Services;
 using web_server.Models;
 

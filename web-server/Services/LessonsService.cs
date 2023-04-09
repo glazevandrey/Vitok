@@ -76,18 +76,18 @@ namespace web_server.Services
                 }
 
                 TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory()
-                { CashFlow = new CashFlow() { Amount = (int)Math.Abs(tariff.Amount), Count = lessonCount} ,  CustomMessages = new CustomMessage() { MessageValue = $"Оплата тарифа: {tariff.Title}" } });
+                { CashFlow = new CashFlow() { Amount = (int)Math.Abs(tariff.Amount), Count = lessonCount} ,  CustomMessage = $"Оплата тарифа: {tariff.Title}"  });
 
             }
             else
             {
                 if (isTrial)
                 {
-                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { Date = DateTime.Now.AddDays(2), CashFlow = new CashFlow() { Amount = 250, Count = 1 }, CustomMessages = new CustomMessage() { MessageValue = $"Оплачено пробное занятие" } });
+                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { Date = DateTime.Now.AddDays(2), CashFlow = new CashFlow() { Amount = 250, Count = 1 }, CustomMessage = $"Оплачено пробное занятие" });
                 }
                 else
                 {
-                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = 1000 * lessonCount, Count = lessonCount }, CustomMessages = new CustomMessage() { MessageValue = $"Оплачено занятий: {lessonCount}" } });
+                    TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = 1000 * lessonCount, Count = lessonCount }, CustomMessage = $"Оплачено занятий: {lessonCount}" });
                 }
 
                 var id = user.Money.FirstOrDefault() != null ? user.Money.FirstOrDefault().Id : 0;
@@ -131,15 +131,15 @@ namespace web_server.Services
                         var f_manag = Math.Abs(item.Cost / 100 * 40);
 
                         tutor.Balance += f_tut;
-                        tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_tut) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" } });
+                        tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_tut) }, CustomMessage = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" });
 
 
 
                         manager.Balance += f_manag;
-                        manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_manag) }, CustomMessages = new CustomMessage() { MessageValue = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" } });
+                        manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_manag) }, CustomMessage = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
 
                         how_minus++;
-                        user.BalanceHistory.Add(new BalanceHistory() { CustomMessages = new CustomMessage() { MessageValue = $"Погашен долг за 1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" } });
+                        user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"Погашен долг за 1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
 
                         var credit = user.Credit.Where(m => m.Repaid == false).First();
                         credit.Repaid = true;

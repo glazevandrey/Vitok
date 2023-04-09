@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using web_app.Models.Requests;
-using web_app.Models.Requests.Get;
+using web_app.Requests;
+using web_app.Requests.Get;
 using web_app.Services;
 using web_server.Models;
 

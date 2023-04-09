@@ -213,11 +213,11 @@
 
         foreach (var item in sorted)
         {
-            if(item.CustomMessages != null)
+            if(!string.IsNullOrEmpty(item.CustomMessage))
             {
              <label><b>@item.Date.ToString("dd.MM.yyyy HH:mm")</b></label>   
              <br/>
-             <label>@item.CustomMessages.MessageValue</label>
+             <label>@item.CustomMessage</label>
                 <br />
                 if(item.CashFlow != null && Model.Role != "Student")
                 {

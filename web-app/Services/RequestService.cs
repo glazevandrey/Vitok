@@ -7,8 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Web.Http;
-using web_app.Models;
-using web_app.Models.Requests;
+using web_app.Requests;
 using web_server.Models;
 using web_server.Services.Interfaces;
 
