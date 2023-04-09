@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using web_server.Models.DBModels;
 
 namespace web_server.Models
 {
     public class Schedule
     {
-        //public int Id { get; set; }
         [Key]
         public int Id { get; set; }
+
+        [ForeignKey("User")]
+        public int UserId { get; set; }
+
+        [ForeignKey("User")]
         public int TutorId { get; set; }
         public string TutorFullName { get; set; }
         public DateTime CreatedDate { get; set; }
