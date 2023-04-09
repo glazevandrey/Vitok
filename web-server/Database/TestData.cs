@@ -31,8 +31,6 @@ namespace web_server.DbContext
         public static List<InChat> LiveChats { get; set; } = new List<InChat>();
         public static List<Registration> Registations = new List<Registration>();
         public static List<RescheduledLessons> RescheduledLessons = new List<RescheduledLessons>();
-
-        // все пользователи
         public static List<User> UserList = new List<User>
             {
              new User() {FirstName = "Сергей", LastName = "Глузер",MiddleName="Сергеевич", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"),
@@ -93,7 +91,6 @@ namespace web_server.DbContext
                     UserId = 5
                 }
             };
-
         public static List<Notifications> Notifications = new List<Notifications>();
         public static List<User> Tutors = UserList.Where(m => m.Role == "Tutor").ToList();
         public static List<User> Managers = UserList.Where(m => m.Role == "Manager").ToList();
