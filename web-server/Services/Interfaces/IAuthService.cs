@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
-using web_server.Models;
+using web_server.Models.DBModels;
 
 namespace web_server.Services.Interfaces
 {

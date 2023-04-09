@@ -1,5 +1,6 @@
-﻿@using web_server.Models;
-@using web_app.Models;
+﻿@    using web_server.Models;
+@    using web_app.Models;
+    using web_server.Models.DBModels;
 
 @model DisplayModelShedule
 @{
@@ -339,7 +340,7 @@ form{
 
                 <select name="courses" id="courses">
                     @{
-                        foreach (web_server.Models.Course item in (List<web_server.Models.Course>)ViewData["courses"])
+                        foreach (Course item in (List<Course>)ViewData["courses"])
                         {
                             <option value="@item.Id">@item.Title</option>
                         }

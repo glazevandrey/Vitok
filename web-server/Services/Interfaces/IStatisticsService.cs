@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using web_app.Models;
+using web_server.Models.DBModels;
 
 namespace web_server.Services.Interfaces
 {

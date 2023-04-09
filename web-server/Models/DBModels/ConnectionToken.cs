@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace web_server.Models
+namespace web_server.Models.DBModels
 {
     public class ConnectionToken
     {

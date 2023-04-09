@@ -3,6 +3,7 @@ using web_app.Requests.Get;
 using web_app.Requests;
 
 using web_app.Services;
+using web_server.Models.DBModels;
 
 namespace web_app.Controllers
 {
@@ -23,7 +24,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<web_server.Models.User>(result.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
             if (user.Role == "Student")
             {
                 var req5 = new CustomRequestPost("api/account/removeFirstLogin", user.UserId.ToString());

@@ -4,8 +4,8 @@ using web_app.Requests.Get;
 using web_app.Requests;
 using web_app.Services;
 using web_server.DbContext;
-using web_server.Models;
 using web_server.Services.Interfaces;
+using web_server.Models.DBModels;
 
 namespace web_app.Controllers
 {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using web_server.DbContext;
-using web_server.Models;
+using web_server.Models.DBModels;
 
 namespace web_server
 {

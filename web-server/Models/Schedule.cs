@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using web_server.Models.DBModels;
 
 namespace web_server.Models
 {
     public class Schedule
     {
+        //public int Id { get; set; }
         [Key]
         public int Id { get; set; }
-        public int UserId { get; set; }
         public int TutorId { get; set; }
         public string TutorFullName { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -35,13 +36,5 @@ namespace web_server.Models
         public Dictionary<DateTime, int> PaidLessons { get; set; } = new Dictionary<DateTime, int>();
         public List<DateTime> ReadyDates { get; set; } = new List<DateTime>();
         public DateTime RemoveDate { get; set; }
-    }
-    public class SkippedDate
-    {
-        [Key]
-        public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public bool WasWarn {get;set;}
-        public int InitPaid { get; set; } = 0;
     }
 }

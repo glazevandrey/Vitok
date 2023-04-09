@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using web_server.DbContext;
 
-namespace web_server.Models
+namespace web_server.Models.DBModels
 {
     public class User : TransferModel
     {
@@ -41,5 +41,5 @@ namespace web_server.Models
         public List<Course> Courses { get; set; }
         public string About { get; set; }
         public UserDate UserDates { get; set; }
-    }   
+    }
 }

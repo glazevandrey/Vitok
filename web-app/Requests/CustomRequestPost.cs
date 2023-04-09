@@ -1,4 +1,5 @@
 ﻿using web_server.Models;
+using web_server.Models.DBModels;
 
 namespace web_app.Requests
 {

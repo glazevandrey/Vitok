@@ -2,24 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using web_server.Models;
+using web_server.Models.DBModels;
 
 namespace web_server.DbContext
 {
-    public class UserCredit
-    {
-        public int Id { get; set; }
-        public double Amount { get; set; }
-        public int TutorId { get; set; }
-        public int ScheduleId { get; set; }
-        public DateTime ScheduleSkippedDate { get; set; }
-        public bool Repaid { get; set; }
-    }
-    public class UserMoney
-    {
-        public int Id { get; set; }
-        public int Count { get; set; }
-        public double Cost { get; set; }
-    }
     public static class TestData
     {
         public static List<Goal> Goals { get; set; } = new List<Goal>() { new Goal() { Id = 0, Title = "Сдать экзамен" },

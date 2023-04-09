@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace web_app.Models
+namespace web_server.Models.DBModels
 {
     public class StudentPayment
     {

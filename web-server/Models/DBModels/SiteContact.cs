@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace web_server.Models
+namespace web_server.Models.DBModels
 {
-    public class Tariff
+    public class SiteContact
     {
         [Key]
         public int Id { get; set; }
         public string Title { get; set; }
-        public int LessonsCount { get; set; }
-        public double Amount { get; set; }
+        public string Text { get; set; }
     }
 }
