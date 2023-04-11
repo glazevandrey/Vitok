@@ -59,48 +59,45 @@
     });
 </script>
 <form method="post" action="/account/saveinfo">
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="ActiveToken" value="@Model.ActiveToken" />
 
-    @Html.TextBoxFor(m => m.UserId, new { @class = "form-control txtbox", @hidden="hidden" })
-    @Html.TextBoxFor(m => m.ActiveToken, new { @class = "form-control txtbox", @hidden="hidden" })
-
-    @Html.TextBoxFor(m => m.Role, new { @class = "form-control txtbox", @hidden="hidden" })
+    <input type="hidden" name="Role" value="@Model.Role" />
 
     <label>Имя</label>
-    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control txtbox" })
+    <input type="text" name="FirstName" class="form-control txtbox" value="@Model.FirstName" />
     <br />
     <br />
 
     <label>Фамилия</label>
-    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control txtbox" })
+    <input type="text" name="LastName" class="form-control txtbox" value="@Model.LastName" />
     <br />
     <br />
 
-    
-    @Html.TextBoxFor(m => m.PhotoUrl, new { @class = "form-control txtbox", @hidden="hidden" })
+    <input type="hidden" name="PhotoUrl" value="@Model.PhotoUrl" />
     <br />
-        <br />
+    <br />
 
     <label>Дата рождения</label>
-    @Html.TextBoxFor(m => m.BirthDate, new { @class = "form-control txtbox", @type="date", @id="BirthDate", @min="1920-01-01", @max="2050-12-31" })
-
+    <input type="date" name="BirthDate" class="form-control txtbox" id="BirthDate" min="1920-01-01" max="2050-12-31" value="@Model.BirthDate.ToString("yyyy-MM-dd")" />
     <br />
     <br />
 
     <label>Почта</label>
-    @Html.TextBoxFor(m => m.Email, new { @class = "form-control txtbox" })
+    <input type="text" name="Email" class="form-control txtbox" value="@Model.Email" />
     <br />
     <br />
 
     <label>Пароль</label>
-    @Html.TextBoxFor(m => m.Password, new { @class = "form-control txtbox" })
+    <input type="password" name="Password" class="form-control txtbox" />
     <br />
     <br />
 
     <label>Номер телефона</label>
-    @Html.TextBoxFor(m => m.Phone, new { @class = "form-control txtbox" })
+    <input type="text" name="Phone" class="form-control txtbox" value="@Model.Phone" />
     <br />
     <br />
-
+    <input value="@Model.Role" name="role" id="role" hidden="hidden"/>
     @{
          var w_days = new List<DayOfWeek>()
                                 {
@@ -111,7 +108,7 @@
 
           <label>Курсы:</label>
           <br/>
-            foreach (var item in Model.Courses)
+            foreach (var item in ((Tutor)Model).Courses)
             {
                 <label>@item.Title</label>
                 <br />
@@ -131,8 +128,8 @@
                 <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
                 </td>
                             @{
-                                Model.UserDates.dateTimes = Model.UserDates.dateTimes.OrderBy(m => m.TimeOfDay).ToList();
-                                foreach (var time in Model.UserDates.dateTimes)
+                                var ordered = ((Tutor)Model).UserDates.dateTimes.OrderBy(m => m.TimeOfDay).ToList();
+                                foreach (var time in ordered)
                                 {
                                 if (time.DayOfWeek == day)
                                 {
@@ -145,28 +142,27 @@
                 }
                 
               
-                </tr>
-                //<br />
-                //<br />
+                        </tr>
+                    }
+                    }
 
-               
+                </table>
 
-                }
-            }
-               
-            </table>
-          
 
-            <br />
+                <br />
 
-            <label>О себе:</label>
-            <br/>
-            @Html.TextAreaFor(m => m.About, new { @class = "form-control rich-textbox" })
+                <label>О себе:</label>
+                <br/>
+                <input value="@{((Tutor)Model).About.ToString();}">
+            //@Html.TextAreaFor(m => m.About, new { @class = "form-control rich-textbox" })
         }
         else if (Model.Role == "Student")
         {
             <label>Пожелания</label>
-            @Html.TextAreaFor(m => m.Wish, new { @class = "form-control rich-textbox" })
+            <input value="@{
+            ((Student)Model).Wish.ToString();}">
+
+           // @Html.TextAreaFor(m => m.Wish, new { @class = "form-control rich-textbox" })
         }
     }
 

@@ -1,11 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using web_server.Database;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DTO;
 using web_server.Services.Interfaces;
 
 namespace web_server.Controllers
@@ -16,16 +22,19 @@ namespace web_server.Controllers
     public class HomeController : Controller
     {
         private readonly IHubContext<NotifHub> _hubContext;
-        DataContext _data;
         IAuthService _authService;
         IJsonService _jsonService;
         ILessonsService _lessonsService;
         IScheduleService _scheduleService;
         IStatisticsService _statisticsService;
-
-        public HomeController(DataContext data, IStatisticsService statisticsService ,IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
+        UserRepository _userRepository;
+        ContactsRepository _contactsRepository;
+        CourseRepository _courseRepository;
+        public HomeController(UserRepository userRepository, CourseRepository courseRepository, ContactsRepository contactsRepository, IStatisticsService statisticsService ,IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
         {
-            _data = data;
+            _userRepository = userRepository;
+            _courseRepository = courseRepository;
+            _contactsRepository = contactsRepository;
             _hubContext = hub;
             _authService = authService;
             _jsonService = jsonService;
@@ -35,23 +44,22 @@ namespace web_server.Controllers
         }
 
         [HttpPost("loginuser", Name = "loginuser")]
-        public string LoginUser()
+        public async Task<string> LoginUser()
         {
 
-            var f =_data.UserDates.ToList();
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
-
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
-            var json = _authService.LogIn(user, HttpContext);
+            var args = form.Keys.First().Split(";");
+            var json =  await _authService.LogIn(args[0], args[1], HttpContext);
+          
             return json;
         }
 
         [HttpPost("registeruser", Name = "registeruser")]
-        public string RegisterUser()
+        public async Task<string> RegisterUser()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -60,33 +68,33 @@ namespace web_server.Controllers
             }
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
-            var json = _authService.Register(user, HttpContext, _hubContext);
+            var json = await _authService.Register(user, HttpContext, _hubContext);
             return json;
         }
 
         [HttpGet("getAllSchedules", Name = "getAllSchedules")]
-        public string GetAllSchedules()
+        public async Task<string> GetAllSchedules()
         {
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Schedules));
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _scheduleService.GetAllSchedules()));
         }
 
         [HttpGet("getAllReSchedules", Name = "getAllReSchedules")]
-        public string GetAllReSchedules()
+        public async Task<string> GetAllReSchedules()
         {
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.RescheduledLessons));
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _scheduleService.GetAllReschedules()));
         }
 
         [Authorize]
         [HttpGet("getuser", Name = "getuser")]
-        public string GetUser([FromQuery] string args)
+        public async Task<string> GetUser([FromQuery] string args)
         {
             if (args == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var json = _authService.GetUserByToken(args);
-            var check = _authService.CheckIsActive(HttpContext);
+            var json = await _authService.GetUserByToken(args);
+            var check = await _authService.CheckIsActive(HttpContext);
             if (check == false)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
@@ -96,22 +104,23 @@ namespace web_server.Controllers
         }
 
         [HttpGet("getAllStudentsAndTutors", Name = "getAllStudentsAndTutors")]
-        public string GetAll([FromQuery] string args)
+        public async Task<string> GetAll([FromQuery] string args)
         {
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.UserList));
+            var all = await _userRepository.GetAll();
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(all));
         }
 
         [Authorize]
         [HttpGet("getuserbyid", Name = "getuserbyid")]
-        public string GetUserById([FromQuery] string args)
+        public async Task<string> GetUserById([FromQuery] string args)
         {
             if (args == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var json = _authService.GetUserById(args);
-            var check = _authService.CheckIsActive(HttpContext);
+            var json = await _authService.GetUserById(args);
+            var check = await _authService.CheckIsActive(HttpContext);
             if (check == false)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
@@ -145,27 +154,29 @@ namespace web_server.Controllers
 
         [Authorize]
         [HttpGet("getschedulebyid", Name = "getschedulebyid")]
-        public string GetScheduleById([FromQuery] string args)
+        public async Task<string> GetScheduleById([FromQuery] string args)
         {
             if (args == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var userSchedules = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
+            var userSchedules = _scheduleService.GetSchedules(args[0].ToString()); //TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
+
+            //var userSchedules = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
 
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(userSchedules));
         }
 
         [HttpPost("adduserregistration", Name = "adduserregistration")]
-        public string AddUserRegistration()
+        public async Task<string> AddUserRegistration()
         {
             var form = Request.Form;
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(form.First().Key);
 
             if (form.Keys.Count != 0)
             {
-                TestData.Registations.Add(model);
+                await _authService.AddRegistration(model);
                 var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(model));
                 return json;
             }
@@ -190,13 +201,29 @@ namespace web_server.Controllers
         }
 
         [HttpGet("getregistration", Name = "getregistration")]
-        public string GetRegistration([FromQuery] string args) =>
-                        _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Registations.FirstOrDefault(m => m.UserId == Convert.ToInt32(args))));
+        public async Task<string> GetRegistration([FromQuery] string args)
+        {
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _userRepository.GetRegistrationByUserId(Convert.ToInt32(args))));
+        }
 
+        [HttpGet("getTariffs", Name ="getTariffs")]
+        public async Task<string> GetTariffs()
+        {
+            var tariffs = await _courseRepository.GetAllTariffs();
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tariffs));
+        }
 
+        [HttpGet("getGoals", Name = "getGoals")]
+        public async Task<string> GetGoals()
+        {
+            var goals = await _courseRepository.GetAllGoals();
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(goals));
+        }
         [HttpPost("getcontacts", Name = "GetContacts")]
-        public string GetContacts() =>
-            _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Contacts));
+        public async Task<string> GetContacts()
+        {
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _contactsRepository.GetContacts()));
+        }
 
     }
 }

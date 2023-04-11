@@ -34,12 +34,12 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
             ViewData["usertoken"] = user.UserId;
 
-            var req2 = new GetAllUsersRequest();
+            var req2 = new GetAllUsersRequest(Request.Cookies[".AspNetCore.Application.Id"]);
 
             var res2 = _requestService.SendGet(req2, HttpContext);
             if (!res2.success)
@@ -49,7 +49,7 @@ namespace web_app.Controllers
 
             ViewData["role"] = "Manager";
 
-            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res2.result.ToString());
+            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tutor>>(res2.result.ToString(), Program.settings);
             users = users.Where(m => m.Role == "Tutor").ToList();
 
             return View(users);
@@ -65,7 +65,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res1.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res1.result.ToString(), Program.settings);
 
             var req = new CustomRequestPost("api/tutor/removeTutorServer", user);
             var res = _requestService.SendPost(req, HttpContext);
@@ -83,11 +83,15 @@ namespace web_app.Controllers
 
             var listCourses = new List<Course>();
 
+            var req3 = new GetCourses();
+            var res3 = _requestService.SendGet(req3);
+
+            var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(res3.result.ToString()); 
             if (course != null)
             {
                 foreach (var item in course)
                 {
-                    var c = TestData.Courses.FirstOrDefault(m => m.Title == item);
+                    var c = courses.FirstOrDefault(m => m.Title == item);
                     if (c != null)
                     {
                         listCourses.Add(c);
@@ -96,7 +100,7 @@ namespace web_app.Controllers
 
             }
 
-            var user = new User()
+            var user = new Tutor()
             {
                 FirstName = firstNameEdit,
                 LastName = lastNameEdit,
@@ -132,17 +136,22 @@ namespace web_app.Controllers
 
             var course = courses?.Trim().Trim().Split(";");
 
+            var req3 = new GetCourses();
+            var res3 = _requestService.SendGet(req3);
+
+            var coursesList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(res3.result.ToString());
+
             var listCourses = new List<Course>();
 
             if (course != null)
             {
                 foreach (var item in course)
                 {
-                    listCourses.Add(TestData.Courses.FirstOrDefault(m => m.Title == item));
+                    listCourses.Add(coursesList.FirstOrDefault(m => m.Title == item));
                 }
             }
 
-            var user = new User()
+            var user = new Tutor()
             {
                 FirstName = firstName,
                 LastName = lastName,

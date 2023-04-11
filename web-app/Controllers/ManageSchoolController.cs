@@ -6,6 +6,7 @@ using web_app.Requests;
 using web_app.Services;
 using web_server.Models;
 using web_server.Models.DBModels;
+using Newtonsoft.Json;
 
 namespace web_app.Controllers
 {
@@ -29,7 +30,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<Manager>(result.result.ToString());
 
 
             result = new ResponseModel();
@@ -38,7 +39,7 @@ namespace web_app.Controllers
 
             CustomRequestGet req3 = new GetAllTutorsRequest();
             var res3 = _requestService.SendGet(req3, HttpContext);
-            ViewData["Tutors"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res3.result.ToString());
+            ViewData["Tutors"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tutor>>(res3.result.ToString());
 
 
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
@@ -59,9 +60,10 @@ namespace web_app.Controllers
             var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(result.result.ToString());
             ViewData["rescheduled"] = rescheduled;
 
-            CustomRequestGet request2 = new GetAllUsersRequest();
+            CustomRequestGet request2 = new GetAllUsersRequest(Request.Cookies[".AspNetCore.Application.Id"]);
             var result2 = _requestService.SendGet(request2, HttpContext);
-            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString());
+            
+            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString(), Program.settings);
             Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
             foreach (var item in users)
             {

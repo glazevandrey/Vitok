@@ -108,22 +108,22 @@
     }
     else
     {
+        var stud = (Student)Model;
 
-
-        if (Model.Credit.Where(m => m.Repaid == false).ToList().Count > 0)
+        if (stud.Credit.Where(m => m.Repaid == false).ToList().Count > 0)
         {
-            var cred = Model.Credit.Where(m=>m.Repaid == false).ToList().Count;
+            var cred = stud.Credit.Where(m => m.Repaid == false).ToList().Count;
                     <br/>
                     <label style="color:darkred">ВНИМАНИЕ! У вас имеется задолжность за: @cred занятие(й).</label>
 
                     <br />
 
-                    <br />
-                }
-            
-        <div id="count">
-            <label>Осталось: </label>
-            <input disabled="disabled" id="balance_input" value="@Model.LessonsCount занятий" />
+            <br />
+        }
+
+                                                                   <div id="count">
+                                                                       <label>Осталось: </label>
+            <input disabled="disabled" id="balance_input" value="@stud.LessonsCount занятий" />
         </div>
 
         <br/>
@@ -132,7 +132,7 @@
 
          
             <form method="post" action="/balance/setLessons">
-                <input hidden="hidden" name="userId" id="userId" value="@Model.UserId" />
+                <input hidden="hidden" name="userId" id="userId" value="@stud.UserId" />
                 <input hidden="hidden" name="isTrialPay" id="isTrialPay" value="false" />
 
                 <br />
@@ -141,7 +141,7 @@
 
                 @{
 
-                    if(Model.UsedTrial == false)
+                    if (stud.UsedTrial == false)
                     {
                         <input value="Добавить" onclick="trial()" type="button" />
                        

@@ -2,6 +2,5 @@
 {
     public abstract class TransferModel
     {
-        public string CustomJson { get; set; }
     }
 }

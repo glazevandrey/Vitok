@@ -34,8 +34,11 @@ namespace web_app.Controllers
             {
                 return BadRequest("Технические проблемы. Мы уже исправляем!");
             }
-            ViewData["courses"] = TestData.Courses;
-            var data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(response.result.ToString());
+            var req2 = new GetCourses();
+            var response2 = _requestService.SendGet(req2, HttpContext);
+
+            ViewData["courses"] =Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
+            var data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(response.result.ToString(), Program.settings);
             return View(data);
         }
 
@@ -50,7 +53,7 @@ namespace web_app.Controllers
             Int32.TryParse(form["course"], out courseId);
 
 
-            var tutor = new User();
+            var tutor = new Tutor();
 
             if (form.Count != 0)
             {
@@ -64,7 +67,7 @@ namespace web_app.Controllers
                     return BadRequest("Что-то пошло не так =(");
                 }
 
-                tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(response.result.ToString());
+                tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(response.result.ToString(), Program.settings);
                 var time = form["textTime"];
                 if (string.IsNullOrEmpty(time))
                 {
@@ -77,12 +80,15 @@ namespace web_app.Controllers
                     date.dateTimes.Add(DateTime.Parse(item));
                 }
             }
+            var req2 = new GetCourses();
+            var response2 = _requestService.SendGet(req2, HttpContext);
+
+           var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
 
             Registration registration = new Registration
             {
-                UserId = TestData.UserList.Last().UserId + 1,
                 WantThis = date,
-                Course = TestData.Courses.FirstOrDefault(m => m.Id == courseId),
+                Course = courses.FirstOrDefault(m => m.Id == courseId),
                 TutorId = tutorId
             };
 
@@ -92,7 +98,7 @@ namespace web_app.Controllers
 
             if (result.success != false)
             {
-                var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
+                var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString(), Program.settings);
                 registration.UserId = user.UserId;
                 var req = new CustomRequestPost("api/home/addschedulefromuser", registration);
                 _requestService.SendPost(req, HttpContext);
@@ -119,7 +125,7 @@ namespace web_app.Controllers
             {
                 return BadRequest("Технические проблемы. Мы уже исправляем!");
             }
-            var tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(response.result.ToString());
+            var tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(response.result.ToString(), Program.settings);
             return View(tutor);
         }
 

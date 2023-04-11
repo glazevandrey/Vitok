@@ -6,6 +6,8 @@ using web_app.Requests;
 using web_app.Services;
 using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace web_app.Controllers
 {
@@ -35,9 +37,15 @@ namespace web_app.Controllers
                     return Redirect("/manageschool");
 
                 }
+                else if (role == null)
+                {
+                    return View();
+                    //  return Redirect("/schedule");
+                }
                 else
                 {
-                    return Redirect("/schedule");
+                     return Redirect("/schedule");
+
                 }
             }
 
@@ -51,40 +59,32 @@ namespace web_app.Controllers
         }
 
         [HttpPost]
-        public IActionResult LoginUser([FromForm] User user)
+        public IActionResult LoginUser([FromForm]string email, [FromForm] string password)
         {
-            if (user.Email == null || user.Password == null)
+            if (email == null || password == null)
             {
                 return RedirectToAction("login", new { error = "Необходимо заполнить оба поля" });
             }
 
-            CustomRequestPost req = new CustomRequestPost("api/home/LoginUser", user);
+            CustomRequestPost req = new CustomRequestPost("api/home/LoginUser", $"{email};{password}");
             var response = _requestService.SendPost(req, HttpContext);
             if (!response.success || response == null)
             {
                 return RedirectToAction("login", new { error = response.result });
             }
 
-            HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", response.result.ToString(),
+            Dictionary<string, string> keys = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>(response.result.ToString());
+            HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", keys.First().Key.ToString(),
             new CookieOptions
             {
                 // TODO: сделать больше
                 MaxAge = TimeSpan.FromMinutes(1160)
             });
 
-            HttpContext.Request.Headers.Add(".AspNetCore.Application.Id", response.result.ToString());
+            HttpContext.Request.Headers.Add(".AspNetCore.Application.Id", keys.First().Key.ToString());
 
-            var req2 = new GetUserByToken(response.result.ToString());
-            var res2 = _requestService.SendGet(req2, HttpContext);
-            try
-            {
-                user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res2.result.ToString());
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("login");
-            }
-            return RedirectToAction("login", new { role = user.Role });
+          
+            return RedirectToAction("login", new { role = keys.First().Value.ToString()});
 
 
         }

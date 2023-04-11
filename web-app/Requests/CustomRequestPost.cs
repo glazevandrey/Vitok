@@ -10,11 +10,22 @@ namespace web_app.Requests
         public string Address { get; set; }
         public string Args { get; set; }
         public TransferModel TransferData { get; set; }
+
         public CustomRequestPost(string address, User user)
         {
             Address = address;
             User = user;
         }
+        //public CustomRequestPost(string address, Student user)
+        //{
+        //    Address = address;
+        //    User = user;
+        //}
+        //public CustomRequestPost(string address, Tutor user)
+        //{
+        //    Address = address;
+        //    User = user;
+        //}
         public CustomRequestPost(string address, TransferModel data)
         {
             Address = address;

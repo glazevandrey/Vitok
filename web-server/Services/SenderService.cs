@@ -1,14 +1,26 @@
 ﻿using System;
 using System.Net;
 using System.Net.Mail;
+using web_server.Database.Repositories;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
 {
     public class SenderService : ISenderService
     {
-        public void SendMessage(string address, string message2)
+        UserRepository _userRepository;
+        public SenderService(UserRepository userRepository)
         {
+            _userRepository= userRepository;
+        }
+        public async void SendMessage(int id, string message2)
+        {
+            var user = await _userRepository.GetUserById(id);
+            if(user == null)
+            {
+                return;
+            }
+            var address = user.Email;
 
             MailMessage message = new System.Net.Mail.MailMessage();
             string fromEmail = "ivanivanov202311@mail.ru";

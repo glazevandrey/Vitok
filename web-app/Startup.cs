@@ -40,7 +40,7 @@ namespace web_app
             });
             //  services.AddSignalR();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddCustomServices();
+            services.AddCustomServices(Configuration);
 
         }
 

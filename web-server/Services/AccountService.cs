@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -12,25 +14,36 @@ namespace web_server.Services
 {
     public class AccountService : IAccountService
     {
-        public bool RemoveFirstLogin(string args)
+        UserRepository _userRepository;
+        ScheduleRepository _scheduleRepository;
+        public AccountService(UserRepository userRepository, ScheduleRepository scheduleRepository)
         {
-            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args)).FirstLogin = false;
+            _scheduleRepository= scheduleRepository;
+            _userRepository = userRepository;
+        }
+        public async Task<bool> RemoveFirstLogin(string args)
+        {
+            var user = await _userRepository.GetUserById(Convert.ToInt32(args));
+            user.FirstLogin = false;
+            await _userRepository.Update(user);
+            //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args)).FirstLogin = false;
             return true;
         }
 
-        public User SaveAccountInfo(string args)
+        public async Task<User> SaveAccountInfo(string args)
         {
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(args);
-            var old = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(args, Program.settings);
+            var old = await _userRepository.GetUserById(user.UserId);
+            //var old = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
 
             var schedules = new List<Schedule>();
             if (user.Role == "Tutor")
             {
-                schedules = TestData.Schedules.Where(m => m.TutorId == user.UserId).ToList();
+                schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);//TestData.Schedules.Where(m => m.TutorId == user.UserId).ToList();
             }
             else if (user.Role == "Student")
             {
-                schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
+                schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);//TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
             }
             foreach (var item in schedules)
             {
@@ -74,7 +87,9 @@ namespace web_server.Services
                 {
                     item.TutorFullName = new_name;
                 }
+
             }
+            await _scheduleRepository.UpdateRange(schedules);
 
             old.FirstName = user.FirstName;
             old.LastName = user.LastName;
@@ -85,13 +100,14 @@ namespace web_server.Services
             old.Password = user.Password;
             old.Phone = user.Phone;
 
-            var index = TestData.UserList.FindIndex(m => m.UserId == user.UserId);
-            TestData.UserList[index] = old;
+            await _userRepository.Update(old);
+            //var index = TestData.UserList.FindIndex(m => m.UserId == user.UserId);
+            //TestData.UserList[index] = old;
 
             return user;
         }
 
-        public string SavePhoto(IFormFile file, string id)
+        public async Task<string> SavePhoto(IFormFile file, string id)
         {
             string imageName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             string savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/avatars", imageName);
@@ -100,20 +116,26 @@ namespace web_server.Services
                 file.CopyTo(stream);
             }
 
-            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id)).PhotoUrl = "http://localhost:23382/" + "avatars/" + imageName;
+            var user = await _userRepository.GetUserById(Convert.ToInt32(id));
+            user.PhotoUrl = "http://localhost:23382/" + "avatars/" + imageName;
+            await _userRepository.Update(user);
+            //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id)).PhotoUrl = "http://localhost:23382/" + "avatars/" + imageName;
 
             return savePath;
         }
 
-        public bool Withdraw(string tutorid, string count)
+        public async Task<bool> Withdraw(string tutorid, string count)
         {
-            if (TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).Balance < Convert.ToDouble(count))
+            var user = await _userRepository.GetUserById(Convert.ToInt32(tutorid));
+            if (user.Balance < Convert.ToDouble(count))
             {
                 return false;
             }
-            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).Balance -= Convert.ToInt32(count);
-            TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutorid)).BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessage= $"Вывод средств"  });
 
+            user.Balance -= Convert.ToInt32(count);
+            user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessage= $"Вывод средств"  });
+
+            await _userRepository.Update(user);
             //.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Вывод средств: {count} p." });
 
             return true;

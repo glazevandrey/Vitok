@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Services.Interfaces;
@@ -15,8 +17,11 @@ namespace web_server.Controllers
         ILessonsService _lessonsService;
         IAccountService _accountService;
         IScheduleService _scheduleService;
-        public AccountController(IJsonService jsonService, ILessonsService lessonsService, IAccountService accountService, IScheduleService scheduleService)
+        
+        NotificationRepository _notificationRepository;
+        public AccountController(IJsonService jsonService, ILessonsService lessonsService, IAccountService accountService, IScheduleService scheduleService, NotificationRepository notificationRepository)
         {
+            _notificationRepository= notificationRepository;
             _jsonService = jsonService;
             _lessonsService = lessonsService;
             _accountService = accountService;
@@ -25,7 +30,7 @@ namespace web_server.Controllers
 
         [Models.Authorize]
         [HttpPost("saveuserinfo", Name = "saveuserinfo")]
-        public string SaveUserInfo()
+        public async Task<string> SaveUserInfo()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -33,7 +38,7 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var user = _accountService.SaveAccountInfo(form.First().Key);
+            var user =await  _accountService.SaveAccountInfo(form.First().Key);
             if (user != null)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
@@ -44,7 +49,7 @@ namespace web_server.Controllers
         }
         [Models.Authorize]
         [HttpPost("removeFirstLogin", Name = "removeFirstLogin")]
-        public string RemoveFirstLogin()
+        public async Task<string> RemoveFirstLogin()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -54,7 +59,7 @@ namespace web_server.Controllers
 
             var args = form.First().Key;
 
-            var user = _accountService.RemoveFirstLogin(args);
+            var user = await _accountService.RemoveFirstLogin(args);
             if (user == false)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
@@ -66,7 +71,7 @@ namespace web_server.Controllers
 
         [Models.Authorize]
         [HttpPost("addlessons", Name = "addlessons")]
-        public string AddLessons()
+        public async  Task<string> AddLessons()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -76,7 +81,7 @@ namespace web_server.Controllers
 
             var args = form.First().Key.Split(";");
 
-            var user = _lessonsService.AddLessonsToUser(args);
+            var user = await _lessonsService.AddLessonsToUser(args);
             if (user != null)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
@@ -98,14 +103,14 @@ namespace web_server.Controllers
 
         [Models.Authorize]
         [HttpGet("getreschedule", Name = "getreschedule")]
-        public string GetReSchedule([FromQuery] string args)
+        public async Task<string> GetReSchedule([FromQuery] string args)
         {
             if (args == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
             }
 
-            var list = _lessonsService.GetRescheduledLessons(args);
+            var list = await _lessonsService.GetRescheduledLessons(args);
             if (list != null)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
@@ -117,7 +122,7 @@ namespace web_server.Controllers
 
         [Authorize]
         [HttpPost("TutorWithdraw")]
-        public string TutorWithdraw()
+        public async Task<string> TutorWithdraw()
         {
             var args = Request.Form.First().Key?.Split(";");
             if (args == null)
@@ -125,7 +130,7 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
             }
 
-            var res = _accountService.Withdraw(args[0], args[1]);
+            var res = await _accountService.Withdraw(args[0], args[1]);
             if (res == false)
             {
                 return _jsonService.PrepareErrorJson("Недостаточно средств");
@@ -134,27 +139,30 @@ namespace web_server.Controllers
         }
 
         [HttpPost("MarkAsRead", Name = "MarkAsRead")]
-        public void MarkAsRead([FromForm] int id)
+        public async Task MarkAsRead([FromForm] int id)
         {
-            var sc = TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id));
+            var sc = await _notificationRepository.GetNotification(id);
+           // var sc = TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id));
             if (sc == null)
             {
                 return;
             }
 
             sc.Readed = true;
+
+            await _notificationRepository.UpdateNotification(sc);
         }
 
         [Models.Authorize]
         [HttpGet("getschedule", Name = "getschedule")]
-        public string GetSchedule([FromQuery] string args)
+        public async Task<string> GetSchedule([FromQuery] string args)
         {
             if (args == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
             }
 
-            var list = _scheduleService.GetSchedules(args);
+            var list = await _scheduleService.GetSchedules(args);
 
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
             return _jsonService.PrepareSuccessJson(json);

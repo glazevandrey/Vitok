@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
+using System.Threading.Tasks;
 using web_server;
+using web_server.Database;
 using web_server.DbContext;
 using web_server.Models;
+using web_server.Models.DBModels;
 using web_server.Services.Interfaces;
 
 namespace vitok.Controllers
@@ -18,6 +21,7 @@ namespace vitok.Controllers
         ITutorService _tutorService;
         IScheduleService _scheduleService;
         IHubContext<NotifHub> _hubContext;
+        
         public TutorController(IJsonService jsonService, ILessonsService lessonsService, ITutorService tutorService, IScheduleService scheduleService, IHubContext<NotifHub> hubContext)
         {
             _jsonService = jsonService;
@@ -29,12 +33,15 @@ namespace vitok.Controllers
 
         [HttpGet("getall", Name = "GetAll")]
         public string GetAllTutors() =>
-            _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(TestData.Tutors));
+            _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(_tutorService.GetAll()));
 
 
         [HttpGet("gettutor", Name = "gettutor")]
-        public string GetTutor([FromQuery] string args) => _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(
-                TestData.Tutors.FirstOrDefault(m => m.UserId.ToString() == args)));
+        public async Task<string> GetTutor([FromQuery] string args)
+        {
+            var tutor = await _tutorService.GetTutor(args);
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
+        }
 
         [Authorize]
         [HttpPost("addtutor", Name = "addtutor")]
@@ -78,7 +85,7 @@ namespace vitok.Controllers
 
         [Authorize]
         [HttpPost("removeTutorServer", Name = "removeTutorServer")]
-        public string RemoveTutor()
+        public async Task<string> RemoveTutor()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -87,7 +94,7 @@ namespace vitok.Controllers
             }
             var args = form.First().Key;
 
-            bool removed = _tutorService.RemoveTutor(args);
+            bool removed = await _tutorService.RemoveTutor(args);
             if (!removed)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка удалить репетитора");
@@ -98,7 +105,7 @@ namespace vitok.Controllers
 
         [Authorize]
         [HttpPost("addtutorfreedate", Name = "addtutorfreedate")]
-        public string AddTutorFreeDate()
+        public async Task<string> AddTutorFreeDate()
         {
             var form = Request.Form;
             if (form.Keys.Count == 0)
@@ -106,7 +113,7 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Tutor not found");
             }
             var args = form.First().Key;
-            var tutor = _tutorService.AddTutorFreeDate(args);
+            var tutor = await _tutorService.AddTutorFreeDate(args);
             if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить свободные даты");
@@ -116,7 +123,7 @@ namespace vitok.Controllers
         }
         [Authorize]
         [HttpPost("rejectStudent", Name = "rejectStudent")]
-        public string RejectStudent()
+        public async Task<string> RejectStudent()
         {
             var form = Request.Form;
             if (form.Keys.Count == 0)
@@ -124,7 +131,7 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Tutor not found");
             }
             var args = form.First().Key.Split(";");
-            var success = _tutorService.RejectStudent(args, _hubContext);
+            var success =  await _tutorService.RejectStudent(args, _hubContext);
             if (!success)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить свободные даты");
@@ -135,7 +142,7 @@ namespace vitok.Controllers
 
         [Authorize]
         [HttpPost("addtutorschedule", Name = "addtutorschedule")]
-        public string AddTutorSchedule()
+        public async Task<string> AddTutorSchedule()
         {
             var form = Request.Form;
             if (form.Keys.Count == 0)
@@ -144,7 +151,7 @@ namespace vitok.Controllers
             }
             var args = form.First().Key;
 
-            var tutor = _tutorService.AddTutorSchedule(args, _hubContext);
+            var tutor = await _tutorService.AddTutorSchedule(args, _hubContext);
             if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить расписание");
@@ -155,7 +162,7 @@ namespace vitok.Controllers
 
         [Authorize]
         [HttpPost("removetutortimeandschedule", Name = "removetutortimeandschedule")]
-        public string RemoveTutorTimeAndSchedule()
+        public async Task<string> RemoveTutorTimeAndSchedule()
         {
             var form = Request.Form;
             if (form.Keys.Count == 0)
@@ -165,7 +172,7 @@ namespace vitok.Controllers
             var args = form.First().Key;
 
 
-            var tutor = _tutorService.RemoveTutorSchedule(args, _hubContext);
+            var tutor = await _tutorService.RemoveTutorSchedule(args, _hubContext);
             if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка удалить расписание у репетитора");
@@ -176,7 +183,7 @@ namespace vitok.Controllers
 
         [Authorize]
         [HttpPost("changeStatusServer", Name = "changeStatusServer")]
-        public string ChangeStatus()
+        public async Task<string> ChangeStatus()
         {
             var form = Request.Form;
             if (form.Keys.Count == 0)
@@ -186,7 +193,7 @@ namespace vitok.Controllers
 
             var args = form.First().Key;
 
-            var result = _scheduleService.ChangeStatus(args, _hubContext);
+            var result = await _scheduleService.ChangeStatus(args, _hubContext);
             if (result != "OK")
             {
                 return _jsonService.PrepareErrorJson(result);

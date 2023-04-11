@@ -8,6 +8,8 @@ using web_app.Services;
 using web_server.Models;
 using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
+using Newtonsoft.Json;
+using web_server.Database;
 
 namespace web_app.Controllers
 {
@@ -17,6 +19,7 @@ namespace web_app.Controllers
     {
         IJsonService _jsonService;
         IRequestService _requestService;
+
         public ScheduleController(IJsonService jsonService, IRequestService requestService)
         {
             _jsonService = jsonService;
@@ -26,8 +29,8 @@ namespace web_app.Controllers
         {
             CustomRequestGet req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
-
-            if (!res.success)
+          
+                if (!res.success)
             {
                 if (Request.Cookies.ContainsKey(".AspNetCore.Application.Id"))
                 {
@@ -37,7 +40,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             ViewData["usertoken"] = user.UserId;
 
             var result = new ResponseModel();
@@ -48,7 +51,7 @@ namespace web_app.Controllers
 
                 CustomRequestGet req3 = new GetAllTutorsRequest();
                 var res3 = _requestService.SendGet(req3, HttpContext);
-                ViewData["Tutors"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res3.result.ToString());
+                ViewData["Tutors"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res3.result.ToString(), Program.settings);
             }
             else
             {
@@ -67,7 +70,11 @@ namespace web_app.Controllers
             ViewData["role"] = user.Role;
             ViewData["userid"] = user.UserId;
             ViewData["courses"] = user.Courses != null ? user.Courses : new List<Course>();
-            ViewData["lessons"] = user.LessonsCount;
+
+            if (user.Role == "Student")
+            {
+                ViewData["lessons"] = ((Student)user).LessonsCount;
+            }
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
@@ -90,9 +97,15 @@ namespace web_app.Controllers
             ViewData["rescheduled"] = rescheduled;
 
 
-            CustomRequestGet request2 = new GetAllUsersRequest();
+            CustomRequestGet request2 = new GetAllUsersRequest(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var result2 = _requestService.SendGet(request2, HttpContext);
-            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString());
+            if (!result2.success)
+            {
+                return Redirect("/login");
+            }
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new UserConverter());
+            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString(), settings);
             Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
             foreach (var item in users)
             {

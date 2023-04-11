@@ -547,7 +547,7 @@ form{
                                                     }
                                                                                                            
                                                 }
-                                            foreach (var m_date in model1.Date.dateTimes)
+                                            foreach (var m_date in model1.Date)
                                             {
                                                 if (m_date.DayOfWeek == day)
                                                 {
@@ -570,7 +570,7 @@ form{
                                                                     elem[0].parentNode.removeChild(elem[0]);
                                                                  </script>
 
-                                                               btn = $"btn_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
+                                                               btn = $"btn_{model1.UserId}_{model1.Date.dateTime[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
                                                                     <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:100px">clicked3</button>
 
                                                                 <script>
@@ -605,12 +605,12 @@ form{
                                                                     var elem = document.getElementsByClassName('@btn');
                                                                     elem[0].parentNode.removeChild(elem[0]);
                                                                     </script>
-                                                                    var label = $"label_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
+                                                                    var label = $"label_{model1.UserId}_{model1.Date.dateTime[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
                                                                     <div id="tooltrip">
 
                                                                         @{
 
-                                                                            var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goals[0]?.Title}; Имя и фамилия: {model1.UserName};";
+                                                                            var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.UserName};";
 
 
                                                                             if(model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)
@@ -885,7 +885,7 @@ form{
                                                                                     var tutor_id = sub[5];
 
                                                                                     var name = e.target.innerHTML;
-                                                                                    document.getElementById("dateStatus").value = "@model1.Date.dateTimes[0]";
+                                                                                    document.getElementById("dateStatus").value = "@model1.Date.dateTime[0]";
                                                                                     document.getElementById("tutorStatus").value = tutor_id;
                                                                                     document.getElementById("userStatus").value = userid;
                                                                                     document.getElementById("courseId").value = @model1.Course?.Id;
@@ -925,7 +925,7 @@ form{
                                                                                     var tutor_id = sub[5];
 
                                                                                     var name = e.target.innerHTML;
-                                                                                    document.getElementById("dateStatus").value = "@model1.Date.dateTimes[0]";
+                                                                                    document.getElementById("dateStatus").value = "@model1.Date.dateTime[0]";
                                                                                     document.getElementById("tutorStatus").value = tutor_id;
                                                                                     document.getElementById("userStatus").value = userid;
                                                                                     document.getElementById("courseId").value = @model1.Course?.Id;
@@ -970,7 +970,7 @@ form{
                                                                                             var tutor_id = sub[5];
 
                                                                                             var name = e.target.innerHTML;
-                                                                                            document.getElementById("dateStatus").value = "@model1.Date.dateTimes[0]";
+                                                                                            document.getElementById("dateStatus").value = "@model1.Date.dateTime[0]";
                                                                                             document.getElementById("tutorStatus").value = tutor_id;
                                                                                             document.getElementById("userStatus").value = userid;
                                                                                             document.getElementById("courseId").value = @model1.Course?.Id;
@@ -1023,7 +1023,7 @@ form{
                                                                     elem[0].parentNode.removeChild(elem[0]);
                                                                 </script>
 
-                                                                var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goals[0]?.Title}; Имя и фамилия: {model1.TutorFullName}; ";
+                                                                var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.TutorFullName}; ";
 
 
                                                                 if (model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)
@@ -1047,7 +1047,7 @@ form{
                                                                     }
                                                                 }
 
-                                                                var label = $"label_{model1.UserId}_{model1.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
+                                                                var label = $"label_{model1.UserId}_{model1.Date.dateTime[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
 
                                                                 <style>
                                                                     label[data-title] {

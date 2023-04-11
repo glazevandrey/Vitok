@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using web_server.DbContext;
 
 namespace web_server.Models.DBModels
 {
-    public class User : TransferModel
+    public abstract class User : TransferModel
     {
         [Key]
+        
         public int UserId { get; set; }
         public string Password { get; set; }
         public string FirstName { get; set; }
@@ -24,19 +26,45 @@ namespace web_server.Models.DBModels
         public double Balance { get; set; }
 
         // поля студента
-        public string Wish { get; set; }
-        public DateTime StartWaitPayment { get; set; }
-        public bool WasFirstPayment { get; set; } = false;
-        public bool FirstLogin { get; set; } = true;
-        public int LessonsCount { get; set; }
-        public int SkippedInThisMonth { get; set; } = 0;
-        public List<UserMoney> Money { get; set; } = new List<UserMoney>();
-        public List<UserCredit> Credit { get; set; } = new List<UserCredit>();
-        public bool UsedTrial { get; set; } = false;
+        [NotMapped]
+
+        public virtual string Wish { get; set; }
+        [NotMapped]
+
+        public virtual DateTime StartWaitPayment { get; set; }
+        [NotMapped]
+
+        public virtual bool WasFirstPayment { get; set; } = false;
+        [NotMapped]
+
+        public virtual bool FirstLogin { get; set; } = true;
+        [NotMapped]
+
+        public virtual int LessonsCount { get; set; }
+        [NotMapped]
+
+        public virtual int SkippedInThisMonth { get; set; } = 0;
+        [NotMapped]
+
+        public virtual List<UserMoney> Money { get; set; } = new List<UserMoney>();
+        [NotMapped]
+
+        public virtual List<UserCredit> Credit { get; set; } = new List<UserCredit>();
+        [NotMapped]
+
+        public virtual bool UsedTrial { get; set; } = false;
 
         // поля Репетитора
-        public List<Course> Courses { get; set; }
-        public string About { get; set; }
-        public UserDate UserDates { get; set; }
+        [NotMapped]
+
+        public virtual List<Course> Courses { get; set; }
+        [NotMapped]
+
+        public virtual string About { get; set; }
+        [NotMapped]
+
+        public virtual UserDate UserDates { get; set; }
+  
+
     }
 }

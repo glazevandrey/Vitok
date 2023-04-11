@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -5,6 +6,7 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Linq;
 using web_server.Database;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Injection;
 using web_server.Services;
@@ -20,6 +23,7 @@ namespace web_server
 {
     public class Startup
     {
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,12 +41,11 @@ namespace web_server
             {
                 o.EnableDetailedErrors = true;
                 o.MaximumReceiveMessageSize = 31457280; // bytes
-            }); services.AddControllers();
+            });
+            services.AddControllers();
 
-            string connection = Configuration.GetConnectionString("DefaultConnection");
 
-            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
-
+            
             services.AddAuthentication(options =>
             {
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -71,15 +74,24 @@ namespace web_server
                   ClockSkew = TimeSpan.Zero
               };
           });
-            services.AddCustomServices();
+            services.AddCustomServices(Configuration);
+            // ...
+            //var mapperConfig = new MapperConfiguration(mc =>
+            //{
+            //    mc.AddProfile(new MappingProfile());
+            //});
+            //IMapper mapper = mapperConfig.CreateMapper();
+            //services.AddSingleton(mapper);
+            // ...
+            services.AddSingleton<IHostedService, NotificationBackgroundService>();
 
-            services.AddHostedService<NotificationBackgroundService>();
+            //            services.AddHostedService<NotificationBackgroundService>();
 
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserRepository userRepository)
         {
             if (env.IsDevelopment())
             {
@@ -140,11 +152,11 @@ namespace web_server
                     {
                         if (context.Request.Headers["Authorization"].Count > 0)
                         {
-                            context.Request.Headers["Authorization"] = "Bearer " + TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(context.Request.Query["token"])).ActiveToken;
+                            context.Request.Headers["Authorization"] = "Bearer " + (await userRepository.GetUserById(Convert.ToInt32(context.Request.Query["token"])))?.ActiveToken;
                         }
                         else
                         {
-                            context.Request.Headers.Add("Authorization", "Bearer " + TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(context.Request.Query["token"]))?.ActiveToken);
+                            context.Request.Headers.Add("Authorization", "Bearer " + (await userRepository.GetUserById(Convert.ToInt32(context.Request.Query["token"])))?.ActiveToken);
                         }
                     }
                 }

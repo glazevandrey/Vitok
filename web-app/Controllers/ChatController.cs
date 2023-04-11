@@ -24,7 +24,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString(), Program.settings);
             if (user.Role == "Student")
             {
                 var req5 = new CustomRequestPost("api/account/removeFirstLogin", user.UserId.ToString());
@@ -32,7 +32,11 @@ namespace web_app.Controllers
             }
             ViewData["userid"] = user.UserId;
             ViewData["role"] = user.Role;
-            ViewData["lessons"] = user.LessonsCount;
+
+            if (user.Role == "Student")
+            {
+                ViewData["lessons"] = ((Student)user).LessonsCount;
+            }
             ViewData["usertoken"] = user.UserId;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;

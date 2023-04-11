@@ -2,6 +2,6 @@
 {
     public class GetAllUsersRequest : CustomRequestGet
     {
-        public GetAllUsersRequest() : base("api/home/getAllStudentsAndTutors", null) { }
+        public GetAllUsersRequest(string args) : base("api/home/getAllStudentsAndTutors", args) { }
     }
 }

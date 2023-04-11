@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -9,22 +12,35 @@ namespace web_server.Services
 {
     public class CourseService : ICourseService
     {
-        public string EditCourse(string[] args)
+        CourseRepository _courseRepository;
+        UserRepository _userRepository;
+        public CourseService(CourseRepository courseRepository, UserRepository userRepository)
+        {
+            _userRepository = userRepository;
+            _courseRepository = courseRepository;
+        }
+        public async Task<List<Course>> GetCourses()
+        {
+            return await _courseRepository.GetAllCourses();
+        }
+        public async Task<string> EditCourse(string[] args)
         {
             var id = Convert.ToInt32(args[0]);
             var title = args[1];
             var goal = args[2];
-            TestData.Courses.FirstOrDefault(m => m.Id == id).Title = title;
-            TestData.Courses.FirstOrDefault(m => m.Id == id).Goals.Clear();
-            TestData.Courses.FirstOrDefault(m => m.Id == id).Goals.Add(TestData.Goals.FirstOrDefault(m => m.Id == Convert.ToInt32(goal)));
+            var course = await _courseRepository.GetCourseById(id);
+            course.Title = title;
+            course.Goal = new Goal();
+            course.Goal = await _courseRepository.GetGoalById(Convert.ToInt32(goal));
 
             return Newtonsoft.Json.JsonConvert.SerializeObject("OK");
         }
 
-        public string RemoveCourse(string args)
+        public async Task<string> RemoveCourse(string args)
         {
             var id = Convert.ToInt32(args);
-            var users = TestData.UserList;
+            var users = await _userRepository.GetAll();
+            //var users = TestData.UserList;
 
             foreach (var item in users)
             {
@@ -41,21 +57,20 @@ namespace web_server.Services
                 }
             }
 
-            var rem = TestData.Courses.FirstOrDefault(m => m.Id == id);
-            TestData.Courses.Remove(rem);
+            await _courseRepository.RemoveCourse(id);
 
             return Newtonsoft.Json.JsonConvert.SerializeObject("OK");
         }
 
-        public string SetNewCourse(string[] args)
+        public async Task<string> SetNewCourse(string[] args)
         {
             var course = new Course();
-
+            var id = Convert.ToInt32(args[1]);
             course.Title = args[0];
-            course.Id = TestData.Courses.Last().Id + 1;
-            course.Goals = TestData.Goals.Where(m => m.Id == Convert.ToInt32(args[1])).ToList();
+            
+            course.Goal = await _courseRepository.GetGoalById(id);
 
-            TestData.Courses.Add(course);
+            await _courseRepository.AddCourse(course);
 
             return Newtonsoft.Json.JsonConvert.SerializeObject(course);
         }

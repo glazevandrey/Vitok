@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using AutoMapper.Internal.Mappers;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -17,10 +20,20 @@ namespace web_server.Services
     }
     public class ScheduleService : IScheduleService
     {
-        public Schedule AddScheduleFromUser(string args, IHubContext<NotifHub> _hubContext)
+        ScheduleRepository _scheduleRepository;
+        UserRepository _userRepository;
+        NotificationRepository _notificationRepository;
+        public ScheduleService(ScheduleRepository scheduleRepository, UserRepository userRepository, NotificationRepository notificationRepository)
+        {
+            _scheduleRepository = scheduleRepository;
+            _userRepository = userRepository;
+            _notificationRepository = notificationRepository;
+        }
+        public async Task<Schedule> AddScheduleFromUser(string args, IHubContext<NotifHub> _hubContext)
         {
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(args);
-            var user = TestData.UserList.FirstOrDefault(m => m.UserId == model.UserId);
+            var user = await _userRepository.GetUserById(model.UserId);
+            //var user = TestData.UserList.FirstOrDefault(m => m.UserId == model.UserId);
             if (user.Role != "Student")
             {
                 return null;
@@ -29,7 +42,9 @@ namespace web_server.Services
             {
                 return null;
             }
-            var schedule = TestData.Schedules.FirstOrDefault(m => m.StartDate.DayOfWeek == model.WantThis.dateTimes[0].DayOfWeek && m.StartDate.ToString("HH:mm") == model.WantThis.dateTimes[0].ToString("HH:mm"));
+
+            var schedule = await _scheduleRepository.GetScheduleByFunc(m => m.StartDate.DayOfWeek == model.WantThis.dateTimes[0].DayOfWeek && m.StartDate.ToString("HH:mm") == model.WantThis.dateTimes[0].ToString("HH:mm"));
+            //var schedule = TestData.Schedules.FirstOrDefault();
             schedule.Course = model.Course;
             schedule.UserId = model.UserId;
             schedule.WaitPaymentDate = user.LessonsCount > 0 ? DateTime.MinValue : model.WantThis.dateTimes[0];
@@ -38,14 +53,15 @@ namespace web_server.Services
             schedule.CreatedDate = DateTime.Now;
 
             schedule.Looped = true;
+
+            await _scheduleRepository.Update(schedule);
+
             var text = Constants.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
-
-            NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext);
-
+            NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository);
+                        
             return schedule;
-
         }
-        public string ChangeStatus(string args, IHubContext<NotifHub> _hubContext)
+        public async Task<string> ChangeStatus(string args, IHubContext<NotifHub> _hubContext)
         {
             var split = args.Split(';');
             var status = split[0];
@@ -55,11 +71,16 @@ namespace web_server.Services
             var dateCurr = DateTime.Parse(split[4]);
             var warn = Convert.ToBoolean(split[5]);
 
-            var model = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
-            var user = TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
-            var tutor = TestData.Tutors.FirstOrDefault(m => m.UserId == tutor_id);
-            var schedule = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
-            var manager = TestData.Managers.First();
+            var model =  await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            //var model = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            var user = await _userRepository.GetUserById(user_id);
+            //var user = (Student)TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
+            var tutor = await _userRepository.GetUserById(tutor_id);
+            //var tutor = (Tutor)TestData.UserList.FirstOrDefault(m => m.UserId == tutor_id);
+            var schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            //var schedule = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            var manager = await _userRepository.GetUserById(await _userRepository.GetManagerId());
+            //var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
 
             if ((Status)Enum.Parse(typeof(Status), status) == Status.Проведен && (user.LessonsCount == 0 || user.Credit.Where(m => m.Repaid == false).ToList().Count > 0))
             {
@@ -102,7 +123,7 @@ namespace web_server.Services
                         manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
 
                         manager.Balance += for_manager;
-
+                      
                     }
 
 
@@ -121,10 +142,11 @@ namespace web_server.Services
                     schedule.Status = (Status)Enum.Parse(typeof(Status), status);
                     schedule.EndDate = dateCurr;
                 }
+                await _scheduleRepository.Update(schedule);
 
                 if (user.LessonsCount == 1)
                 {
-                    NotifHub.SendNotification(Constants.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constants.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
                 }
                 else if (user.LessonsCount <= 0)
                 {
@@ -132,7 +154,8 @@ namespace web_server.Services
                     {
                         user.StartWaitPayment = DateTime.Now;
                     }
-                    var ff = TestData.Schedules.Where(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue).ToList();
+                    var ff = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue);
+                    //var ff = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue);
                     if (ff.Count > 0)
                     {
                         foreach (var item in ff)
@@ -140,20 +163,22 @@ namespace web_server.Services
                             item.WaitPaymentDate = DateTime.MinValue;
                         }
                     }
-                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).Reverse().ToList());
-
+                    var sorted = SortSchedulesForUnpaid(await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue));
+                    sorted.Reverse();
 
                     foreach (var item in sorted)
                     {
 
-                        var sch = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+                        var sch = await _scheduleRepository.GetScheduleById(item.ScheduleId);//TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
 
                         sch.WaitPaymentDate = item.Nearest;
+
+                        await _scheduleRepository.Update(sch);
                     }
 
-                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
                     NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
-                        user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
+                        user.FirstName + " " + user.LastName), _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
                 }
 
 
@@ -218,12 +243,12 @@ namespace web_server.Services
                         NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
               Replace("{userName}", user.FirstName + " " + user.LastName).
               Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
-              TestData.Managers.First().UserId.ToString(), _hubContext);
+              _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
 
                         NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
                    Replace("{userName}", user.FirstName + " " + user.LastName).
                    Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
-                  user_id.ToString(), _hubContext);
+                  user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
 
                         // уведомления что ученик пропустил. менеджеру и ученику. Осталось одно бесплатное
 
@@ -235,11 +260,11 @@ namespace web_server.Services
 
                         NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_SKIP.
                    Replace("{userName}", user.FirstName + " " + user.LastName),
-                  TestData.Managers.First().UserId.ToString(), _hubContext);
+                  _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
 
                         NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_SKIP.
                    Replace("{userName}", user.FirstName + " " + user.LastName),
-                  user_id.ToString(), _hubContext);
+                  user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
                     }
 
                     if (user.SkippedInThisMonth >= 3)
@@ -248,12 +273,12 @@ namespace web_server.Services
                         NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_WARN.
                       Replace("{userName}", user.FirstName + " " + user.LastName).
                       Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
-                      TestData.Managers.First().UserId.ToString(), _hubContext);
+                      _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
 
                         NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_WARN.
                    Replace("{userName}", user.FirstName + " " + user.LastName).
                    Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
-                  user_id.ToString(), _hubContext);
+                  user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
                     }
 
                 }
@@ -266,12 +291,12 @@ namespace web_server.Services
                     NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
                   Replace("{userName}", user.FirstName + " " + user.LastName).
                   Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
-                  TestData.Managers.First().UserId.ToString(), _hubContext);
+                  _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
 
                     NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
                Replace("{userName}", user.FirstName + " " + user.LastName).
                Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
-              user_id.ToString(), _hubContext);
+              user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
 
                     // уведомление ученику и менеджеру что не предупредил
 
@@ -329,7 +354,7 @@ namespace web_server.Services
                         user.StartWaitPayment = DateTime.Now;
                     }
 
-                    var ff = TestData.Schedules.Where(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue).ToList();
+                    var ff = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user_id && m.WaitPaymentDate != DateTime.MinValue);
                     if (ff.Count > 0)
                     {
                         foreach (var item in ff)
@@ -337,40 +362,68 @@ namespace web_server.Services
                             item.WaitPaymentDate = DateTime.MinValue;
                         }
                     }
-                    var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).Reverse().ToList());
+
+                    var sorted = SortSchedulesForUnpaid(await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue));
+                    sorted.Reverse();
+                    //var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).Reverse().ToList());
 
 
                     foreach (var item in sorted)
                     {
 
-                        var sch = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+                        var sch = await _scheduleRepository.GetScheduleById(item.ScheduleId); // TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
 
                         sch.WaitPaymentDate = item.Nearest;
+
+                        await _scheduleRepository.Update(sch);
                     }
 
-                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext);
+                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
                     NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
-                        user.FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == user_id).LastName), TestData.Managers.First().UserId.ToString(), _hubContext);
+                        user.FirstName + " " + user.LastName), _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
                 }
 
             }
 
-
+            await _userRepository.Update(user);
+            await _userRepository.Update(manager);
+            await _userRepository.Update(tutor);
+            await _scheduleRepository.Update(schedule);
             return "OK";
         }
 
-        public List<Schedule> GetSchedules(string args)
+        public async Task<List<Schedule>> GetAllSchedules()
         {
-            var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
+
+            return await _scheduleRepository.GetSchedulesByFunc(null);
+        }
+        public async Task<List<RescheduledLessons>> GetAllReschedules()
+        {
+            return await _scheduleRepository.GetReschedulesByFunc(null);
+        }
+
+        public async Task<Schedule> GetScheduleById(int id)
+        {
+            return await _scheduleRepository.GetScheduleById(id);
+        }
+        public async Task<bool> Update(Schedule schedule)
+        {
+            await _scheduleRepository.Update(schedule);
+            return true;
+        }
+        public async Task<List<Schedule>> GetSchedules(string args)
+        {
+            var user = await _userRepository.GetUserByToken(args);
+            //var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
             if (user == null)
             {
                 return null;
             }
-
-            var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
+            var schedules = await _scheduleRepository.GetSchedulesByFunc(m=>m.UserId == user.UserId);
+           // var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
             if (schedules == null || schedules.Count == 0)
             {
-                schedules = TestData.Schedules.Where(m => m.TutorId == user.UserId).ToList();
+                schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
 
             }
             return schedules;
@@ -541,5 +594,10 @@ namespace web_server.Services
             return result;
         }
 
+        public async Task<Schedule> UpdateRange(List<Schedule> schedules)
+        {
+            await _scheduleRepository.UpdateRange(schedules);
+            return null;
+        }
     }
 }

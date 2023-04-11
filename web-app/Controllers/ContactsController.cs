@@ -30,9 +30,13 @@ namespace web_app.Controllers
             {
                 return Redirect("/login");
             }
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             ViewData["role"] = user.Role;
-            ViewData["lessons"] = user.LessonsCount;
+
+            if (user.Role == "Student")
+            {
+                ViewData["lessons"] = ((Student)user).LessonsCount;
+            }
             ViewData["usertoken"] = user.UserId;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
@@ -53,13 +57,13 @@ namespace web_app.Controllers
                     {
                         req2 = new GetUserById(item.TutorId.ToString() + $";{user.Role}");
                         var res2 = _requestService.SendGet(req2, HttpContext);
-                        model2.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res2.result.ToString()));
+                        model2.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(res2.result.ToString(), Program.settings));
                     }
                     else
                     {
                         req2 = new GetUserById(item.UserId.ToString() + $";{user.Role}");
                         var res2 = _requestService.SendGet(req2, HttpContext);
-                        model2.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res2.result.ToString()));
+                        model2.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<Student>(res2.result.ToString(), Program.settings));
 
                     }
                 }

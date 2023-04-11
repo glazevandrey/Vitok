@@ -2,6 +2,6 @@
 {
     public interface ISenderService
     {
-        public void SendMessage(string address, string message);
+        public void SendMessage(int id, string message);
     }
 }

@@ -142,7 +142,7 @@
             foreach (var item in dic)
             {
 
-                foreach (User tutor in (List<User>)ViewData["users"])
+                foreach (Tutor tutor in (List<User>)ViewData["users"])
                 {
                     if (tutor.UserId == Model.FirstOrDefault(m => m.TutorFullName == item.Key).TutorId)
                     {

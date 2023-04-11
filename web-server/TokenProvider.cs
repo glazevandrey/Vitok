@@ -5,6 +5,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models.DBModels;
 
@@ -12,7 +14,11 @@ namespace web_server
 {
     public class TokenProvider
     {
-
+        UserRepository _userRepository;
+        public TokenProvider(UserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
         private ClaimsIdentity GetUserClaims(User user)
         {
             var claims = new List<Claim>
@@ -26,9 +32,10 @@ namespace web_server
 
             return new ClaimsIdentity(claims, "token");
         }
-        public string LoginUser(string email, string Password)
+        public async Task<Dictionary<string, string>> LoginUser(string email, string Password)
         {
-            var user = TestData.UserList.FirstOrDefault(x => x.Email == email);
+            var user = await _userRepository.GetUserByEmail(email);
+            //var user = TestData.UserList.FirstOrDefault(x => x.Email == email);
 
             if (user == null)
                 return null;
@@ -51,7 +58,9 @@ namespace web_server
                 );
 
                 var token = new JwtSecurityTokenHandler().WriteToken(JWToken);
-                return token;
+                var res = new Dictionary<string, string>();
+                res.Add(token, user.Role);
+                return res;
             }
             else
             {

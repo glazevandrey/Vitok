@@ -44,7 +44,6 @@ namespace web_app.Controllers
             }
             else
             {
-                user.UserId = web_server.DbContext.TestData.UserList.Last().UserId + 1;
             }
             user.Role = "Student";
             CustomRequestPost req = new CustomRequestPost("api/home/registeruser", user);

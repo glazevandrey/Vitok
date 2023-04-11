@@ -5,6 +5,7 @@ using web_app.Services;
 using web_server.DbContext;
 using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
+using System.Collections.Generic;
 
 namespace web_app.Controllers
 {
@@ -27,12 +28,21 @@ namespace web_app.Controllers
             {
                 return Redirect("/login");
             }
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
+            var req3 = new GetTariffsRequest();
+            var res3 = _requestService.SendGet(req3);
+            var tariffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tariff>>(res3.result.ToString());
+
 
             ViewData["role"] = user.Role;
-            ViewData["tariffs"] = TestData.Tariffs;
+            ViewData["tariffs"] = tariffs;
             ViewData["usertoken"] = user.UserId;
-            ViewData["lessons"] = user.LessonsCount;
+
+            if(user.Role == "Student")
+            {
+                ViewData["lessons"] = ((Student)user).LessonsCount;
+            }
+
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
             if (user.FirstLogin == true && user.Role == "Student")

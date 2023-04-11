@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -13,12 +15,18 @@ namespace web_server.Services
     public class AuthService : IAuthService
     {
         IJsonService _jsonService;
-        public AuthService(IJsonService jsonService)
+        UserRepository _userRepository;
+        ScheduleRepository _scheduleRepository;
+        NotificationRepository _notificationRepository;
+        public AuthService(IJsonService jsonService, UserRepository userRepository, ScheduleRepository scheduleRepository, NotificationRepository notificationRepository)
         {
             _jsonService = jsonService;
+            _userRepository = userRepository;
+            _scheduleRepository = scheduleRepository;
+            _notificationRepository = notificationRepository;
         }
 
-        public bool CheckIsActive(HttpContext context)
+        public async Task<bool> CheckIsActive(HttpContext context)
         {
             if (context.User.Identity.IsAuthenticated)
             {
@@ -30,30 +38,48 @@ namespace web_server.Services
             }
 
         }
-        public string GetUserById(string args)
+        public async Task<string> GetUserById(string args)
         {
 
             var split = args.Split(';');
             var id = split[0];
             var role = split[1];
-            var user = new User();
-            if (role == "Tutor" || role == "Manager")
+            var tutor = new Tutor();
+            var student = new Student();
+            var manager = new Manager();
+            var userRole = (await _userRepository.GetUserById(Convert.ToInt32(id))).Role;
+            //var userRole = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id)).Role;
+            string json = "";
+            if(userRole == "Student")
             {
-                user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
+                student = (Student)await _userRepository.GetUserById(Convert.ToInt32(id));
+
+                //student = (Student)TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
+                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(student));
+
+            }
+            else if (userRole == "Tutor")
+            {
+                tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(id));
+                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
+
             }
             else
             {
-                user = TestData.Tutors.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
-
+                manager = (Manager)await _userRepository.GetUserById(Convert.ToInt32(id));
+                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(manager));
             }
 
-
-            var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
             return json;
         }
-        public string GetUserByToken(string token)
+
+        public async Task<bool> AddRegistration(Registration registration)
         {
-            var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == token);
+            return await _userRepository.AddRegistration(registration);
+        }
+        public async Task<string> GetUserByToken(string token)
+        {
+            var user = await _userRepository.GetUserByToken(token);
             if (user == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
@@ -63,43 +89,70 @@ namespace web_server.Services
             return json;
         }
 
-        public string LogIn(User user, HttpContext context)
+        public async Task<string> LogIn(string login, string password, HttpContext context)
         {
-            TokenProvider _tokenProvider = new TokenProvider();
-            var userToken = _tokenProvider.LoginUser(user.Email, user.Password.Trim());
+           
+            TokenProvider _tokenProvider = new TokenProvider(_userRepository);
+            var res = await _tokenProvider.LoginUser(login, password.Trim());
+            if(res == null || res.Count == 0)
+            {
+                return _jsonService.PrepareErrorJson("Неверное имя пользователя или пароль");
+
+            }
+            var userToken = res.First().Key;
+            var role = res.First().Value;
             if (userToken != null)
             {
-                TestData.UserList.FirstOrDefault(m => m.Email == user.Email).ActiveToken = userToken;
+                var user = await _userRepository.GetUserByEmail(login);
+                user.ActiveToken = userToken;
+                try
+                {
+                    await _userRepository.Update(user);
+
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+
                 context.Response.Cookies.Append(".AspNetCore.Application.Id", userToken,
                     new CookieOptions
                     {
                         MaxAge = TimeSpan.FromMinutes(1160)
                     });
 
-                var json = _jsonService.PrepareSuccessJson(@"""" + userToken + @"""");
+                var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(res));
                 return json;
             }
 
             return _jsonService.PrepareErrorJson("Неверное имя пользователя или пароль");
         }
-        public static void DeleteUnPaid(object obj)
+        public async void DeleteUnPaid(object obj)
         {
             var id = (int)obj;
-            var schedule = TestData.Schedules.FirstOrDefault(m => m.Id == id);
-            TestData.Schedules.Remove(schedule);
+            var schedule = await _scheduleRepository.GetScheduleById(id);
+            //var schedule = TestData.Schedules.FirstOrDefault(m => m.Id == id);
+            await _scheduleRepository.RemoveSchedule(schedule);
+            //TestData.Schedules.Remove(schedule);
             Program.Timers[id].Dispose();
             Program.Timers.Remove(id);
         }
 
-        public string Register(User user, HttpContext context, IHubContext<NotifHub> _hubContext)
+        public async Task<string> Register(User user, HttpContext context, IHubContext<NotifHub> _hubContext)
         {
             user.StartWaitPayment = DateTime.Now;
-            if (TestData.UserList.FirstOrDefault(m => m.Email == user.Email) != null)
+
+            if (await _userRepository.GetUserByEmail(user.Email) != null)
             {
                 return null;
             }
-            TestData.UserList.Add(user);
-            var reg = TestData.Registations.FirstOrDefault(m => m.UserId == user.UserId);
+
+            await _userRepository.AddUser(user);
+            //TestData.UserList.Add(user);
+
+            var reg = await _userRepository.GetRegistrationByUserId(user.UserId);//TestData.Registations.FirstOrDefault(m => m.UserId == user.UserId);
             if (reg != null)
             {
                 var nearest = reg.WantThis.dateTimes[0];
@@ -115,18 +168,18 @@ namespace web_server.Services
                     }
                 }
 
+                var tutor = await _userRepository.GetUserById(reg.TutorId);
                 foreach (var item in reg.WantThis.dateTimes)
                 {
-                    var id = TestData.Schedules.Last().Id + 1;
 
+                    
                     var sch = new Schedule()
                     {
-                        Id = id,
                         TutorId = reg.TutorId,
                         Course = reg.Course,
-                        TutorFullName = TestData.Tutors.FirstOrDefault(m => m.UserId == reg.TutorId).FirstName + " " + TestData.Tutors.FirstOrDefault(m => m.UserId == reg.TutorId).LastName,
+                        TutorFullName = tutor.FirstName + " " +tutor.LastName,
                         UserId = reg.UserId,
-                        UserName = TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName,
+                        UserName = user.FirstName,
                         Date = new UserDate() { dateTimes = new System.Collections.Generic.List<DateTime>() { item } },
                         CreatedDate = DateTime.Now,
                         StartDate = item,
@@ -138,25 +191,27 @@ namespace web_server.Services
                     {
                         sch.WaitPaymentDate = nearest;
                     }
-                    TestData.Schedules.Add(sch);
+
+                    var id = await _scheduleRepository.AddSchedule(sch);
+                    //TestData.Schedules.Add(sch);
 
                     TimerCallback tm = new TimerCallback(DeleteUnPaid);
 
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24 * 3600000, 24 * 3600000));
                     var timer = Program.Timers[id];
-
-                    NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).LastName), reg.TutorId.ToString(), _hubContext);
+                    
+                    NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository);
 
                     NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
-                        Replace("{studentName}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.UserId).LastName).
-                        Replace("{tutorName}", TestData.UserList.FirstOrDefault(m => m.UserId == reg.TutorId).FirstName + " " + TestData.UserList.FirstOrDefault(m => m.UserId == reg.TutorId).LastName),
-                        TestData.Managers.First().UserId.ToString(), _hubContext);
+                        Replace("{studentName}", user.FirstName + " " +  user.LastName).
+                        Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName),
+                        (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository);
 
                 }
 
             }
 
-            return LogIn(user, context);
+            return await LogIn(user.Email, user.Password, context);
         }
     }
 }

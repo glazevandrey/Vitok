@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -11,11 +13,21 @@ namespace web_server.Services
 {
     public class StatisticsService : IStatisticsService
     {
-        public Dictionary<DateTime, List<StudentPayment>> FormingStatData(string args)
+        UserRepository _userRepository;
+        ScheduleRepository _scheduleRepository;
+
+        public StatisticsService(UserRepository userRepository, ScheduleRepository scheduleRepository)
+        {
+            _scheduleRepository = scheduleRepository;
+            _userRepository = userRepository;
+        }
+        public async  Task<Dictionary<DateTime, List<StudentPayment>>> FormingStatData(string args)
         {
 
-            var user = TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args));
-            var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId);
+            var user = await _userRepository.GetUserById(Convert.ToInt32(args));
+            //var user = TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args));
+            var schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
+            //var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId);
 
             var startDate = DateTime.Parse("01." + DateTime.Now.Month + "." + DateTime.Now.Year + " 12:00");
             user.BalanceHistory.Reverse();

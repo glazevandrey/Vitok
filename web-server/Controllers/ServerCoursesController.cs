@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Threading.Tasks;
 using web_server.DbContext;
 using web_server.Services.Interfaces;
 
@@ -19,14 +20,13 @@ namespace web_server.Controllers
 
 
         [HttpGet("getcourses", Name = "getcourses")]
-        public string Index()
+        public async Task<string> Index()
         {
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(
-                            TestData.Courses.ToList()));
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _courseService.GetCourses()));
         }
 
         [HttpPost("setnewcourse", Name = "setnewcourse")]
-        public string SetNewCourse()
+        public async Task<string> SetNewCourse()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -36,7 +36,7 @@ namespace web_server.Controllers
 
             var args = form.First().Key.Split(";");
 
-            var json = _courseService.SetNewCourse(args);
+            var json = await _courseService.SetNewCourse(args);
             if (json == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить курс");
@@ -47,7 +47,7 @@ namespace web_server.Controllers
 
 
         [HttpPost("removeCourseServer", Name = "removeCourseServer")]
-        public string RemoveCourseServer()
+        public async Task<string> RemoveCourseServer()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -57,7 +57,7 @@ namespace web_server.Controllers
 
             var args = form.First().Key;
 
-            var json = _courseService.RemoveCourse(args);
+            var json = await _courseService.RemoveCourse(args);
             if (json == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить курс");
@@ -66,7 +66,7 @@ namespace web_server.Controllers
             return _jsonService.PrepareSuccessJson(json);
         }
         [HttpPost("editCourseServer", Name = "editCourseServer")]
-        public string EditCourseServer()
+        public async  Task<string> EditCourseServer()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -76,7 +76,7 @@ namespace web_server.Controllers
 
             var args = form.First().Key.Split(";");
 
-            var json = _courseService.EditCourse(args);
+            var json = await _courseService.EditCourse(args);
             if (json == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить курс");

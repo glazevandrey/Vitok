@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Security.Permissions;
 using web_app.Requests;
 using web_app.Requests.Get;
 using web_app.Services;
@@ -38,11 +40,15 @@ namespace web_app.Controllers
             {
                 return Redirect("/account/logout");
             }
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString(), Program.settings);
             ViewData["usertoken"] = user.UserId;
             ViewData["userid"] = user.UserId;
 
-            ViewData["lessons"] = user.LessonsCount;
+
+            if (user.Role == "Student")
+            {
+                ViewData["lessons"] = ((Student)user).LessonsCount;
+            }
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
@@ -54,17 +60,59 @@ namespace web_app.Controllers
         }
 
         [HttpPost("saveinfo", Name = "saveinfo")]
-        public IActionResult SaveInfo([FromForm] User user)
+        public IActionResult SaveInfo(int userId,
+    string firstName,
+    string lastName,
+    string photoUrl,
+    DateTime birthDate,
+    string email,
+    string password,
+    string phone,
+    string wish, string role, string about
+)
         {
-            if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
+            if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
             {
                 return RedirectToAction("Index", "Account", new { error = "Неудачная попытка сохранить данные" });
             }
 
-            user.FirstName = user.FirstName.Trim();
-            user.LastName = user.LastName.Trim();
+            var student = new Student();
+            var tutor = new Tutor();
+            CustomRequestPost req = null;
 
-            CustomRequestPost req = new CustomRequestPost("api/account/saveuserinfo", user);
+            if (role == "Student")
+            {
+                student.FirstName = firstName.Trim();
+                student.LastName = lastName.Trim();
+                student.Role = role;
+                student.About = about;
+                student.Password = password;
+                student.Phone = phone;
+                student.Wish = wish;
+                student.Email = email;
+                student.PhotoUrl = photoUrl;
+                student.BirthDate = birthDate;
+                student.UserId = userId;
+               req = new CustomRequestPost("api/account/saveuserinfo", student);
+            }
+            else
+            {
+                tutor.FirstName = firstName.Trim();
+                tutor.LastName = lastName.Trim();
+                tutor.Role = role;
+                tutor.About = about;
+                tutor.Password = password;
+                tutor.Phone = phone;
+                tutor.Wish = wish;
+                tutor.Email = email;
+                tutor.PhotoUrl = photoUrl;
+                tutor.BirthDate = birthDate;
+                tutor.UserId = userId;
+                req = new CustomRequestPost("api/account/saveuserinfo", tutor);
+
+            }
+
+
             var response = _requestService.SendPost(req, HttpContext);
             if (response == null)
             {

@@ -4,6 +4,7 @@ using web_app.Requests;
 using web_app.Services;
 using web_server.DbContext;
 using web_server.Models.DBModels;
+using System.Collections.Generic;
 
 namespace web_app.Controllers
 {
@@ -23,10 +24,14 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             ViewData["usertoken"] = user.UserId;
             ViewData["role"] = user.Role;
-            ViewData["lessons"] = user.LessonsCount;
+
+            if (user.Role == "Student")
+            {
+                ViewData["lessons"] = ((Student)user).LessonsCount;
+            }
             ViewData["count"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
@@ -34,7 +39,12 @@ namespace web_app.Controllers
             {
                 ViewData["firstLogin"] = true;
             }
-            return View(TestData.Tariffs);
+
+            var req2 = new GetTariffsRequest();
+            var res2 = _requestService.SendGet(req2);
+            var tariffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tariff>>(res2.result.ToString());
+            
+            return View(tariffs);
         }
     }
 }

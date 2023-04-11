@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using web_server.Models.DBModels;
 
 namespace web_server.Models
 {
@@ -6,7 +8,6 @@ namespace web_server.Models
     {
         [Key]
         public int Id { get; set; }
-        public string UserId { get; set; }
-        public string WithUserId { get; set; }
+        public int WithUserId { get; set; }
     }
 }

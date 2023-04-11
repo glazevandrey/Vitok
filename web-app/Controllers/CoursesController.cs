@@ -34,14 +34,21 @@ namespace web_app.Controllers
             {
                 return Redirect("/login");
             }
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             ViewData["role"] = user.Role;
-            ViewData["lessons"] = user.LessonsCount;
+
+            if (user.Role == "Student")
+            {
+                ViewData["lessons"] = ((Student)user).LessonsCount;
+            }
             ViewData["usertoken"] = user.UserId;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
-            ViewData["goals"] = TestData.Goals;
+            var req2 = new GetGoalsRequest();
+            var res2 = _requestService.SendGet(req2);
+            var goals = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Goal>>(res2.result.ToString());
+            ViewData["goals"] = goals;
             if (editError != null)
             {
                 ViewData["error"] = editError;

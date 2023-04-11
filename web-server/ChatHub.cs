@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
+using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -13,35 +16,47 @@ namespace web_server
     [web_server.Models.Authorize]
     public class ChatHub : Microsoft.AspNetCore.SignalR.Hub
     {
-
-        public async Task SetChat(string userId, int with)
+        UserRepository _userRepository;
+        ChatRepository _chatRepository;
+        ScheduleRepository _scheduleRepository;
+        public ChatHub(UserRepository userRepository, ChatRepository chatRepository, ScheduleRepository scheduleRepository)
         {
-            if (TestData.LiveChats.FirstOrDefault(m => m.UserId == userId) != null)
+            _chatRepository = chatRepository;
+            _userRepository = userRepository;
+            _scheduleRepository = scheduleRepository;
+        }
+        public async Task SetChat(int userId, int with)
+        {
+            var user = await _chatRepository.GetChatUserByUserId(userId);
+            if (user != null)
             {
-                TestData.LiveChats.FirstOrDefault(m => m.UserId == userId).WithUserId = with.ToString();
+                user.InChat.WithUserId = with;
+                //TestData.LiveChats.FirstOrDefault(m => m.UserId == userId).WithUserId = with.ToString();
             }
             else
             {
-                TestData.LiveChats.Add(new InChat()
+                user.InChat = new InChat()
                 {
-
-                    UserId = userId,
-                    WithUserId = with.ToString()
-                });
+                    WithUserId = with
+                };
             }
-
+            await _chatRepository.Update(user);
         }
 
         public async Task GetMessages(string userId)
         {
-            var currChatUser = TestData.ChatUsers.FirstOrDefault(u => u.ConnectionTokens.Any(t => t.Token == Context.ConnectionId));
-            var currUser = TestData.UserList.FirstOrDefault(m => m.UserId == currChatUser.UserId);
-            await SetChat(currChatUser.UserId.ToString(), Convert.ToInt32(userId));
+             var currChatUser =await  _chatRepository.GetChatUserByFunc(u => u.ConnectionTokens.Any(t => t.Token == Context.ConnectionId));
+            //var currChatUser = TestData.ChatUsers.FirstOrDefault(u => u.ConnectionTokens.Any(t => t.Token == Context.ConnectionId));
+            var currUser =await _userRepository.GetUserById(currChatUser.UserId);
+            //var currUser = TestData.UserList.FirstOrDefault(m => m.UserId == currChatUser.UserId);
+            await SetChat(currChatUser.UserId, Convert.ToInt32(userId));
 
-            var user = TestData.ChatUsers.FirstOrDefault(m => m.UserId == Convert.ToInt32(userId));
+            var user = await _chatRepository.GetChatUserByUserId(Convert.ToInt32(userId));
+            //var user = TestData.ChatUsers.FirstOrDefault(m => m.UserId == Convert.ToInt32(userId));
 
             if (user == null) { await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow"); return; }
-            var messages = TestData.ChatUsers.FirstOrDefault(u => u.ConnectionTokens.Any(t => t.Token == Context.ConnectionId)).Messages.ToList();
+             
+            var messages = currChatUser.Messages.ToList();
             var result = new List<Messages>();
 
             await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow");
@@ -61,7 +76,7 @@ namespace web_server
 
             foreach (var item in result)
             {
-                var user2 = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
+                var user2 = await _userRepository.GetUserById(user.UserId);
                 if (user.ConnectionTokens.Any(t => t.Token == item.SenderId) || user.UserId == Convert.ToInt32(item.SenderId))
                 {
                     if (item.FilePath == null)
@@ -89,16 +104,20 @@ namespace web_server
 
         public async Task SendMessage(string message, string token, string filePath)
         {
-            var user = TestData.ChatUsers.FirstOrDefault(m => m.UserId == Convert.ToInt32(token));
-            var own = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.Any(m=>m.Token == Context.ConnectionId));
-            var ownPhoto = TestData.UserList.FirstOrDefault(m => m.UserId == own.UserId).PhotoUrl;
+            var user = await _chatRepository.GetChatUserByUserId(Convert.ToInt32(token));
+            //var user = TestData.ChatUsers.FirstOrDefault(m => m.UserId == Convert.ToInt32(token));
+            var own =await  _chatRepository.GetChatUserByFunc(m => m.ConnectionTokens.Any(m => m.Token == Context.ConnectionId));
+            //var own = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.Any(m=>m.Token == Context.ConnectionId));
+            var ownPhoto = await _userRepository.GetUserById(own.UserId);
+            //var ownPhoto = TestData.UserList.FirstOrDefault(m => m.UserId == own.UserId).PhotoUrl;
             if (user == null) { return; }
 
             var active = user.ConnectionTokens.Where(m => m.Status == "Connected").ToList();
             foreach (var item in active)
             {
-                var user2 = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
-                if (TestData.LiveChats.FirstOrDefault(m => m.UserId == token).WithUserId == own.UserId.ToString())
+                var user2 = await _userRepository.GetUserById(user.UserId);
+                //var user2 = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
+                if (user.InChat.WithUserId == own.UserId)
                 {
                     if (filePath == null)
                     {
@@ -122,7 +141,8 @@ namespace web_server
                 own.Messages.Add(new Messages() { Message = message, FilePath = filePath, SenderId = own.UserId.ToString(), ReceiverId = user.UserId.ToString(), MessageTime = DateTime.Now });
 
             }
-
+            await _chatRepository.Update(user);
+            await _chatRepository.Update(own);
             foreach (var item in own.ConnectionTokens.Where(m => m.Status == "Connected"))
             {
                 if (filePath == null)
@@ -135,46 +155,51 @@ namespace web_server
                 }
             }
         }
-        public override Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             var connectionId = Context.ConnectionId;
             var ctx = Context.GetHttpContext();
             if (!ctx.Request.Query.ContainsKey("token"))
             {
-                return Task.CompletedTask;
+                await Task.CompletedTask;
             }
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
-            var photo = TestData.UserList.FirstOrDefault(m => m.UserId == userId).PhotoUrl;
-            var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
+            var user = await _userRepository.GetUserById(userId);
+            var photo = user.PhotoUrl;
 
-            if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId) == null)
+            var chatUser = await _chatRepository.GetChatUserByUserId(userId); 
+            if (chatUser == null)
             {
-                TestData.ChatUsers.Add(new ChatUser() { UserId = userId, ConnectionTokens = new List<ConnectionToken>() { new ConnectionToken() { Token = connectionId, Status = "Connected" } } });
-                TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).Messages.Add(new Messages() { Id = 0, MessageTime = DateTime.Now, ReceiverId = userId.ToString(), SenderId = TestData.Managers.First().UserId.ToString(), Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!" });
-                SetNewContact(userId);
+                var model = new ChatUser() { UserId = userId, ConnectionTokens = new List<ConnectionToken>() { new ConnectionToken() { Token = connectionId, Status = "Connected" } } };
+               
+                model.Messages.Add(new Messages() { Id = 0, MessageTime = DateTime.Now, ReceiverId = userId.ToString(), SenderId = (await _userRepository.GetManagerId()).ToString(), Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!" });
+                
+                await _chatRepository.AddChatUser(model);
+                await SetNewContact(userId);
 
             }
-
             else
             {
-                TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens.Add( new ConnectionToken() { Token = connectionId, Status = "Connected" });
+                chatUser.ConnectionTokens.Add( new ConnectionToken() { Token = connectionId, Status = "Connected" });
             }
 
-            GetContacts(userId);
+            await GetContacts(userId);
 
-            foreach (var item in TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).Messages)
+            foreach (var item in chatUser.Messages)
             {
-                var who = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.Any(t => t.Token == item.SenderId));
+                var who =await  _chatRepository.GetChatUserByFunc(m => m.ConnectionTokens.Any(t => t.Token == item.SenderId));
+                //var who = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.Any(t => t.Token == item.SenderId));
                 if (who == null)
                 {
-                    who = TestData.ChatUsers.FirstOrDefault(m => m.UserId == Convert.ToInt32(item.SenderId));
+                    who = await _chatRepository.GetChatUserByUserId(Convert.ToInt32(item.SenderId));
                 }
             }
 
-            SetChat(userId.ToString(), 0);
+            await SetChat(userId, 0);
 
-            return base.OnConnectedAsync();
+            await base.OnConnectedAsync();
         }
+
         public async Task SendMessageWithFile(FileAttachment attachment, string to, string message)
         {
             var fileBytes = Convert.FromBase64String(attachment.content);
@@ -183,33 +208,36 @@ namespace web_server
         }
         public async Task SetNewContact(int userId)
         {
-            var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
+            var user = await _userRepository.GetUserById(userId);
+            //var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
 
             List<Schedule> userSchediles = new List<Schedule>();
 
             if (user.Role == "Student")
             {
-                userSchediles = TestData.Schedules.Where(m => m.UserId == userId).ToList();
+                userSchediles = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == userId); //TestData.Schedules.Where(m => m.UserId == userId).ToList();
             }
             else if (user.Role == "Tutor")
             {
-                userSchediles = TestData.Schedules.Where(m => m.TutorId == userId).ToList();
+                userSchediles = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == userId);
             }
             else
             {
-                userSchediles = TestData.Schedules;
+                userSchediles = await _scheduleRepository.GetSchedulesByFunc(null);
             }
 
-            var manager = TestData.Managers.First();
-            if (manager.UserId != userId)
+            var managerId  =await _userRepository.GetManagerId();
+           // var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
+            if (managerId != userId)
             {
-                var managerChat = TestData.ChatUsers.FirstOrDefault(m => m.UserId == manager.UserId);
+                var managerChat = await _chatRepository.GetChatUserByUserId(managerId);
+                //var managerChat = TestData.ChatUsers.FirstOrDefault(m => m.UserId == manager.UserId);
                 if (managerChat != null)
                 {
                     if (managerChat.Contacts.FirstOrDefault(m => m.UserId == userId) == null)
                     {
-                        TestData.ChatUsers.FirstOrDefault(m => m.UserId == manager.UserId)?.Contacts?.Add(new Contact() { UserId = userId });
-                        var active = TestData.ChatUsers.FirstOrDefault(m => m.UserId == manager.UserId)?.ConnectionTokens?.Where(m => m.Status == "Connected");
+                        managerChat?.Contacts?.Add(new Contact() { UserId = userId });
+                        var active = managerChat?.ConnectionTokens?.Where(m => m.Status == "Connected");
 
                         if (active != null)
                         {
@@ -218,14 +246,15 @@ namespace web_server
                                 await Clients.Client(item.Token).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
                             }
                         }
+                        await _chatRepository.Update(managerChat);
 
                     }
                 }
 
 
             }
-
-            var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId);
+            var chatUser = await _chatRepository.GetChatUserByUserId(user.UserId);
+            //var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId);
 
             if (user.Role == "Manager")
             {
@@ -236,8 +265,11 @@ namespace web_server
                         continue;
                     }
 
-                    var student = TestData.UserList.FirstOrDefault(m => m.UserId == item.UserId);
-                    var tutor = TestData.UserList.FirstOrDefault(m => m.UserId == item.TutorId);
+                   // var student = await _userRepository.GetUserById(item.UserId);
+                    //var student = TestData.UserList.FirstOrDefault(m => m.UserId == item.UserId);
+                    //var tutor = await _userRepository.GetUserById(item.TutorId);
+
+                    //var tutor = TestData.UserList.FirstOrDefault(m => m.UserId == item.TutorId);
 
 
 
@@ -280,22 +312,24 @@ namespace web_server
                     UserId = item.TutorId
                 };
 
+                var chat = await _chatRepository.GetChatUserByUserId(item.UserId); //TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId);
+
 
                 if (user.UserId != item.UserId)
                 {
-                    if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId) == null)
+                    if (chat == null)
                     {
-                        if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
+                        if (chatUser.Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
                         {
-                            TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.Add(new Contact() { UserId = item.UserId });
+                            chatUser.Contacts.Add(new Contact() { UserId = item.UserId });
                         }
                     }
                     else
                     {
 
-                        if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId).Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
+                        if (chat.Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
                         {
-                            chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.UserId);
+                            chatUser = chat;
                             chatUser.Contacts.Add(contact);
 
                             foreach (var token in chatUser.ConnectionTokens.Where(m => m.Status == "Connected"))
@@ -303,16 +337,16 @@ namespace web_server
                                 await Clients.Client(token.Token).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
                             }
 
-                            if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
+                            if (chatUser.Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
                             {
-                                TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.Add(new Contact() { UserId = item.UserId });
+                                chatUser.Contacts.Add(new Contact() { UserId = item.UserId });
                             }
                         }
                         else
                         {
-                            if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
+                            if (chatUser.Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
                             {
-                                TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.Add(new Contact() { UserId = item.UserId });
+                                chatUser.Contacts.Add(new Contact() { UserId = item.UserId });
                             }
                         }
                     }
@@ -326,12 +360,12 @@ namespace web_server
 
                 if (user.UserId != item.TutorId)
                 {
-                    var tutor = TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.TutorId);
+                    var tutor = await _chatRepository.GetChatUserByUserId(item.TutorId); //TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.TutorId);
                     if (tutor == null)
                     {
-                        if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.FirstOrDefault(m => m.UserId == item.TutorId) == null)
+                        if (chatUser.Contacts.FirstOrDefault(m => m.UserId == item.TutorId) == null)
                         {
-                            TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.Add(new Contact() { UserId = item.TutorId });
+                            chatUser.Contacts.Add(new Contact() { UserId = item.TutorId });
                         }
                     }
                     else
@@ -339,7 +373,7 @@ namespace web_server
 
                         if (tutor.Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
                         {
-                            chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.TutorId);
+                            chatUser = await _chatRepository.GetChatUserByUserId(item.TutorId);
 
                             chatUser.Contacts.Add(contact);
 
@@ -348,77 +382,89 @@ namespace web_server
                                 await Clients.Client(token.Token).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
                             }
 
-                            TestData.ChatUsers.FirstOrDefault(m => m.UserId == item.TutorId).Contacts.Add(contact);
-                            TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.Add(new Contact() { UserId = item.TutorId });
+                            tutor.Contacts.Add(contact);
+                            await _chatRepository.Update(tutor);
+                            chatUser.Contacts.Add(new Contact() { UserId = item.TutorId });
 
                         }
                         else
                         {
-                            if (TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.FirstOrDefault(m => m.UserId == item.TutorId) == null)
+                            if (chatUser.Contacts.FirstOrDefault(m => m.UserId == item.TutorId) == null)
                             {
-                                TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.Add(new Contact() { UserId = item.TutorId });
+                                chatUser.Contacts.Add(new Contact() { UserId = item.TutorId });
                             }
                         }
                     }
 
                 }
 
+                await _chatRepository.Update(chat);
 
             }
 
             var contact2 = new Contact()
             {
-                UserId = manager.UserId
+                UserId = managerId
             };
 
-            if (!TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.Contains(contact2) && manager.UserId != user.UserId)
+            if (!chatUser.Contacts.Contains(contact2) && managerId!= user.UserId)
             {
-                TestData.ChatUsers.FirstOrDefault(m => m.UserId == user.UserId).Contacts.Add(contact2);
+                chatUser.Contacts.Add(contact2);
             }
+
+            await _chatRepository.Update(chatUser);
         }
 
-        public static async Task RemoveContact(int userId)
-        {
-            var users = TestData.ChatUsers.ToList();
-            foreach (var item in users)
-            {
-                var cont = item.Contacts.FirstOrDefault(m => m.UserId == userId);
-                if (cont != null)
-                {
-                    item.Contacts.Remove(cont);
-                }
-            }
-        }
+        //public static async Task RemoveContact(int userId)
+        //{
+
+        //    //var users = TestData.ChatUsers.ToList();
+        //    foreach (var item in users)
+        //    {
+        //        var cont = item.Contacts.FirstOrDefault(m => m.UserId == userId);
+        //        if (cont != null)
+        //        {
+        //            item.Contacts.Remove(cont);
+        //        }
+        //    }
+        //}
+
         public async Task GetContacts(int userId)
         {
-            var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId);
+            var chatUser = await _chatRepository.GetChatUserByUserId(userId);
+            //var chatUser = TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId);
             foreach (var item in chatUser.Contacts)
             {
                 if (item.UserId == -1)
                 {
                     continue;
                 }
-                var user = TestData.UserList.FirstOrDefault(m => m.UserId == item.UserId);
+                var user = await _userRepository.GetUserById(item.UserId);
+                //var user = TestData.UserList.FirstOrDefault(m => m.UserId == item.UserId);
 
                 await Clients.Clients(Context.ConnectionId).SendAsync("UserList", item.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
             }
 
         }
-        public override Task OnDisconnectedAsync(Exception ex)
+        public async override Task OnDisconnectedAsync(Exception ex)
         {
             var connectionId = Context.ConnectionId;
             var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
 
-            TestData.ChatUsers.FirstOrDefault(m => m.UserId == userId).ConnectionTokens.FirstOrDefault(m=>m.Token == connectionId).Status = "Disconnected";
-            Clients.All.SendAsync("DisconnectUser", connectionId);
+            var user = await _chatRepository.GetChatUserByUserId(userId);
+            user.ConnectionTokens.FirstOrDefault(m=>m.Token == connectionId).Status = "Disconnected";
+            await _chatRepository.Update(user);
+            await Clients.All.SendAsync("DisconnectUser", connectionId);
 
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
         public async Task OnlineUsers()
         {
             var connectionId = Context.ConnectionId;
-            var who = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.Any( m=>m.Token == connectionId));
-            var user = TestData.UserList.FirstOrDefault(m => m.UserId == who.UserId);
+            var who =await  _chatRepository.GetChatUserByFunc(m => m.ConnectionTokens.Any(m => m.Token == connectionId));
+            //var who = TestData.ChatUsers.FirstOrDefault(m => m.ConnectionTokens.Any( m=>m.Token == connectionId));
+            var user = await _userRepository.GetUserById(who.UserId);
+            //var user = TestData.UserList.FirstOrDefault(m => m.UserId == who.UserId);
             await Clients.All.SendAsync("UserList", connectionId, user.FirstName + " " + user.LastName, user.PhotoUrl);
         }
     }

@@ -135,8 +135,8 @@ td {
 
         </tr>
             @{
-                var tutors = new List<User>();
-                tutors = (List<User>)ViewData["Tutors"];
+                var tutors = new List<Tutor>();
+                tutors = (List<Tutor>)ViewData["Tutors"];
                 int countA = 0, countB = 0;
 
                 foreach (var tutor in tutors)
@@ -178,19 +178,19 @@ td {
                                                 }
 
                                             }
-                                                if (schedule.Date.dateTimes[0].DayOfWeek == date.DayOfWeek)
+                                                if (schedule.Date.dateTime.DayOfWeek == date.DayOfWeek)
                                                 {
                                                     if (schedule.Looped != true)
                                                     {
-                                                        if (schedule.Date.dateTimes[0] != date)
+                                                        if (schedule.Date.dateTime != date)
                                                         {
                                                             continue;
                                                         }    
                                                     }
 
-                                                    if (schedule.Date.dateTimes[0].Hour == date.Hour)
+                                                    if (schedule.Date.dateTime.Hour == date.Hour)
                                                     {
-                                                        var textMouse = $"Курс: {schedule.Course?.Title}; Цель: {schedule.Course?.Goals[0]?.Title}; Имя и фамилия: {schedule.UserName}; ";
+                                                        var textMouse = $"Курс: {schedule.Course?.Title}; Цель: {schedule.Course?.Goal?.Title}; Имя и фамилия: {schedule.UserName}; ";
                                                         textMouse += $"Репетитор: {schedule.TutorFullName}";
                                                         if (schedule.Status == Status.Перенесен || schedule.RescheduledLessons.Count > 0)
                                                         {
@@ -212,7 +212,7 @@ td {
                                                             }
                                                         }
 
-                                                        var label = $"label_{schedule.UserId}_{schedule.Date.dateTimes[0].ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
+                                                        var label = $"label_{schedule.UserId}_{schedule.Date.dateTime.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
                                                         <style>
                                                             label[data-title] {
                                                                 position: relative;

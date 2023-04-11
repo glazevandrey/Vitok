@@ -53,20 +53,20 @@ namespace web_app.Controllers
                 }
             }
 
-            var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
+            var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString(), Program.settings);
             
             ViewData["usertoken"] = currUser.UserId;
             ViewData["photoUrl"] = currUser.PhotoUrl;
             ViewData["displayName"] = currUser.FirstName + " " + currUser.LastName;
 
-            var req = new GetAllUsersRequest();
+            var req = new GetAllUsersRequest(Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
             if (!res.success)
             {
                 return Redirect("/login");
             }
             ViewData["role"] = "Manager";
-            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res.result.ToString());
+            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res.result.ToString(), Program.settings);
             users = users.Where(m => m.Role == "Student").ToList();
             var schedules = new List<Schedule>();
 
@@ -108,7 +108,7 @@ namespace web_app.Controllers
                 }
             }
 
-            var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
+            var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString(), Program.settings);
 
 
             CustomRequestGet req = new GetUserById(userid + ";" + "Manager");
@@ -117,12 +117,21 @@ namespace web_app.Controllers
             {
                 return Redirect("/login");
             }
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
+
+
+            var req3 = new GetTariffsRequest();
+            var res3 = _requestService.SendGet(req3);
+            var tariffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tariff>>(res3.result.ToString());
 
             ViewData["role"] = currUser.Role;
-            ViewData["tariffs"] = TestData.Tariffs;
+            ViewData["tariffs"] = tariffs;
             ViewData["usertoken"] = currUser.UserId;
-            ViewData["lessons"] = currUser.LessonsCount;
+
+            if (user.Role == "Student")
+            {
+                ViewData["lessons"] = ((Student)user).LessonsCount;
+            }
             ViewData["photoUrl"] = currUser.PhotoUrl;
             ViewData["displayName"] = currUser.FirstName + " " + currUser.LastName;
 
@@ -170,7 +179,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data.result.ToString());
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data.result.ToString(), Program.settings);
 
             return View(user);
         }

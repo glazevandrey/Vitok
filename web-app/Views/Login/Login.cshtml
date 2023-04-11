@@ -17,24 +17,23 @@
 
                     <form method='post' action="/login/">
                         <div>
-                            @Html.AntiForgeryToken()
                             <div>
                                 <label>Логин</label><br />
                             </div>
                             <div>
-                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control txtbox" })
+                              <input id="email" type="email" name="email" />
                             </div>
                             <div style="padding-top:20px;"></div>
                             <div>
                                 <label>Пароль</label><br />
                             </div>
                             <div>
-                                @Html.PasswordFor(m => m.Password, new { @class = "form-control txtbox" })
-                            </div>
+                            <input id="password" type="password" name="password" />
+                        </div>
                         </div>
                         <div>
                             <div style="padding-top:20px;">
-                                <input class="btn btn-primary btn-lg rph-login-button" type="submit" value="Войти" />
+                                <input type="submit" value="Войти" />
                             </div>
                         </div>
                         </form>
