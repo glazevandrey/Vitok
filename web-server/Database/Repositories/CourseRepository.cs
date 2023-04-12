@@ -1,16 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.Models.DBModels;
+using web_server.Models.DBModels.DTO;
 
 namespace web_server.Database.Repositories
 {
     public class CourseRepository
     {
         DataContext _context;
-        public CourseRepository(DataContext context)
+        IMapper _mapper;
+        public CourseRepository(IMapper mapper,DataContext context)
         {
+            _mapper = mapper;
             _context = context;
         }
         public async Task<bool> RemoveCourse(int id)
@@ -23,12 +27,12 @@ namespace web_server.Database.Repositories
 
         public async Task<Course> GetCourseById(int id)
         {
-            return await _context.Courses.FirstOrDefaultAsync(m => m.Id == id);
+            return _mapper.Map<Course>(await _context.Courses.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id));
         }
 
         public async Task<List<Course>> GetAllCourses()
         {
-            return await _context.Courses.ToListAsync();
+            return _mapper.Map<List<Course>>( await _context.Courses.ToListAsync());
         }
         public async Task<List<Goal>> GetAllGoals()
         {
@@ -42,7 +46,7 @@ namespace web_server.Database.Repositories
         {
             return await _context.Goals.FirstOrDefaultAsync(m => m.Id == id);
         }
-        public async Task<bool> AddCourse(Course course)
+        public async Task<bool> AddCourse(CourseDTO course)
         {
             _context.Courses.Add(course);
 

@@ -420,19 +420,19 @@ namespace web_server.Services
                 return null;
             }
 
-            var schedules = new List<Schedule>();
-            schedules = user.Schedules;
-            //if(user.Role == "Student")
-            //{
-            //    schedules = user.Schedules;
-            //    //schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
+           var schedules = new List<Schedule>();
+          //  schedules = user.Schedules;
+            if (user.Role == "Student")
+            {
+               // schedules = user.Schedules;
+                schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
 
-            //}
-            //else
-            //{
+            }
+            else
+            {
 
-            //    //schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
-            //}
+                schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
+            }
 
 
             return schedules;

@@ -51,24 +51,24 @@ namespace web_server.Database.Repositories
         }
         public async Task<Schedule> GetScheduleById(int id)
         {
-            return _mapper.Map<Schedule>(await  _context.Schedules.FirstOrDefaultAsync(m => m.Id == id));
+            var mapped = await _context.Schedules.Include(m => m.Course).FirstOrDefaultAsync(m => m.Id == id);
+            return _mapper.Map<Schedule>(mapped);
         }
 
         public async Task<List<Schedule>> GetSchedulesByFunc(Func<ScheduleDTO, bool> func)
         {
             if(func == null)
             {
-                return _mapper.Map<List<Schedule>>(await _context.Schedules.ToListAsync());
+                return _mapper.Map<List<Schedule>>(await _context.Schedules.Include(m => m.Course).ToListAsync());
             }
 
-            return _mapper.Map<List<Schedule>>(_context.Schedules.Where(func).ToList());
+            return _mapper.Map<List<Schedule>>(_context.Schedules.Include(m => m.Course).Where(func).ToList());
         }
         public async Task<Schedule> GetScheduleByFunc(Func<ScheduleDTO, bool> func)
         {
-            lock (_context)
-            {
-                return (_mapper.Map<List<Schedule>>(_context.Schedules.Where(func).ToList())).FirstOrDefault();
-            }
+            
+                return (_mapper.Map<List<Schedule>>(_context.Schedules.Include(m=>m.Course).Where(func).ToList())).FirstOrDefault();
+            
         }
         public async Task<List<RescheduledLessons>> GetReschedulesByFunc(Func<RescheduledLessons, bool> func)
         {

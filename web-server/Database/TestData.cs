@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DBModels.DTO;
 using web_server.Models.DTO;
 
 namespace web_server.DbContext
@@ -17,10 +18,10 @@ namespace web_server.DbContext
             new Goal() {Title = "Проходить собеседование" }, new Goal() {  Title = "Путешествовать" }, new Goal() { Title = "Повысить уровень" },
             };
 
-        public static List<Course> Courses { get; set; } = new List<Course>() {
-            new Course() {Title="ОГЭ", Goal = Goals[0] ,},
-            new Course() { Title="ЕГЭ", Goal = Goals[1], },
-            new Course() {Title="Общий английский", Goal =Goals[2] }
+        public static List<CourseDTO> Courses { get; set; } = new List<CourseDTO>() {
+            new CourseDTO() {Title="ОГЭ", Goal = Goals[0] ,},
+            new CourseDTO() { Title="ЕГЭ", Goal = Goals[1], },
+            new CourseDTO() {Title="Общий английский", Goal =Goals[2] }
         };
 
         public static List<Tariff> Tariffs = new List<Tariff>()
@@ -37,8 +38,8 @@ namespace web_server.DbContext
         public static List<RescheduledLessons> RescheduledLessons = new List<RescheduledLessons>();
 
         public static List<Notifications> Notifications = new List<Notifications>();
-        public static List<Schedule> Schedules = new List<Schedule>() {
-            new Schedule() { UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 5, UserId = 2,
+        public static List<ScheduleDTO> Schedules = new List<ScheduleDTO>() {
+            new ScheduleDTO() { UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 5, UserId = 2,
 
                 StartDate = DateTime.Parse("19.04.2023 23:00"), WaitPaymentDate = DateTime.Parse("19.04.2023 23:00"), Course = Courses[0] },
 

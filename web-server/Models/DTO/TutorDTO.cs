@@ -2,13 +2,14 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using web_server.Models.DBModels;
+using web_server.Models.DBModels.DTO;
 
 namespace web_server.Models.DTO
 {
     public class TutorDTO : UserDTO
     {
 
-        public List<Course> Courses { get; set; } = new List<Course>();
+        public List<CourseDTO> Courses { get; set; } = new List<CourseDTO>();
         public string About { get; set; }
         public List<UserDate> UserDates { get; set; }  = new List<UserDate>();
 

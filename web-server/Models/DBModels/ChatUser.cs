@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace web_server.Models.DBModels
 {
-    public class ChatUser
+    public class Chat
     {
         [Key]
         public int Id { get; set;}

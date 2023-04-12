@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using web_server.Models.DBModels;
+using web_server.Models.DBModels.DTO;
 using web_server.Models.DTO;
 
 namespace web_server
@@ -28,6 +29,11 @@ namespace web_server
 
             CreateMap<ScheduleDTO, Schedule>();
             CreateMap<Schedule, ScheduleDTO>();
+
+            CreateMap<Course, CourseDTO>();
+            CreateMap<CourseDTO, Course>();
+
+
 
         }
     }

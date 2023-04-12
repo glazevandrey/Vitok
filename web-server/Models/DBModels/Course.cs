@@ -12,7 +12,7 @@ namespace web_server.Models.DBModels
         public string Title { get; set; }
 
         //public int? GoalId { get; set; } // Внешний ключ
-        //public Goal Goal { get; set; } // Навигационное свойство
+        public Goal Goal { get; set; } // Навигационное свойство
 
 
         //public int? TutorId { get; set; }

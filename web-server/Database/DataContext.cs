@@ -5,6 +5,7 @@ using System.Linq;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DBModels.DTO;
 using web_server.Models.DTO;
 
 namespace web_server.Database
@@ -19,7 +20,7 @@ namespace web_server.Database
 
         //public DbSet<ConnectionToken>  ConnectionTokens { get; set; }
         public DbSet<Contact>  Contacts{ get; set; }
-        public DbSet<Course>  Courses{ get; set; }
+        public DbSet<CourseDTO>  Courses{ get; set; }
         public DbSet<UserDate> UserDates { get; set; }
         public DbSet<Goal> Goals{ get; set; }
         //public DbSet<InChat> InChats{ get; set; }
@@ -70,12 +71,12 @@ namespace web_server.Database
             //  modelBuilder.Entity<Course>()
             //.HasKey(t => new { t.GoalId, t.TutorId});
 
-            modelBuilder.Entity<Course>()
+            modelBuilder.Entity<CourseDTO>()
         .HasOne(pt => pt.Tutor)
         .WithMany(p => p.Courses)
         .HasForeignKey(pt => pt.TutorId);
 
-            modelBuilder.Entity<Course>()
+            modelBuilder.Entity<CourseDTO>()
                 .HasOne(pt => pt.Goal)
                 .WithOne(t => t.Course)
                 .HasForeignKey<Goal>(pt => pt.CourseId)
@@ -85,7 +86,7 @@ namespace web_server.Database
             modelBuilder.Entity<ScheduleDTO>()
             .HasOne(pt => pt.Course)
             .WithOne(t => t.Schedule)
-            .HasForeignKey<Course>(pt => pt.ScheduleId)
+            .HasForeignKey<CourseDTO>(pt => pt.ScheduleId)
             .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
 
 

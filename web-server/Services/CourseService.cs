@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DBModels.DTO;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
@@ -14,10 +16,12 @@ namespace web_server.Services
     {
         CourseRepository _courseRepository;
         UserRepository _userRepository;
-        public CourseService(CourseRepository courseRepository, UserRepository userRepository)
+        IMapper _mapper;
+        public CourseService(IMapper mapper, CourseRepository courseRepository, UserRepository userRepository)
         {
             _userRepository = userRepository;
             _courseRepository = courseRepository;
+            _mapper = mapper;
         }
         public async Task<List<Course>> GetCourses()
         {
@@ -28,7 +32,7 @@ namespace web_server.Services
             var id = Convert.ToInt32(args[0]);
             var title = args[1];
             var goal = args[2];
-            var course = await _courseRepository.GetCourseById(id);
+            var course =  _mapper.Map<CourseDTO>(await _courseRepository.GetCourseById(id));
             course.Title = title;
             course.Goal = new Goal();
             course.Goal = await _courseRepository.GetGoalById(Convert.ToInt32(goal));
@@ -64,11 +68,11 @@ namespace web_server.Services
 
         public async Task<string> SetNewCourse(string[] args)
         {
-            var course = new Course();
+            var course = new CourseDTO();
             var id = Convert.ToInt32(args[1]);
             course.Title = args[0];
             
-            course.Goal = await _courseRepository.GetGoalById(id);
+            course.Goal =  await _courseRepository.GetGoalById(id);
 
             await _courseRepository.AddCourse(course);
 
