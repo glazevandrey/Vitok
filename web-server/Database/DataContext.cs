@@ -20,19 +20,21 @@ namespace web_server.Database
         //public DbSet<ConnectionToken>  ConnectionTokens { get; set; }
         public DbSet<Contact>  Contacts{ get; set; }
         public DbSet<Course>  Courses{ get; set; }
-        //public DbSet<UserDate> UserDates { get; set; }
+        public DbSet<UserDate> UserDates { get; set; }
         public DbSet<Goal> Goals{ get; set; }
         //public DbSet<InChat> InChats{ get; set; }
         //public DbSet<Messages> Messages{ get; set; }
         public DbSet<Notifications> Notifications{ get; set; }
 
-        //public DbSet<NotificationTask> NotificationTasks { get; set; }
+       // public DbSet<NotificationTask> NotificationTasks { get; set; }
         //public DbSet<NotificationTokens> NotificationTokens{ get; set; }
         //public DbSet<PaidLesson> PaidLessons{ get; set; }
         public DbSet<Registration> Registrations{ get; set; }
         public DbSet<RescheduledLessons> RescheduledLessons{ get; set; }
-        public DbSet<Schedule> Schedules{ get; set; }
-        //public DbSet<SiteContact> SiteContacts{ get; set; }
+        public DbSet<ScheduleDTO> Schedules { get; set; }
+        
+        public DbSet<SiteContact> SiteContacts{ get; set; }
+        
         //public DbSet<SkippedDate> SkippedDates{ get; set; }
         //public DbSet<StudentPayment> StudentPayments{ get; set; }
         public DbSet<Tariff> Tariffs{ get; set; }
@@ -56,32 +58,117 @@ namespace web_server.Database
             modelBuilder.Entity<TutorDTO>().ToTable("Tutors");
             modelBuilder.Entity<ManagerDTO>().ToTable("Managers");
             modelBuilder.Entity<StudentDTO>().ToTable("Students");
-            modelBuilder.Entity<Goal>().HasData(TestData.Goals);
-            modelBuilder.Entity<Course>().HasData(TestData.Courses) ;
-            modelBuilder.Entity<Schedule>().HasData(TestData.Schedules);
-            modelBuilder.Entity<Tariff>().HasData(TestData.Tariffs);
-            var tutors = (TestData.UserList.Where(m => m.Role == "Tutor").ToList());
-            modelBuilder.Entity<TutorDTO>().HasData(tutors);
 
-            var students = TestData.UserList.Where(m => m.Role == "Student");
-            modelBuilder.Entity<StudentDTO>().HasData(students);
+            //modelBuilder.Entity<Goal>().HasData(TestData.Goals);
+            //modelBuilder.Entity<Course>().HasData(TestData.Courses) ;
+            //modelBuilder.Entity<Schedule>().HasData(TestData.Schedules);
+            //modelBuilder.Entity<Tariff>().HasData(TestData.Tariffs);
 
-            var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
-            modelBuilder.Entity<TutorDTO>().HasData(manager);
+            // остальное добавляется отдельно
 
+
+            //  modelBuilder.Entity<Course>()
+            //.HasKey(t => new { t.GoalId, t.TutorId});
+
+            modelBuilder.Entity<Course>()
+        .HasOne(pt => pt.Tutor)
+        .WithMany(p => p.Courses)
+        .HasForeignKey(pt => pt.TutorId);
+
+            modelBuilder.Entity<Course>()
+                .HasOne(pt => pt.Goal)
+                .WithOne(t => t.Course)
+                .HasForeignKey<Goal>(pt => pt.CourseId)
+                .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
+
+            modelBuilder.Entity<ScheduleDTO>()
+            .HasOne(pt => pt.Course)
+            .WithOne(t => t.Schedule)
+            .HasForeignKey<Course>(pt => pt.ScheduleId)
+            .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
+
+            //modelBuilder.Entity<Schedule>()
+            //.HasOne(pt => pt.StartDate)
+            //.WithOne(t => t.Schedule)
+            //.HasForeignKey<UserDate>(pt => pt.ScheduleId)
+            //.OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
+
+
+
+            modelBuilder.Entity<ScheduleDTO>()
+            .HasMany(pt => pt.Tasks)
+            .WithOne(t => t.Schedule)
+            .HasForeignKey(pt => pt.ScheduleId)
+            .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
 
             modelBuilder.Entity<StudentDTO>()
-        .HasMany(s => s.Money)
-        .WithOne()
-        .HasForeignKey("StudentDTOUserId"); // Указание имени внешнего ключа
+            .HasMany(pt => pt.Schedules)
+            .WithOne(t => t.Student)
+            .HasForeignKey(pt => pt.UserId)
+            .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
 
-            // Конфигурация отношения между StudentDTO и UserCredit
-            modelBuilder.Entity<StudentDTO>()
-                .HasMany(s => s.Credit)
-                .WithOne()
-                .HasForeignKey("StudentDTOUserId"); // Указание имени внешнего ключа
+        // MEKDD
+        //modelBuilder.Entity<StudentDTO>()
+        //.HasMany(pt => pt.Schedules)
+        //.WithOne(t => t.Student)
+        //.HasForeignKey(pt => pt.StudentId)
+        //.OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+        /*
 
-           
+        SqlException: The INSERT statement conflicted with the FOREIGN KEY constraint 
+            "FK_UserDates_Schedules_ScheduleId". The conflict occurred in database "vitokdb",
+            table "dbo.Schedules", column 'Id'.
+
+             */
+
+            modelBuilder.Entity<TutorDTO>()
+            .HasMany(pt => pt.Schedules)
+            .WithOne(t => t.Tutor)
+            .HasForeignKey(pt => pt.TutorId)
+            .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
+            //modelBuilder.Entity<Schedule>()
+            //.HasOne(pt => pt.Tutor)
+            //.WithMany(t => t.)
+            //.HasForeignKey<UserDate>(pt => pt.ScheduleId)
+            //.OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
+
+
+            modelBuilder.Entity<TutorDTO>()
+            .HasMany(pt => pt.UserDates)
+            .WithOne(t => t.Tutor)
+            .HasForeignKey(pt => pt.TutorId)
+            .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
+
+
+
+            //modelBuilder.Entity<Course>()
+            //    .HasOne(pt => pt.Tutor)
+            //    .WithMany(p => p.Courses)
+            //    .HasForeignKey(pt => pt.TutorId);
+
+            //modelBuilder.Entity<Course>()
+            //    .HasOne(pt => pt.Goal)
+            //    .WithOne(t => t.Course)
+            //    .HasForeignKey<Goal>(pt=>pt.CourseId);
+
+            //    modelBuilder.Entity<StudentDTO>()
+            //.HasMany(s => s.Money)
+            //.WithOne()
+            //.HasForeignKey("StudentDTOUserId"); // Указание имени внешнего ключа
+
+            //    // Конфигурация отношения между StudentDTO и UserCredit
+            //    modelBuilder.Entity<StudentDTO>()
+            //        .HasMany(s => s.Credit)
+            //        .WithOne()
+            //        .HasForeignKey("StudentDTOUserId"); // Указание имени внешнего ключа
+
+
 
 
         }

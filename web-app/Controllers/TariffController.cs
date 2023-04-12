@@ -24,7 +24,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
+            var user = (Student)Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             ViewData["usertoken"] = user.UserId;
             ViewData["role"] = user.Role;
 

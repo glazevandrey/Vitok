@@ -8,6 +8,7 @@ using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DTO;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
@@ -43,11 +44,11 @@ namespace web_server.Services
                 return null;
             }
 
-            var schedule = await _scheduleRepository.GetScheduleByFunc(m => m.StartDate.DayOfWeek == model.WantThis.dateTimes[0].DayOfWeek && m.StartDate.ToString("HH:mm") == model.WantThis.dateTimes[0].ToString("HH:mm"));
+            var schedule = await _scheduleRepository.GetScheduleByFunc(m => m.StartDate.DayOfWeek == model.WantThis.First().dateTime.DayOfWeek && m.StartDate.ToString("HH:mm") == model.WantThis.First().dateTime.ToString("HH:mm"));
             //var schedule = TestData.Schedules.FirstOrDefault();
             schedule.Course = model.Course;
             schedule.UserId = model.UserId;
-            schedule.WaitPaymentDate = user.LessonsCount > 0 ? DateTime.MinValue : model.WantThis.dateTimes[0];
+            schedule.WaitPaymentDate = user.LessonsCount > 0 ? DateTime.MinValue : model.WantThis.First().dateTime;
             schedule.Status = Status.Ожидает;
             schedule.UserName = user.FirstName + " " + user.LastName;
             schedule.CreatedDate = DateTime.Now;
@@ -71,13 +72,13 @@ namespace web_server.Services
             var dateCurr = DateTime.Parse(split[4]);
             var warn = Convert.ToBoolean(split[5]);
 
-            var model =  await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            var model =  await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.StartDate == date);
             //var model = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
             var user = await _userRepository.GetUserById(user_id);
             //var user = (Student)TestData.UserList.FirstOrDefault(m => m.UserId == user_id);
             var tutor = await _userRepository.GetUserById(tutor_id);
             //var tutor = (Tutor)TestData.UserList.FirstOrDefault(m => m.UserId == tutor_id);
-            var schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
+            var schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.StartDate == date);
             //var schedule = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == date);
             var manager = await _userRepository.GetUserById(await _userRepository.GetManagerId());
             //var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
@@ -414,18 +415,26 @@ namespace web_server.Services
         public async Task<List<Schedule>> GetSchedules(string args)
         {
             var user = await _userRepository.GetUserByToken(args);
-            //var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
             if (user == null)
             {
                 return null;
             }
-            var schedules = await _scheduleRepository.GetSchedulesByFunc(m=>m.UserId == user.UserId);
-           // var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
-            if (schedules == null || schedules.Count == 0)
-            {
-                schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
 
-            }
+            var schedules = new List<Schedule>();
+            schedules = user.Schedules;
+            //if(user.Role == "Student")
+            //{
+            //    schedules = user.Schedules;
+            //    //schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
+
+            //}
+            //else
+            //{
+
+            //    //schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
+            //}
+
+
             return schedules;
         }
 

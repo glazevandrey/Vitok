@@ -34,6 +34,7 @@ namespace web_app.Controllers
             var tariffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tariff>>(res3.result.ToString());
 
 
+
             ViewData["role"] = user.Role;
             ViewData["tariffs"] = tariffs;
             ViewData["usertoken"] = user.UserId;

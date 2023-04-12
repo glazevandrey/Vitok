@@ -163,8 +163,17 @@ namespace web_server.Controllers
             }
 
             var list = await _scheduleService.GetSchedules(args);
+            string json = "";
+            try
+            {
+                json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+            }
+            catch (Exception ex)
+            {
 
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+                throw ex;
+            }
+            
             return _jsonService.PrepareSuccessJson(json);
 
         }

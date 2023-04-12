@@ -34,7 +34,6 @@ namespace web_server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSwaggerGen();
             services.AddSignalR(o =>
@@ -150,13 +149,15 @@ namespace web_server
                     }
                     if (context.Request.Query.ContainsKey("token"))
                     {
+                        //var user = userRepository.GetUserById(Convert.ToInt32(context.Request.Query["token"])).GetAwaiter().GetResult();
                         if (context.Request.Headers["Authorization"].Count > 0)
                         {
-                            context.Request.Headers["Authorization"] = "Bearer " + (await userRepository.GetUserById(Convert.ToInt32(context.Request.Query["token"])))?.ActiveToken;
+                            context.Request.Headers["Authorization"] = "Bearer " + context.Request.Query["token"];
                         }
                         else
                         {
-                            context.Request.Headers.Add("Authorization", "Bearer " + (await userRepository.GetUserById(Convert.ToInt32(context.Request.Query["token"])))?.ActiveToken);
+                            
+                            context.Request.Headers.Add("Authorization", "Bearer " + context.Request.Query["token"]);
                         }
                     }
                 }

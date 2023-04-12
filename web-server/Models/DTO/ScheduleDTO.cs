@@ -1,17 +1,20 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System;
-using web_server.Models.DTO;
+using System.ComponentModel.DataAnnotations.Schema;
+using web_server.Models.DBModels;
 
-namespace web_server.Models.DBModels
+namespace web_server.Models.DTO
 {
-    public class Schedule
+    public class ScheduleDTO
     {
         [Key]
         public int Id { get; set; }
+
         public int UserId { get; set; }
+        public StudentDTO Student { get; set; }
         public int TutorId { get; set; }
+        public TutorDTO Tutor { get; set; }
 
         public string TutorFullName { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -27,7 +30,6 @@ namespace web_server.Models.DBModels
         public DateTime EndDate { get; set; }
         public Status Status { get; set; } = Status.Ожидает;
 
-        [NotMapped]
 
         public List<NotificationTask> Tasks = new List<NotificationTask>()
         {
@@ -36,19 +38,20 @@ namespace web_server.Models.DBModels
             new NotificationTask() { NotifKey = Constants.NOTIF_DONT_FORGET_SET_STATUS, NotifValue = false }
         };
 
-        [NotMapped]
         public List<SkippedDate> SkippedDates { get; set; } = new List<SkippedDate>();
 
-        [NotMapped]
         public List<RescheduledLessons> RescheduledLessons { get; set; } = new List<RescheduledLessons>();
         public DateTime RescheduledDate { get; set; }
         public DateTime NewDate { get; set; }
         public DateTime WaitPaymentDate { get; set; }
-
         public List<PaidLesson> PaidLessons { get; set; } = new List<PaidLesson>();
-
         public List<ReadyDate> ReadyDates { get; set; } = new List<ReadyDate>();
         public DateTime RemoveDate { get; set; }
     }
-
+    public class ReadyDate
+    {
+        [Key]
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+    }
 }

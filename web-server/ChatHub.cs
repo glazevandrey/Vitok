@@ -170,12 +170,13 @@ namespace web_server
             var chatUser = await _chatRepository.GetChatUserByUserId(userId); 
             if (chatUser == null)
             {
-                var model = new ChatUser() { UserId = userId, ConnectionTokens = new List<ConnectionToken>() { new ConnectionToken() { Token = connectionId, Status = "Connected" } } };
+                var model = new ChatUser() { InChat= new InChat(), UserId = userId, ConnectionTokens = new List<ConnectionToken>() { new ConnectionToken() { Token = connectionId, Status = "Connected" } } };
                
                 model.Messages.Add(new Messages() { Id = 0, MessageTime = DateTime.Now, ReceiverId = userId.ToString(), SenderId = (await _userRepository.GetManagerId()).ToString(), Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!" });
                 
                 await _chatRepository.AddChatUser(model);
                 await SetNewContact(userId);
+                chatUser = model;
 
             }
             else
@@ -452,6 +453,10 @@ namespace web_server
             var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
 
             var user = await _chatRepository.GetChatUserByUserId(userId);
+            if(user == null)
+            {
+                return;
+            }
             user.ConnectionTokens.FirstOrDefault(m=>m.Token == connectionId).Status = "Disconnected";
             await _chatRepository.Update(user);
             await Clients.All.SendAsync("DisconnectUser", connectionId);

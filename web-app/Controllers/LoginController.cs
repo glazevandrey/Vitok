@@ -8,6 +8,10 @@ using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
 using System.Collections.Generic;
 using System.Linq;
+using web_server.Database;
+using Microsoft.EntityFrameworkCore;
+using web_server.DbContext;
+using web_server.Models.DTO;
 
 namespace web_app.Controllers
 {
@@ -36,11 +40,6 @@ namespace web_app.Controllers
                 {
                     return Redirect("/manageschool");
 
-                }
-                else if (role == null)
-                {
-                    return View();
-                    //  return Redirect("/schedule");
                 }
                 else
                 {

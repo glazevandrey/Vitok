@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace web_server.Models.DBModels
 {
@@ -7,7 +8,7 @@ namespace web_server.Models.DBModels
         [Key]
         public int UserId { get; set; }
         public int TutorId { get; set; }
-        public UserDate WantThis { get; set; }
+        public List<UserDate> WantThis { get; set; }
         public Course Course { get; set; }
     }
 }

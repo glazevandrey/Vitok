@@ -72,12 +72,13 @@ namespace web_app.Controllers
 
             foreach (var user in users)
             {
-                var req2 = new GetSchedulesByUserId(user.UserId.ToString());
-                res = _requestService.SendGet(req2, HttpContext);
+                //var req2 = new GetSchedulesByUserId(user.UserId.ToString());
+                //res = _requestService.SendGet(req2, HttpContext);
 
                 if (res.success)
                 {
-                    schedules.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(res.result.ToString()));
+                    schedules.AddRange(user.Schedules);
+                    //  schedules.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(res.result.ToString()));
                 }
 
             }

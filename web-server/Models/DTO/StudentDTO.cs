@@ -15,10 +15,9 @@ namespace web_server.Models.DTO
         public int LessonsCount { get; set; }
         public int SkippedInThisMonth { get; set; } = 0;
 
-        [NotMapped]
+        public List<ScheduleDTO> Schedules { get; set; } = new List<ScheduleDTO>();
         public List<UserMoney> Money { get; set; } = new List<UserMoney>();
-        
-        [NotMapped]
+       
         public List<UserCredit> Credit { get; set; } = new List<UserCredit>();
         public bool UsedTrial { get; set; } = false;
     }

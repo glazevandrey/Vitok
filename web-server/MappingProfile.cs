@@ -25,6 +25,10 @@ namespace web_server
             CreateMap<StudentDTO, Student>();
             CreateMap<ManagerDTO, Manager>();
 
+
+            CreateMap<ScheduleDTO, Schedule>();
+            CreateMap<Schedule, ScheduleDTO>();
+
         }
     }
 }

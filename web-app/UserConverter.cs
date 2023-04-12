@@ -30,7 +30,16 @@ namespace web_app
                 default:
                     throw new Exception("Unknown role");
             }
-            serializer.Populate(item.CreateReader(), user);
+            try
+            {
+                serializer.Populate(item.CreateReader(), user);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
             return user;
         }
 

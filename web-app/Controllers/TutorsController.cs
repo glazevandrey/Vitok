@@ -162,7 +162,7 @@ namespace web_app.Controllers
                 Email = email,
                 Courses = listCourses,
                 Role = "Tutor",
-                UserDates = new UserDate() { dateTimes = new List<DateTime>() },
+                UserDates = new List<UserDate>(),
 
             };
             CustomRequestPost req = new CustomRequestPost("api/tutor/addtutor", user);

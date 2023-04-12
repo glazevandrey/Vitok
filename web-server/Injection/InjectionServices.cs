@@ -28,6 +28,7 @@ namespace web_server.Injection
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlServer(connection);
+
             }, ServiceLifetime.Scoped);
             // services.AddDbContext<DataContext>(options => { options.UseSqlServer(connection)}, ServiceLifetime.Transient);
 

@@ -128,12 +128,12 @@
                 <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
                 </td>
                             @{
-                                var ordered = ((Tutor)Model).UserDates.dateTimes.OrderBy(m => m.TimeOfDay).ToList();
+                                var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
                                 foreach (var time in ordered)
                                 {
-                                if (time.DayOfWeek == day)
+                                if (time.dateTime.DayOfWeek == day)
                                 {
-                                        <td><label> @time.ToString("HH:mm") </label></td>
+                                        <td><label> @time.dateTime.ToString("HH:mm") </label></td>
 
 
 

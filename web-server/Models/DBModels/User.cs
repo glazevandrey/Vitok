@@ -24,7 +24,7 @@ namespace web_server.Models.DBModels
         public string ActiveToken { get; set; }
         public List<BalanceHistory> BalanceHistory { get; set; } = new List<BalanceHistory>();
         public double Balance { get; set; }
-
+        public List<Schedule> Schedules { get; set; } = new List<Schedule>();
         // поля студента
         [NotMapped]
 
@@ -63,7 +63,7 @@ namespace web_server.Models.DBModels
         public virtual string About { get; set; }
         [NotMapped]
 
-        public virtual UserDate UserDates { get; set; }
+        public virtual List<UserDate> UserDates { get; set; } = new List<UserDate>();
   
 
     }

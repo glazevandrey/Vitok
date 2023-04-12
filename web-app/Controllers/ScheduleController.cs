@@ -10,6 +10,7 @@ using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
 using Newtonsoft.Json;
 using web_server.Database;
+using System.Diagnostics;
 
 namespace web_app.Controllers
 {
@@ -29,8 +30,8 @@ namespace web_app.Controllers
         {
             CustomRequestGet req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
-          
-                if (!res.success)
+
+            if (!res.success)
             {
                 if (Request.Cookies.ContainsKey(".AspNetCore.Application.Id"))
                 {
@@ -55,17 +56,19 @@ namespace web_app.Controllers
             }
             else
             {
-                CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-                result = _requestService.SendGet(request, HttpContext);
+                //CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+                //result = _requestService.SendGet(request, HttpContext);
+
 
             }
 
-            if (!res.success)
-            {
-                return Redirect("/login");
-            }
+            //if (!res.success || result == null || !result.success)
+            //{
+            //    return Redirect("/login");
+            //}
 
-            var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
+            var model = user.Schedules;
+           // var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
 
             ViewData["role"] = user.Role;
             ViewData["userid"] = user.UserId;

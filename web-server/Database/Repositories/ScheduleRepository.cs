@@ -1,30 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DTO;
 
 namespace web_server.Database.Repositories
 {
     public class ScheduleRepository
     {
         DataContext _context;
-        public ScheduleRepository(DataContext context)
+        IMapper _mapper;
+        public ScheduleRepository(IMapper mapper, DataContext context)
         {
+            _mapper = mapper;
             _context = context;
         }
 
         public async Task<int> AddSchedule(Schedule schedule)
         {
-            await _context.Schedules.AddAsync(schedule);
+            await _context.Schedules.AddAsync(_mapper.Map<ScheduleDTO>(schedule));
             var res = await _context.SaveChangesAsync();
             return res;
         }
         public async Task<bool> RemoveSchedule(Schedule schedule)
         {
-            _context.Schedules.Remove(schedule);
+            _context.Schedules.Remove(_mapper.Map<ScheduleDTO>(schedule));
             await _context.SaveChangesAsync();
             return true;
         }
@@ -47,21 +51,24 @@ namespace web_server.Database.Repositories
         }
         public async Task<Schedule> GetScheduleById(int id)
         {
-            return await _context.Schedules.FirstOrDefaultAsync(m => m.Id == id);
+            return _mapper.Map<Schedule>(await  _context.Schedules.FirstOrDefaultAsync(m => m.Id == id));
         }
 
-        public async Task<List<Schedule>> GetSchedulesByFunc(Func<Schedule, bool> func)
+        public async Task<List<Schedule>> GetSchedulesByFunc(Func<ScheduleDTO, bool> func)
         {
             if(func == null)
             {
-                return await _context.Schedules.ToListAsync();
+                return _mapper.Map<List<Schedule>>(await _context.Schedules.ToListAsync());
             }
 
-            return _context.Schedules.Where(func).ToList();
+            return _mapper.Map<List<Schedule>>(_context.Schedules.Where(func).ToList());
         }
-        public async Task<Schedule> GetScheduleByFunc(Func<Schedule, bool> func)
+        public async Task<Schedule> GetScheduleByFunc(Func<ScheduleDTO, bool> func)
         {
-            return _context.Schedules.FirstOrDefault(func);
+            lock (_context)
+            {
+                return (_mapper.Map<List<Schedule>>(_context.Schedules.Where(func).ToList())).FirstOrDefault();
+            }
         }
         public async Task<List<RescheduledLessons>> GetReschedulesByFunc(Func<RescheduledLessons, bool> func)
         {

@@ -55,7 +55,6 @@ namespace web_server.Services
                 //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Add(dateTime);
                 var model = new Schedule()
                 {
-                    Date = new UserDate() { dateTimes = new List<DateTime>() { dateTime } },
                     Looped = Convert.ToBoolean(split[2]),
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     TutorId = tutor.UserId,
@@ -93,7 +92,6 @@ namespace web_server.Services
             {
                 var sch = new Schedule()
                 {
-                    Date = new UserDate() { dateTimes = new List<DateTime>() { dateTime } },
                     UserName = user.FirstName + " " + user.LastName,
                     Looped = Convert.ToBoolean(split[2]),
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
@@ -254,9 +252,10 @@ namespace web_server.Services
             //var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
             if (tutor != null)
             {
-                tutor.UserDates.dateTimes.Remove(dateTime);
+                var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
+                tutor.UserDates.Remove(rem);
                 await _userRepository.Update(tutor);
-                Schedule schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == Convert.ToInt32(tutor_id) && m.Date.dateTimes[0] == dateTime && m.UserId == Convert.ToInt32(user_id));
+                Schedule schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == Convert.ToInt32(tutor_id) && m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id));
                 //var schedule = TestData.Schedules.FirstOrDefault();
                 if (schedule != null)
                 {
@@ -307,7 +306,8 @@ namespace web_server.Services
             var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
             if (tutor != null)
             {
-                tutor.UserDates.dateTimes.Remove(dateTime);
+                var rem = tutor.UserDates.FirstOrDefault(m=>m.dateTime == dateTime);
+                tutor.UserDates.Remove(rem);
                 await _userRepository.Update(tutor);
                 //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
             }

@@ -61,7 +61,7 @@ namespace web_server.Services
 
         public async Task<User> AddLessonsToUser(string[] args)
         {
-            var user = await _userRepository.GetUserById(Convert.ToInt32(args[0]));
+            var user = (Student)(await _userRepository.GetUserById(Convert.ToInt32(args[0])));
            // var user = (Student)TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args[0]));
 
             user.LessonsCount += Convert.ToInt32(args[1]);
@@ -89,9 +89,8 @@ namespace web_server.Services
                 var needed = user.Money.FirstOrDefault(m => m.Cost == one);
                 if (needed == null)
                 {
-                    var id = user.Money.FirstOrDefault() != null ? user.Money.FirstOrDefault().Id : 0;
 
-                    user.Money.Add(new UserMoney() { Id = id, Cost = one, Count = lessonCount });
+                    user.Money.Add(new UserMoney() { Cost = one, Count = lessonCount });
                 }
                 else
                 {
@@ -181,7 +180,7 @@ namespace web_server.Services
                 }
             }
 
-            var waited = await _scheduleRepository.GetSchedulesByFunc(m => m.WaitPaymentDate != DateTime.MinValue);
+            var waited = await _scheduleRepository.GetSchedulesByFunc(m => m.WaitPaymentDate != DateTime.MinValue && m.UserId == user.UserId);
            // var waited = schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
             foreach (var item in waited)
             {
@@ -246,12 +245,11 @@ namespace web_server.Services
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     UserName = user.FirstName + " " + user.LastName,
                     Course = await _courseRepository.GetCourseById(courseId),
-                    Date = new UserDate() { dateTimes = new List<DateTime>() { newDateTime } },
                     StartDate = newDateTime,
                     Looped = true,
                 };
 
-                var model = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime);
+                var model = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.StartDate == oldDateTime);
 
                 //if (TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).WaitPaymentDate != DateTime.MinValue)
                 if (model.WaitPaymentDate != DateTime.MinValue)
@@ -308,14 +306,13 @@ namespace web_server.Services
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     UserName = user.FirstName + " " + user.LastName,
                     Course = await _courseRepository.GetCourseById(courseId),
-                    Date = new UserDate() { dateTimes = new List<DateTime>() { newDateTime } },
                     StartDate = newDateTime,
                     Looped = false,
                 };
 
                 var re_less = new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason, TutorId = tutor_id, UserId = user_id };
 
-                var old = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime);
+                var old = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.StartDate == oldDateTime);
                 //var old = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime);
                 if (old.Status == Status.ОжидаетОплату)
                 {

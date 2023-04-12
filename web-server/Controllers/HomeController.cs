@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -30,8 +31,12 @@ namespace web_server.Controllers
         UserRepository _userRepository;
         ContactsRepository _contactsRepository;
         CourseRepository _courseRepository;
-        public HomeController(UserRepository userRepository, CourseRepository courseRepository, ContactsRepository contactsRepository, IStatisticsService statisticsService ,IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
+        DataContext data;
+        IMapper map;
+        public HomeController(IMapper maa, DataContext data, UserRepository userRepository, CourseRepository courseRepository, ContactsRepository contactsRepository, IStatisticsService statisticsService ,IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
         {
+            map = maa;
+            this.data = data;
             _userRepository = userRepository;
             _courseRepository = courseRepository;
             _contactsRepository = contactsRepository;
@@ -46,6 +51,93 @@ namespace web_server.Controllers
         [HttpPost("loginuser", Name = "loginuser")]
         public async Task<string> LoginUser()
         {
+
+
+            if (data.Tutors.Count() == 0 && data.Students.Count() == 0 && data.Managers.Count() == 0)
+            {
+
+
+
+                data.Goals.AddRange(TestData.Goals);
+                try
+                {
+                    data.SaveChanges();
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+
+                data.Courses.AddRange(TestData.Courses);
+                try
+                {
+                    data.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+
+
+         
+
+
+                var students = TestData.UserList.Where(m => m.Role == "Student");
+                foreach (var item in students)
+                {
+                    data.Students.Add(map.Map<StudentDTO>(item));
+                }
+
+                data.SaveChanges();
+
+                var tutors = TestData.UserList.Where(m => m.Role == "Tutor");
+                foreach (var item in tutors)
+                {
+                    data.Tutors.Add(map.Map<TutorDTO>(item));
+                }
+
+                var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
+                data.Managers.Add(map.Map<ManagerDTO>(manager));
+
+                try
+                {
+
+                    data.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+
+                data.Schedules.AddRange(map.Map<List<ScheduleDTO>>(TestData.Schedules));
+                data.Tariffs.AddRange(TestData.Tariffs);
+                try
+                {
+                    data.SaveChanges();
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+
+                //// Создаем новую цель
+                //var newGoal = new Goal { Title = "Новая цель" };
+                //data.Goals.Add(newGoal);
+                //data.SaveChanges();
+
+                //// Создаем новый курс с указанием связанной цели
+                //var newCourse = new Course { Title = "Новый курс", GoalId = newGoal.Id };
+                //data.Courses.Add(newCourse);
+                //data.SaveChanges();
+
+
+            }
 
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -94,11 +186,6 @@ namespace web_server.Controllers
             }
 
             var json = await _authService.GetUserByToken(args);
-            var check = await _authService.CheckIsActive(HttpContext);
-            if (check == false)
-            {
-                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
-            }
 
             return json;
         }
@@ -107,7 +194,17 @@ namespace web_server.Controllers
         public async Task<string> GetAll([FromQuery] string args)
         {
             var all = await _userRepository.GetAll();
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(all));
+            string json = "";
+            try
+            {
+                json = (Newtonsoft.Json.JsonConvert.SerializeObject(all));
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return _jsonService.PrepareSuccessJson(json);
         }
 
         [Authorize]
@@ -120,13 +217,6 @@ namespace web_server.Controllers
             }
 
             var json = await _authService.GetUserById(args);
-            var check = await _authService.CheckIsActive(HttpContext);
-            if (check == false)
-            {
-                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
-
-            }
-
             return json;
         }
 

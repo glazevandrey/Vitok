@@ -46,7 +46,7 @@ namespace web_app.Controllers
         public IActionResult FromRegisterToLogin()
         {
             var form = Request.Form;
-            var date = new UserDate();
+            var date = new List<UserDate>();
             int tutorId = 0;
             int courseId = -1;
 
@@ -77,7 +77,7 @@ namespace web_app.Controllers
 
                 foreach (var item in times)
                 {
-                    date.dateTimes.Add(DateTime.Parse(item));
+                    date.Add(new UserDate() { dateTime = DateTime.Parse(item) });
                 }
             }
             var req2 = new GetCourses();

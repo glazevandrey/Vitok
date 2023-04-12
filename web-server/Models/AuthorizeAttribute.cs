@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Linq;
 using System.Security.Claims;
 
 namespace web_server.Models
@@ -28,15 +29,15 @@ namespace web_server.Models
 
             if (IsAuthenticated)
             {
-                if (_claim.Length == 0)
+                if (claimsIndentity.Claims.Count() == 0)
                 {
                     return;
                 }
 
                 bool flagClaim = false;
-                foreach (var item in _claim)
+                foreach (var item in claimsIndentity.Claims)
                 {
-                    if (context.HttpContext.User.HasClaim("Role", item))
+                    if (context.HttpContext.User.HasClaim("Role", item.Value))
                         flagClaim = true;
                 }
                 if (!flagClaim)

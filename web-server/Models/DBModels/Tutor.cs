@@ -8,8 +8,8 @@ namespace web_server.Models.DBModels
     public class Tutor : User
     {
         // поля Репетитора
-        public new  List<Course> Courses { get; set; }
+        public new List<Course> Courses { get; set; } = new List<Course>();
         public new string About { get; set; }
-        public new List<UserDate> UserDates { get; set; }
+        public new List<UserDate> UserDates { get; set; } = new List<UserDate>();
     }
 }

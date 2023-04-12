@@ -65,9 +65,9 @@ namespace web_app.Controllers
                 var sch = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(response2.result.ToString());
                 if (sch != null)
                 {
-                    foreach (var item in sch.WantThis.dateTimes)
+                    foreach (var item in sch.WantThis)
                     {
-                        var req3 = new CustomRequestPost("api/tutor/removetutortime", $"{sch.TutorId};{item}");
+                        var req3 = new CustomRequestPost("api/tutor/removetutortime", $"{sch.TutorId};{item.dateTime}");
                         var response3 = _requestService.SendPost(req3, HttpContext);
                         if (response3 == null)
                         {

@@ -38,14 +38,14 @@ namespace web_server.Database.Repositories
         }
         public async Task<List<Tutor>> GetAllTutors()
         {
-            var model = await _context.Tutors.ToListAsync();
+            var model = await _context.Tutors.Include(m => m.Schedules).Include(m => m.UserDates).Include(m => m.BalanceHistory).Include(m => m.Courses).ToListAsync();
             return _mapper.Map<List<Tutor>>(model);
         }
         public async Task<List<User>> GetAll()
         {
 
-            var tutors = await _context.Tutors.AsNoTracking().ToListAsync();
-            var students = await _context.Students.AsNoTracking().ToListAsync();
+            var tutors = await _context.Tutors.Include(m => m.Schedules).Include(m=>m.UserDates).Include(m=>m.BalanceHistory).Include(m=>m.Courses).AsNoTracking().ToListAsync();
+            var students = await _context.Students.Include(m=>m.Schedules).Include(m=>m.Credit).Include(m=>m.Money).Include(m=>m.BalanceHistory).AsNoTracking().ToListAsync();
             var managers = await _context.Managers.AsNoTracking().ToListAsync();
 
             var allUsers = new List<User>();
@@ -87,7 +87,7 @@ namespace web_server.Database.Repositories
         public async Task<Tutor> SetTutorFreeDate(int tutorId, DateTime date)
         {
             var tutor = await _context.Tutors.FindAsync(tutorId);
-            tutor.UserDates.dateTimes.Add(date);
+            tutor.UserDates.Add(new UserDate() { dateTime = date });
             _context.Update(tutor);
             await _context.SaveChangesAsync();
 
@@ -150,6 +150,10 @@ namespace web_server.Database.Repositories
         public async Task<bool> ChangeNotifTokenStatus(string status, string connectionId, int userId)
         {
             var user = await _context.Users.FindAsync(userId);
+            if(user == null || user.NotificationTokens == null || user.NotificationTokens.Count == 0)
+            {
+                return false;
+            }
             user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId).TokenValue = status;
             _context.Update(user);
 
@@ -159,56 +163,55 @@ namespace web_server.Database.Repositories
         }
         public async Task Update(User user)
         {
+                if (user is Student)
+                {
+                    _context.Students.Update(_mapper.Map<StudentDTO>((Student)user));
+                }
+                if (user is Tutor)
+                {
 
+                    _context.Tutors.Update(_mapper.Map<TutorDTO>((Tutor)user));
+                }
+                if(user is Manager)
+                {
+                    _context.Managers.Update(_mapper.Map<ManagerDTO>((Manager)user));
+                }
 
-            if (user is Student)
-            {                
-                _context.Students.Update(_mapper.Map<StudentDTO>((Student)user));
-            }
-            if(user is Tutor)
-            {
-
-                _context.Tutors.Update(_mapper.Map<TutorDTO>((Tutor)user));
-            }
-
-            await _context.SaveChangesAsync();
+               await _context.SaveChangesAsync();
         }
-        //public async Task Update(UserDTO user)
-        //{
-        //    if (user is StudentDTO)
-        //    {
-        //        _context.Students.Update((StudentDTO)user);
-        //    }
-        //    if (user is TutorDTO)
-        //    {
-        //        _context.Tutors.Update((TutorDTO)(user));
-        //    }
-
-        //    await _context.SaveChangesAsync();
-        //}
+       
         public async Task<User> GetUserById(int id)
         {
-            lock(_context){
-                var tutor = _context.Tutors.AsNoTracking().FirstOrDefaultAsync(m => m.UserId == (id)).Result;
-                if (tutor != null)
+            //lock(_context){
+                try
                 {
-                    return _mapper.Map<Tutor>(tutor);
-                }
+                    var tutor = await _context.Tutors.Include(m => m.Schedules).Include(m=>m.BalanceHistory).Include(m => m.Courses).Include(m => m.UserDates).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == (id));
+                    if (tutor != null)
+                    {
+                        return _mapper.Map<Tutor>(tutor);
+                    }
 
-                var student =  _context.Students.AsNoTracking().FirstOrDefaultAsync(m=>m.UserId == id).Result;
-                if (student != null)
+                var student = await _context.Students.Include(m=>m.Credit).Include(m=>m.Money).Include(m=>m.BalanceHistory).Include(m=>m.Schedules).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == id);
+                    if (student != null)
+                    {
+                        return _mapper.Map<Student>(student);
+                    }
+
+                    var manager = await _context.Managers.AsNoTracking().FirstOrDefaultAsync(m => m.UserId == id);
+                    if (manager != null)
+                    {
+                        return _mapper.Map<Manager>(manager);
+                    }
+
+                    return null;
+                }
+                catch (Exception ex)
                 {
-                    return _mapper.Map<Student>(student);
-                }
 
-                var manager =  _context.Managers.AsNoTracking().FirstOrDefaultAsync( m=>m.UserId == id).Result;
-                if (manager != null)
-                {
-                    return _mapper.Map<Manager>(manager);
+                    throw ex;
                 }
-
-                return null;
-            }
+           
+            //}
             
 
         }
@@ -231,7 +234,7 @@ namespace web_server.Database.Repositories
             var manager = await _context.Managers.AsNoTracking().FirstOrDefaultAsync(x => x.Email == email);
             if (manager != null)
             {
-                return _mapper.Map<Student>(manager);
+                return _mapper.Map<Manager>(manager);
             }
 
             return null;
@@ -262,25 +265,28 @@ namespace web_server.Database.Repositories
         //}
         public async Task<User> GetUserByToken(string id)
         {
-            var tutor = await _context.Tutors.FirstOrDefaultAsync(x => x.ActiveToken == id);
-            if (tutor != null)
-            {
-                return _mapper.Map<Tutor>(tutor);
-            }
+            
+                var tutor =  await _context.Tutors.Include(m=>m.Schedules).Include(m=>m.Courses).Include(m=>m.UserDates).FirstOrDefaultAsync(x => x.ActiveToken == id);
+                if (tutor != null)
+                {
+                    return _mapper.Map<Tutor>(tutor);
+                }
 
-            var student = await _context.Students.FirstOrDefaultAsync(x => x.ActiveToken == id);
-            if (student != null)
-            {
-                return _mapper.Map<Student>(student);
-            }
+                var student =  await _context.Students.Include(m => m.Credit).Include(m => m.Money).Include(m => m.BalanceHistory).Include(m => m.Schedules).FirstOrDefaultAsync(x => x.ActiveToken == id);
+                if (student != null)
+                {
+                    return _mapper.Map<Student>(student);
+                }
 
-            var manager = await _context.Managers.FirstOrDefaultAsync(x => x.ActiveToken == id);
-            if (manager != null)
-            {
-                return _mapper.Map<Manager>(manager);
-            }
+                var manager =  await _context.Managers.FirstOrDefaultAsync(x => x.ActiveToken == id);
+                if (manager != null)
+                {
+                    return _mapper.Map<Manager>(manager);
+                }
 
-            return null;
+                return null;
+            
+            
 
         }
         public async Task<List<Notifications>> GetUserNotifications(int id)

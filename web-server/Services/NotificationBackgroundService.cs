@@ -78,12 +78,12 @@ namespace web_server.Services
 
                             if (lesson.StartDate == lessonDate)
                             {
-                                lessonDate = lesson.Date.dateTimes[0];
+                                    lessonDate = lesson.StartDate;
                             }
-                            else
-                            {
-                                lessonDate = lesson.StartDate;
-                            }
+                            //else
+                            //{
+                            //    lessonDate = lesson.StartDate;
+                            //}
 
 
                             // Проверяем статус занятия

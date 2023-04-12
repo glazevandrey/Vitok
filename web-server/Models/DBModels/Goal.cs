@@ -8,5 +8,8 @@ namespace web_server.Models.DBModels
         [Key]
         public int Id { get; set; }
         public string Title { get; set; }
+
+        public int? CourseId { get; set; }
+        public Course Course { get; set; }
     }
 }

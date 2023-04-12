@@ -84,8 +84,16 @@ namespace web_server.Services
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
-
-            var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+            string json = "";
+            try
+            {
+                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
             return json;
         }
 
@@ -155,21 +163,22 @@ namespace web_server.Services
             var reg = await _userRepository.GetRegistrationByUserId(user.UserId);//TestData.Registations.FirstOrDefault(m => m.UserId == user.UserId);
             if (reg != null)
             {
-                var nearest = reg.WantThis.dateTimes[0];
+                var nearest = reg.WantThis.First().dateTime;
 
-                if (reg.WantThis.dateTimes.Count > 1)
+                if (reg.WantThis.Count > 1)
                 {
-                    foreach (var item in reg.WantThis.dateTimes)
+                    
+                    foreach (var item in reg.WantThis)
                     {
-                        if (item < nearest)
+                        if (item.dateTime < nearest)
                         {
-                            nearest = item;
+                            nearest = item.dateTime;
                         }
                     }
                 }
 
                 var tutor = await _userRepository.GetUserById(reg.TutorId);
-                foreach (var item in reg.WantThis.dateTimes)
+                foreach (var item in reg.WantThis)
                 {
 
                     
@@ -180,14 +189,13 @@ namespace web_server.Services
                         TutorFullName = tutor.FirstName + " " +tutor.LastName,
                         UserId = reg.UserId,
                         UserName = user.FirstName,
-                        Date = new UserDate() { dateTimes = new System.Collections.Generic.List<DateTime>() { item } },
                         CreatedDate = DateTime.Now,
-                        StartDate = item,
+                        StartDate = item.dateTime,
                         Looped = true,
                         Status = Status.Ожидает
                     };
 
-                    if (nearest == item)
+                    if (nearest == item.dateTime)
                     {
                         sch.WaitPaymentDate = nearest;
                     }

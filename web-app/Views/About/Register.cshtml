@@ -111,12 +111,12 @@
                                     <br />
                                     <br />
 
-                                    foreach (var time in item.UserDates.dateTimes)
+                                    foreach (var time in item.UserDates)
                                     { 
-                                        if(time.DayOfWeek == day)
+                                        if(time.dateTime.DayOfWeek == day)
                                         {
                                                 var name = $"a{item.UserId}{x}{y}";
-                                                <button class="@name" onclick="clickeds('@name', '@item.UserId', '@time')">@time.ToString("HH:mm")</button>
+                                                <button class="@name" onclick="clickeds('@name', '@item.UserId', '@time.dateTime')">@time.dateTime.ToString("HH:mm")</button>
                                                 y++;
 
                                                  <br />

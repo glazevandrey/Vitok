@@ -94,8 +94,10 @@ namespace web_server
         {
             var connectionId = Context.ConnectionId;
             var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
+            
+                await _userRepository.ChangeNotifTokenStatus("Disconnected", connectionId, userId);
 
-            await _userRepository.ChangeNotifTokenStatus("Disconnected", connectionId, userId);
+           
 
             //TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId).TokenValue = "Disconnected";
         }
