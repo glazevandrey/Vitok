@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using System.Collections.Generic;
 using web_server.Models.DBModels;
-using web_server.Models.DBModels.DTO;
 using web_server.Models.DTO;
 
 namespace web_server
@@ -33,6 +31,8 @@ namespace web_server
             CreateMap<Course, CourseDTO>();
             CreateMap<CourseDTO, Course>();
 
+            CreateMap<Chat, ChatDTO>();
+            CreateMap<ChatDTO, Chat>();
 
 
         }

@@ -117,7 +117,6 @@ namespace web_server.Services
                 {
                     await _userRepository.Update(user);
 
-
                 }
                 catch (Exception ex)
                 {

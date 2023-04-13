@@ -17,6 +17,7 @@ namespace web_server.Models.DBModels
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public List<NotificationTokens> NotificationTokens { get; set; } = new List<NotificationTokens>();
+        public List<Notifications> Notifications { get; set; } = new List<Notifications>();
         public DateTime BirthDate { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
@@ -25,6 +26,9 @@ namespace web_server.Models.DBModels
         public List<BalanceHistory> BalanceHistory { get; set; } = new List<BalanceHistory>();
         public double Balance { get; set; }
         public List<Schedule> Schedules { get; set; } = new List<Schedule>();
+
+        public Chat Chat { get; set; } = new Chat();
+
         // поля студента
         [NotMapped]
 

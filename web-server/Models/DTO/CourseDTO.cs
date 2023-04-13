@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using web_server.Models.DBModels;
 using web_server.Models.DTO;
 
-namespace web_server.Models.DBModels.DTO
+namespace web_server.Models.DTO
 {
     public class CourseDTO
     {

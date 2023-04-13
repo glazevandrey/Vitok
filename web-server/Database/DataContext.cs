@@ -5,7 +5,7 @@ using System.Linq;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
-using web_server.Models.DBModels.DTO;
+using web_server.Models.DTO;
 using web_server.Models.DTO;
 
 namespace web_server.Database
@@ -16,16 +16,17 @@ namespace web_server.Database
 
        // public DbSet<BalanceHistory> BalanceHistories { get; set; }
         //public DbSet<CashFlow> CashFlows { get; set; }
-        public DbSet<ChatUser> ChatUsers { get; set; }
+        //public DbSet<Chat> Chats { get; set; }
 
         //public DbSet<ConnectionToken>  ConnectionTokens { get; set; }
         public DbSet<Contact>  Contacts{ get; set; }
         public DbSet<CourseDTO>  Courses{ get; set; }
+        public DbSet<ChatDTO> Chats{ get; set; }
         public DbSet<UserDate> UserDates { get; set; }
         public DbSet<Goal> Goals{ get; set; }
         //public DbSet<InChat> InChats{ get; set; }
         //public DbSet<Messages> Messages{ get; set; }
-        public DbSet<Notifications> Notifications{ get; set; }
+        public DbSet<NotificationsDTO> Notifications{ get; set; }
 
        // public DbSet<NotificationTask> NotificationTasks { get; set; }
         //public DbSet<NotificationTokens> NotificationTokens{ get; set; }
@@ -95,6 +96,19 @@ namespace web_server.Database
             //.WithOne(t => t.Schedule)
             //.HasForeignKey<UserDate>(pt => pt.ScheduleId)
             //.OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
+            modelBuilder.Entity<UserDTO>()
+            .HasOne(pt => pt.Chat)
+            .WithOne(t => t.User)
+            .HasForeignKey<ChatDTO>(pt => pt.UserId)
+            .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
+            modelBuilder.Entity<NotificationsDTO>()
+            .HasOne(pt => pt.User)
+            .WithMany(t => t.Notifications)
+            .HasForeignKey(pt => pt.UserId)
+            .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+
 
 
 

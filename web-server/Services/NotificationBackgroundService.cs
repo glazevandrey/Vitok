@@ -216,8 +216,9 @@ namespace web_server.Services
 
                         Program.BackInAir = false;
                         await _scheduleService.UpdateRange(lessons);
+                            await Task.Delay(TimeSpan.FromSeconds(120), stoppingToken);
+
                         }
-                        Task.Delay(TimeSpan.FromSeconds(120), stoppingToken);
                     }
                     catch (Exception ex)
                     {

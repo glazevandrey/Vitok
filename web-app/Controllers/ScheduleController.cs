@@ -85,8 +85,8 @@ namespace web_app.Controllers
 
             if (user.Role == "Manager")
             {
-                req = new GetAllReSchedules();
-                res = _requestService.SendGet(req, HttpContext);
+                return Redirect("/manageschool");
+
             }
             else
             {

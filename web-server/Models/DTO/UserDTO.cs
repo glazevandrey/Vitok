@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System;
 using web_server.Models.DBModels;
+using web_server.Models.DTO;
 
 namespace web_server.Models.DTO
 {
@@ -20,6 +21,8 @@ namespace web_server.Models.DTO
         public string Phone { get; set; }
         public string Role { get; set; }
         public string ActiveToken { get; set; }
+        public ChatDTO Chat { get; set; }
+        public List<NotificationsDTO> Notifications { get; set; } = new List<NotificationsDTO>();
         public List<BalanceHistory> BalanceHistory { get; set; } = new List<BalanceHistory>();
         public double Balance { get; set; }
     }

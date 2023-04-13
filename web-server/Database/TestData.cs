@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using web_server.Models;
 using web_server.Models.DBModels;
-using web_server.Models.DBModels.DTO;
+using web_server.Models.DTO;
 using web_server.Models.DTO;
 
 namespace web_server.DbContext
@@ -33,7 +33,6 @@ namespace web_server.DbContext
         };
 
         public static List<SiteContact> Contacts = new List<SiteContact> { new SiteContact() {  Title = "Телефон", Text = "+790523232" }, new SiteContact { Title = "Телеграм", Text = "@andreyglazev" } };
-        public static List<InChat> LiveChats { get; set; } = new List<InChat>();
         public static List<Registration> Registations = new List<Registration>();
         public static List<RescheduledLessons> RescheduledLessons = new List<RescheduledLessons>();
 
@@ -41,7 +40,7 @@ namespace web_server.DbContext
         public static List<ScheduleDTO> Schedules = new List<ScheduleDTO>() {
             new ScheduleDTO() { UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 5, UserId = 2,
 
-                StartDate = DateTime.Parse("19.04.2023 23:00"), WaitPaymentDate = DateTime.Parse("19.04.2023 23:00"), Course = Courses[0] },
+                StartDate = DateTime.Parse("19.04.2023 23:00"), Course = Courses[0] },
 
 
             //new Schedule() { UserName ="Петр Иванов", TutorFullName = "Сергей Глузер", TutorId = 6, UserId = 3,
@@ -68,7 +67,7 @@ namespace web_server.DbContext
             //    Date = new UserDate() { dateTime = DateTime.Parse("13.04.2023 17:00") }, Looped = true, Course = Courses[2]}
 
         };
-        private static List<ChatUser> ChatUsers { get; set; } = new List<ChatUser>();
+        private static List<Chat> Chats { get; set; } = new List<Chat>();
 
         public static List<UserDTO> UserList = new List<UserDTO>()
         {

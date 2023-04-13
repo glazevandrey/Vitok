@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.Models.DBModels;
-using web_server.Models.DBModels.DTO;
+using web_server.Models.DTO;
 
 namespace web_server.Database.Repositories
 {
@@ -27,16 +27,35 @@ namespace web_server.Database.Repositories
 
         public async Task<Course> GetCourseById(int id)
         {
-            return _mapper.Map<Course>(await _context.Courses.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id));
+            var res = await _context.Courses.FirstOrDefaultAsync(m => m.Id == id);
+            _context.Entry(res).State = EntityState.Detached;
+            return _mapper.Map<Course>(res);
         }
 
         public async Task<List<Course>> GetAllCourses()
         {
-            return _mapper.Map<List<Course>>( await _context.Courses.ToListAsync());
+            var res = await _context.Courses.ToListAsync();
+
+            foreach (var item in res)
+            {
+                
+                
+                
+            }
+                
+            return _mapper.Map<List<Course>>(res);
         }
         public async Task<List<Goal>> GetAllGoals()
         {
-            return await _context.Goals.ToListAsync();
+            var res = await _context.Goals.ToListAsync();
+            foreach (var item in res)
+            {
+                
+                
+                
+            }
+
+            return res;
         }
         public async Task<List<Tariff>> GetAllTariffs()
         {
@@ -44,7 +63,9 @@ namespace web_server.Database.Repositories
         }
         public async Task<Goal> GetGoalById(int id)
         {
-            return await _context.Goals.FirstOrDefaultAsync(m => m.Id == id);
+            var res = await _context.Goals.FirstOrDefaultAsync(m => m.Id == id);
+            _context.Entry(res).State = EntityState.Detached;
+            return res;
         }
         public async Task<bool> AddCourse(CourseDTO course)
         {

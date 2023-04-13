@@ -605,6 +605,7 @@ namespace web_server.Services
 
         public async Task<Schedule> UpdateRange(List<Schedule> schedules)
         {
+            
             await _scheduleRepository.UpdateRange(schedules);
             return null;
         }

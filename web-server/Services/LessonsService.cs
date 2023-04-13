@@ -65,7 +65,7 @@ namespace web_server.Services
            // var user = (Student)TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args[0]));
 
             user.LessonsCount += Convert.ToInt32(args[1]);
-            var schedules = _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
+            var schedules = user.Schedules;//_scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
 
             //var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
             var isTrial = Convert.ToBoolean(args[2]);
@@ -179,24 +179,35 @@ namespace web_server.Services
                     item.Count -= how_minus;
                 }
             }
-
-            var waited = await _scheduleRepository.GetSchedulesByFunc(m => m.WaitPaymentDate != DateTime.MinValue && m.UserId == user.UserId);
+        
            // var waited = schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
-            foreach (var item in waited)
+           
+
+           
+
+            var waited = user.Schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue && m.UserId == user.UserId).ToList();
+            if (waited.Count == 0)
             {
-                var sch = await _scheduleRepository.GetScheduleById(item.Id);
+                foreach (var item in waited)
+                {
+                    item.WaitPaymentDate = DateTime.MinValue;
 
-                sch.WaitPaymentDate = DateTime.MinValue;
 
-                await _scheduleRepository.Update(sch);
+
+                    if (user.Credit.Where(m => m.Repaid == false).ToList().Count == 0)
+                    {
+                        user.StartWaitPayment = DateTime.MinValue;
+                    }
+                }
+
+                await _userRepository.Update(user);
+
             }
-
-            if (user.Credit.Where(m => m.Repaid == false).ToList().Count == 0)
+            else
             {
-                user.StartWaitPayment = DateTime.MinValue;
-            }
+                await _userRepository.Update(user);
 
-            await _userRepository.Update(user);
+            }
             return user;
         }
 

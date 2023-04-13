@@ -4,10 +4,10 @@ using web_server.Models.DBModels;
 
 namespace web_server.Models
 {
-    public class InChat
-    {
-        [Key]
-        public int Id { get; set; }
-        public int WithUserId { get; set; }
-    }
+    //public class InChat
+    //{
+    //    [Key]
+    //    public int Id { get; set; }
+    //    public int WithUserId { get; set; }
+    //}
 }

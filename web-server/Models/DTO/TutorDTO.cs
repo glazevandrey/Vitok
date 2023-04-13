@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using web_server.Models.DBModels;
-using web_server.Models.DBModels.DTO;
+using web_server.Models.DTO;
 
 namespace web_server.Models.DTO
 {

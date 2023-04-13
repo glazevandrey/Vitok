@@ -27,13 +27,14 @@ namespace web_server.Injection
 
             services.AddDbContext<DataContext>(options =>
             {
+                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 options.UseSqlServer(connection);
+                options.EnableSensitiveDataLogging();
 
             }, ServiceLifetime.Scoped);
             // services.AddDbContext<DataContext>(options => { options.UseSqlServer(connection)}, ServiceLifetime.Transient);
 
             services.AddScoped<UserRepository>();//(m => { var map = m.GetService<IMapper>(); return new UserRepository(map); });
-            services.AddScoped<ChatRepository>();
             services.AddScoped<ContactsRepository>();
             services.AddScoped<CourseRepository>();
             services.AddScoped<NotificationRepository>();//(m => { return new NotificationRepository(); });

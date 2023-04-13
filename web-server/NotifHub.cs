@@ -34,20 +34,21 @@ namespace web_server
             notif.Message = message;
             notif.UserIdTo = Convert.ToInt32(to);
             notif.DateTime = DateTime.Now;
-
-            await notificationRepository.AddNotification(notif);
+            user.Notifications.Add(notif);
+            await userRepository.Update(user);
+            //await notificationRepository.AddNotification(notif);
 
             try
             {
                 var connecedTokens = user.NotificationTokens.Where(m => m.TokenValue == "Connected").ToList();
                 foreach (var item in connecedTokens)
                 {
-                    hub.Clients.Client(item.TokenKey).SendAsync("ReceiveNotification", message, false, notif.Id);
+                    await hub.Clients.Client(item.TokenKey).SendAsync("ReceiveNotification", message, false, notif.Id);
                 }
             }
             catch (Exception ex)
             {
-                return;
+                throw ex;
             }
 
         }
