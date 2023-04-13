@@ -51,20 +51,23 @@ namespace web_server.Services
             // var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
             if (tutor != null)
             {
-                await _userRepository.SetTutorFreeDate(tutor.UserId, dateTime);
+                tutor.UserDates.Add(new UserDate() { dateTime = dateTime});
+                await _userRepository.Update(tutor);
+                //await _userRepository.SetTutorFreeDate(tutor.UserId, dateTime);
                 //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Add(dateTime);
                 var model = new Schedule()
                 {
                     Looped = Convert.ToBoolean(split[2]),
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     TutorId = tutor.UserId,
-                    UserId = -1,
                     StartDate = dateTime,
                 };
                 await _scheduleRepository.AddSchedule(model);
                 //TestData.Schedules.Add();
 
             }
+
+
 
             return tutor;
         }
@@ -166,13 +169,17 @@ namespace web_server.Services
                 //TestData.Schedules.Remove(item);
             }
 
-            var all_reschedules = await _scheduleRepository.GetReschedulesByFunc(m => m.UserId == userId && m.TutorId == tutorId); 
+            //var all_reschedules = new List<RescheduledLessons>();
+            //foreach (var item in all_schedules)
+            //{
+
+            //}
             //var all_reschedules = TestData.RescheduledLessons.Where(m => m.UserId == userId && m.TutorId == tutorId);
-            foreach (var item in all_reschedules)
-            {
-                await _scheduleRepository.RemoveReschedule(item);
-                //TestData.RescheduledLessons.Remove(item);
-            }
+            //foreach (var item in all_reschedules)
+            //{
+            //    await _scheduleRepository.RemoveReschedule(item);
+            //    //TestData.RescheduledLessons.Remove(item);
+            //}
 
 
             var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == userId && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);

@@ -198,12 +198,12 @@ td {
 
                                                             foreach (var resc in rescheduled)
                                                             {
-                                                                if (resc.TutorId == schedule.TutorId && resc.UserId == schedule.UserId)
-                                                                {
+                                                                //if (resc.TutorId == schedule.TutorId && resc.UserId == schedule.UserId)
+                                                                //{
 
                                                                     textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
                                                                     break;
-                                                                }
+                                                                //}
                                                             }
 
                                                             if(schedule.RescheduledDate == date)

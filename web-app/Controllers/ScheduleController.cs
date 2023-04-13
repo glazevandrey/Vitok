@@ -90,21 +90,21 @@ namespace web_app.Controllers
             }
             else
             {
-                req = new GetReSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-                res = _requestService.SendGet(req, HttpContext);
+                //req = new GetReSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+                //res = _requestService.SendGet(req, HttpContext);
 
             }
 
 
-            var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(res.result.ToString());
-            ViewData["rescheduled"] = rescheduled;
+            //var rescheduled =  ;// Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(res.result.ToString());
+            //ViewData["rescheduled"] = rescheduled;
 
 
             CustomRequestGet request2 = new GetAllUsersRequest(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var result2 = _requestService.SendGet(request2, HttpContext);
             if (!result2.success)
             {
-                return Redirect("/login");
+                return Redirect("/account/logout");
             }
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new UserConverter());

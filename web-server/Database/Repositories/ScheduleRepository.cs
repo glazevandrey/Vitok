@@ -23,8 +23,18 @@ namespace web_server.Database.Repositories
         public async Task<int> AddSchedule(Schedule schedule)
         {
             await _context.Schedules.AddAsync(_mapper.Map<ScheduleDTO>(schedule));
-            var res = await _context.SaveChangesAsync();
-            return res;
+            int id = 0;
+            try
+            {
+                id= await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return id;
         }
         public async Task<bool> RemoveSchedule(Schedule schedule)
         {

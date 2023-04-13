@@ -373,7 +373,7 @@ namespace web_server
 
                     if (itemUser.Chat == null)
                     {
-                        if (itemUser.Chat.Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
+                        if (user    .Chat.Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
                         {
                             user.Chat.Contacts.Add(new Contact() { UserId = item.UserId });
                         }
@@ -381,10 +381,10 @@ namespace web_server
                     else
                     {
 
-                        if (itemUser.Chat.Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
+                        if (user.Chat.Contacts.FirstOrDefault(m => m.UserId == contact.UserId) == null)
                         {
                             //user.Chat = itemUser.Chat;
-                            user.Chat.Contacts.Add(contact);
+                            itemUser.Chat.Contacts.Add(contact);
 
                             foreach (var token in user.Chat.ConnectionTokens.Where(m => m.Status == "Connected"))
                             {

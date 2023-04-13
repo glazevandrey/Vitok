@@ -29,33 +29,33 @@ namespace web_server.Services
             _notificationRepository = notificationRepository;
         }
 
-        public async Task<List<RescheduledLessons>> GetRescheduledLessons(string args)
-        {
-            var user = await _userRepository.GetUserByToken(args);
-          //  var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
-            if (user == null)
-            {
-                return null;
-            }
+        //public async Task<List<RescheduledLessons>> GetRescheduledLessons(string args)
+        //{
+        //    var user = await _userRepository.GetUserByToken(args);
+        //  //  var user = TestData.UserList.FirstOrDefault(m => m.ActiveToken == args);
+        //    if (user == null)
+        //    {
+        //        return null;
+        //    }
 
-            var schedules = new List<RescheduledLessons>();
-            if (user.Role == "Tutor")
-            {
-                schedules = await _scheduleRepository.GetReschedulesByFunc(m => m.TutorId == user.UserId);
-                //schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
-            }
-            else
-            {
-                schedules = await _scheduleRepository.GetReschedulesByFunc(m => m.UserId == user.UserId);
-            }
+        //    var schedules = new List<RescheduledLessons>();
+        //    if (user.Role == "Tutor")
+        //    {
+        //        schedules = await _scheduleRepository.GetReschedulesByFunc(m => m.TutorId == user.UserId);
+        //        //schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
+        //    }
+        //    else
+        //    {
+        //        schedules = await _scheduleRepository.GetReschedulesByFunc(m => m.UserId == user.UserId);
+        //    }
 
-            //if (schedules == null || schedules.Count == 0)
-            //{
-            //    schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
-            //}
+        //    //if (schedules == null || schedules.Count == 0)
+        //    //{
+        //    //    schedules = TestData.RescheduledLessons.Where(m => m.TutorId == user.UserId).ToList();
+        //    //}
 
-            return schedules;
-        }
+        //    return schedules;
+        //}
 
 
 
@@ -305,10 +305,7 @@ namespace web_server.Services
                     Initiator = initiator,
                     NewTime = newDateTime,
                     OldTime = oldDateTime,
-                    Reason = reason,
-                    TutorId = tutor_id,
-                    UserId = user_id
-                };
+                    Reason = reason,                };
 
                 var new_model = new Schedule
                 {
@@ -321,7 +318,7 @@ namespace web_server.Services
                     Looped = false,
                 };
 
-                var re_less = new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason, TutorId = tutor_id, UserId = user_id };
+                var re_less = new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason };
 
                 var old = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.StartDate == oldDateTime);
                 //var old = TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime);

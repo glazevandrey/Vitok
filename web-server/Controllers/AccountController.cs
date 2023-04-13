@@ -101,24 +101,24 @@ namespace web_server.Controllers
             return Redirect($"{Program.web_app_ip}/account");
         }
 
-        [Models.Authorize]
-        [HttpGet("getreschedule", Name = "getreschedule")]
-        public async Task<string> GetReSchedule([FromQuery] string args)
-        {
-            if (args == null)
-            {
-                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
-            }
+        //[Models.Authorize]
+        //[HttpGet("getreschedule", Name = "getreschedule")]
+        //public async Task<string> GetReSchedule([FromQuery] string args)
+        //{
+        //    if (args == null)
+        //    {
+        //        return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка!");
+        //    }
 
-            var list = await _lessonsService.GetRescheduledLessons(args);
-            if (list != null)
-            {
-                var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
-                return _jsonService.PrepareSuccessJson(json);
-            }
+        //    var list = await _lessonsService.GetRescheduledLessons(args);
+        //    if (list != null)
+        //    {
+        //        var json = Newtonsoft.Json.JsonConvert.SerializeObject(list);
+        //        return _jsonService.PrepareSuccessJson(json);
+        //    }
 
-            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
-        }
+        //    return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+        //}
 
         [Authorize]
         [HttpPost("TutorWithdraw")]

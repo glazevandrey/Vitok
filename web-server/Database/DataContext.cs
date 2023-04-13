@@ -153,11 +153,11 @@ namespace web_server.Database
 
 
 
-            modelBuilder.Entity<TutorDTO>()
-            .HasMany(pt => pt.UserDates)
-            .WithOne(t => t.Tutor)
-            .HasForeignKey(pt => pt.TutorId)
-            .OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
+            //modelBuilder.Entity<TutorDTO>()
+            //.HasMany(pt => pt.UserDates)
+            //.WithOne(t => t.Tutor)
+            //.HasForeignKey(pt => pt.TutorId)
+            //.OnDelete(DeleteBehavior.Restrict); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
 
 
 

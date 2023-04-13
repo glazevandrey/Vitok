@@ -622,13 +622,16 @@ form{
                                                                                 foreach (var resc in rescheduled)
                                                                                 {
 
-                                                                                    if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
-                                                                                    {
+                                                                                   // if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
+                                                                                    //{
+                                                                                if (resc.NewTime == s_date)
+                                                                                {
+                                                                                    textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
 
-                                                                                        textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
-
-                                                                                        break;
-                                                                                    }
+                                                                                    break;
+                                                                                }
+                                                                
+                                                                                    //}
                                                                                 }
                                                                                 if(model1.RescheduledDate == _date)
                                                                                 {
@@ -1023,25 +1026,28 @@ form{
                                                             <script>
                                                                     var elem = document.getElementsByClassName('@btn');
                                                                     elem[0].parentNode.removeChild(elem[0]);
-                                                                </script>
+                                                            </script>
 
-                                                                var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.TutorFullName}; ";
+                                                            var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.TutorFullName}; ";
 
 
-                                                                if (model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)
+                                                            if (model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)
+                                                            {
+                                                                var rescheduled = model1.RescheduledLessons;
+
+                                                                foreach (var resc in rescheduled)
                                                                 {
-                                                                    var rescheduled = model1.RescheduledLessons;
 
-                                                                    foreach (var resc in rescheduled)
+                                                                //if (resc.TutorId == model1.TutorId && resc.UserId == model1.UserId)
+                                                                    //{
+                                                                    if(resc.NewTime == s_date)
                                                                     {
+                                                                        textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
 
-                                                                        if (resc.TutorId == model1.TutorId && resc.UserId == model1.UserId)
-                                                                        {
-
-                                                                            textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
-
-                                                                            break;
-                                                                        }
+                                                                        break;
+                                                                    }
+                                                                  
+                                                                     //   }
                                                                     }
                                                                     if (model1.RescheduledDate == _date)
                                                                     {

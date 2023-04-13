@@ -112,15 +112,7 @@ namespace web_server.Database.Repositories
             await _context.SaveChangesAsync();
         }
         //public async Task RemoveByFunc(Func<, bool>)
-        public async Task<Tutor> SetTutorFreeDate(int tutorId, DateTime date)
-        {
-            var tutor = await _context.Tutors.FindAsync(tutorId);
-            tutor.UserDates.Add(new UserDate() { dateTime = date });
-            _context.Update(tutor);
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<Tutor>(tutor);
-        }
+    
         public async Task<int> GetManagerId()
         {
             var manag = await _context.Managers.FirstOrDefaultAsync();
