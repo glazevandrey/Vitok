@@ -47,7 +47,7 @@ namespace web_app.Controllers
             if (result.success)
             {
                 var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
-                model.RemoveAll(m => m.UserId == -1);
+                model.RemoveAll(m => m.UserId == 1);
                 var model2 = new List<User>();
 
                 foreach (var item in model)

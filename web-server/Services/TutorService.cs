@@ -60,6 +60,8 @@ namespace web_server.Services
                     Looped = Convert.ToBoolean(split[2]),
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     TutorId = tutor.UserId,
+                    UserId = 1,
+                    CourseId = 1,
                     StartDate = dateTime,
                 };
                 await _scheduleRepository.AddSchedule(model);

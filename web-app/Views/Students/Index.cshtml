@@ -1,6 +1,5 @@
 ﻿@using web_server.Models;
 @using web_server.Models.DBModels;
-    using web_server.Models.DTO;
 @model List<User>;
 @{
     Layout = "_Layout";
@@ -30,6 +29,10 @@
 
             foreach (var item in Model)
             {
+                if (string.IsNullOrEmpty(item.FirstName))
+                {
+                    continue;
+                }
                 <div name="student">
                     @{
                         var info = $"/students/info?id={item.UserId}";

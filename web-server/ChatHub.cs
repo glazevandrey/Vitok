@@ -268,7 +268,7 @@ namespace web_server
 
                 foreach (var item in userSchediles)
                 {
-                    if (item.TutorId == -1 || item.UserId == -1)
+                    if (item.TutorId == 1 || item.UserId == 1)
                     {
                         continue;
                     }
@@ -354,7 +354,7 @@ namespace web_server
             foreach (var item in userSchediles)
             {
 
-                if (item.UserId == -1)
+                if (item.UserId == 1)
                 {
                     continue;
                 }
@@ -498,7 +498,7 @@ namespace web_server
             //var Chat = TestData.Chats.FirstOrDefault(m => m.UserId == userId);
             foreach (var item in curUser.Chat.Contacts)
             {
-                if (item.UserId == -1)
+                if (item.UserId == 1)
                 {
                     continue;
                 }

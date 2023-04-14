@@ -25,8 +25,10 @@ namespace web_server.Services
         }
         public async Task<List<Course>> GetCourses()
         {
-            return await _courseRepository.GetAllCourses();
+            var courses = await _courseRepository.GetAllCourses();
+            return (_mapper.Map<List<Course>>(courses));
         }
+
         public async Task<string> EditCourse(string[] args)
         {
             var id = Convert.ToInt32(args[0]);
@@ -34,9 +36,9 @@ namespace web_server.Services
             var goal = args[2];
             var course =  _mapper.Map<CourseDTO>(await _courseRepository.GetCourseById(id));
             course.Title = title;
-            course.Goal = new Goal();
-            course.Goal = await _courseRepository.GetGoalById(Convert.ToInt32(goal));
-
+            course.Goal = new GoalDTO();
+            course.Goal =_mapper.Map<GoalDTO>(await _courseRepository.GetGoalById(Convert.ToInt32(goal)));
+            await _courseRepository.Update(course);
             return Newtonsoft.Json.JsonConvert.SerializeObject("OK");
         }
 
@@ -71,8 +73,8 @@ namespace web_server.Services
             var course = new CourseDTO();
             var id = Convert.ToInt32(args[1]);
             course.Title = args[0];
-            
-            course.Goal =  await _courseRepository.GetGoalById(id);
+            course.GoalId = id;
+            //course.Goal =  _mapper.Map<GoalDTO>(await _courseRepository.GetGoalById(id));
 
             await _courseRepository.AddCourse(course);
 

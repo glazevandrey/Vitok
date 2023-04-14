@@ -25,18 +25,27 @@ namespace web_server
             }
 
             var user = await userRepository.GetUserById(Convert.ToInt32(to));
-          //  var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(to));
             if(user == null)
             {
                 return;
             }
+
             var notif = new Notifications();
             notif.Message = message;
             notif.UserIdTo = Convert.ToInt32(to);
             notif.DateTime = DateTime.Now;
             user.Notifications.Add(notif);
-            await userRepository.Update(user);
-            //await notificationRepository.AddNotification(notif);
+
+            try
+            {
+                await userRepository.Update(user);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
 
             try
             {

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
 
@@ -28,11 +29,22 @@ namespace web_server
             CreateMap<ScheduleDTO, Schedule>();
             CreateMap<Schedule, ScheduleDTO>();
 
+
+            CreateMap<GoalDTO, Goal>();
+            CreateMap<Goal, GoalDTO>();
+
+            CreateMap<Registration, RegistrationDTO>();
+            CreateMap<RegistrationDTO, Registration>();
+
             CreateMap<Course, CourseDTO>();
             CreateMap<CourseDTO, Course>();
 
             CreateMap<Chat, ChatDTO>();
             CreateMap<ChatDTO, Chat>();
+            CreateMap<NotificationsDTO, Notifications>();
+            CreateMap<Notifications, NotificationsDTO>();
+
+
 
 
         }

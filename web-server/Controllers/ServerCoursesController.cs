@@ -22,7 +22,19 @@ namespace web_server.Controllers
         [HttpGet("getcourses", Name = "getcourses")]
         public async Task<string> Index()
         {
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _courseService.GetCourses()));
+            var res = await _courseService.GetCourses();
+            string json = "";
+            try
+            {
+                json = Newtonsoft.Json.JsonConvert.SerializeObject(res);
+
+            }
+            catch (System.Exception ex)
+            {
+
+                throw ex;
+            }
+            return _jsonService.PrepareSuccessJson(json);
         }
 
         [HttpPost("setnewcourse", Name = "setnewcourse")]

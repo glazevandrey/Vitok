@@ -22,11 +22,11 @@ namespace web_server.Database.Repositories
 
         public async Task<int> AddSchedule(Schedule schedule)
         {
-            await _context.Schedules.AddAsync(_mapper.Map<ScheduleDTO>(schedule));
-            int id = 0;
+            var mapped = _mapper.Map<ScheduleDTO>(schedule);
+            await _context.Schedules.AddAsync(mapped);
             try
             {
-                id= await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
             }
             catch (Exception ex)
@@ -34,7 +34,7 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-            return id;
+            return mapped.Id;
         }
         public async Task<bool> RemoveSchedule(Schedule schedule)
         {
@@ -69,8 +69,21 @@ namespace web_server.Database.Repositories
         }
         public async Task Update(Schedule schedule)
         {
-            _context.Update(_mapper.Map<ScheduleDTO>(schedule));
-            await _context.SaveChangesAsync();
+            try
+            {
+                var mapped = _mapper.Map<ScheduleDTO>(schedule);
+                _context.Update(mapped);
+
+                await _context.SaveChangesAsync();
+                _context.Entry(mapped).State = EntityState.Detached;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+     
         }
         public async Task<bool> RemoveReschedule(RescheduledLessons reschedule)
         {
@@ -93,7 +106,8 @@ namespace web_server.Database.Repositories
                 var res = await _context.Schedules.Include(m => m.Course).AsNoTracking().ToListAsync();
                 foreach (var item in res)
                 {
-                    
+                    _context.Entry(item).State = EntityState.Detached;
+
                 }
                 return _mapper.Map<List<Schedule>>(res);
             }
@@ -103,9 +117,11 @@ namespace web_server.Database.Repositories
         public async Task<Schedule> GetScheduleByFunc(Func<ScheduleDTO, bool> func)
         {
 
+            var ff = _context.ChangeTracker.Entries();
             var res =  _context.Schedules.AsNoTracking().Include(m => m.Course).FirstOrDefault(func);
+            ff = _context.ChangeTracker.Entries();
             _context.Entry(res).State = EntityState.Detached;
-         
+            ff = _context.ChangeTracker.Entries();
             return (_mapper.Map<Schedule>(res));
             
         }
@@ -116,9 +132,10 @@ namespace web_server.Database.Repositories
                 var res2 = await _context.RescheduledLessons.AsNoTracking().ToListAsync();
                 foreach (var item in res2)
                 {
-                    
-                    
-                    
+
+
+                    _context.Entry(item).State = EntityState.Detached;
+
 
                 }
 
@@ -126,6 +143,14 @@ namespace web_server.Database.Repositories
             }
 
             var res = _context.RescheduledLessons.Where(func).ToList();
+            foreach (var item in res)
+            {
+
+
+                _context.Entry(item).State = EntityState.Detached;
+
+
+            }
             return res;
         }
     }

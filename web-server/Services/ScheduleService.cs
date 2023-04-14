@@ -57,6 +57,9 @@ namespace web_server.Services
 
             await _scheduleRepository.Update(schedule);
 
+            var tutor = (Tutor)await _userRepository.GetUserById(model.TutorId);
+            var rem = tutor.UserDates.FirstOrDefault(m=>m.dateTime == model.WantThis.FirstOrDefault().dateTime);
+            await _userRepository.RemoveTutorTime(rem);
             var text = Constants.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
             NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository);
                         
@@ -463,7 +466,7 @@ namespace web_server.Services
                 foreach (var cur in item.Value)
                 {
 
-                    if (model3.TutorId == -1)
+                    if (model3.TutorId == 1)
                     {
 
                         if (cur.Looped)

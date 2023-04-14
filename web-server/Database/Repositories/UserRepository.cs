@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -27,14 +28,17 @@ namespace web_server.Database.Repositories
 
         public async Task<bool> AddRegistration(Registration registration)
         {
-            _context.Registrations.Add(registration);
+            var f = _mapper.Map<RegistrationDTO>(registration);
+            _context.Registrations.Add(f);
             await _context.SaveChangesAsync();
+            _context.Entry(f).State = EntityState.Detached;
             return true;
         }
         public async Task<Registration> GetRegistrationByUserId(int userId)
         {
             var reg = await _context.Registrations.FirstOrDefaultAsync(m=>m.UserId == userId);
-            return reg;
+
+            return _mapper.Map<Registration>(reg);
         }
         public async Task<List<Tutor>> GetAllTutors()
         {
@@ -182,43 +186,70 @@ namespace web_server.Database.Repositories
 
             return true;
         }
+
+        public async Task RemoveTutorTime(UserDate date)
+        {
+            _context.UserDates.Remove(date);
+            await _context.SaveChangesAsync(); 
+        }
         public async Task Update(User user)
         {
+            try
+            {
+                var ff = _context.ChangeTracker.Entries(); 
                 if (user is Student)
                 {
 
-                var st = _mapper.Map<StudentDTO>((Student)user);
-                _context.Students.Update(st);
+                    var st = _mapper.Map<StudentDTO>((Student)user);
+                    _context.Students.Update(st);
+                    await _context.SaveChangesAsync();
 
-            }
-            if (user is Tutor)
+                    _context.Entry(st).State = EntityState.Detached;
+
+                }
+                if (user is Tutor)
                 {
 
-                var st = _mapper.Map<TutorDTO>((Tutor)user);
+                    var st = _mapper.Map<TutorDTO>((Tutor)user);
 
-                _context.Tutors.Update(st);
-                
+                    _context.Tutors.Update(st);
+                    await _context.SaveChangesAsync();
+                    ff = _context.ChangeTracker.Entries();
+                    _context.Entry(st).State = EntityState.Detached;
+                     ff = _context.ChangeTracker.Entries();
 
-            }
-            if (user is Manager)
+                }
+                if (user is Manager)
                 {
-                var st = _mapper.Map<ManagerDTO>((Manager)user);
-                
+                    var st = _mapper.Map<ManagerDTO>((Manager)user);
 
-                _context.Managers.Update(st);
-                
 
-            }
-            try
-            {
-                var fg = _context.ChangeTracker.Entries();
+                    _context.Managers.Update(st);
+                    await _context.SaveChangesAsync();
 
-                await _context.SaveChangesAsync();
-                _context.Entry(_mapper.Map<UserDTO>(user)).State = EntityState.Detached;
+                    _context.Entry(st).State = EntityState.Detached;
+
+
+                }
             }
             catch (Exception ex)
             {
-                var fg = _context.ChangeTracker.Entries();
+                var f = _context.ChangeTracker.Entries();
+
+                foreach (var entry in f)
+                {
+                    if (entry.Entity != null)
+                    {
+                        entry.State = EntityState.Detached;
+                    }
+                }
+                await Update(user);
+            }
+            try
+            {
+            }
+            catch (Exception ex)
+            {
 
                 throw ex;
             }
@@ -270,30 +301,30 @@ namespace web_server.Database.Repositories
             //lock(_context){
             try
             {
+                var ff = _context.ChangeTracker.Entries();
                     var tutor = await _context.Tutors.Include(m => m.Schedules).Include(m => m.Notifications).Include(m=>m.BalanceHistory).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Courses).Include(m => m.UserDates).FirstOrDefaultAsync(m => m.UserId == (id));
                     if (tutor != null)
                     {
-                    
-                    
-                    
+
+
+                    ff = _context.ChangeTracker.Entries();
                     return _mapper.Map<Tutor>(tutor);
                     }
 
                     var student = await _context.Students.Include(m=>m.Credit).Include(m=>m.Notifications).Include(m=>m.Money).Include(m=>m.Chat).Include(m=>m.Chat.Messages).Include(m=>m.Chat.Contacts).Include(m=>m.Chat.ConnectionTokens).Include(m=>m.BalanceHistory).Include(m=>m.Schedules).FirstOrDefaultAsync(m => m.UserId == id);
                     if (student != null)
                     {
-                    
-                    
-                    
+
+                    ff = _context.ChangeTracker.Entries();
+
                     return _mapper.Map<Student>(student);
                     }
 
                     var manager = await _context.Managers.Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == id);
                     if (manager != null)
                     {
-                    
-                    
-                     return _mapper.Map<Manager>(manager);
+
+                    return _mapper.Map<Manager>(manager);
                     }
 
                     return null;

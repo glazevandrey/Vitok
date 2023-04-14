@@ -69,8 +69,8 @@ namespace web_server.Services
 
                         // Обрабатываем каждое занятие
                         foreach (var lesson in lessons)
-                        {
-                            if (lesson.UserId == -1)
+                        {   
+                            if (lesson.UserId == 1)
                             {
                                 continue;
                             }

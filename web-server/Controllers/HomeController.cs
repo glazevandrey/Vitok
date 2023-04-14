@@ -67,24 +67,47 @@ namespace web_server.Controllers
                 catch (Exception ex)
                 {
 
-                    throw;
+                    throw ex;
                 }
-
-                data.Courses.AddRange(TestData.Courses);
+                var ff = new CourseDTO() { GoalId = 1, Title = "" };
+                data.Courses.Add(ff);
                 try
                 {
                     data.SaveChanges();
+
+
                 }
                 catch (Exception ex)
                 {
 
-                    throw;
+                    throw ex;
+                }
+                data.Entry(ff).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                data.Courses.AddRange(TestData.Courses);
+                try
+                {
+                    data.SaveChanges();
+                    foreach (var item in TestData.Courses)
+                    {
+                        data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
                 }
 
+                var gg = new StudentDTO()
+                {
 
-         
-
-
+                    Role = "Student",
+                   
+                    //UserId = 3
+                };
+                data.Students.Add(gg);
+                data.SaveChanges();
+                data.Entry(gg).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var students = TestData.UserList.Where(m => m.Role == "Student");
                 foreach (var item in students)
                 {
@@ -93,12 +116,29 @@ namespace web_server.Controllers
 
                 data.SaveChanges();
 
+                foreach (var item in students)
+                {
+                    data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                }
                 var tutors = TestData.UserList.Where(m => m.Role == "Tutor");
                 foreach (var item in tutors)
                 {
-                    data.Tutors.Add(map.Map<TutorDTO>(item));
+                    var d = map.Map<TutorDTO>(item);
+                    foreach (var dd in d.Courses)
+                    {
+                        dd.Id = 0;
+                    }
+                    data.Tutors.Add(d);
                 }
+                try
+                {
+                    data.SaveChanges();
+                }
+                catch (Exception ex)
+                {
 
+                    throw ex;
+                }
                 var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
                 data.Managers.Add(map.Map<ManagerDTO>(manager));
 
@@ -106,6 +146,15 @@ namespace web_server.Controllers
                 {
 
                     data.SaveChanges();
+
+                    foreach (var item in tutors)
+                    {
+                        data.Entry(map.Map<TutorDTO>(item)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                    }
+
+                        data.Entry(map.Map<ManagerDTO>(manager)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                    
+
                 }
                 catch (Exception ex)
                 {
@@ -118,6 +167,10 @@ namespace web_server.Controllers
                 try
                 {
                     data.SaveChanges();
+                    foreach (var item in map.Map<List<ScheduleDTO>>(TestData.Schedules))
+                    {
+                        data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                    }
 
                 }
                 catch (Exception ex)
@@ -276,11 +329,11 @@ namespace web_server.Controllers
 
         [Authorize]
         [HttpPost("addschedulefromuser", Name = "addschedulefromuser")]
-        public string AddScheduleFromUser()
+        public async Task<string> AddScheduleFromUser()
         {
             var form = Request.Form;
 
-            var schedule = _scheduleService.AddScheduleFromUser(form.First().Key, _hubContext);
+            var schedule = await _scheduleService.AddScheduleFromUser(form.First().Key, _hubContext);
             if (schedule != null)
             {
                 var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(schedule));

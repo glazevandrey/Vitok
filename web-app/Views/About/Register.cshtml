@@ -147,7 +147,18 @@
                                     <option value="@course.Id">@course.Title</option>
                                 }
                                 }
+                               
                                 </select>
+                                    
+                                        if(item.Courses.Count > 0)
+                                        {
+                                                  <script>
+                                        document.getElementById("course22").value = '@item.Courses.First()?.Id';
+
+                                    </script>
+                                        }
+                                    
+                              
                                 <br />
                             }
 

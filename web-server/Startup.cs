@@ -82,6 +82,10 @@ namespace web_server
             //IMapper mapper = mapperConfig.CreateMapper();
             //services.AddSingleton(mapper);
             // ...
+            
+            
+            
+            
             services.AddSingleton<IHostedService, NotificationBackgroundService>();
 
             //            services.AddHostedService<NotificationBackgroundService>();

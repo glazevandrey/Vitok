@@ -66,6 +66,10 @@
         <tbody id="table-body">
             @foreach (var item in Model)
             {
+                if (string.IsNullOrEmpty(item.Title))
+                {
+                    continue;
+                }
                  <tr>
                     <td>
                     @item.Title
