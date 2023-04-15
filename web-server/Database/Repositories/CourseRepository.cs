@@ -29,13 +29,21 @@ namespace web_server.Database.Repositories
         public async Task<Course> GetCourseById(int id)
         {
             var res = await _context.Courses.Include(m=>m.Goal).FirstOrDefaultAsync(m => m.Id == id);
+
+                _context.Entry(res).State = EntityState.Detached;
+            
+            var dsd = _context.ChangeTracker.Entries();
+            foreach (var item in dsd)
+            {
+                item.State = EntityState.Detached;
+            }
             return _mapper.Map<Course>(res);
         }
 
         public async Task<List<Course>> GetAllCourses()
         {
 
-            var res = await _context.Courses.Include(m=>m.Goal).Where(m=>m.TutorId == null).ToListAsync();
+            var res = await _context.Courses.Include(m=>m.Goal).ToListAsync();
 
             foreach (var item in res)
             {

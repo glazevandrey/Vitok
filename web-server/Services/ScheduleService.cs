@@ -61,7 +61,7 @@ namespace web_server.Services
             var rem = tutor.UserDates.FirstOrDefault(m=>m.dateTime == model.WantThis.FirstOrDefault().dateTime);
             await _userRepository.RemoveTutorTime(rem);
             var text = Constants.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
-            NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository);
+            await NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository);
                         
             return schedule;
         }
@@ -150,7 +150,7 @@ namespace web_server.Services
 
                 if (user.LessonsCount == 1)
                 {
-                    NotifHub.SendNotification(Constants.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
+                    await NotifHub.SendNotification(Constants.NOTIF_ONE_LESSON_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
                 }
                 else if (user.LessonsCount <= 0)
                 {
@@ -180,8 +180,8 @@ namespace web_server.Services
                         await _scheduleRepository.Update(sch);
                     }
 
-                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
-                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
                         user.FirstName + " " + user.LastName), _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
                 }
 
@@ -244,12 +244,12 @@ namespace web_server.Services
                     if (user.SkippedInThisMonth == 1)
                     {
 
-                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
+                        await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
               Replace("{userName}", user.FirstName + " " + user.LastName).
               Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
               _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
 
-                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
+                        await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_LAST_ONE.
                    Replace("{userName}", user.FirstName + " " + user.LastName).
                    Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
                   user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
@@ -262,11 +262,11 @@ namespace web_server.Services
                     if (user.SkippedInThisMonth == 2)
                     {
 
-                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_SKIP.
+                        await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_SKIP.
                    Replace("{userName}", user.FirstName + " " + user.LastName),
                   _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
 
-                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_SKIP.
+                        await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_SKIP.
                    Replace("{userName}", user.FirstName + " " + user.LastName),
                   user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
                     }
@@ -274,12 +274,12 @@ namespace web_server.Services
                     if (user.SkippedInThisMonth >= 3)
                     {
 
-                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_WARN.
+                        await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_WARN.
                       Replace("{userName}", user.FirstName + " " + user.LastName).
                       Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
                       _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
 
-                        NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_WARN.
+                        await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_WARN.
                    Replace("{userName}", user.FirstName + " " + user.LastName).
                    Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
                   user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
@@ -292,12 +292,12 @@ namespace web_server.Services
                     user.LessonsCount--;
 
 
-                    NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
+                    await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
                   Replace("{userName}", user.FirstName + " " + user.LastName).
                   Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
                   _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
 
-                    NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
+                    await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
                Replace("{userName}", user.FirstName + " " + user.LastName).
                Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateCurr.ToString("dd.MM.yyyy HH:mm")),
               user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
@@ -382,8 +382,8 @@ namespace web_server.Services
                         await _scheduleRepository.Update(sch);
                     }
 
-                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
-                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
                         user.FirstName + " " + user.LastName), _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
                 }
 

@@ -6,6 +6,8 @@ namespace web_app.Requests
     public class CustomRequestPost
     {
         public User User { get; set; }
+        public Tutor Tutor { get; set; }
+
         public string Token { get; set; }
         public string Address { get; set; }
         public string Args { get; set; }
@@ -15,6 +17,11 @@ namespace web_app.Requests
         {
             Address = address;
             User = user;
+        }
+        public CustomRequestPost(string address, Tutor user)
+        {
+            Address = address;
+            Tutor = user;
         }
         //public CustomRequestPost(string address, Student user)
         //{

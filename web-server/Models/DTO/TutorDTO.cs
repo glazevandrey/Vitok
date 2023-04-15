@@ -9,10 +9,13 @@ namespace web_server.Models.DTO
     public class TutorDTO : UserDTO
     {
 
-        public List<CourseDTO> Courses { get; set; } = new List<CourseDTO>();
         public string About { get; set; }
-        public List<UserDate> UserDates { get; set; }  = new List<UserDate>();
 
+        [NotMapped]
+        public List<CourseDTO> ConstCourses { get; set; } = new List<CourseDTO>();
+        public List<TutorCourse> Courses { get; set; } = new List<TutorCourse>();
+
+        public List<UserDate> UserDates { get; set; }  = new List<UserDate>();
         public List<ScheduleDTO> Schedules { get; set; } = new List<ScheduleDTO>();
     }
 }

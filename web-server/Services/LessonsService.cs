@@ -244,7 +244,6 @@ namespace web_server.Services
             if (Convert.ToBoolean(loop))
             {
                 var alredyUsed = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == tutor_id && m.StartDate.DayOfWeek == newDateTime.DayOfWeek && m.StartDate.Hour == newDateTime.Hour);
-                //var alredyUsed = TestData.Schedules.Where(m => m.TutorId == tutor_id && m.StartDate.DayOfWeek == newDateTime.DayOfWeek && m.StartDate.Hour == newDateTime.Hour).ToList();
                 if (alredyUsed.Count != 0)
                 {
                     return null;
@@ -262,7 +261,6 @@ namespace web_server.Services
 
                 var model = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == tutor_id && m.UserId == user_id && m.StartDate == oldDateTime);
 
-                //if (TestData.Schedules.FirstOrDefault(m => m.TutorId == tutor_id && m.UserId == user_id && m.Date.dateTimes[0] == oldDateTime).WaitPaymentDate != DateTime.MinValue)
                 if (model.WaitPaymentDate != DateTime.MinValue)
                 {
                     new_model.WaitPaymentDate = model.WaitPaymentDate;
@@ -275,14 +273,14 @@ namespace web_server.Services
                 await _scheduleRepository.AddSchedule(new_model);
 
                 // отправка манагеру что постоянный перенос
-                NotifHub.SendNotification(Constants.NOTIF_REGULAR_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
+                await NotifHub.SendNotification(Constants.NOTIF_REGULAR_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
                     .Replace("{studentName}", user.FirstName + " " + user.LastName)
                     .Replace("{oldDate}", cureDate.ToString("dd.MM.yyyy HH:mm"))
                     .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")),(await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository);
 
 
                 // отправка студенту что перенос занятия
-                NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT_REGULAR
+                await NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT_REGULAR
                     .Replace("{name}", tutor.FirstName + " " + tutor.LastName)
                     .Replace("{dateOld}", cureDate.ToString("dd.MM.yyyy HH:mm"))
                     .Replace("{dateNew}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
@@ -339,13 +337,13 @@ namespace web_server.Services
                 await _scheduleRepository.AddSchedule(new_model);
                 //TestData.Schedules.Add(new_model);
 
-                NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
+                await NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
                    .Replace("{name}", tutor.FirstName + " " + tutor.LastName)
                    .Replace("{dateOld}", cureDate.ToString("dd.MM.yyyy HH:mm"))
                    .Replace("{dateNew}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
 
                 // отправка манагеру что разовый перенос
-                NotifHub.SendNotification(Constants.NOTIF_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
+                await NotifHub.SendNotification(Constants.NOTIF_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
                     .Replace("{studentName}", user.FirstName + " " + user.LastName)
                     .Replace("{oldDate}", cureDate.ToString("dd.MM.yyyy HH:mm"))
                     .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")), (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository);
@@ -369,8 +367,8 @@ namespace web_server.Services
                     //}
 
 
-                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
-                    NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user_id.ToString(), _hubContext, _userRepository, _notificationRepository);
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
                         user.FirstName + " " + user.LastName), _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
                 }
 
@@ -424,8 +422,8 @@ namespace web_server.Services
                     await _scheduleRepository.Update(sch2);
                 }
 
-                NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _userRepository, _notificationRepository);
-                NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _userRepository, _notificationRepository);
+                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
                     user.FirstName + " " + user.LastName), _userRepository.GetManagerId().ToString(), _hubContext, _userRepository, _notificationRepository);
             }
 

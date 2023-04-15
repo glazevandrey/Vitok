@@ -1,7 +1,9 @@
-﻿namespace web_server.Services.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace web_server.Services.Interfaces
 {
     public interface ICustomNotificationService
     {
-        public void SendMessage(string message, string to);
+        public Task SendMessage(string message, string to);
     }
 }

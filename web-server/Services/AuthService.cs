@@ -207,9 +207,9 @@ namespace web_server.Services
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24 * 3600000, 24 * 3600000));
                     var timer = Program.Timers[id];
                     
-                    NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository);
+                    await  NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository);
 
-                    NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
+                    await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
                         Replace("{studentName}", user.FirstName + " " +  user.LastName).
                         Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName),
                         (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository);

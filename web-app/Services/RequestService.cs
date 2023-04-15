@@ -97,8 +97,20 @@ namespace web_app.Services
                 var request = WebRequest.Create(url);
                 request.Method = "POST";
 
-                var json = JsonSerializer.Serialize(req.User);
-                byte[] byteArray = Encoding.UTF8.GetBytes(json);
+                string json = "";
+                byte[] byteArray;
+                if(req.Tutor != null)
+                {
+                    json = JsonSerializer.Serialize(req.Tutor);
+                    byteArray = Encoding.UTF8.GetBytes(json);
+                }
+                else
+                {
+                    json = JsonSerializer.Serialize(req.User);
+                    byteArray = Encoding.UTF8.GetBytes(json);
+
+                }
+              
                 request.ContentType = "application/x-www-form-urlencoded";
 
 
@@ -114,6 +126,12 @@ namespace web_app.Services
                 }
 
                 if (req.User != null)
+                {
+                    using var reqStream = request.GetRequestStream();
+                    reqStream.Write(byteArray, 0, byteArray.Length);
+                }
+
+                if (req.Tutor != null)
                 {
                     using var reqStream = request.GetRequestStream();
                     reqStream.Write(byteArray, 0, byteArray.Length);

@@ -69,20 +69,7 @@ namespace web_server.Controllers
 
                     throw ex;
                 }
-                var ff = new CourseDTO() { GoalId = 1, Title = "" };
-                data.Courses.Add(ff);
-                try
-                {
-                    data.SaveChanges();
-
-
-                }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
-                data.Entry(ff).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            
                 data.Courses.AddRange(TestData.Courses);
                 try
                 {
@@ -124,10 +111,11 @@ namespace web_server.Controllers
                 foreach (var item in tutors)
                 {
                     var d = map.Map<TutorDTO>(item);
-                    foreach (var dd in d.Courses)
-                    {
-                        dd.Id = 0;
-                    }
+                    //foreach (var dd in d.Courses)
+                    //{
+                    //    dd.Id = 0;
+                    //}
+                    d.Courses.Add(new TutorCourse() { CourseId  = TestData.Courses.FirstOrDefault(m=>m.Title == "ОГЭ").Id});
                     data.Tutors.Add(d);
                 }
                 try
@@ -162,6 +150,11 @@ namespace web_server.Controllers
                     throw ex;
                 }
 
+
+                foreach (var item in TestData.Schedules)
+                {
+                    item.CourseId = TestData.Courses.First(m => m.Title == "ЕГЭ").Id;
+                }
                 data.Schedules.AddRange(map.Map<List<ScheduleDTO>>(TestData.Schedules));
                 data.Tariffs.AddRange(TestData.Tariffs);
                 try
@@ -169,6 +162,7 @@ namespace web_server.Controllers
                     data.SaveChanges();
                     foreach (var item in map.Map<List<ScheduleDTO>>(TestData.Schedules))
                     {
+                       
                         data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                     }
 

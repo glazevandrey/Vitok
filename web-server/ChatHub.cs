@@ -478,20 +478,6 @@ namespace web_server
             }
         }
 
-        //public static async Task RemoveContact(int userId)
-        //{
-
-        //    //var users = TestData.Chats.ToList();
-        //    foreach (var item in users)
-        //    {
-        //        var cont = item.Contacts.FirstOrDefault(m => m.UserId == userId);
-        //        if (cont != null)
-        //        {
-        //            item.Contacts.Remove(cont);
-        //        }
-        //    }
-        //}
-
         public async Task GetContacts(User curUser)
         {
             //var Chat = await _chatRepository.GetChatByUserId(userId);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.Services.Interfaces;
 
@@ -16,9 +17,9 @@ namespace web_server.Services
             _notificationRepository = notificationRepository;
             _hubContext = hubContext;
         }
-        public void SendMessage(string message, string to)
+        public async Task SendMessage(string message, string to)
         {
-            NotifHub.SendNotification(message, to, _hubContext, _userRepository, _notificationRepository);
+            await NotifHub.SendNotification(message, to, _hubContext, _userRepository, _notificationRepository);
         }
     }
 }

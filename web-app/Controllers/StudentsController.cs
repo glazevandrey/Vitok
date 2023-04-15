@@ -66,7 +66,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
             ViewData["role"] = "Manager";
-            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res.result.ToString(), Program.settings);
+            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Student>>(res.result.ToString(), Program.settings);
             users = users.Where(m => m.Role == "Student").ToList();
             var schedules = new List<Schedule>();
 

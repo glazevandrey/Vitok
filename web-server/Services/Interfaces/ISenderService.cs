@@ -1,7 +1,9 @@
-﻿namespace web_server.Services.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace web_server.Services.Interfaces
 {
     public interface ISenderService
     {
-        public void SendMessage(int id, string message);
+        public Task SendMessage(int id, string message);
     }
 }

@@ -19,7 +19,7 @@ namespace web_server.Services
     {
         //ISenderService _senderService;
         //IScheduleService _scheduleService;
-        //ICustomNotificationService _customNotificationService;
+        //ICustomNotificationService await _customNotificationService;
         //UserRepository _userRepository;
         //NotificationRepository _notificationRepository;
         //ScheduleRepository _scheduleRepository;
@@ -33,7 +33,7 @@ namespace web_server.Services
 
         //public NotificationBackgroundService(ICustomNotificationService customNotificationService, ISenderService senderService, IScheduleService scheduleService)// UserRepository userRepository, NotificationRepository notificationRepository, ScheduleRepository scheduleRepository)
         //{
-        //    _customNotificationService = customNotificationService;
+        //    await _customNotificationService = customNotificationService;
         //    _senderService = senderService;
         //    _scheduleService = scheduleService;
         //    //_userRepository = userRepository;
@@ -101,13 +101,13 @@ namespace web_server.Services
                                             // var tutor = await _userRepository.GetUserById(lesson.TutorId);
 
                                             
-                                                _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_DONT_FORGET_SET_STATUS);
-                                                _customNotificationService.SendMessage(Constants.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString());
+                                                await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_DONT_FORGET_SET_STATUS);
+                                                await _customNotificationService.SendMessage(Constants.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString());
 
 
                                             
 
-                                            //_customNotificationService.SendMessage(Constants.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository );
+                                            //await _customNotificationService.SendMessage(Constants.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository );
                                         }
 
                                     }
@@ -122,12 +122,12 @@ namespace web_server.Services
 
 
 
-                                            _customNotificationService.SendMessage(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString());
-                                            _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_TOMORROW_LESSON);
+                                            await _customNotificationService.SendMessage(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString());
+                                            await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_TOMORROW_LESSON);
 
-                                            _customNotificationService.SendMessage(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString());
+                                            await _customNotificationService.SendMessage(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString());
                                             //var student = await _userRepository.GetUserById(lesson.UserId);
-                                            _senderService.SendMessage(lesson.UserId, Constants.NOTIF_TOMORROW_LESSON);
+                                            await _senderService.SendMessage(lesson.UserId, Constants.NOTIF_TOMORROW_LESSON);
 
                                         }
                                     }
@@ -141,14 +141,14 @@ namespace web_server.Services
                                            // lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON).NotifValue = true;
                                             lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON).NotifValue = true;
 
-                                            _customNotificationService.SendMessage(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString());
+                                            await _customNotificationService.SendMessage(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString());
                                             //var tutor =await _userRepository.GetUserById(lesson.TutorId); //TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
-                                            _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
+                                            await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
 
 
-                                            _customNotificationService.SendMessage(Constants.NOTIF_START_LESSON, lesson.UserId.ToString());
+                                            await _customNotificationService.SendMessage(Constants.NOTIF_START_LESSON, lesson.UserId.ToString());
                                           //  var student = await _userRepository.GetUserById(lesson.UserId);// TestData.UserList.FirstOrDefault(m => m.UserId == lesson.UserId).Email;
-                                            _senderService.SendMessage(lesson.UserId, Constants.NOTIF_START_LESSON);
+                                            await _senderService.SendMessage(lesson.UserId, Constants.NOTIF_START_LESSON);
 
 
                                         }
@@ -174,13 +174,13 @@ namespace web_server.Services
                                             lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_TOMORROW_LESSON).NotifValue = true;
 
 
-                                            _customNotificationService.SendMessage(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString());
+                                            await _customNotificationService.SendMessage(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString());
                                            // var tutor = await _userRepository.GetUserById(lesson.TutorId);
-                                            _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_TOMORROW_LESSON);
+                                            await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_TOMORROW_LESSON);
 
-                                            _customNotificationService.SendMessage(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString());
+                                            await _customNotificationService.SendMessage(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString());
                                             //var student = await _userRepository.GetUserById(lesson.UserId);
-                                            _senderService.SendMessage(lesson.UserId, Constants.NOTIF_TOMORROW_LESSON);
+                                            await _senderService.SendMessage(lesson.UserId, Constants.NOTIF_TOMORROW_LESSON);
                                         }
 
                                     }
@@ -203,11 +203,11 @@ namespace web_server.Services
                                             lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON).NotifValue = true;
                                             await _scheduleService.Update(sch);
 
-                                            _customNotificationService.SendMessage(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString());
-                                            _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
+                                            await _customNotificationService.SendMessage(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString());
+                                            await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
 
-                                            _customNotificationService.SendMessage(Constants.NOTIF_START_LESSON, lesson.UserId.ToString());
-                                            _senderService.SendMessage(lesson.UserId, Constants.NOTIF_START_LESSON);
+                                            await _customNotificationService.SendMessage(Constants.NOTIF_START_LESSON, lesson.UserId.ToString());
+                                            await _senderService.SendMessage(lesson.UserId, Constants.NOTIF_START_LESSON);
                                         }
                                     }
                                 }

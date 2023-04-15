@@ -59,12 +59,12 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить репетитора");
             }
 
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(true));
         }
 
         [Authorize]
         [HttpPost("updatetutordata", Name = "updatetutordata")]
-        public string updatetutordata()
+        public async Task<string> updatetutordata()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -73,14 +73,14 @@ namespace vitok.Controllers
             }
 
             var args = form.First().Key;
-            var tutor = _tutorService.UpdateTutor(args);
+            var tutor = await _tutorService.UpdateTutor(args);
             if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка обновить данные репетитора");
             }
 
 
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(true));
         }
 
         [Authorize]

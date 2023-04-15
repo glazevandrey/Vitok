@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.DbContext;
@@ -42,13 +43,25 @@ namespace web_server.Database.Repositories
         }
         public async Task<List<Tutor>> GetAllTutors()
         {
-            var model = await _context.Tutors.Include(m => m.Schedules).Include(m => m.UserDates).Include(m => m.BalanceHistory).Include(m => m.Courses).ToListAsync();
-            return _mapper.Map<List<Tutor>>(model);
+            try
+            {
+                var model = await _context.Tutors.Include(m => m.Schedules).Include(m => m.UserDates).Include(m => m.BalanceHistory).Include(m => m.Courses).ThenInclude(c=>c.Course).ThenInclude(c=>c.Goal).ToListAsync();
+                return _mapper.Map<List<Tutor>>(model);
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+            return null;
+           
         }
+      
         public async Task<List<User>> GetAll()
         {
 
-            var tutors = await _context.Tutors.Include(m => m.Notifications).Include(m => m.Schedules).Include(m=>m.UserDates).Include(m=>m.BalanceHistory).Include(m=>m.Courses).ToListAsync();
+            var tutors = await _context.Tutors.Include(m => m.Schedules).Include(m => m.UserDates).Include(m => m.BalanceHistory).Include(m => m.Courses).ThenInclude(c => c.Course).ThenInclude(c => c.Goal).ToListAsync();
             var students = await _context.Students.Include(m => m.Notifications).Include(m=>m.Schedules).Include(m=>m.Credit).Include(m=>m.Money).Include(m=>m.BalanceHistory).ToListAsync();
             var managers = await _context.Managers.Include(m => m.Notifications).ToListAsync();
             try
@@ -160,12 +173,20 @@ namespace web_server.Database.Repositories
         public async Task<bool> AddTonificationTokenToUser(NotificationTokens token, int userId)
         {
             var user = await _context.Users.FirstOrDefaultAsync(m=>m.UserId == userId);
-            
-            
-            
-            user.NotificationTokens.Add(token);
-            _context.Update(user);
-            await _context.SaveChangesAsync();
+
+
+            try
+            {
+                user.NotificationTokens.Add(token);
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+          
             return true;
         }
 
@@ -192,11 +213,57 @@ namespace web_server.Database.Repositories
             _context.UserDates.Remove(date);
             await _context.SaveChangesAsync(); 
         }
+        public async Task UpdateTutorCourses(TutorDTO old, List<TutorCourse> courses)
+        {
+            var old_courses = _context.TutorCourses.Where(m => m.TutorId == old.UserId).ToList();
+            if (old.Courses.Count == 0 && old_courses.Count != 0)
+            {
+                foreach (var item in old_courses)
+                {
+                    _context.Entry(item).State = EntityState.Deleted;
+                }
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task SaveModel(UserDTO user)
+        {
+            if (user is StudentDTO)
+            {
+
+                var st = (StudentDTO)user;
+                _context.Entry(st).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+
+                _context.Entry(st).State = EntityState.Detached;
+
+            }
+            if (user is TutorDTO)
+            {
+
+                var st = (TutorDTO)user;
+               
+                await _context.SaveChangesAsync();
+                _context.Entry(st).State = EntityState.Detached;
+
+            }
+            if (user is ManagerDTO)
+            {
+
+                var st = (ManagerDTO)user;
+                _context.Entry(st).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+
+                _context.Entry(st).State = EntityState.Detached;
+
+
+            }
+        }
         public async Task Update(User user)
         {
             try
             {
-                var ff = _context.ChangeTracker.Entries(); 
                 if (user is Student)
                 {
 
@@ -214,9 +281,7 @@ namespace web_server.Database.Repositories
 
                     _context.Tutors.Update(st);
                     await _context.SaveChangesAsync();
-                    ff = _context.ChangeTracker.Entries();
                     _context.Entry(st).State = EntityState.Detached;
-                     ff = _context.ChangeTracker.Entries();
 
                 }
                 if (user is Manager)
@@ -232,6 +297,10 @@ namespace web_server.Database.Repositories
 
                 }
             }
+            catch(DbUpdateConcurrencyException ex)
+            {
+                await SaveModel(_mapper.Map<UserDTO>(user));
+            }
             catch (Exception ex)
             {
                 var f = _context.ChangeTracker.Entries();
@@ -245,6 +314,7 @@ namespace web_server.Database.Repositories
                 }
                 await Update(user);
             }
+            
             try
             {
             }
@@ -295,27 +365,56 @@ namespace web_server.Database.Repositories
             }
           
         }
+
+        public async Task<UserDTO> GetNotMapped(int id)
+        {
+            try
+            {
+                var tutor = await _context.Tutors.Include(m => m.Schedules).Include(m => m.Notifications).Include(m => m.BalanceHistory).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefaultAsync(m => m.UserId == (id));
+                if (tutor != null)
+                {                    
+                    return tutor;
+                }
+
+                var student = await _context.Students.Include(m => m.Credit).Include(m => m.Notifications).Include(m => m.Money).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.BalanceHistory).Include(m => m.Schedules).FirstOrDefaultAsync(m => m.UserId == id);
+                if (student != null)
+                {
+                    return student;
+                }
+
+                var manager = await _context.Managers.Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == id);
+                if (manager != null)
+                {
+
+                    return manager;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
         public async Task<User> GetUserById(int id)
         {
 
             //lock(_context){
             try
             {
-                var ff = _context.ChangeTracker.Entries();
-                    var tutor = await _context.Tutors.Include(m => m.Schedules).Include(m => m.Notifications).Include(m=>m.BalanceHistory).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Courses).Include(m => m.UserDates).FirstOrDefaultAsync(m => m.UserId == (id));
+                    var tutor = await _context.Tutors.Include(m => m.Schedules).Include(m => m.Notifications).Include(m=>m.BalanceHistory).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m=>m.Courses).ThenInclude(m=>m.Course).ThenInclude(m=>m.Goal).FirstOrDefaultAsync(m => m.UserId == (id));
                     if (tutor != null)
                     {
 
 
-                    ff = _context.ChangeTracker.Entries();
-                    return _mapper.Map<Tutor>(tutor);
+                return _mapper.Map<Tutor>(tutor);
                     }
 
                     var student = await _context.Students.Include(m=>m.Credit).Include(m=>m.Notifications).Include(m=>m.Money).Include(m=>m.Chat).Include(m=>m.Chat.Messages).Include(m=>m.Chat.Contacts).Include(m=>m.Chat.ConnectionTokens).Include(m=>m.BalanceHistory).Include(m=>m.Schedules).FirstOrDefaultAsync(m => m.UserId == id);
                     if (student != null)
                     {
 
-                    ff = _context.ChangeTracker.Entries();
 
                     return _mapper.Map<Student>(student);
                     }
@@ -386,7 +485,7 @@ namespace web_server.Database.Repositories
         public async Task<User> GetUserByToken(string id)
         {
             
-                var tutor =  await _context.Tutors.Include(m=>m.Schedules).Include(m=>m.Courses).Include(m => m.Chat).Include(m=>m.UserDates).FirstOrDefaultAsync(x => x.ActiveToken == id);
+                var tutor =  await _context.Tutors.Include(m=>m.Schedules).Include(m=>m.Courses).ThenInclude(m=>m.Course).ThenInclude(m=>m.Goal).Include(m => m.Chat).Include(m=>m.UserDates).FirstOrDefaultAsync(x => x.ActiveToken == id);
                 if (tutor != null)
                 {
                 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.Services.Interfaces;
 
@@ -13,7 +14,7 @@ namespace web_server.Services
         {
             _userRepository= userRepository;
         }
-        public async void SendMessage(int id, string message2)
+        public async Task SendMessage(int id, string message2)
         {
             var user = await _userRepository.GetUserById(id);
             if(user == null)

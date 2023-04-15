@@ -39,7 +39,7 @@ namespace web_app.Controllers
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
             ViewData["usertoken"] = user.UserId;
 
-            var req2 = new GetAllUsersRequest(Request.Cookies[".AspNetCore.Application.Id"]);
+            var req2 = new GetAllTutorsRequest();// Request.Cookies[".AspNetCore.Application.Id"]);
 
             var res2 = _requestService.SendGet(req2, HttpContext);
             if (!res2.success)
@@ -113,7 +113,7 @@ namespace web_app.Controllers
                 Courses = listCourses,
             };
 
-            CustomRequestPost req = new CustomRequestPost("api/tutor/updatetutordata", user);
+            CustomRequestPost req = new CustomRequestPost("api/tutor/updatetutordata", user);     
             var response = _requestService.SendPost(req, HttpContext);
             if (response == null)
             {
@@ -147,7 +147,9 @@ namespace web_app.Controllers
             {
                 foreach (var item in course)
                 {
-                    listCourses.Add(coursesList.FirstOrDefault(m => m.Title == item));
+                    var c = coursesList.FirstOrDefault(m => m.Title == item);
+                    
+                    listCourses.Add(c);
                 }
             }
 

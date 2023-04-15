@@ -18,6 +18,7 @@ namespace web_server.DbContext
             new GoalDTO() {Title = "Проходить собеседование" }, new GoalDTO() {  Title = "Путешествовать" }, new GoalDTO() { Title = "Повысить уровень" },
             };
 
+
         public static List<CourseDTO> Courses { get; set; } = new List<CourseDTO>() {
             new CourseDTO() {Title="ОГЭ", GoalId  = 4 ,},
             new CourseDTO() { Title="ЕГЭ",  GoalId = 2, },
@@ -40,7 +41,7 @@ namespace web_server.DbContext
         public static List<ScheduleDTO> Schedules = new List<ScheduleDTO>() {
             new ScheduleDTO() { UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 4, UserId = 3,
 
-                StartDate = DateTime.Parse("19.04.2023 23:00"), Course = Courses[0] },
+                StartDate = DateTime.Parse("19.04.2023 23:00")},
 
 
             //new Schedule() { UserName ="Петр Иванов", TutorFullName = "Сергей Глузер", TutorId = 6, UserId = 3,
@@ -107,11 +108,15 @@ namespace web_server.DbContext
                 },
             new TutorDTO()
           {FirstName = "Сергей", LastName = "Глузер",MiddleName="Сергеевич", About = "Лучший", BirthDate = DateTime.Parse("15.02.2001"), UserDates = new List<UserDate>(){},
-                    Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(),  Email = "sergey@mail.ru", Phone = "+79054769537",
+                   // Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(),
+                 //  Courses = new List<TutorCourse>(){ new TutorCourse() {CourseId = TestData.Courses.FirstOrDefault(m=>m.Title == "ЕГЭ").Id } },
+                Email = "sergey@mail.ru", Phone = "+79054769537",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor" },
             new TutorDTO()
              {FirstName = "Иван", MiddleName="Сергеевич", LastName = "Петров", About = "Почти лучший", BirthDate = DateTime.Parse("14.01.2002"), UserDates = new List<UserDate>(){ },
-                    Courses = TestData.Courses.Where(m => m.Title == "ОГЭ").ToList(), Email = "ivan@mail.ru", Phone = "+79188703839",
+                   // Courses = TestData.Courses.Where(m => m.Title == "ОГЭ").ToList(),  },
+
+                Email = "ivan@mail.ru", Phone = "+79188703839",
                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor" },
             new ManagerDTO()
            {

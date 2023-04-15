@@ -17,7 +17,7 @@ namespace web_server
             _userRepository = userRepository;
         }
 
-        public async static void SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, NotificationRepository notificationRepository)
+        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, NotificationRepository notificationRepository)
         {
             if (to == "-1")
             {

@@ -93,7 +93,7 @@ namespace web_server.Database.Repositories
         }
         public async Task<Schedule> GetScheduleById(int id)
         {
-            var mapped = await _context.Schedules.Include(m => m.Course).FirstOrDefaultAsync(m => m.Id == id);
+            var mapped = await _context.Schedules.Include(m => m.Course).ThenInclude(m=>m.Goal).FirstOrDefaultAsync(m => m.Id == id);
             _context.Entry(mapped).State = EntityState.Detached;
 
             return _mapper.Map<Schedule>(mapped);
@@ -103,7 +103,7 @@ namespace web_server.Database.Repositories
         {
             if(func == null)
             {
-                var res = await _context.Schedules.Include(m => m.Course).AsNoTracking().ToListAsync();
+                var res = await _context.Schedules.Include(m => m.Course).ThenInclude(m=>m.Goal).AsNoTracking().ToListAsync();
                 foreach (var item in res)
                 {
                     _context.Entry(item).State = EntityState.Detached;
@@ -112,16 +112,12 @@ namespace web_server.Database.Repositories
                 return _mapper.Map<List<Schedule>>(res);
             }
 
-            return _mapper.Map<List<Schedule>>(_context.Schedules.AsNoTracking().Include(m => m.Course).Where(func).ToList());
+            return _mapper.Map<List<Schedule>>(_context.Schedules.AsNoTracking().Include(m => m.Course).ThenInclude(m=>m.Goal).Where(func).ToList());
         }
         public async Task<Schedule> GetScheduleByFunc(Func<ScheduleDTO, bool> func)
         {
-
-            var ff = _context.ChangeTracker.Entries();
-            var res =  _context.Schedules.AsNoTracking().Include(m => m.Course).FirstOrDefault(func);
-            ff = _context.ChangeTracker.Entries();
+            var res =  _context.Schedules.AsNoTracking().Include(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefault(func);
             _context.Entry(res).State = EntityState.Detached;
-            ff = _context.ChangeTracker.Entries();
             return (_mapper.Map<Schedule>(res));
             
         }
