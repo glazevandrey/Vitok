@@ -27,9 +27,7 @@ namespace web_server.Models.DBModels
         public DateTime EndDate { get; set; }
         public Status Status { get; set; } = Status.Ожидает;
 
-        [NotMapped]
-
-        public List<NotificationTask> Tasks = new List<NotificationTask>()
+        public List<NotificationTask> Tasks { get; set; } = new List<NotificationTask>()
         {
             new NotificationTask() { NotifKey = Constants.NOTIF_START_LESSON, NotifValue = false },
             new NotificationTask() { NotifKey = Constants.NOTIF_TOMORROW_LESSON, NotifValue = false },

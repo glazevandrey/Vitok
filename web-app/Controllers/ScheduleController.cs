@@ -11,6 +11,8 @@ using web_server.Models.DBModels;
 using Newtonsoft.Json;
 using web_server.Database;
 using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace web_app.Controllers
 {
@@ -44,39 +46,38 @@ namespace web_app.Controllers
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             ViewData["usertoken"] = user.UserId;
 
-            var result = new ResponseModel();
-            if (user.Role == "Manager")
-            {
-                CustomRequestGet request = new GetAllSchedules();
-                result = _requestService.SendGet(request, HttpContext);
-
-                CustomRequestGet req3 = new GetAllTutorsRequest();
-                var res3 = _requestService.SendGet(req3, HttpContext);
-                ViewData["Tutors"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res3.result.ToString(), Program.settings);
-            }
-            else
-            {
-                //CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-                //result = _requestService.SendGet(request, HttpContext);
-
-
-            }
-
+         
             //if (!res.success || result == null || !result.success)
             //{
             //    return Redirect("/login");
             //}
 
-            var model = user.Schedules;
+            
            // var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
 
             ViewData["role"] = user.Role;
             ViewData["userid"] = user.UserId;
-            ViewData["courses"] = user.Courses != null ? user.Courses : new List<Course>();
+            var model = new List<Schedule>();
+
+            if (user.Role == "Tutor")
+            {
+                ViewData["courses"] = ((Tutor)user).Courses != null ? ((Tutor)user).Courses : new List<Course>();
+                model = ((Tutor)user).Schedules;
+
+            }
+            else
+            {
+
+                var _req = new GetCourses();
+                var _res = _requestService.SendGet(_req);
+                var _list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(_res.result.ToString());
+                ViewData["courses"] = _list;
+            }
 
             if (user.Role == "Student")
             {
                 ViewData["lessons"] = ((Student)user).LessonsCount;
+                model =  ((Student)user).Schedules;
             }
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
@@ -110,9 +111,9 @@ namespace web_app.Controllers
             settings.Converters.Add(new UserConverter());
             var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString(), settings);
             Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
-            foreach (var item in users)
+            foreach (var item in users.Where(m=>m.Role == "Student"))
             {
-                if (item.StartWaitPayment != DateTime.MinValue)
+                if (((Student)item).StartWaitPayment != DateTime.MinValue)
                 {
                     keyValuePairs.Add(item.UserId, item.StartWaitPayment);
                 }
@@ -180,7 +181,7 @@ namespace web_app.Controllers
 
             var date1 = DateTime.Parse(date3);
             var date2 = DateTime.Now;
-            if (date1 <= date2)
+            if (date1 <= date2 && tutorIdChoosed != 4.ToString())
             {
                 return RedirectToAction("Index", "Schedule", new { error = "Нельзя создать занятие на дату которая меньше текущей." });
             }
@@ -220,7 +221,7 @@ namespace web_app.Controllers
             else
             {
                 // TODO: REMOVE AND
-                if (DateTime.Parse(currDate) > DateTime.Now.AddMinutes(55) && tutorStatus != 1.ToString())
+                if (DateTime.Parse(currDate) > DateTime.Now.AddMinutes(55) && tutorStatus != 4.ToString())
                 {
                     return RedirectToAction("Index", "Schedule", new { error = "Нельзя провести занятие если его дата меньше текущей с учетом времени занятия." });
                 }

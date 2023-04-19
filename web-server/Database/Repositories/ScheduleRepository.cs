@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -36,28 +37,22 @@ namespace web_server.Database.Repositories
             }
             return mapped.Id;
         }
-        public async Task<bool> RemoveSchedule(Schedule schedule)
+        public async Task<bool> RemoveSchedule(ScheduleDTO schedule)
         {
-            _context.Schedules.Remove(_mapper.Map<ScheduleDTO>(schedule));
+            _context.Schedules.Remove(schedule);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task UpdateRange(List<Schedule> schedule)
+        public async Task UpdateRange(List<ScheduleDTO> schedule)
         {
             try
             {
 
-                foreach (var item in _mapper.Map<List<ScheduleDTO>>(schedule))
-                {
-                    
-                }
-                _context.UpdateRange(_mapper.Map<List<ScheduleDTO>>(schedule));
-
                 await _context.SaveChangesAsync();
-                foreach (var item in _mapper.Map<List<ScheduleDTO>>(await _context.Schedules.Include(m => m.Tasks).ToListAsync()))
+                foreach (var item in schedule)
                 {
-                    
+                    _context.Entry(item).State = EntityState.Detached;
                 }
             }
             catch (Exception ex)
@@ -67,23 +62,40 @@ namespace web_server.Database.Repositories
             }
            
         }
+        public async Task Update(ScheduleDTO schedule)
+        {
+            try
+            {
+                //var mapped = _mapper.Map<ScheduleDTO>(schedule);
+                await _context.SaveChangesAsync();
+                    _context.Entry(schedule).State = EntityState.Detached;
+
+            }
+            catch (Exception ex)
+            {
+                var ff = _context.ChangeTracker.Entries();
+                Thread.Sleep(1000);
+                await Update(schedule);
+            }
+     
+        }
         public async Task Update(Schedule schedule)
         {
             try
             {
                 var mapped = _mapper.Map<ScheduleDTO>(schedule);
-                _context.Update(mapped);
-
+                _context.Schedules.Update(mapped);
                 await _context.SaveChangesAsync();
                 _context.Entry(mapped).State = EntityState.Detached;
 
             }
             catch (Exception ex)
             {
-
-                throw ex;
+                var ff = _context.ChangeTracker.Entries();
+                Thread.Sleep(1000);
+                await Update(schedule);
             }
-     
+
         }
         public async Task<bool> RemoveReschedule(RescheduledLessons reschedule)
         {
@@ -91,34 +103,51 @@ namespace web_server.Database.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<Schedule> GetScheduleById(int id)
+        public async Task<ScheduleDTO> GetScheduleById(int id)
         {
-            var mapped = await _context.Schedules.Include(m => m.Course).ThenInclude(m=>m.Goal).FirstOrDefaultAsync(m => m.Id == id);
-            _context.Entry(mapped).State = EntityState.Detached;
-
-            return _mapper.Map<Schedule>(mapped);
-        }
-
-        public async Task<List<Schedule>> GetSchedulesByFunc(Func<ScheduleDTO, bool> func)
-        {
-            if(func == null)
+            try
             {
-                var res = await _context.Schedules.Include(m => m.Course).ThenInclude(m=>m.Goal).AsNoTracking().ToListAsync();
-                foreach (var item in res)
-                {
-                    _context.Entry(item).State = EntityState.Detached;
+                var mapped = await _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefaultAsync(m => m.Id == id);
+                //_context.Entry(mapped).State = EntityState.Detached;
 
-                }
-                return _mapper.Map<List<Schedule>>(res);
+                return mapped;
             }
+            catch (Exception ex)
+            {
 
-            return _mapper.Map<List<Schedule>>(_context.Schedules.AsNoTracking().Include(m => m.Course).ThenInclude(m=>m.Goal).Where(func).ToList());
+                throw ex;
+            }
+           
+           // return _mapper.Map<ScheduleDTO>(mapped);
         }
-        public async Task<Schedule> GetScheduleByFunc(Func<ScheduleDTO, bool> func)
+
+        public async Task<List<ScheduleDTO>> GetSchedulesByFunc(Func<ScheduleDTO, bool> func)
         {
-            var res =  _context.Schedules.AsNoTracking().Include(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefault(func);
-            _context.Entry(res).State = EntityState.Detached;
-            return (_mapper.Map<Schedule>(res));
+            try
+            {
+                if (func == null)
+                {
+                    var res = await _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m=>m.Tasks).Include(m=>m.RescheduledLessons).Include(m=>m.SkippedDates).Include(m=>m.ReadyDates).Include(m=>m.PaidLessons).ToListAsync();
+                    return res;
+
+                    //return _mapper.Map<List<Schedule>>(res);
+                }
+
+                return _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.Tasks).Include(m => m.RescheduledLessons).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).Where(func).ToList();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+           
+        }
+        public async Task<ScheduleDTO> GetScheduleByFunc(Func<ScheduleDTO, bool> func)
+        {
+            var res =  _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m=>m.SkippedDates).Include(m=>m.ReadyDates).Include(m=>m.PaidLessons).Include(m=>m.RescheduledLessons).Include(m=>m.Tasks).FirstOrDefault(func);
+            //_context.Entry(res).State = EntityState.Detached;
+            return res;
+            //return (_mapper.Map<Schedule>(res));
             
         }
         public async Task<List<RescheduledLessons>> GetReschedulesByFunc(Func<RescheduledLessons, bool> func)

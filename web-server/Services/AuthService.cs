@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
@@ -18,8 +19,10 @@ namespace web_server.Services
         UserRepository _userRepository;
         ScheduleRepository _scheduleRepository;
         NotificationRepository _notificationRepository;
-        public AuthService(IJsonService jsonService, UserRepository userRepository, ScheduleRepository scheduleRepository, NotificationRepository notificationRepository)
+        IMapper _mapper;
+        public AuthService(IJsonService jsonService, IMapper mapper,  UserRepository userRepository, ScheduleRepository scheduleRepository, NotificationRepository notificationRepository)
         {
+            _mapper = mapper;
             _jsonService = jsonService;
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
@@ -87,6 +90,8 @@ namespace web_server.Services
             string json = "";
             try
             {
+
+
                 json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
             }
             catch(Exception ex)
@@ -207,12 +212,12 @@ namespace web_server.Services
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24 * 3600000, 24 * 3600000));
                     var timer = Program.Timers[id];
                     
-                    await  NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository);
+                    await  NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
                         Replace("{studentName}", user.FirstName + " " +  user.LastName).
                         Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName),
-                        (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository);
+                        (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
                 }
 

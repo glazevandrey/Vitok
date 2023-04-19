@@ -23,20 +23,22 @@ namespace web_server.Database.Repositories
             var result = await _context.Notifications.AddAsync(_mapper.Map<NotificationsDTO>(notif));
             return true;
         }
-        public async Task<Notifications> GetNotification(int id)
+        public async Task<NotificationsDTO> GetNotification(int id)
         {
+            var res = await _context.Notifications.FirstOrDefaultAsync(m => m.Id == id);
+            //_context.Entry(res).State = EntityState.Detached;
 
-            var result = _mapper.Map<Notifications>(await _context.Notifications.FirstOrDefaultAsync(m=>m.Id == id));
-            return result;
+            return res;
         }
-        public async Task<bool> UpdateNotification(Notifications notification)
+        public async Task<bool> UpdateNotification()
         {
-            var user = await _context.Users.Include(m=>m.Notifications).FirstOrDefaultAsync(m=>m.Notifications.FirstOrDefault(m=>m.DateTime == notification.DateTime) != null);
-            user.Notifications.FirstOrDefault(m => m.DateTime == notification.DateTime).Readed = true;
-            _context.Users.Update(_mapper.Map<UserDTO>(user));
+            //var user = await _context.Users.Include(m=>m.Notifications).FirstOrDefaultAsync(m=>m.Notifications.FirstOrDefault(m=>m.DateTime == notification.DateTime) != null);
+            //user.Notifications.FirstOrDefault(m => m.DateTime == notification.DateTime).Readed = true;
+            //_context.Users.Update(_mapper.Map<UserDTO>(user));
             //context.Notifications.Update(_mapper.Map<NotificationsDTO>(notification));
+
             await _context.SaveChangesAsync();
-            _context.Entry(_mapper.Map<UserDTO>(user)).State = EntityState.Detached;
+            //_context.Entry(_mapper.Map<UserDTO>(user)).State = EntityState.Detached;
             return true;
         }
     }

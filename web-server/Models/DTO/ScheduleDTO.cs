@@ -31,12 +31,10 @@ namespace web_server.Models.DTO
         public DateTime EndDate { get; set; }
         public Status Status { get; set; } = Status.Ожидает;
 
-
-        public List<NotificationTask> Tasks = new List<NotificationTask>()
-        {
-            new NotificationTask() { NotifKey = Constants.NOTIF_START_LESSON, NotifValue = false },
-            new NotificationTask() { NotifKey = Constants.NOTIF_TOMORROW_LESSON, NotifValue = false },
-            new NotificationTask() { NotifKey = Constants.NOTIF_DONT_FORGET_SET_STATUS, NotifValue = false }
+        public List<NotificationTaskDTO> Tasks { get; set; } = new List<NotificationTaskDTO>(){
+            new NotificationTaskDTO() { NotifKey = Constants.NOTIF_START_LESSON, NotifValue = false },
+            new NotificationTaskDTO() { NotifKey = Constants.NOTIF_TOMORROW_LESSON, NotifValue = false },
+            new NotificationTaskDTO() { NotifKey = Constants.NOTIF_DONT_FORGET_SET_STATUS, NotifValue = false }
         };
 
         public List<SkippedDate> SkippedDates { get; set; } = new List<SkippedDate>();

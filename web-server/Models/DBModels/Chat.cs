@@ -14,4 +14,5 @@ namespace web_server.Models.DBModels
         public List<Messages> Messages { get; set; } = new List<Messages>();
         public List<Contact> Contacts { get; set; } = new List<Contact>();
     }
+
 }

@@ -91,7 +91,7 @@
                 if (!mainDic.ContainsKey(item.UserId))
                 {
                     var users = (List<User>)ViewData["users"];
-                    var user = users.FirstOrDefault(m=>m.UserId == item.UserId);
+                    var user = (Student)users.FirstOrDefault(m=>m.UserId == item.UserId);
                     Dictionary<string, int> dic2 = new Dictionary<string, int>();
                     dic2.Add(item.UserName, user.LessonsCount);
                     if (!mainDic.ContainsKey(item.UserId))

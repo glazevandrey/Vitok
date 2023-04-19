@@ -32,11 +32,7 @@ namespace web_server.Database.Repositories
 
                 _context.Entry(res).State = EntityState.Detached;
             
-            var dsd = _context.ChangeTracker.Entries();
-            foreach (var item in dsd)
-            {
-                item.State = EntityState.Detached;
-            }
+         
             return _mapper.Map<Course>(res);
         }
 

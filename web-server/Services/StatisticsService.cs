@@ -21,10 +21,10 @@ namespace web_server.Services
             _scheduleRepository = scheduleRepository;
             _userRepository = userRepository;
         }
-        public async  Task<Dictionary<DateTime, List<StudentPayment>>> FormingStatData(string args)
+        public async Task<Dictionary<DateTime, List<StudentPayment>>> FormingStatData(string args)
         {
 
-            var user = await _userRepository.GetUserById(Convert.ToInt32(args));
+            var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(args));
             //var user = TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args));
             var schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
             //var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId);

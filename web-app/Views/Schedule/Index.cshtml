@@ -339,7 +339,7 @@ form{
 
                 <select name="courses" id="courses">
                     @{
-                        foreach (Course item in (List<Course>)ViewData["courses"])
+                        foreach (Course item in  (List<Course>)ViewData["courses"])
                         {
                             <option value="@item.Id">@item.Title</option>
                         }

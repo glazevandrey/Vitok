@@ -214,7 +214,7 @@ namespace web_server.Controllers
         [HttpGet("getAllSchedules", Name = "getAllSchedules")]
         public async Task<string> GetAllSchedules()
         {
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _scheduleService.GetAllSchedules()));
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(map.Map<List<Schedule>>(await _scheduleService.GetAllSchedules())));
         }
 
         [HttpGet("getAllReSchedules", Name = "getAllReSchedules")]
@@ -271,14 +271,14 @@ namespace web_server.Controllers
 
         [Authorize]
         [HttpGet("getstatistics", Name = "getstatistics")]
-        public string Getstatistics([FromQuery] string args)
+        public async Task<string> Getstatistics([FromQuery] string args)
         {
             if (args == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var data = _statisticsService.FormingStatData(args);
+            var data = await _statisticsService.FormingStatData(args);
             if (data == null)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");

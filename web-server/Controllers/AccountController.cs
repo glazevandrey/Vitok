@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
+using web_server.Models.DBModels;
 using web_server.Services.Interfaces;
 
 namespace web_server.Controllers
@@ -17,10 +20,12 @@ namespace web_server.Controllers
         ILessonsService _lessonsService;
         IAccountService _accountService;
         IScheduleService _scheduleService;
+        IMapper _mapper;
         
         NotificationRepository _notificationRepository;
-        public AccountController(IJsonService jsonService, ILessonsService lessonsService, IAccountService accountService, IScheduleService scheduleService, NotificationRepository notificationRepository)
+        public AccountController( IMapper mapper,IJsonService jsonService, ILessonsService lessonsService, IAccountService accountService, IScheduleService scheduleService, NotificationRepository notificationRepository)
         {
+            _mapper = mapper;
             _notificationRepository= notificationRepository;
             _jsonService = jsonService;
             _lessonsService = lessonsService;
@@ -150,7 +155,7 @@ namespace web_server.Controllers
 
             sc.Readed = true;
 
-            await _notificationRepository.UpdateNotification(sc);
+            await _notificationRepository.UpdateNotification();
         }
 
         [Models.Authorize]
@@ -170,8 +175,17 @@ namespace web_server.Controllers
             }
             catch (Exception ex)
             {
+                try
+                {
+                    json = Newtonsoft.Json.JsonConvert.SerializeObject(_mapper.Map<List<Schedule>>(list));
 
-                throw ex;
+
+                }
+                catch (Exception x)
+                {
+
+                    throw x;
+                }
             }
             
             return _jsonService.PrepareSuccessJson(json);

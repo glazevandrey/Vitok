@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -16,6 +17,10 @@ namespace web_server
 
             CreateMap<User, UserDTO>();
             CreateMap<UserDTO, User>();
+
+            CreateMap<NotificationTaskDTO, NotificationTask>();
+            CreateMap< NotificationTask, NotificationTaskDTO>();
+
 
             CreateMap<TutorDTO, User>();
             CreateMap<StudentDTO, User>();
@@ -49,8 +54,8 @@ namespace web_server
             CreateMap<ManagerDTO, Manager>();
 
 
-            CreateMap<ScheduleDTO, Schedule>();
-            CreateMap<Schedule, ScheduleDTO>();
+            CreateMap<ScheduleDTO, Schedule>();//.ForMember(m=>m.CourseId, m=>m.MapFrom(m=>m.Course.Id)).AfterMap((src, dest) => { dest.Course = null; });
+            CreateMap<Schedule, ScheduleDTO>().ForMember(m => m.CourseId, m => m.MapFrom(m => m.Course.Id)).AfterMap((src, dest) => { dest.Course = null; });//.ForMember(m=>m.CourseId, m=>m.MapFrom(m=>m.Course.Id));
 
 
             CreateMap<GoalDTO, Goal>();
@@ -59,7 +64,7 @@ namespace web_server
             CreateMap<Registration, RegistrationDTO>();
             CreateMap<RegistrationDTO, Registration>();
 
-            CreateMap<Course, CourseDTO>();
+            CreateMap<Course, CourseDTO>();//.ForMember(m=>m.GoalId , m=>m.MapFrom(m=>m.Goal.Id)).ForMember(m=>m.Id , m=>m.MapFrom(m=>m.Id));
             CreateMap<CourseDTO, Course>();
 
             CreateMap<Chat, ChatDTO>();

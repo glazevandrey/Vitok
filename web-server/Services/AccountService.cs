@@ -8,6 +8,7 @@ using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DTO;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
@@ -36,7 +37,7 @@ namespace web_server.Services
             var old = await _userRepository.GetUserById(user.UserId);
             //var old = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
 
-            var schedules = new List<Schedule>();
+            var schedules = new List<ScheduleDTO>();
             if (user.Role == "Tutor")
             {
                 schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);//TestData.Schedules.Where(m => m.TutorId == user.UserId).ToList();
@@ -126,7 +127,7 @@ namespace web_server.Services
 
         public async Task<bool> Withdraw(string tutorid, string count)
         {
-            var user = await _userRepository.GetUserById(Convert.ToInt32(tutorid));
+            var user = await _userRepository.GetUser(Convert.ToInt32(tutorid));
             if (user.Balance < Convert.ToDouble(count))
             {
                 return false;
@@ -135,7 +136,7 @@ namespace web_server.Services
             user.Balance -= Convert.ToInt32(count);
             user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessage= $"Вывод средств"  });
 
-            await _userRepository.Update(user);
+            await _userRepository.SaveChanges(user);
             //.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Вывод средств: {count} p." });
 
             return true;

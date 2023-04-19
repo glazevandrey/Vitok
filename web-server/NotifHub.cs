@@ -1,30 +1,35 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DTO;
 
 namespace web_server
 {
     public class NotifHub : Hub
     {
         UserRepository _userRepository;
-        public NotifHub(UserRepository userRepository)
+        IMapper _mapper;
+        public NotifHub(IMapper mapper,UserRepository userRepository)
         {
+            _mapper = mapper;
             _userRepository = userRepository;
         }
 
-        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, NotificationRepository notificationRepository)
+        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, NotificationRepository notificationRepository, IMapper mapper)
         {
-            if (to == "-1")
+            if (to == "-1" || to == "1")
             {
                 return;
             }
 
-            var user = await userRepository.GetUserById(Convert.ToInt32(to));
+            var user = await userRepository.GetUser(Convert.ToInt32(to));
             if(user == null)
             {
                 return;
@@ -34,11 +39,11 @@ namespace web_server
             notif.Message = message;
             notif.UserIdTo = Convert.ToInt32(to);
             notif.DateTime = DateTime.Now;
-            user.Notifications.Add(notif);
+            user.Notifications.Add(mapper.Map<NotificationsDTO>(notif));
 
             try
             {
-                await userRepository.Update(user);
+                await userRepository.SaveChanges(user);
 
             }
             catch (Exception ex)
@@ -61,11 +66,9 @@ namespace web_server
             }
 
         }
-        public async Task SetNotifications(int userId)
+        public async Task SetNotifications(List<NotificationsDTO> notifs)
         {
-            var notifs = await _userRepository.GetUserNotifications(userId);
-            //var notifs = TestData.Notifications.Where(m => m.UserIdTo == userId).ToList();
-            notifs.Reverse();
+
             foreach (var item in notifs)
             {
                 await Clients.Client(Context.ConnectionId).SendAsync("ReceiveNotification", item.Message, item.Readed, item.Id);
@@ -80,7 +83,7 @@ namespace web_server
                 return;
             }
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
-            var user =  await _userRepository.GetUserById(userId);
+            var user =  await _userRepository.GetUser(userId);
            // var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
             if (user == null)
             {
@@ -88,24 +91,22 @@ namespace web_server
             }
             if (user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId) == null)
             {
-                await _userRepository.AddTonificationTokenToUser(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" }, userId);
+                await _userRepository.AddTonificationTokenToUser(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" }, user);
                 //TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.Add(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" });
             }
-            else
-            {
+            
 
-                await _userRepository.ChangeNotifTokenStatus("Connected", connectionId, userId);
-                //TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId).TokenValue = "Connected";
-            }
-
-            await SetNotifications(userId);
+            await SetNotifications(user.Notifications);
         }
         public async override Task OnDisconnectedAsync(Exception ex)
         {
             var connectionId = Context.ConnectionId;
             var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
-            
-                await _userRepository.ChangeNotifTokenStatus("Disconnected", connectionId, userId);
+            var user = await _userRepository.GetUser(userId);
+           var rem = user.NotificationTokens.FirstOrDefault(m=>m.TokenKey == connectionId);
+            user.NotificationTokens.Remove(rem);
+            await _userRepository.SaveChanges(user);
+           // await _userRepository.ChangeNotifTokenStatus("Disconnected", connectionId, user);
 
            
 

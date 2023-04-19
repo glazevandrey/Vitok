@@ -204,7 +204,7 @@ namespace vitok.Controllers
 
         [Authorize]
         [HttpPost("rescheduletutor", Name = "rescheduletutor")]
-        public string RescheduleTutor()
+        public async Task<string> RescheduleTutor()
         {
             var form = Request.Form;
             if (form.Keys.Count == 0)
@@ -213,14 +213,15 @@ namespace vitok.Controllers
             }
             var args = form.First().Key;
 
-            var rescheduled = _lessonsService.RescheduleLesson(args, _hubContext);
+            var rescheduled = await _lessonsService.RescheduleLesson(args, _hubContext);
 
             if (rescheduled == null)
             {
                 return _jsonService.PrepareErrorJson("Выбранная дата занята или некорректна.");
             }
 
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(rescheduled));
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(true);
+            return _jsonService.PrepareSuccessJson(json);
         }
 
 

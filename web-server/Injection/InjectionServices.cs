@@ -27,7 +27,6 @@ namespace web_server.Injection
 
             services.AddDbContext<DataContext>(options =>
             {
-                options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 options.UseSqlServer(connection);
                 options.EnableSensitiveDataLogging();
 
@@ -44,7 +43,7 @@ namespace web_server.Injection
 
             services.AddScoped<IJsonService, JsonService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<ICustomNotificationService, CustomNotificationService>(m => { var hub = m.GetService<IHubContext<NotifHub>>(); var not = m.GetService<NotificationRepository>(); var user = m.GetService<UserRepository>()  ; return new CustomNotificationService(not, user, hub); });
+            services.AddScoped<ICustomNotificationService, CustomNotificationService>(m => { var hub = m.GetService<IHubContext<NotifHub>>(); var not = m.GetService<NotificationRepository>(); var user = m.GetService<UserRepository>(); var mapper = m.GetService<IMapper>(); return new CustomNotificationService(mapper,not, user, hub); });
 
             services.AddScoped<ILessonsService, LessonsService>();
             services.AddScoped<IAccountService, AccountService>();

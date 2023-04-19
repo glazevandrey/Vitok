@@ -10,6 +10,7 @@ using web_server.Database.Repositories;
 using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DTO;
 
 namespace web_server
 {
@@ -24,28 +25,7 @@ namespace web_server
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
         }
-        public async Task SetChat(User user, int with)
-        {
-            if (user.Chat != null)
-            {
-                user.Chat.InChat = with;
-                //TestData.LiveChats.FirstOrDefault(m => m.UserId == userId).WithUserId = with.ToString();
-            }
-            else
-            {
-                user.Chat.InChat = with;
-            }
-            //try
-            //{
-            //    await _userRepository.Update(user);
-
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    throw ex;
-            //}
-        }
+      
 
         public async Task GetMessages(string userId)
         {
@@ -56,11 +36,15 @@ namespace web_server
             // var currUser = TestData.UserList.FirstOrDefault(m => m.UserId == currChat.UserId);
 
             var currUser = await _userRepository.GetUserByChatToken(Context.ConnectionId);
+
+
+           
+            currUser.Chat.InChat = Convert.ToInt32(userId);
             
-            await SetChat(currUser, Convert.ToInt32(userId));
+
             try
             {
-                await _userRepository.Update(currUser);
+                await _userRepository.SaveChanges(currUser);
 
             }
             catch (Exception ex)
@@ -78,7 +62,7 @@ namespace web_server
             var result = new List<Messages>();
 
             await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow");
-
+            //messages.Reverse();
             foreach (var message in messages)
             {
                 if (user.Chat.ConnectionTokens.Any(t => t.Token == message.SenderId) || user.Chat.ConnectionTokens.Any(t => t.Token == message.ReceiverId))
@@ -165,7 +149,7 @@ namespace web_server
 
             try
             {
-                await _userRepository.Update(own);
+                await _userRepository.SaveChanges(own);
 
 
             }
@@ -225,7 +209,7 @@ namespace web_server
             }
             else
             {
-                await SetChat(user, 0);
+                user.Chat.InChat = 0;
 
                 user.Chat.ConnectionTokens.Add( new ConnectionToken() { Token = connectionId, Status = "Connected" });
                 try
@@ -264,22 +248,16 @@ namespace web_server
             List<Schedule> userSchediles = user.Schedules;
             if(user.Role == "Manager")
             {
-                userSchediles = await _scheduleRepository.GetSchedulesByFunc(null);
+                var schedules = await _scheduleRepository.GetSchedulesByFunc(null);
 
-                foreach (var item in userSchediles)
+                foreach (var item in schedules)
                 {
                     if (item.TutorId == 1 || item.UserId == 1)
                     {
                         continue;
                     }
 
-                    // var student = await _userRepository.GetUserById(item.UserId);
-                    //var student = TestData.UserList.FirstOrDefault(m => m.UserId == item.UserId);
-                    //var tutor = await _userRepository.GetUserById(item.TutorId);
-
-                    //var tutor = TestData.UserList.FirstOrDefault(m => m.UserId == item.TutorId);
-
-
+               
 
                     var userContct = new Contact()
                     {
@@ -304,6 +282,8 @@ namespace web_server
                     }
                 }
                 //await _userRepository.Update(user);
+
+                await _scheduleRepository.UpdateRange(schedules);
                 return;
             }
            
@@ -346,11 +326,7 @@ namespace web_server
 
             }
 
-            //var chatUser = await _userRepository.GetUserById(userId);
-            //var Chat = await _chatRepository.GetChatByUserId(user.UserId);
-            //var Chat = TestData.Chats.FirstOrDefault(m => m.UserId == user.UserId);
-
-
+        
             foreach (var item in userSchediles)
             {
 
@@ -364,7 +340,6 @@ namespace web_server
                     UserId = item.TutorId
                 };
 
-                //var chat = await _chatRepository.GetChatByUserId(item.UserId); //TestData.Chats.FirstOrDefault(m => m.UserId == item.UserId);
 
 
                 if (user.UserId != item.UserId)
@@ -373,7 +348,7 @@ namespace web_server
 
                     if (itemUser.Chat == null)
                     {
-                        if (user    .Chat.Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
+                        if (user.Chat.Contacts.FirstOrDefault(m => m.UserId == item.UserId) == null)
                         {
                             user.Chat.Contacts.Add(new Contact() { UserId = item.UserId });
                         }
@@ -395,6 +370,7 @@ namespace web_server
                             {
                                 user.Chat.Contacts.Add(new Contact() { UserId = item.UserId });
                             }
+
                         }
                         else
                         {
@@ -404,6 +380,8 @@ namespace web_server
                             }
                         }
                     }
+
+                    await _userRepository.Update(itemUser);
 
                 }
 
@@ -438,7 +416,6 @@ namespace web_server
                             }
 
                             tutor.Chat.Contacts.Add(contact);
-                            await _userRepository.Update(tutor);
                             user.Chat.Contacts.Add(new Contact() { UserId = item.TutorId });
 
                         }
@@ -450,10 +427,11 @@ namespace web_server
                             }
                         }
                     }
+                    await _userRepository.Update(tutor);
 
                 }
 
-               //await _userRepository.Update(user);
+                //await _userRepository.Update(user);
 
             }
 
@@ -466,16 +444,7 @@ namespace web_server
             {
                 user.Chat.Contacts.Add(contact2);
             }
-            try
-            {
-               // await _userRepository.Update(user);
-
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            
         }
 
         public async Task GetContacts(User curUser)
@@ -507,7 +476,7 @@ namespace web_server
                 return;
             }
             user.Chat.ConnectionTokens.FirstOrDefault(m=>m.Token == Context.ConnectionId).Status = "Disconnected";
-            await _userRepository.Update(user);
+            await _userRepository.SaveChanges(user);
             await Clients.All.SendAsync("DisconnectUser", Context.ConnectionId);
 
             await Task.CompletedTask;
@@ -520,6 +489,8 @@ namespace web_server
             var user = await _userRepository.GetUserByChatToken(Context.ConnectionId);
             //var user = TestData.UserList.FirstOrDefault(m => m.UserId == who.UserId);
             await Clients.All.SendAsync("UserList", Context.ConnectionId, user.FirstName + " " + user.LastName, user.PhotoUrl);
+            await _userRepository.SaveChanges(user);
+            
         }
     }
 }
