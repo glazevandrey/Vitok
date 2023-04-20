@@ -433,7 +433,7 @@ namespace web_server.Database.Repositories
 
         public async Task<UserDTO> GetUser(int id)
         {
-            return await _context.Users.Include(m=>m.NotificationTokens).Include(m=>m.BalanceHistory).ThenInclude(m=>m.CashFlow).Include(m=>m.Notifications).FirstOrDefaultAsync(m => m.UserId == id);
+            return await _context.Users.Include(m=>m.NotificationTokens).Include(m=>m.BalanceHistory).ThenInclude(m=>m.CashFlow).Include(m=>m.Notifications).Include(m=>m.Chat).ThenInclude(m=>m.Contacts).Include(m=>m.Chat).ThenInclude(m=>m.ConnectionTokens).FirstOrDefaultAsync(m => m.UserId == id);
         }
         public async Task<TutorDTO> GetTutor(int id)
         {

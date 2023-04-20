@@ -106,7 +106,7 @@ namespace web_server
 
         public async Task SendMessage(string message, string token, string filePath)
         {
-            var user = await _userRepository.GetUserById(Convert.ToInt32(token));
+            var user = await _userRepository.GetUser(Convert.ToInt32(token));
             //  var user = await _chatRepository.GetChatByUserId(Convert.ToInt32(token));
             //var user = TestData.Chats.FirstOrDefault(m => m.UserId == Convert.ToInt32(token));
 
@@ -145,7 +145,7 @@ namespace web_server
 
             }
 
-            await _userRepository.Update(user);
+            await _userRepository.SaveChanges(user);
 
             try
             {
@@ -180,15 +180,20 @@ namespace web_server
                 await Task.CompletedTask;
             }
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
-            var user = await _userRepository.GetUserById(userId);
+ 
+            var user = await _userRepository.GetUser(userId);
+            //var user = await _userRepository.GetUserById(userId);
             var photo = user.PhotoUrl;
 
-            //var Chat = await _chatRepository.GetChatByUserId(userId); 
             if (user.Chat == null)
             {
-                var model = new Chat() { InChat= 0, UserId = userId, ConnectionTokens = new List<ConnectionToken>() { new ConnectionToken() { Token = connectionId, Status = "Connected" } } };
+                var model = new ChatDTO() { InChat= 0, UserId = userId, ConnectionTokens = new List<ConnectionToken>() { new ConnectionToken() { Token = connectionId, Status = "Connected" } } };
                
-                model.Messages.Add(new Messages() { Id = 0, MessageTime = DateTime.Now, ReceiverId = userId.ToString(), SenderId = (await _userRepository.GetManagerId()).ToString(), Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!" });
+                if(user.Role != "Manager")
+                {
+                    model.Messages.Add(new Messages() { Id = 0, MessageTime = DateTime.Now, ReceiverId = userId.ToString(), SenderId = (await _userRepository.GetManagerId()).ToString(), Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!" });
+
+                }
                 user.Chat = model;
                 user.Chat.InChat = 0;
 
@@ -196,7 +201,7 @@ namespace web_server
 
                 try
                 {
-                    await _userRepository.Update(user);
+                    await _userRepository.SaveChanges(user);
 
                 }
                 catch (Exception ex)
@@ -214,7 +219,7 @@ namespace web_server
                 user.Chat.ConnectionTokens.Add( new ConnectionToken() { Token = connectionId, Status = "Connected" });
                 try
                 {
-                    await _userRepository.Update(user);
+                    await _userRepository.SaveChanges(user);
 
                 }
                 catch (Exception ex)
@@ -240,12 +245,13 @@ namespace web_server
             File.WriteAllBytes($"wwwroot/files/{attachment.fileName}", fileBytes);
             await SendMessage(message, to, $"{attachment.fileName}");
         }
-        public async Task SetNewContact(User user)
+        public async Task SetNewContact(UserDTO user)
         {
             //var user = await _userRepository.GetUserById(userId);
             //var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
 
-            List<Schedule> userSchediles = user.Schedules;
+            List<ScheduleDTO> userSchediles;
+
             if(user.Role == "Manager")
             {
                 var schedules = await _scheduleRepository.GetSchedulesByFunc(null);
@@ -286,7 +292,20 @@ namespace web_server
                 await _scheduleRepository.UpdateRange(schedules);
                 return;
             }
-           
+            else
+            {
+                if(user.Role == "Tutor")
+                {
+                    userSchediles = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
+                }
+                else
+                {
+                    userSchediles = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
+
+                }
+                await _scheduleRepository.UpdateRange(userSchediles);
+            }
+
             var managerId = await _userRepository.GetManagerId();
             var manager = (Manager)await _userRepository.GetUserById(managerId);
         
@@ -447,7 +466,7 @@ namespace web_server
             
         }
 
-        public async Task GetContacts(User curUser)
+        public async Task GetContacts(UserDTO curUser)
         {
             //var Chat = await _chatRepository.GetChatByUserId(userId);
             //var Chat = TestData.Chats.FirstOrDefault(m => m.UserId == userId);
