@@ -24,7 +24,6 @@ namespace web_server.Controllers
         private readonly IHubContext<NotifHub> _hubContext;
         IAuthService _authService;
         IJsonService _jsonService;
-        ILessonsService _lessonsService;
         IScheduleService _scheduleService;
         IStatisticsService _statisticsService;
         UserRepository _userRepository;
@@ -32,9 +31,9 @@ namespace web_server.Controllers
         CourseRepository _courseRepository;
         DataContext data;
         IMapper map;
-        public HomeController(IMapper maa, DataContext data, UserRepository userRepository, CourseRepository courseRepository, ContactsRepository contactsRepository, IStatisticsService statisticsService, IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
+        public HomeController(IMapper maз, DataContext data, UserRepository userRepository, CourseRepository courseRepository, ContactsRepository contactsRepository, IStatisticsService statisticsService, IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, IScheduleService scheduleService)
         {
-            map = maa;
+            map = maз;
             this.data = data;
             _userRepository = userRepository;
             _courseRepository = courseRepository;
@@ -42,7 +41,6 @@ namespace web_server.Controllers
             _hubContext = hub;
             _authService = authService;
             _jsonService = jsonService;
-            _lessonsService = lessonsService;
             _scheduleService = scheduleService;
             _statisticsService = statisticsService;
         }
@@ -50,141 +48,7 @@ namespace web_server.Controllers
         [HttpPost("loginuser", Name = "loginuser")]
         public async Task<string> LoginUser()
         {
-
-
-            if (data.Tutors.Count() == 0 && data.Students.Count() == 0 && data.Managers.Count() == 0)
-            {
-
-
-
-                data.Goals.AddRange(TestData.Goals);
-                try
-                {
-                    data.SaveChanges();
-
-                }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
-
-                data.Courses.AddRange(TestData.Courses);
-                try
-                {
-                    data.SaveChanges();
-                    foreach (var item in TestData.Courses)
-                    {
-                        data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-                    }
-                }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
-
-                var gg = new StudentDTO()
-                {
-
-                    Role = "Student",
-
-                    //UserId = 3
-                };
-                data.Students.Add(gg);
-                data.SaveChanges();
-                data.Entry(gg).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-                var students = TestData.UserList.Where(m => m.Role == "Student");
-                foreach (var item in students)
-                {
-                    data.Students.Add(map.Map<StudentDTO>(item));
-                }
-
-                data.SaveChanges();
-
-                foreach (var item in students)
-                {
-                    data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-                }
-                var tutors = TestData.UserList.Where(m => m.Role == "Tutor");
-                foreach (var item in tutors)
-                {
-                    var d = map.Map<TutorDTO>(item);
-                    //foreach (var dd in d.Courses)
-                    //{
-                    //    dd.Id = 0;
-                    //}
-                    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
-                    data.Tutors.Add(d);
-                }
-                try
-                {
-                    data.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
-                var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
-                data.Managers.Add(map.Map<ManagerDTO>(manager));
-
-                try
-                {
-
-                    data.SaveChanges();
-
-                    foreach (var item in tutors)
-                    {
-                        data.Entry(map.Map<TutorDTO>(item)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-                    }
-
-                    data.Entry(map.Map<ManagerDTO>(manager)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-
-
-                }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
-
-
-                foreach (var item in TestData.Schedules)
-                {
-                    item.CourseId = TestData.Courses.First(m => m.Title == "ЕГЭ").Id;
-                }
-                data.Schedules.AddRange(map.Map<List<ScheduleDTO>>(TestData.Schedules));
-                data.Tariffs.AddRange(TestData.Tariffs);
-                try
-                {
-                    data.SaveChanges();
-                    foreach (var item in map.Map<List<ScheduleDTO>>(TestData.Schedules))
-                    {
-
-                        data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-                    }
-
-                }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
-
-                //// Создаем новую цель
-                //var newGoal = new Goal { Title = "Новая цель" };
-                //data.Goals.Add(newGoal);
-                //data.SaveChanges();
-
-                //// Создаем новый курс с указанием связанной цели
-                //var newCourse = new Course { Title = "Новый курс", GoalId = newGoal.Id };
-                //data.Courses.Add(newCourse);
-                //data.SaveChanges();
-
-
-            }
-
+            await InitializeDataBase();
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
             {
@@ -359,6 +223,131 @@ namespace web_server.Controllers
         public async Task<string> GetContacts()
         {
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _contactsRepository.GetContacts()));
+        }
+
+        private async Task InitializeDataBase()
+        {
+            if (data.Tutors.Count() == 0 && data.Students.Count() == 0 && data.Managers.Count() == 0)
+            {
+
+
+
+                data.Goals.AddRange(TestData.Goals);
+                try
+                {
+                    data.SaveChanges();
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+
+                data.Courses.AddRange(TestData.Courses);
+                try
+                {
+                    data.SaveChanges();
+                    foreach (var item in TestData.Courses)
+                    {
+                        data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+
+                var gg = new StudentDTO()
+                {
+
+                    Role = "Student",
+
+                    //UserId = 3
+                };
+                data.Students.Add(gg);
+                data.SaveChanges();
+                data.Entry(gg).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                var students = TestData.UserList.Where(m => m.Role == "Student");
+                foreach (var item in students)
+                {
+                    data.Students.Add(map.Map<StudentDTO>(item));
+                }
+
+                data.SaveChanges();
+
+                foreach (var item in students)
+                {
+                    data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                }
+                var tutors = TestData.UserList.Where(m => m.Role == "Tutor");
+                foreach (var item in tutors)
+                {
+                    var d = map.Map<TutorDTO>(item);
+                    //foreach (var dd in d.Courses)
+                    //{
+                    //    dd.Id = 0;
+                    //}
+                    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
+                    data.Tutors.Add(d);
+                }
+                try
+                {
+                    data.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+                var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
+                data.Managers.Add(map.Map<ManagerDTO>(manager));
+
+                try
+                {
+
+                    data.SaveChanges();
+
+                    foreach (var item in tutors)
+                    {
+                        data.Entry(map.Map<TutorDTO>(item)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                    }
+
+                    data.Entry(map.Map<ManagerDTO>(manager)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+
+
+                foreach (var item in TestData.Schedules)
+                {
+                    item.CourseId = TestData.Courses.First(m => m.Title == "ЕГЭ").Id;
+                }
+                data.Schedules.AddRange(map.Map<List<ScheduleDTO>>(TestData.Schedules));
+                data.Tariffs.AddRange(TestData.Tariffs);
+                try
+                {
+                    data.SaveChanges();
+                    foreach (var item in map.Map<List<ScheduleDTO>>(TestData.Schedules))
+                    {
+
+                        data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+            }
+
         }
 
     }
