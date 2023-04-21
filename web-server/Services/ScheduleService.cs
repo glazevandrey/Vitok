@@ -115,6 +115,12 @@ namespace web_server.Services
                 await ChangeStatusToSkipped(user, tutor, manager, schedule, dateCurr, warn);
             }
 
+
+            if(user.LessonsCount <= 0)
+            {
+                await CalculateNoPaidWarn(user);
+            }
+
             await _userRepository.SaveChanges(tutor);
             await _userRepository.SaveChanges(user);
             await _userRepository.Update(manager);
@@ -230,6 +236,39 @@ namespace web_server.Services
             return schedules;
         }
 
+        private async Task CalculateNoPaidWarn(StudentDTO user)
+        {
+            if (user.LessonsCount <= 0)
+            {
+                if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
+                {
+                    user.StartWaitPayment = DateTime.Now;
+                }
+
+                var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue);
+                var sorted = SortSchedulesForUnpaid(_mapper.Map<List<ScheduleDTO>>(list));
+                sorted.Reverse();
+                //var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).Reverse().ToList());
+
+                foreach (var item in user.Schedules)
+                {
+                    item.WaitPaymentDate = DateTime.MinValue;
+                    await _scheduleRepository.Update(item);
+                }
+
+                foreach (var item in sorted)
+                {
+                    var sch = await _scheduleRepository.GetScheduleById(item.ScheduleId);
+                    //var sch = user.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId); // await _scheduleRepository.GetScheduleById(item.ScheduleId); // TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+
+                    sch.WaitPaymentDate = item.Nearest;
+
+                    await _scheduleRepository.Update(sch);
+
+                }
+            }
+
+        }
         public static List<SortedModel> SortSchedulesForUnpaid(List<ScheduleDTO> schedules2)
         {
             Dictionary<int, List<ScheduleDTO>> curr = new Dictionary<int, List<ScheduleDTO>>();
@@ -523,36 +562,6 @@ namespace web_server.Services
 
             }
 
-
-            if (user.LessonsCount <= 0)
-            {
-                if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
-                {
-                    user.StartWaitPayment = DateTime.Now;
-                }
-
-                var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue);
-                var sorted = SortSchedulesForUnpaid(_mapper.Map<List<ScheduleDTO>>(list));
-                sorted.Reverse();
-                //var sorted = SortSchedulesForUnpaid(TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).Reverse().ToList());
-
-                foreach (var item in user.Schedules)
-                {
-                    item.WaitPaymentDate = DateTime.MinValue;
-                    await _scheduleRepository.Update(item);
-                }
-
-                foreach (var item in sorted)
-                {
-                    var sch = await _scheduleRepository.GetScheduleById(item.ScheduleId);
-                    //var sch = user.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId); // await _scheduleRepository.GetScheduleById(item.ScheduleId); // TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
-
-                    sch.WaitPaymentDate = item.Nearest;
-
-                    await _scheduleRepository.Update(sch);
-
-                }
-            }
         }
         private async Task ChangeStatusToReady(TutorDTO tutor, StudentDTO user, User manager, ScheduleDTO schedule,
             DateTime dateCurr, DateTime date, string status)
@@ -612,37 +621,6 @@ namespace web_server.Services
 
             await _scheduleRepository.Update(schedule);
 
-            if (user.LessonsCount <= 0)
-            {
-                if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
-                {
-                    user.StartWaitPayment = DateTime.Now;
-                }
-
-                var schedules = user.Schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
-
-                if (schedules.Count > 0)
-                {
-                    foreach (var item in schedules)
-                    {
-                        item.WaitPaymentDate = DateTime.MinValue;
-                    }
-                }
-
-                var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).ToList();
-                var sorted = SortSchedulesForUnpaid(_mapper.Map<List<ScheduleDTO>>(list));
-                sorted.Reverse();
-
-                foreach (var item in sorted)
-                {
-
-                    var sch = user.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
-
-                    sch.WaitPaymentDate = item.Nearest;
-
-                    await _scheduleRepository.Update(_mapper.Map<ScheduleDTO>(sch));
-                }
-            }
         }
     }
 }
