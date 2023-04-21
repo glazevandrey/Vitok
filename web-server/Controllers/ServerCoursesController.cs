@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
-using web_server.DbContext;
 using web_server.Services.Interfaces;
 
 namespace web_server.Controllers
@@ -78,7 +77,7 @@ namespace web_server.Controllers
             return _jsonService.PrepareSuccessJson(json);
         }
         [HttpPost("editCourseServer", Name = "editCourseServer")]
-        public async  Task<string> EditCourseServer()
+        public async Task<string> EditCourseServer()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)

@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
@@ -18,15 +15,15 @@ namespace web_server
     public class ChatHub : Microsoft.AspNetCore.SignalR.Hub
     {
         UserRepository _userRepository;
-      //  ChatRepository _chatRepository;
+        //  ChatRepository _chatRepository;
         ScheduleRepository _scheduleRepository;
         public ChatHub(UserRepository userRepository, ScheduleRepository scheduleRepository)
         {
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
         }
-      
-     
+
+
         public async Task GetMessages(string userId)
         {
             // var currChat 
@@ -38,9 +35,9 @@ namespace web_server
             var currUser = await _userRepository.GetUserByChatToken(Context.ConnectionId);
 
 
-           
+
             currUser.Chat.InChat = Convert.ToInt32(userId);
-            
+
 
             try
             {
@@ -57,7 +54,7 @@ namespace web_server
             //var user = TestData.Chats.FirstOrDefault(m => m.UserId == Convert.ToInt32(userId));
 
             if (user.Chat == null) { await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow"); return; }
-             
+
             var messages = currUser.Chat.Messages.ToList();
             var result = new List<Messages>();
 
@@ -180,16 +177,16 @@ namespace web_server
                 await Task.CompletedTask;
             }
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
- 
+
             var user = await _userRepository.GetUser(userId);
             //var user = await _userRepository.GetUserById(userId);
             var photo = user.PhotoUrl;
 
             if (user.Chat == null)
             {
-                var model = new ChatDTO() { InChat= 0, UserId = userId, ConnectionTokens = new List<ConnectionToken>() { new ConnectionToken() { Token = connectionId, Status = "Connected" } } };
-               
-                if(user.Role != "Manager")
+                var model = new ChatDTO() { InChat = 0, UserId = userId, ConnectionTokens = new List<ConnectionToken>() { new ConnectionToken() { Token = connectionId, Status = "Connected" } } };
+
+                if (user.Role != "Manager")
                 {
                     model.Messages.Add(new Messages() { Id = 0, MessageTime = DateTime.Now, ReceiverId = userId.ToString(), SenderId = (await _userRepository.GetManagerId()).ToString(), Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!" });
 
@@ -208,7 +205,7 @@ namespace web_server
                 {
                     throw ex;
                 }
-             
+
 
 
             }
@@ -232,7 +229,7 @@ namespace web_server
             {
                 user.Chat.InChat = 0;
 
-                user.Chat.ConnectionTokens.Add( new ConnectionToken() { Token = connectionId, Status = "Connected" });
+                user.Chat.ConnectionTokens.Add(new ConnectionToken() { Token = connectionId, Status = "Connected" });
                 try
                 {
                     await _userRepository.SaveChanges(user);
@@ -250,7 +247,7 @@ namespace web_server
 
             await GetContacts(user);
 
-            
+
 
             await base.OnConnectedAsync();
         }
@@ -268,7 +265,7 @@ namespace web_server
 
             List<ScheduleDTO> userSchediles;
 
-            if(user.Role == "Manager")
+            if (user.Role == "Manager")
             {
                 var schedules = await _scheduleRepository.GetSchedulesByFunc(null);
 
@@ -279,7 +276,7 @@ namespace web_server
                         continue;
                     }
 
-               
+
 
                     var userContct = new Contact()
                     {
@@ -310,7 +307,7 @@ namespace web_server
             }
             else
             {
-                if(user.Role == "Tutor")
+                if (user.Role == "Tutor")
                 {
                     userSchediles = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
                 }
@@ -324,10 +321,10 @@ namespace web_server
 
             var managerId = await _userRepository.GetManagerId();
             var manager = (Manager)await _userRepository.GetUserById(managerId);
-        
 
 
-            if (user.Role !="Manager")
+
+            if (user.Role != "Manager")
             {
                 //var managerChat = TestData.Chats.FirstOrDefault(m => m.UserId == manager.UserId);
                 if (manager?.Chat != null)
@@ -361,7 +358,7 @@ namespace web_server
 
             }
 
-        
+
             foreach (var item in userSchediles)
             {
 
@@ -475,11 +472,11 @@ namespace web_server
                 UserId = managerId
             };
 
-            if (!user.Chat.Contacts.Contains(contact2) && managerId!= user.UserId)
+            if (!user.Chat.Contacts.Contains(contact2) && managerId != user.UserId)
             {
                 user.Chat.Contacts.Add(contact2);
             }
-            
+
         }
 
         public async Task GetContacts(UserDTO curUser)
@@ -502,15 +499,15 @@ namespace web_server
         public async override Task OnDisconnectedAsync(Exception ex)
         {
             //var connectionId = Context.ConnectionId;
-          //  var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
+            //  var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
 
             var user = await _userRepository.GetUserByChatToken(Context.ConnectionId);
-           // var user = await _chatRepository.GetChatByUserId(userId);
-            if(user.Chat == null)
+            // var user = await _chatRepository.GetChatByUserId(userId);
+            if (user.Chat == null)
             {
                 return;
             }
-            user.Chat.ConnectionTokens.FirstOrDefault(m=>m.Token == Context.ConnectionId).Status = "Disconnected";
+            user.Chat.ConnectionTokens.FirstOrDefault(m => m.Token == Context.ConnectionId).Status = "Disconnected";
             await _userRepository.SaveChanges(user);
             await Clients.All.SendAsync("DisconnectUser", Context.ConnectionId);
 
@@ -518,14 +515,14 @@ namespace web_server
         }
         public async Task OnlineUsers()
         {
-            
+
             //var who =await  _chatRepository.GetChatByFunc(m => m.ConnectionTokens.Any(m => m.Token == connectionId));
             //var who = TestData.Chats.FirstOrDefault(m => m.ConnectionTokens.Any( m=>m.Token == connectionId));
             var user = await _userRepository.GetUserByChatToken(Context.ConnectionId);
             //var user = TestData.UserList.FirstOrDefault(m => m.UserId == who.UserId);
             await Clients.All.SendAsync("UserList", Context.ConnectionId, user.FirstName + " " + user.LastName, user.PhotoUrl);
             await _userRepository.SaveChanges(user);
-            
+
         }
     }
 }

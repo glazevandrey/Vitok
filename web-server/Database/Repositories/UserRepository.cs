@@ -1,16 +1,10 @@
 ﻿using AutoMapper;
-using AutoMapper.Internal;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Data.OleDb;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
@@ -26,7 +20,7 @@ namespace web_server.Database.Repositories
         {
             _mapper = mapper;
             _context = data;
-            
+
         }
 
         public async Task<bool> AddRegistration(Registration registration)
@@ -39,7 +33,7 @@ namespace web_server.Database.Repositories
         }
         public async Task<Registration> GetRegistrationByUserId(int userId)
         {
-            var reg = await _context.Registrations.FirstOrDefaultAsync(m=>m.UserId == userId);
+            var reg = await _context.Registrations.FirstOrDefaultAsync(m => m.UserId == userId);
 
             return _mapper.Map<Registration>(reg);
         }
@@ -47,7 +41,7 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                var model = await _context.Tutors.Include(m => m.Schedules).Include(m => m.UserDates).Include(m => m.BalanceHistory).Include(m => m.Courses).ThenInclude(c=>c.Course).ThenInclude(c=>c.Goal).ToListAsync();
+                var model = await _context.Tutors.Include(m => m.Schedules).Include(m => m.UserDates).Include(m => m.BalanceHistory).Include(m => m.Courses).ThenInclude(c => c.Course).ThenInclude(c => c.Goal).ToListAsync();
                 return _mapper.Map<List<Tutor>>(model);
             }
             catch (Exception ex)
@@ -55,22 +49,22 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-           
+
         }
-      
+
         public async Task<List<User>> GetAll()
         {
 
             var tutors = await _context.Tutors.Include(m => m.Schedules).Include(m => m.UserDates).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Courses).ThenInclude(c => c.Course).ThenInclude(c => c.Goal).ToListAsync();
-            var students = await _context.Students.Include(m=>m.Schedules).Include(m=>m.Credit).Include(m=>m.Money).Include(m=>m.BalanceHistory).ThenInclude(m => m.CashFlow).ToListAsync();
-            var managers = await _context.Managers.Include(m => m.Notifications).Include(m => m.BalanceHistory).ThenInclude(m=>m.CashFlow).ToListAsync();
+            var students = await _context.Students.Include(m => m.Schedules).Include(m => m.Credit).Include(m => m.Money).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).ToListAsync();
+            var managers = await _context.Managers.Include(m => m.Notifications).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).ToListAsync();
             try
             {
                 foreach (var item in tutors)
                 {
 
                     _context.Entry(item).State = EntityState.Detached;
-                    
+
                 }
                 foreach (var item in students)
                 {
@@ -93,7 +87,7 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-         
+
             var allUsers = new List<User>();
 
             // Маппинг Tutors на UserDTO и добавление в список всех пользователей
@@ -125,7 +119,7 @@ namespace web_server.Database.Repositories
         }
         public async Task Remove(int id)
         {
-            var res = await _context.Tutors.Include(m=>m.Schedules).FirstOrDefaultAsync(m=>m.UserId == id);
+            var res = await _context.Tutors.Include(m => m.Schedules).FirstOrDefaultAsync(m => m.UserId == id);
             _context.Entry(res).State = EntityState.Deleted;
             try
             {
@@ -139,13 +133,13 @@ namespace web_server.Database.Repositories
             }
         }
         //public async Task RemoveByFunc(Func<, bool>)
-    
+
         public async Task<int> GetManagerId()
         {
             var manag = await _context.Managers.FirstOrDefaultAsync();
             _context.Entry(manag).State = EntityState.Detached;
-            
-            
+
+
             return manag.UserId;
         }
         public async Task<int> AddUser(User user)
@@ -179,7 +173,7 @@ namespace web_server.Database.Repositories
 
             return 0;
         }
-     
+
         public async Task<bool> AddTonificationTokenToUser(NotificationTokens token, UserDTO user)
         {
 
@@ -196,7 +190,7 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-          
+
             return true;
         }
 
@@ -206,10 +200,10 @@ namespace web_server.Database.Repositories
         //    _context.UserDates.Remove(date);
         //    await _context.SaveChangesAsync(); 
         //}
-     
+
         public async Task UpdateTutorCourses(TutorDTO old)
         {
-            var old_courses = _context.TutorCourses.Include(m=>m.Course).ThenInclude(m=>m.Goal).Where(m => m.TutorId == old.UserId).ToList();
+            var old_courses = _context.TutorCourses.Include(m => m.Course).ThenInclude(m => m.Goal).Where(m => m.TutorId == old.UserId).ToList();
             if (old.Courses.Count == 0 && old_courses.Count != 0)
             {
                 foreach (var item in old_courses)
@@ -218,20 +212,20 @@ namespace web_server.Database.Repositories
                 }
             }
 
-            if(old.Courses.Count > 0 && old_courses.Count > old.Courses.Count)
+            if (old.Courses.Count > 0 && old_courses.Count > old.Courses.Count)
             {
                 foreach (var item in old_courses)
                 {
-                    var old2 = old.Courses.FirstOrDefault(m=>m.Course.Title == item.Course.Title);
-                    if(old2 == null)
+                    var old2 = old.Courses.FirstOrDefault(m => m.Course.Title == item.Course.Title);
+                    if (old2 == null)
                     {
                         _context.Entry(item).State = EntityState.Deleted;
-                        
+
                     }
                 }
             }
 
-            if (old_courses.Count  < old.Courses.Count)
+            if (old_courses.Count < old.Courses.Count)
             {
                 foreach (var item in old.Courses)
                 {
@@ -293,7 +287,7 @@ namespace web_server.Database.Repositories
 
                     throw ex;
                 }
-             
+
 
             }
             if (user is ManagerDTO || user.Role == "Manager")
@@ -320,7 +314,7 @@ namespace web_server.Database.Repositories
             }
             catch (Exception ex)
             {
-                
+
                 throw ex;
             }
         }
@@ -328,14 +322,14 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                var d = await _context.Students.Include(m => m.Credit).Include(m=>m.Chat).ThenInclude(m=>m.Contacts).Include(m => m.Money).Include(m=>m.Schedules)
+                var d = await _context.Students.Include(m => m.Credit).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Money).Include(m => m.Schedules)
                                         .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
                     .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
                     .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
                     .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
 
                     .FirstOrDefaultAsync(m => m.UserId == userId);
-  
+
                 return d;
 
             }
@@ -376,7 +370,7 @@ namespace web_server.Database.Repositories
                 {
                     var st = _mapper.Map<ManagerDTO>((Manager)user);
 
-                   // _context.Entry(st).State = EntityState.Modified;
+                    // _context.Entry(st).State = EntityState.Modified;
 
                     _context.Managers.Update(st);
                     await _context.SaveChangesAsync();
@@ -386,7 +380,7 @@ namespace web_server.Database.Repositories
 
                 }
             }
-            catch(DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException ex)
             {
                 await SaveModel(_mapper.Map<UserDTO>(user));
             }
@@ -404,9 +398,9 @@ namespace web_server.Database.Repositories
                 }
                 await Update(user);
             }
-            
+
         }
-        public async Task<UserDTO> GetUserByChatToken (string token)
+        public async Task<UserDTO> GetUserByChatToken(string token)
         {
             try
             {
@@ -445,19 +439,19 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-          
+
         }
 
 
         public async Task<UserDTO> GetUser(int id)
         {
-            return await _context.Users.Include(m=>m.NotificationTokens).Include(m=>m.BalanceHistory).ThenInclude(m=>m.CashFlow).Include(m=>m.Notifications).Include(m=>m.Chat).ThenInclude(m=>m.Contacts).Include(m=>m.Chat).ThenInclude(m=>m.ConnectionTokens).FirstOrDefaultAsync(m => m.UserId == id);
+            return await _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens).FirstOrDefaultAsync(m => m.UserId == id);
         }
         public async Task<TutorDTO> GetTutor(int id)
         {
-            return await _context.Tutors.Include(m=>m.Courses).Include(m=>m.Schedules).ThenInclude(m=>m.Course).Include(m=>m.Schedules).ThenInclude(m=>m.Tasks).Include(m=>m.Chat).ThenInclude(m=>m.Contacts).FirstOrDefaultAsync(m=>m.UserId == id);
+            return await _context.Tutors.Include(m => m.Courses).Include(m => m.Schedules).ThenInclude(m => m.Course).Include(m => m.Schedules).ThenInclude(m => m.Tasks).Include(m => m.Chat).ThenInclude(m => m.Contacts).FirstOrDefaultAsync(m => m.UserId == id);
         }
-     
+
         public async Task<User> GetUserById(int id)
         {
             var gg = _context.ChangeTracker.Entries();
@@ -465,55 +459,55 @@ namespace web_server.Database.Repositories
             //lock(_context){
             try
             {
-                    var tutor = await _context.Tutors.Include(m => m.Schedules)
-                    .Include(m=>m.Schedules).ThenInclude(m=>m.RescheduledLessons)
-                    .Include(m=>m.Schedules).ThenInclude(m=>m.ReadyDates)
-                    .Include(m=>m.Schedules).ThenInclude(m=>m.SkippedDates)
-                                        .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
+                var tutor = await _context.Tutors.Include(m => m.Schedules)
+                .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
+                .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
+                .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
+                                    .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
 
-                    .Include(m=>m.Schedules).ThenInclude(m=>m.Course).ThenInclude(m=>m.Goal)
-                    .Include(m => m.Notifications).Include(m=>m.BalanceHistory).ThenInclude(m=>m.CashFlow).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m=>m.Courses).ThenInclude(m=>m.Course).ThenInclude(m=>m.Goal).FirstOrDefaultAsync(m => m.UserId == (id));
-                    if (tutor != null)
-                    {
+                .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
+                .Include(m => m.Notifications).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefaultAsync(m => m.UserId == (id));
+                if (tutor != null)
+                {
                     _context.Entry(tutor).State = EntityState.Detached;
 
                     return _mapper.Map<Tutor>(tutor);
-                    }
+                }
 
-                    var student = await _context.Students.Include(m=>m.Credit).Include(m=>m.Notifications).Include(m=>m.Money).Include(m=>m.Chat).Include(m=>m.Chat.Messages).Include(m=>m.Chat.Contacts).Include(m=>m.Chat.ConnectionTokens).Include(m=>m.BalanceHistory).ThenInclude(m => m.CashFlow)
-                    .Include(m => m.Schedules)
-                    .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
-                    .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
-                                        .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
+                var student = await _context.Students.Include(m => m.Credit).Include(m => m.Notifications).Include(m => m.Money).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow)
+                .Include(m => m.Schedules)
+                .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
+                .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
+                                    .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
 
-                    .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
-                    .Include(m=>m.Schedules).ThenInclude(m=>m.Course).ThenInclude(m=>m.Goal).FirstOrDefaultAsync(m => m.UserId == id);
-                    if (student != null)
-                    {
+                .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
+                .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefaultAsync(m => m.UserId == id);
+                if (student != null)
+                {
                     _context.Entry(student).State = EntityState.Detached;
 
 
                     return _mapper.Map<Student>(student);
-                    }
+                }
 
-                    var manager = await _context.Managers.Include(m=>m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == id);
-                    if (manager != null)
-                    {
+                var manager = await _context.Managers.Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == id);
+                if (manager != null)
+                {
                     _context.Entry(manager).State = EntityState.Detached;
 
                     return _mapper.Map<Manager>(manager);
-                    }
-
-                    return null;
                 }
-                catch (Exception ex)
-                {
 
-                    throw ex;
-                }
-           
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
             //}
-                    }
+        }
 
         public async Task<User> GetUserByEmail(string email)
         {
@@ -522,7 +516,7 @@ namespace web_server.Database.Repositories
             {
 
                 _context.Entry(tutor).State = EntityState.Detached;
-                
+
                 return _mapper.Map<Tutor>(tutor);
             }
 
@@ -548,17 +542,17 @@ namespace web_server.Database.Repositories
             return null;
 
         }
- 
+
         public async Task<User> GetUserByToken(string id)
         {
             try
             {
-                var tutor = await _context.Tutors.Include(m=>m.BalanceHistory).ThenInclude(m => m.CashFlow)
+                var tutor = await _context.Tutors.Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow)
                     .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
                     .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
-                    .Include(m => m.Schedules).ThenInclude(m=>m.ReadyDates)
-                    .Include(m=>m.Schedules).ThenInclude(m=>m.SkippedDates)
-                    .Include(m=>m.Schedules).ThenInclude(m=>m.Course).ThenInclude(m=>m.Goal)
+                    .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
+                    .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
+                    .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
                     .Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.Chat).Include(m => m.UserDates).FirstOrDefaultAsync(x => x.ActiveToken == id);
                 if (tutor != null)
                 {
@@ -571,7 +565,7 @@ namespace web_server.Database.Repositories
                 }
 
                 var student = await _context.Students.Include(m => m.Credit).Include(m => m.Chat).Include(m => m.Money).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).
-                    Include(m=>m.Schedules).ThenInclude(m=>m.Course).ThenInclude(m=>m.Goal)
+                    Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
                     .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
                     .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
                     .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
@@ -603,9 +597,9 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-               
-            
-            
+
+
+
 
         }
         public async Task<List<Notifications>> GetUserNotifications(int id)

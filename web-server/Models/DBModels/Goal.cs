@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using web_server.Models.DTO;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace web_server.Models.DBModels
 {

@@ -12,9 +12,9 @@ namespace web_server.Services
         NotificationRepository _notificationRepository;
         IHubContext<NotifHub> _hubContext;
         IMapper _mapper;
-        public CustomNotificationService(IMapper mapper, NotificationRepository notificationRepository, UserRepository userRepository, IHubContext<NotifHub> hubContext )
+        public CustomNotificationService(IMapper mapper, NotificationRepository notificationRepository, UserRepository userRepository, IHubContext<NotifHub> hubContext)
         {
-            _mapper= mapper;
+            _mapper = mapper;
             _userRepository = userRepository;
             _notificationRepository = notificationRepository;
             _hubContext = hubContext;

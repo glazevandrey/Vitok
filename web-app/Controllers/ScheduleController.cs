@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using web_app.Requests.Get;
+using System.Linq;
 using web_app.Requests;
+using web_app.Requests.Get;
 using web_app.Services;
 using web_server.Models;
-using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
-using Newtonsoft.Json;
-using web_server.Database;
-using System.Diagnostics;
-using Microsoft.Extensions.Configuration;
-using System.Linq;
+using web_server.Services.Interfaces;
 
 namespace web_app.Controllers
 {
@@ -68,7 +65,7 @@ namespace web_app.Controllers
             if (user.Role == "Student")
             {
                 ViewData["lessons"] = ((Student)user).LessonsCount;
-                model =  ((Student)user).Schedules;
+                model = ((Student)user).Schedules;
             }
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
@@ -80,7 +77,7 @@ namespace web_app.Controllers
                 return Redirect("/manageschool");
 
             }
-           
+
 
             CustomRequestGet request2 = new GetAllUsersRequest(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var result2 = _requestService.SendGet(request2, HttpContext);
@@ -92,7 +89,7 @@ namespace web_app.Controllers
             settings.Converters.Add(new UserConverter());
             var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString(), settings);
             Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
-            foreach (var item in users.Where(m=>m.Role == "Student"))
+            foreach (var item in users.Where(m => m.Role == "Student"))
             {
                 if (((Student)item).StartWaitPayment != DateTime.MinValue)
                 {
@@ -109,7 +106,7 @@ namespace web_app.Controllers
             else
             {
                 var dic = new Dictionary<int, bool>();
-                foreach (var item in users.Where(m=>m.Role == "Student").ToList())
+                foreach (var item in users.Where(m => m.Role == "Student").ToList())
                 {
                     if (!dic.ContainsKey(item.UserId))
                     {
@@ -131,7 +128,7 @@ namespace web_app.Controllers
             {
                 ViewData["error"] = error;
             }
-            var ff = model.FirstOrDefault(m => m.StartDate == DateTime.Parse("21.04.2023 10:00")); 
+            var ff = model.FirstOrDefault(m => m.StartDate == DateTime.Parse("21.04.2023 10:00"));
             return View(modl);
         }
 

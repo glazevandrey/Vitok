@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using web_app.Requests.Get;
 using web_app.Requests;
+using web_app.Requests.Get;
 using web_app.Services;
-using web_server.DbContext;
-using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
+using web_server.Services.Interfaces;
 
 namespace web_app.Controllers
 {

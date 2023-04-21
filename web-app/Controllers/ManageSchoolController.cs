@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using web_app.Requests.Get;
 using web_app.Requests;
+using web_app.Requests.Get;
 using web_app.Services;
 using web_server.Models;
 using web_server.Models.DBModels;
-using Newtonsoft.Json;
 
 namespace web_app.Controllers
 {
@@ -62,7 +61,7 @@ namespace web_app.Controllers
 
             CustomRequestGet request2 = new GetAllUsersRequest(Request.Cookies[".AspNetCore.Application.Id"]);
             var result2 = _requestService.SendGet(request2, HttpContext);
-            
+
             var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString(), Program.settings);
             Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
             foreach (var item in users)

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
@@ -25,7 +24,7 @@ namespace web_server.Services
         public TutorService(IMapper mapper, UserRepository userRepository, ScheduleRepository scheduleRepository, CourseRepository courseRepository)
         {
             _mapper = mapper;
-            _courseRepository= courseRepository;
+            _courseRepository = courseRepository;
             _userRepository = userRepository;
             _scheduleRepository = scheduleRepository;
         }
@@ -52,25 +51,25 @@ namespace web_server.Services
             var split = args.Split(';');
             var tutor_id = split[0];
             var dateTime = DateTime.Parse(split[1]);
-            var tutor =  await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
+            var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
             if (tutor != null)
             {
-                tutor.UserDates.Add(new UserDate() { dateTime = dateTime});
+                tutor.UserDates.Add(new UserDate() { dateTime = dateTime });
                 var model = new Schedule()
                 {
                     Looped = Convert.ToBoolean(split[2]),
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     TutorId = tutor.UserId,
                     UserId = 1,
-                    Course = new Course() { Id = 1},
+                    Course = new Course() { Id = 1 },
                     StartDate = dateTime,
                 };
 
                 await _scheduleRepository.AddSchedule(model);
                 //tutor.Schedules.Add(_mapper.Map<ScheduleDTO>(model));
                 await _userRepository.SaveChanges(tutor);
-       
-             
+
+
 
                 //await _scheduleRepository.AddSchedule(model);
             }
@@ -88,13 +87,13 @@ namespace web_server.Services
             var course_id = split[4];
 
             var dateTime = DateTime.Parse(split[1]);
-            var tutor = (Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
+            var tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
             var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(user_id));
             var course = await _courseRepository.GetCourseById(Convert.ToInt32(course_id));
-          
+
             //var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
             //var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(user_id));
-           // var course = TestData.Courses.FirstOrDefault(m => m.Id == Convert.ToInt32(course_id));
+            // var course = TestData.Courses.FirstOrDefault(m => m.Id == Convert.ToInt32(course_id));
             if (user.Credit.Where(m => m.Repaid == false).ToList().Count >= 3)
             {
                 return null;
@@ -129,9 +128,9 @@ namespace web_server.Services
 
                 var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
                 list.Reverse();
-                
-              //  var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
-              
+
+                //  var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
+
 
                 var sorted = ScheduleService.SortSchedulesForUnpaid(list);
 
@@ -151,7 +150,7 @@ namespace web_server.Services
                 var type = Convert.ToBoolean(split[2]) == true ? "постоянное" : "разовое";
 
                 await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName).Replace("{type}", type)
-                    .Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper );
+                    .Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
 
                 await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName).Replace("{type}", type)
@@ -191,7 +190,7 @@ namespace web_server.Services
                 if (item.WaitPaymentDate != DateTime.MinValue)
                 {
                     item.WaitPaymentDate = DateTime.MinValue;
-                   // await _scheduleRepository.Update(item);
+                    // await _scheduleRepository.Update(item);
 
                 }
             }
@@ -215,7 +214,7 @@ namespace web_server.Services
 
             var managerId = _userRepository.GetManagerId();
             // TestData.UserList.FirstOrDefault(m => m.Role == "Manager").UserId;
-            
+
 
 
             await NotifHub.SendNotification(Constants.NOTIF_TUTOR_REJECT_USER_FMANAGER
@@ -313,10 +312,10 @@ namespace web_server.Services
             var split = args.Split(';');
             var tutor_id = split[0];
             var dateTime = DateTime.Parse(split[1]);
-            var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
+            var tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
             if (tutor != null)
             {
-                var rem = tutor.UserDates.FirstOrDefault(m=>m.dateTime == dateTime);
+                var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
                 tutor.UserDates.Remove(rem);
                 await _userRepository.Update(tutor);
                 //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
@@ -327,14 +326,14 @@ namespace web_server.Services
 
         public async Task<Tutor> UpdateTutor(string args)
         {
-            
+
             var tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(args);
             // var old = (Tutor)await _userRepository.GetUserById(tutor.UserId);
             // var old = (Tutor)await _userRepository.GetUserById(tutor.UserId);
             // var old = TestData.UserList.FirstOrDefault(m => m.UserId == tutor.UserId);
             var old = await _userRepository.GetTutor(tutor.UserId);
             var schedules = old.Schedules;
-          //  var schedules = TestData.Schedules.Where(m => m.TutorId == tutor.UserId).ToList();
+            //  var schedules = TestData.Schedules.Where(m => m.TutorId == tutor.UserId).ToList();
 
             foreach (var item in schedules)
             {
@@ -382,10 +381,10 @@ namespace web_server.Services
             //        item.TutorId = old.UserId;
             //    }
             //}
-           await _userRepository.SaveChanges(old);
+            await _userRepository.SaveChanges(old);
             // await _userRepository.Update(_mapper.Map<Tutor>(old));
             //await _userRepository.UpdateTutorCourses(old);
-           
+
             //old.Courses = new List<TutorCourse>();
             //await _userRepository.Update(old);
             //await _userRepository.SaveModel(old);

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -33,7 +32,7 @@ namespace web_server.Controllers
         CourseRepository _courseRepository;
         DataContext data;
         IMapper map;
-        public HomeController(IMapper maa, DataContext data, UserRepository userRepository, CourseRepository courseRepository, ContactsRepository contactsRepository, IStatisticsService statisticsService ,IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
+        public HomeController(IMapper maa, DataContext data, UserRepository userRepository, CourseRepository courseRepository, ContactsRepository contactsRepository, IStatisticsService statisticsService, IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, ILessonsService lessonsService, IScheduleService scheduleService)
         {
             map = maa;
             this.data = data;
@@ -69,7 +68,7 @@ namespace web_server.Controllers
 
                     throw ex;
                 }
-            
+
                 data.Courses.AddRange(TestData.Courses);
                 try
                 {
@@ -89,7 +88,7 @@ namespace web_server.Controllers
                 {
 
                     Role = "Student",
-                   
+
                     //UserId = 3
                 };
                 data.Students.Add(gg);
@@ -115,7 +114,7 @@ namespace web_server.Controllers
                     //{
                     //    dd.Id = 0;
                     //}
-                    d.Courses.Add(new TutorCourse() { CourseId  = TestData.Courses.FirstOrDefault(m=>m.Title == "ОГЭ").Id});
+                    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
                     data.Tutors.Add(d);
                 }
                 try
@@ -140,8 +139,8 @@ namespace web_server.Controllers
                         data.Entry(map.Map<TutorDTO>(item)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                     }
 
-                        data.Entry(map.Map<ManagerDTO>(manager)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-                    
+                    data.Entry(map.Map<ManagerDTO>(manager)).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+
 
                 }
                 catch (Exception ex)
@@ -162,7 +161,7 @@ namespace web_server.Controllers
                     data.SaveChanges();
                     foreach (var item in map.Map<List<ScheduleDTO>>(TestData.Schedules))
                     {
-                       
+
                         data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                     }
 
@@ -192,8 +191,8 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
             var args = form.Keys.First().Split(";");
-            var json =  await _authService.LogIn(args[0], args[1], HttpContext);
-          
+            var json = await _authService.LogIn(args[0], args[1], HttpContext);
+
             return json;
         }
 
@@ -343,7 +342,7 @@ namespace web_server.Controllers
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _userRepository.GetRegistrationByUserId(Convert.ToInt32(args))));
         }
 
-        [HttpGet("getTariffs", Name ="getTariffs")]
+        [HttpGet("getTariffs", Name = "getTariffs")]
         public async Task<string> GetTariffs()
         {
             var tariffs = await _courseRepository.GetAllTariffs();

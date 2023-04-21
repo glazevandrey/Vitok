@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using web_server.DbContext;
 
 namespace web_server.Models.DBModels
 {
     public abstract class User : TransferModel
     {
         [Key]
-        
+
         public int UserId { get; set; }
         public string Password { get; set; }
         public string FirstName { get; set; }
@@ -68,7 +67,7 @@ namespace web_server.Models.DBModels
         [NotMapped]
 
         public virtual List<UserDate> UserDates { get; set; } = new List<UserDate>();
-  
+
 
     }
 }

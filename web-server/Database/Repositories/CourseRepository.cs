@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +12,14 @@ namespace web_server.Database.Repositories
     {
         DataContext _context;
         IMapper _mapper;
-        public CourseRepository(IMapper mapper,DataContext context)
+        public CourseRepository(IMapper mapper, DataContext context)
         {
             _mapper = mapper;
             _context = context;
         }
         public async Task<bool> RemoveCourse(int id)
         {
-            var rem = _context.Courses.FirstOrDefault(m=>m.Id == id);
+            var rem = _context.Courses.FirstOrDefault(m => m.Id == id);
             _context.Courses.Remove(rem);
             await _context.SaveChangesAsync();
             return true;
@@ -28,18 +27,18 @@ namespace web_server.Database.Repositories
 
         public async Task<Course> GetCourseById(int id)
         {
-            var res = await _context.Courses.Include(m=>m.Goal).FirstOrDefaultAsync(m => m.Id == id);
+            var res = await _context.Courses.Include(m => m.Goal).FirstOrDefaultAsync(m => m.Id == id);
 
-                _context.Entry(res).State = EntityState.Detached;
-            
-         
+            _context.Entry(res).State = EntityState.Detached;
+
+
             return _mapper.Map<Course>(res);
         }
 
         public async Task<List<Course>> GetAllCourses()
         {
 
-            var res = await _context.Courses.Include(m=>m.Goal).ToListAsync();
+            var res = await _context.Courses.Include(m => m.Goal).ToListAsync();
 
             foreach (var item in res)
             {
@@ -55,19 +54,19 @@ namespace web_server.Database.Repositories
         }
         public async Task<List<Goal>> GetAllGoals()
         {
-            var res = await _context.Goals.Include(m=>m.Courses).ToListAsync();
-         
+            var res = await _context.Goals.Include(m => m.Courses).ToListAsync();
+
             foreach (var item in res)
             {
                 _context.Entry(item).State = EntityState.Detached;
-                
+
             }
             var dd = _context.ChangeTracker.Entries();
             foreach (var item in dd)
             {
                 item.State = EntityState.Detached;
             }
-            return  _mapper.Map<List<Goal>>(res);
+            return _mapper.Map<List<Goal>>(res);
         }
         public async Task<List<Tariff>> GetAllTariffs()
         {
@@ -75,12 +74,12 @@ namespace web_server.Database.Repositories
         }
         public async Task<Goal> GetGoalById(int id)
         {
-            var res = await _context.Goals.Include(m=>m.Courses).FirstOrDefaultAsync(m => m.Id == id);
+            var res = await _context.Goals.Include(m => m.Courses).FirstOrDefaultAsync(m => m.Id == id);
             return _mapper.Map<Goal>(res);
         }
         public async Task<bool> Update(CourseDTO course)
         {
-             _context.Courses.Update(course);
+            _context.Courses.Update(course);
             await _context.SaveChangesAsync();
             _context.Entry(course).State = EntityState.Detached;
             var dd = _context.ChangeTracker.Entries();
@@ -104,7 +103,7 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-            
+
             return true;
         }
     }

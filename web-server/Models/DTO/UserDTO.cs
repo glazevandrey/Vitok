@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System;
 using web_server.Models.DBModels;
-using web_server.Models.DTO;
 
 namespace web_server.Models.DTO
 {

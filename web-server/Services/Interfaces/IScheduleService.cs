@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
 

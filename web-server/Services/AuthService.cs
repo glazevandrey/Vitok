@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Services.Interfaces;
@@ -20,7 +19,7 @@ namespace web_server.Services
         ScheduleRepository _scheduleRepository;
         NotificationRepository _notificationRepository;
         IMapper _mapper;
-        public AuthService(IJsonService jsonService, IMapper mapper,  UserRepository userRepository, ScheduleRepository scheduleRepository, NotificationRepository notificationRepository)
+        public AuthService(IJsonService jsonService, IMapper mapper, UserRepository userRepository, ScheduleRepository scheduleRepository, NotificationRepository notificationRepository)
         {
             _mapper = mapper;
             _jsonService = jsonService;
@@ -53,7 +52,7 @@ namespace web_server.Services
             var userRole = (await _userRepository.GetUserById(Convert.ToInt32(id))).Role;
             //var userRole = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id)).Role;
             string json = "";
-            if(userRole == "Student")
+            if (userRole == "Student")
             {
                 student = (Student)await _userRepository.GetUserById(Convert.ToInt32(id));
 
@@ -94,20 +93,20 @@ namespace web_server.Services
 
                 json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
-            
+
             return json;
         }
 
         public async Task<string> LogIn(string login, string password, HttpContext context)
         {
-           
+
             TokenProvider _tokenProvider = new TokenProvider(_userRepository);
             var res = await _tokenProvider.LoginUser(login, password.Trim());
-            if(res == null || res.Count == 0)
+            if (res == null || res.Count == 0)
             {
                 return _jsonService.PrepareErrorJson("Неверное имя пользователя или пароль");
 
@@ -171,7 +170,7 @@ namespace web_server.Services
 
                 if (reg.WantThis.Count > 1)
                 {
-                    
+
                     foreach (var item in reg.WantThis)
                     {
                         if (item.dateTime < nearest)
@@ -185,12 +184,12 @@ namespace web_server.Services
                 foreach (var item in reg.WantThis)
                 {
 
-                    
+
                     var sch = new Schedule()
                     {
                         TutorId = reg.TutorId,
                         Course = reg.Course,
-                        TutorFullName = tutor.FirstName + " " +tutor.LastName,
+                        TutorFullName = tutor.FirstName + " " + tutor.LastName,
                         UserId = reg.UserId,
                         UserName = user.FirstName,
                         CreatedDate = DateTime.Now,
@@ -210,11 +209,11 @@ namespace web_server.Services
 
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24 * 3600000, 24 * 3600000));
                     var timer = Program.Timers[id];
-                    
-                    await  NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
+
+                    await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
-                        Replace("{studentName}", user.FirstName + " " +  user.LastName).
+                        Replace("{studentName}", user.FirstName + " " + user.LastName).
                         Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName),
                         (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 

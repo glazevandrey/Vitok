@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using web_app.Requests.Get;
-using web_app.Requests;
-using web_app.Services;
-using web_server.DbContext;
-using web_server.Services.Interfaces;
-using web_server.Models.DBModels;
 using System.Collections.Generic;
+using web_app.Requests;
+using web_app.Requests.Get;
+using web_app.Services;
+using web_server.Models.DBModels;
+using web_server.Services.Interfaces;
 
 namespace web_app.Controllers
 {
@@ -39,16 +38,16 @@ namespace web_app.Controllers
             ViewData["tariffs"] = tariffs;
             ViewData["usertoken"] = user.UserId;
 
-            if(user.Role == "Student")
+            if (user.Role == "Student")
             {
                 ViewData["lessons"] = ((Student)user).LessonsCount;
             }
 
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
-            if ( user.Role == "Student")
+            if (user.Role == "Student")
             {
-                
+
                 ViewData["firstLogin"] = ((Student)user).FirstLogin;
             }
             if (error != null)
@@ -61,7 +60,7 @@ namespace web_app.Controllers
         [HttpPost("setLessons", Name = "setLessons")]
         public IActionResult SetLessons([FromForm] string userId, [FromForm] string count, [FromForm] string isTrialPay, [FromForm] string count3)
         {
-            if(count == 0.ToString() && count3 == 0.ToString())
+            if (count == 0.ToString() && count3 == 0.ToString())
             {
                 return RedirectToAction("Index", "Balance", new { error = "Нельзя пополнить счет на 0 занятий" });
 

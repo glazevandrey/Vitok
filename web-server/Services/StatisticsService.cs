@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Services.Interfaces;
@@ -530,7 +528,7 @@ namespace web_server.Services
                 if (first.PaymentDate == DateTime.MinValue) // Если первый элемент имеет PaymentAmount = "0"
                 {
                     var next = ordered.FirstOrDefault(m => m.PaymentDate != DateTime.MinValue);
-                    
+
                     if (next != null) // Если следующий элемент существует
                     {
                         first.PaymentAmount = next.PaymentAmount; // Изменить PaymentAmount первого элемента
@@ -542,7 +540,7 @@ namespace web_server.Services
 
                 hh[item.Key] = ordered.ToList();
             }
-            
+
 
             return hh;
         }

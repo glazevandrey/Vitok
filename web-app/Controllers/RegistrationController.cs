@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR.Client;
 using System;
-using System.Linq;
-using web_app.Requests.Get;
 using web_app.Requests;
+using web_app.Requests.Get;
 using web_app.Services;
-using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
+using web_server.Services.Interfaces;
 
 namespace web_app.Controllers
 {

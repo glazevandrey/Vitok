@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace web_server.Models.DBModels
 {
     public class Chat
     {
         [Key]
-        public int Id { get; set;}
+        public int Id { get; set; }
         public int UserId { get; set; }
         public int InChat { get; set; }
         public List<ConnectionToken> ConnectionTokens { get; set; } = new List<ConnectionToken>();

@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using web_app.Requests.Get;
-using web_app.Requests;
-using web_app.Services;
-using web_server.DbContext;
-using web_server.Models.DBModels;
 using System.Collections.Generic;
+using web_app.Requests;
+using web_app.Requests.Get;
+using web_app.Services;
+using web_server.Models.DBModels;
 
 namespace web_app.Controllers
 {
@@ -43,7 +42,7 @@ namespace web_app.Controllers
             var req2 = new GetTariffsRequest();
             var res2 = _requestService.SendGet(req2);
             var tariffs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tariff>>(res2.result.ToString());
-            
+
             return View(tariffs);
         }
     }

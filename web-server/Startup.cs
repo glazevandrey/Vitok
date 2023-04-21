@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -6,16 +5,11 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Linq;
-using web_server.Database;
 using web_server.Database.Repositories;
-using web_server.DbContext;
 using web_server.Injection;
 using web_server.Services;
 
@@ -23,7 +17,7 @@ namespace web_server
 {
     public class Startup
     {
-        
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -44,7 +38,7 @@ namespace web_server
             services.AddControllers();
 
 
-            
+
             services.AddAuthentication(options =>
             {
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -82,10 +76,10 @@ namespace web_server
             //IMapper mapper = mapperConfig.CreateMapper();
             //services.AddSingleton(mapper);
             // ...
-            
-            
-            
-            
+
+
+
+
             services.AddSingleton<IHostedService, NotificationBackgroundService>();
 
             //            services.AddHostedService<NotificationBackgroundService>();
@@ -160,7 +154,7 @@ namespace web_server
                         }
                         else
                         {
-                            
+
                             context.Request.Headers.Add("Authorization", "Bearer " + context.Request.Query["token"]);
                         }
                     }

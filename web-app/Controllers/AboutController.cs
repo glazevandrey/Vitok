@@ -2,10 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using web_app.Requests.Get;
 using web_app.Requests;
+using web_app.Requests.Get;
 using web_app.Services;
-using web_server.DbContext;
 using web_server.Models.DBModels;
 
 namespace web_app.Controllers
@@ -37,7 +36,7 @@ namespace web_app.Controllers
             var req2 = new GetCourses();
             var response2 = _requestService.SendGet(req2, HttpContext);
 
-            ViewData["courses"] =Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
+            ViewData["courses"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
             var data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(response.result.ToString(), Program.settings);
             return View(data);
         }
@@ -82,7 +81,7 @@ namespace web_app.Controllers
             var req2 = new GetCourses();
             var response2 = _requestService.SendGet(req2, HttpContext);
 
-           var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
+            var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
 
             Registration registration = new Registration
             {

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Services.Interfaces;
@@ -21,12 +20,12 @@ namespace web_server.Controllers
         IAccountService _accountService;
         IScheduleService _scheduleService;
         IMapper _mapper;
-        
+
         NotificationRepository _notificationRepository;
-        public AccountController( IMapper mapper,IJsonService jsonService, ILessonsService lessonsService, IAccountService accountService, IScheduleService scheduleService, NotificationRepository notificationRepository)
+        public AccountController(IMapper mapper, IJsonService jsonService, ILessonsService lessonsService, IAccountService accountService, IScheduleService scheduleService, NotificationRepository notificationRepository)
         {
             _mapper = mapper;
-            _notificationRepository= notificationRepository;
+            _notificationRepository = notificationRepository;
             _jsonService = jsonService;
             _lessonsService = lessonsService;
             _accountService = accountService;
@@ -43,7 +42,7 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var user =await  _accountService.SaveAccountInfo(form.First().Key);
+            var user = await _accountService.SaveAccountInfo(form.First().Key);
             if (user != null)
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(user);
@@ -76,7 +75,7 @@ namespace web_server.Controllers
 
         [Models.Authorize]
         [HttpPost("addlessons", Name = "addlessons")]
-        public async  Task<string> AddLessons()
+        public async Task<string> AddLessons()
         {
             var form = Request.Form;
             if (form == null || form.Keys.Count == 0)
@@ -147,7 +146,7 @@ namespace web_server.Controllers
         public async Task MarkAsRead([FromForm] int id)
         {
             var sc = await _notificationRepository.GetNotification(id);
-           // var sc = TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id));
+            // var sc = TestData.Notifications.FirstOrDefault(m => m.Id == Convert.ToInt32(id));
             if (sc == null)
             {
                 return;
@@ -187,7 +186,7 @@ namespace web_server.Controllers
                     throw x;
                 }
             }
-            
+
             return _jsonService.PrepareSuccessJson(json);
 
         }

@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using web_app.Requests.Get;
+using System.Collections.Generic;
+using System.Linq;
 using web_app.Requests;
 using web_app.Services;
 using web_server.Services.Interfaces;
-using web_server.Models.DBModels;
-using System.Collections.Generic;
-using System.Linq;
-using web_server.Database;
-using Microsoft.EntityFrameworkCore;
-using web_server.DbContext;
-using web_server.Models.DTO;
 
 namespace web_app.Controllers
 {
@@ -43,7 +37,7 @@ namespace web_app.Controllers
                 }
                 else
                 {
-                     return Redirect("/schedule");
+                    return Redirect("/schedule");
 
                 }
             }
@@ -58,7 +52,7 @@ namespace web_app.Controllers
         }
 
         [HttpPost]
-        public IActionResult LoginUser([FromForm]string email, [FromForm] string password)
+        public IActionResult LoginUser([FromForm] string email, [FromForm] string password)
         {
             if (email == null || password == null)
             {
@@ -72,7 +66,7 @@ namespace web_app.Controllers
                 return RedirectToAction("login", new { error = response.result });
             }
 
-            Dictionary<string, string> keys = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string,string>>(response.result.ToString());
+            Dictionary<string, string> keys = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(response.result.ToString());
             HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", keys.First().Key.ToString(),
             new CookieOptions
             {
@@ -82,8 +76,8 @@ namespace web_app.Controllers
 
             HttpContext.Request.Headers.Add(".AspNetCore.Application.Id", keys.First().Key.ToString());
 
-          
-            return RedirectToAction("login", new { role = keys.First().Value.ToString()});
+
+            return RedirectToAction("login", new { role = keys.First().Value.ToString() });
 
 
         }

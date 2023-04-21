@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
-using web_server.DbContext;
-using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
 using web_server.Services.Interfaces;
@@ -34,10 +31,10 @@ namespace web_server.Services
             var id = Convert.ToInt32(args[0]);
             var title = args[1];
             var goal = args[2];
-            var course =  _mapper.Map<CourseDTO>(await _courseRepository.GetCourseById(id));
+            var course = _mapper.Map<CourseDTO>(await _courseRepository.GetCourseById(id));
             course.Title = title;
             course.Goal = new GoalDTO();
-            course.Goal =_mapper.Map<GoalDTO>(await _courseRepository.GetGoalById(Convert.ToInt32(goal)));
+            course.Goal = _mapper.Map<GoalDTO>(await _courseRepository.GetGoalById(Convert.ToInt32(goal)));
             await _courseRepository.Update(course);
             return Newtonsoft.Json.JsonConvert.SerializeObject("OK");
         }

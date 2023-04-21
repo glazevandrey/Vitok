@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using web_server.Database;
 using web_server.Database.Repositories;
-using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
@@ -22,7 +19,7 @@ namespace web_server.Services
         TariffRepositories _tariffRepositories;
         NotificationRepository _notificationRepository;
         IMapper _mapper;
-        public LessonsService(IMapper mapper, UserRepository userRepository,  ScheduleRepository scheduleRepository, TariffRepositories tariffRepositories, 
+        public LessonsService(IMapper mapper, UserRepository userRepository, ScheduleRepository scheduleRepository, TariffRepositories tariffRepositories,
             CourseRepository courseRepository, NotificationRepository notificationRepository)
         {
             _mapper = mapper;
@@ -36,7 +33,7 @@ namespace web_server.Services
         public async Task<User> AddLessonsToUser(string[] args)
         {
             var user = await _userRepository.GetStudent(Convert.ToInt32(args[0]));
-       
+
             user.LessonsCount += Convert.ToInt32(args[1]);
 
             var isTrial = Convert.ToBoolean(args[2]);
@@ -70,7 +67,7 @@ namespace web_server.Services
 
                 user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(tariff.Amount), Count = lessonCount }, CustomMessage = $"Оплата тарифа: {tariff.Title}" });
 
-              
+
             }
             else
             {
@@ -83,14 +80,14 @@ namespace web_server.Services
                     user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = 1000 * lessonCount, Count = lessonCount }, CustomMessage = $"Оплачено занятий: {lessonCount}" });
                 }
 
-                if(user.Money.FirstOrDefault(m=>m.Cost == 1000) != null)
+                if (user.Money.FirstOrDefault(m => m.Cost == 1000) != null)
                 {
-                    user.Money.FirstOrDefault(m=>m.Cost == 1000).Count+= lessonCount;
+                    user.Money.FirstOrDefault(m => m.Cost == 1000).Count += lessonCount;
 
                 }
                 else
                 {
-                    user.Money.Add(new UserMoney() {Cost = 1000, Count = lessonCount });
+                    user.Money.Add(new UserMoney() { Cost = 1000, Count = lessonCount });
                 }
             }
 
@@ -143,7 +140,7 @@ namespace web_server.Services
                     item.Count -= how_minus;
                 }
             }
-                 
+
 
             var waited = user.Schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue && m.UserId == user.UserId).ToList();
             if (waited.Count != 0 && user.LessonsCount > 0)
@@ -167,7 +164,7 @@ namespace web_server.Services
                 await _userRepository.SaveChanges(user);
 
             }
-            return  _mapper.Map<Student>(user);
+            return _mapper.Map<Student>(user);
         }
 
         public async Task<Schedule> RescheduleLesson(string args, IHubContext<NotifHub> _hubContext)
@@ -202,7 +199,7 @@ namespace web_server.Services
 
             if (Convert.ToBoolean(loop))
             {
-                var alredyUsed = tutor.Schedules.Where(m=>m.StartDate.DayOfWeek == newDateTime.DayOfWeek && m.StartDate.Hour == newDateTime.Hour).ToList();
+                var alredyUsed = tutor.Schedules.Where(m => m.StartDate.DayOfWeek == newDateTime.DayOfWeek && m.StartDate.Hour == newDateTime.Hour).ToList();
 
                 if (alredyUsed.Count != 0)
                 {
@@ -215,13 +212,13 @@ namespace web_server.Services
                     UserId = user_id,
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     UserName = user.FirstName + " " + user.LastName,
-                    Course = _mapper.Map<Course>(tutor.Courses.FirstOrDefault(m=>m.CourseId == courseId).Course),
+                    Course = _mapper.Map<Course>(tutor.Courses.FirstOrDefault(m => m.CourseId == courseId).Course),
                     StartDate = newDateTime,
                     Looped = true,
                 };
 
-                var model = user.Schedules.FirstOrDefault(m=>m.StartDate == oldDateTime);
-             
+                var model = user.Schedules.FirstOrDefault(m => m.StartDate == oldDateTime);
+
                 if (model.WaitPaymentDate != DateTime.MinValue)
                 {
                     new_model.WaitPaymentDate = model.WaitPaymentDate;
@@ -257,7 +254,7 @@ namespace web_server.Services
             else
             {
                 var alredyUsed = tutor.Schedules.Where(m => m.StartDate == newDateTime).ToList();
-               
+
                 if (alredyUsed.Count != 0)
                 {
                     return null;
@@ -268,7 +265,7 @@ namespace web_server.Services
                     Initiator = initiator,
                     NewTime = newDateTime,
                     OldTime = oldDateTime,
-                    Reason = reason,          
+                    Reason = reason,
                 };
 
                 var new_model = new Schedule
@@ -277,7 +274,7 @@ namespace web_server.Services
                     UserId = user_id,
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     UserName = user.FirstName + " " + user.LastName,
-                    Course = _mapper.Map<Course>(tutor.Courses.FirstOrDefault(m=>m.CourseId == courseId).Course),
+                    Course = _mapper.Map<Course>(tutor.Courses.FirstOrDefault(m => m.CourseId == courseId).Course),
                     StartDate = newDateTime,
                     Looped = false,
                 };
@@ -300,7 +297,7 @@ namespace web_server.Services
                 old.RescheduledLessons.Add(new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason });
 
                 user.Schedules.Add(_mapper.Map<ScheduleDTO>(new_model));
-           
+
                 await CalculateNoPaidWarn(user, _hubContext);
 
                 // отправка юзеру что разовый перенос
@@ -319,7 +316,7 @@ namespace web_server.Services
                 return new_model;
             }
         }
-        
+
         public async Task CalculateNoPaidWarn(StudentDTO user, IHubContext<NotifHub> _hubContext)
         {
 
@@ -329,7 +326,7 @@ namespace web_server.Services
                 {
                     user.StartWaitPayment = DateTime.Now;
                 }
-                var ff = user.Schedules.Where(m=>m.WaitPaymentDate != DateTime.MinValue).ToList();
+                var ff = user.Schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
                 //var ff = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue);
                 //var ff = TestData.Schedules.Where(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue).ToList();
                 if (ff.Count > 0)
@@ -339,9 +336,9 @@ namespace web_server.Services
                         item.WaitPaymentDate = DateTime.MinValue;
                     }
                 }
-                
+
                 //await _scheduleRepository.UpdateRange(ff);
-                var list = user.Schedules.Where(m=> m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).ToList();
+                var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).ToList();
                 //var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
                 list.Reverse();
                 //var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
@@ -369,7 +366,7 @@ namespace web_server.Services
                 var manager = (await _userRepository.GetManagerId());
                 await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
                 await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
-                    user.FirstName + " " + user.LastName),manager.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
+                    user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
             }
 

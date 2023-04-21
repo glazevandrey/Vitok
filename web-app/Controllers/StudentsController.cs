@@ -1,22 +1,14 @@
-﻿using CsvHelper;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using web_app.Requests.Get;
 using web_app.Requests;
+using web_app.Requests.Get;
 using web_app.Services;
-using web_server.DbContext;
-using web_server.Models;
-using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
+using web_server.Services.Interfaces;
 
 namespace web_app.Controllers
 {
@@ -54,7 +46,7 @@ namespace web_app.Controllers
             }
 
             var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString(), Program.settings);
-            
+
             ViewData["usertoken"] = currUser.UserId;
             ViewData["photoUrl"] = currUser.PhotoUrl;
             ViewData["displayName"] = currUser.FirstName + " " + currUser.LastName;

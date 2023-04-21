@@ -12,12 +12,12 @@ namespace web_server.Services
         UserRepository _userRepository;
         public SenderService(UserRepository userRepository)
         {
-            _userRepository= userRepository;
+            _userRepository = userRepository;
         }
         public async Task SendMessage(int id, string message2)
         {
             var user = await _userRepository.GetUserById(id);
-            if(user == null)
+            if (user == null)
             {
                 return;
             }

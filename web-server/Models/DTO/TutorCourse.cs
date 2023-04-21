@@ -10,6 +10,6 @@ namespace web_server.Models.DTO
         public int? CourseId { get; set; }
         public CourseDTO Course { get; set; }
         public int? TutorId { get; set; }
-        public TutorDTO  Tutor {get;set;}
+        public TutorDTO Tutor { get; set; }
     }
 }

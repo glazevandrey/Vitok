@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
 
@@ -60,7 +59,7 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-           
+
         }
         public async Task Update(ScheduleDTO schedule)
         {
@@ -69,7 +68,7 @@ namespace web_server.Database.Repositories
                 var dd = _context.ChangeTracker.Entries();
                 //var mapped = _mapper.Map<ScheduleDTO>(schedule);
                 await _context.SaveChangesAsync();
-                    _context.Entry(schedule).State = EntityState.Detached;
+                _context.Entry(schedule).State = EntityState.Detached;
 
             }
             catch (Exception ex)
@@ -78,7 +77,7 @@ namespace web_server.Database.Repositories
                 Thread.Sleep(1000);
                 await Update(schedule);
             }
-     
+
         }
         public async Task Update(Schedule schedule)
         {
@@ -118,8 +117,8 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-           
-           // return _mapper.Map<ScheduleDTO>(mapped);
+
+            // return _mapper.Map<ScheduleDTO>(mapped);
         }
 
         public async Task<List<ScheduleDTO>> GetSchedulesByFunc(Func<ScheduleDTO, bool> func)
@@ -128,7 +127,7 @@ namespace web_server.Database.Repositories
             {
                 if (func == null)
                 {
-                    var res = await _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m=>m.Tasks).Include(m=>m.RescheduledLessons).Include(m=>m.SkippedDates).Include(m=>m.ReadyDates).Include(m=>m.PaidLessons).ToListAsync();
+                    var res = await _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.Tasks).Include(m => m.RescheduledLessons).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).ToListAsync();
                     return res;
 
                     //return _mapper.Map<List<Schedule>>(res);
@@ -141,15 +140,15 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-           
+
         }
         public async Task<ScheduleDTO> GetScheduleByFunc(Func<ScheduleDTO, bool> func)
         {
-            var res =  _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m=>m.SkippedDates).Include(m=>m.ReadyDates).Include(m=>m.PaidLessons).Include(m=>m.RescheduledLessons).Include(m=>m.Tasks).FirstOrDefault(func);
+            var res = _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).Include(m => m.RescheduledLessons).Include(m => m.Tasks).FirstOrDefault(func);
             //_context.Entry(res).State = EntityState.Detached;
             return res;
             //return (_mapper.Map<Schedule>(res));
-            
+
         }
         public async Task<List<RescheduledLessons>> GetReschedulesByFunc(Func<RescheduledLessons, bool> func)
         {

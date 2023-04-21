@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using web_server.Models.DBModels;
 
 namespace web_server.Models.DTO
 {

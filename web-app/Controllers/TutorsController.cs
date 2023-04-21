@@ -1,13 +1,12 @@
-﻿    using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using web_app.Requests.Get;
 using web_app.Requests;
+using web_app.Requests.Get;
 using web_app.Services;
-using web_server.DbContext;
-using web_server.Services.Interfaces;
 using web_server.Models.DBModels;
+using web_server.Services.Interfaces;
 
 namespace web_app.Controllers
 {
@@ -86,7 +85,7 @@ namespace web_app.Controllers
             var req3 = new GetCourses();
             var res3 = _requestService.SendGet(req3);
 
-            var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(res3.result.ToString()); 
+            var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(res3.result.ToString());
             if (course != null)
             {
                 foreach (var item in course)
@@ -113,7 +112,7 @@ namespace web_app.Controllers
                 Courses = listCourses,
             };
 
-            CustomRequestPost req = new CustomRequestPost("api/tutor/updatetutordata", user);     
+            CustomRequestPost req = new CustomRequestPost("api/tutor/updatetutordata", user);
             var response = _requestService.SendPost(req, HttpContext);
             if (response == null)
             {
@@ -148,7 +147,7 @@ namespace web_app.Controllers
                 foreach (var item in course)
                 {
                     var c = coursesList.FirstOrDefault(m => m.Title == item);
-                    
+
                     listCourses.Add(c);
                 }
             }

@@ -1,7 +1,4 @@
 ﻿using AutoMapper;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
@@ -19,7 +16,7 @@ namespace web_server
             CreateMap<UserDTO, User>();
 
             CreateMap<NotificationTaskDTO, NotificationTask>();
-            CreateMap< NotificationTask, NotificationTaskDTO>();
+            CreateMap<NotificationTask, NotificationTaskDTO>();
 
 
             CreateMap<TutorDTO, User>();
@@ -31,7 +28,7 @@ namespace web_server
 
 
             CreateMap<CourseDTO, CourseDTO>();            //            CreateMap<TutorCourse, CourseDTO>();
-            CreateMap<CourseDTO, TutorCourse>().ForMember(m=>m.Course, m=>m.MapFrom(m=>m)).ForMember(m=>m.CourseId, m=>m.MapFrom(m=>m.Id)).ReverseMap();
+            CreateMap<CourseDTO, TutorCourse>().ForMember(m => m.Course, m => m.MapFrom(m => m)).ForMember(m => m.CourseId, m => m.MapFrom(m => m.Id)).ReverseMap();
             CreateMap<Course, TutorCourse>().ForMember(m => m.Course, m => m.MapFrom(m => m)).ForMember(m => m.CourseId, m => m.MapFrom(m => m.Id)).ReverseMap();
 
             // .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.CourseId))

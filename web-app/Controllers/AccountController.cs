@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Security.Permissions;
 using web_app.Requests;
 using web_app.Requests.Get;
 using web_app.Services;
@@ -93,7 +92,7 @@ namespace web_app.Controllers
                 student.PhotoUrl = photoUrl;
                 student.BirthDate = birthDate;
                 student.UserId = userId;
-               req = new CustomRequestPost("api/account/saveuserinfo", student);
+                req = new CustomRequestPost("api/account/saveuserinfo", student);
             }
             else
             {

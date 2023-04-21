@@ -99,7 +99,7 @@ namespace web_app.Services
 
                 string json = "";
                 byte[] byteArray;
-                if(req.Tutor != null)
+                if (req.Tutor != null)
                 {
                     json = JsonSerializer.Serialize(req.Tutor);
                     byteArray = Encoding.UTF8.GetBytes(json);
@@ -110,7 +110,7 @@ namespace web_app.Services
                     byteArray = Encoding.UTF8.GetBytes(json);
 
                 }
-              
+
                 request.ContentType = "application/x-www-form-urlencoded";
 
 

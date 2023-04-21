@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server;
-using web_server.Database;
-using web_server.DbContext;
 using web_server.Models;
-using web_server.Models.DBModels;
 using web_server.Services.Interfaces;
 
 namespace vitok.Controllers
@@ -21,7 +18,7 @@ namespace vitok.Controllers
         ITutorService _tutorService;
         IScheduleService _scheduleService;
         IHubContext<NotifHub> _hubContext;
-        
+
         public TutorController(IJsonService jsonService, ILessonsService lessonsService, ITutorService tutorService, IScheduleService scheduleService, IHubContext<NotifHub> hubContext)
         {
             _jsonService = jsonService;
@@ -32,7 +29,7 @@ namespace vitok.Controllers
         }
 
         [HttpGet("getall", Name = "GetAll")]
-        public  async Task<string> GetAllTutors() =>
+        public async Task<string> GetAllTutors() =>
             _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _tutorService.GetAll()));
 
 
@@ -131,7 +128,7 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Tutor not found");
             }
             var args = form.First().Key.Split(";");
-            var success =  await _tutorService.RejectStudent(args, _hubContext);
+            var success = await _tutorService.RejectStudent(args, _hubContext);
             if (!success)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить свободные даты");

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
@@ -33,7 +31,7 @@ namespace web_server.DbContext
             new Tariff() { Amount = 56700, LessonsCount = 81, Title = "ВЫГОДНЫЙ ПАКЕТ ЗАНЯТИЙ 81"}
         };
 
-        public static List<SiteContact> Contacts = new List<SiteContact> { new SiteContact() {  Title = "Телефон", Text = "+790523232" }, new SiteContact { Title = "Телеграм", Text = "@andreyglazev" } };
+        public static List<SiteContact> Contacts = new List<SiteContact> { new SiteContact() { Title = "Телефон", Text = "+790523232" }, new SiteContact { Title = "Телеграм", Text = "@andreyglazev" } };
         public static List<Registration> Registations = new List<Registration>();
         public static List<RescheduledLessons> RescheduledLessons = new List<RescheduledLessons>();
 

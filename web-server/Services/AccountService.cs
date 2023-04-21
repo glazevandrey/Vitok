@@ -2,11 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
-using web_server.DbContext;
-using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
 using web_server.Services.Interfaces;
@@ -19,7 +16,7 @@ namespace web_server.Services
         ScheduleRepository _scheduleRepository;
         public AccountService(UserRepository userRepository, ScheduleRepository scheduleRepository)
         {
-            _scheduleRepository= scheduleRepository;
+            _scheduleRepository = scheduleRepository;
             _userRepository = userRepository;
         }
         public async Task<bool> RemoveFirstLogin(string args)
@@ -134,7 +131,7 @@ namespace web_server.Services
             }
 
             user.Balance -= Convert.ToInt32(count);
-            user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessage= $"Вывод средств"  });
+            user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessage = $"Вывод средств" });
 
             await _userRepository.SaveChanges(user);
             //.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Вывод средств: {count} p." });
