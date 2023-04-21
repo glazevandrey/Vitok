@@ -5,7 +5,7 @@ using System.Linq;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
-using web_server.Models.DTO;
+
 
 namespace web_server.DbContext
 {
@@ -41,7 +41,7 @@ namespace web_server.DbContext
         public static List<ScheduleDTO> Schedules = new List<ScheduleDTO>() {
             new ScheduleDTO() { UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 4, UserId = 3,
 
-                StartDate = DateTime.Parse("19.04.2023 23:00")},
+                StartDate = DateTime.Parse("23.04.2023 13:00")},
 
 
             //new Schedule() { UserName ="Петр Иванов", TutorFullName = "Сергей Глузер", TutorId = 6, UserId = 3,
@@ -68,7 +68,6 @@ namespace web_server.DbContext
             //    Date = new UserDate() { dateTime = DateTime.Parse("13.04.2023 17:00") }, Looped = true, Course = Courses[2]}
 
         };
-        private static List<Chat> Chats { get; set; } = new List<Chat>();
 
         public static List<UserDTO> UserList = new List<UserDTO>()
         {
@@ -96,7 +95,7 @@ namespace web_server.DbContext
                     LastName = "Курочка",
                     MiddleName = "Андреевич",
                     LessonsCount = 1,
-                    //Money = new List<UserMoney>(){ new UserMoney() { Id = 0, Cost = 1000, Count = 1} },
+                    Money = new List<UserMoney>(){ new UserMoney() { Cost = 1000, Count = 1} },
                     BirthDate = DateTime.Parse("12.05.1999"),
                     Password = "123123",
                     WasFirstPayment = true,

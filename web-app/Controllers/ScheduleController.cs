@@ -46,15 +46,6 @@ namespace web_app.Controllers
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             ViewData["usertoken"] = user.UserId;
 
-         
-            //if (!res.success || result == null || !result.success)
-            //{
-            //    return Redirect("/login");
-            //}
-
-            
-           // var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
-
             ViewData["role"] = user.Role;
             ViewData["userid"] = user.UserId;
             var model = new List<Schedule>();
@@ -89,17 +80,7 @@ namespace web_app.Controllers
                 return Redirect("/manageschool");
 
             }
-            else
-            {
-                //req = new GetReSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-                //res = _requestService.SendGet(req, HttpContext);
-
-            }
-
-
-            //var rescheduled =  ;// Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(res.result.ToString());
-            //ViewData["rescheduled"] = rescheduled;
-
+           
 
             CustomRequestGet request2 = new GetAllUsersRequest(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var result2 = _requestService.SendGet(request2, HttpContext);
@@ -115,24 +96,24 @@ namespace web_app.Controllers
             {
                 if (((Student)item).StartWaitPayment != DateTime.MinValue)
                 {
-                    keyValuePairs.Add(item.UserId, item.StartWaitPayment);
+                    keyValuePairs.Add(item.UserId, ((Student)item).StartWaitPayment);
                 }
             }
 
             if (user.Role == "Student")
             {
-                ViewData["firstPay"] = user.WasFirstPayment;
+                ViewData["firstPay"] = ((Student)user).WasFirstPayment;
                 ViewData["firstLogin"] = ((Student)user).FirstLogin;
 
             }
             else
             {
                 var dic = new Dictionary<int, bool>();
-                foreach (var item in users)
+                foreach (var item in users.Where(m=>m.Role == "Student").ToList())
                 {
                     if (!dic.ContainsKey(item.UserId))
                     {
-                        dic.Add(item.UserId, item.WasFirstPayment);
+                        dic.Add(item.UserId, ((Student)item).WasFirstPayment);
                     }
                 }
                 ViewData["firstPay"] = dic;

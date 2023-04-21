@@ -64,11 +64,11 @@ namespace web_server.Services
             var tutor = await _userRepository.GetTutor(model.TutorId);
             //var tutor = (Tutor)await _userRepository.GetUserById(model.TutorId);
 
-            if(tutor.Chat?.Contacts?.FirstOrDefault(m=>m.UserId == model.UserId) == null)
+            if(tutor.Chat != null && tutor.Chat?.Contacts?.FirstOrDefault(m=>m.UserId == model.UserId) == null)
             {
                 tutor.Chat.Contacts.Add(new Contact() { UserId = model.UserId});
             }
-            if (user.Chat?.Contacts?.FirstOrDefault(m => m.UserId == model.UserId) == null)
+            if (user.Chat != null && user.Chat?.Contacts?.FirstOrDefault(m => m.UserId == model.UserId) == null)
             {
                 user.Chat.Contacts.Add(new Contact() { UserId = model.TutorId });
             }
@@ -475,35 +475,40 @@ namespace web_server.Services
                     warn = false;
                     if (user.LessonsCount >= 0)
                     {
-                        user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
+
+                        MakePayment(user, tutor, manager, ref initPay, Status.Пропущен, null, DateTime.MinValue,
+                             $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}",
+                             $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}",
+                             $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}");
+                      
+                        
+                        //user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
+                        //if (user.Money.Count > 0)
+                        //{
+                        //    var for_tutor = 0.0;
+                        //    var for_manager = 0.0;
+
+                        //    var f = user.Money.OrderBy(m => m.Cost).ToList();
+
+                        //    foreach (var item in f)
+                        //    {
+                        //        if (item.Count != 0)
+                        //        {
+                        //            for_tutor = Math.Abs(item.Cost / 100 * 60);
+                        //            for_manager = Math.Abs(item.Cost / 100 * 40);
+                        //            user.Money.FirstOrDefault(m => m.Cost == item.Cost).Count--;
+                        //            initPay = (int)Math.Abs(item.Cost);
+                        //            break;
+                        //        }
+                        //    }
+
+                        //    tutor.Balance += for_tutor;
+                        //    tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" });
+                        //    manager.Balance += for_manager;
+                        //    manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
 
 
-                        if (user.Money.Count > 0)
-                        {
-                            var for_tutor = 0.0;
-                            var for_manager = 0.0;
-
-                            var f = user.Money.OrderBy(m => m.Cost).ToList();
-
-                            foreach (var item in f)
-                            {
-                                if (item.Count != 0)
-                                {
-                                    for_tutor = Math.Abs(item.Cost / 100 * 60);
-                                    for_manager = Math.Abs(item.Cost / 100 * 40);
-                                    user.Money.FirstOrDefault(m => m.Cost == item.Cost).Count--;
-                                    initPay = (int)Math.Abs(item.Cost);
-                                    break;
-                                }
-                            }
-
-                            tutor.Balance += for_tutor;
-                            tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" });
-                            manager.Balance += for_manager;
-                            manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
-
-
-                        }
+                        //}
 
 
                     }
@@ -524,38 +529,44 @@ namespace web_server.Services
 
                 // уведомление ученику и менеджеру что не предупредил
 
-                user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
 
 
                 if (user.Money.Where(m => m.Count > 0).ToList().Count > 0)
                 {
-                    var for_tutor = 0.0;
-                    var for_manager = 0.0;
+                    MakePayment(user,tutor,manager, ref initPay, Status.Пропущен,null, DateTime.MinValue,
+                        $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}",
+                        $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}",
+                        $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}");
+                   
+                    
+                    //var for_tutor = 0.0;
+                    //var for_manager = 0.0;
 
-                    var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
+                    //var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
 
-                    foreach (var item in f)
-                    {
-                        if (item.Count > 0)
-                        {
-                            for_tutor = Math.Abs(item.Cost / 100 * 60);
-                            for_manager = Math.Abs(item.Cost / 100 * 40);
-                            user.Money.FirstOrDefault(m => m.Cost == item.Cost && item.Count > 0).Count--;
-                            initPay = (int)Math.Abs(item.Cost);
-                            break;
-                        }
-                    }
-                    tutor.Balance += for_tutor;
-                    tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" });
+                    //foreach (var item in f)
+                    //{
+                    //    if (item.Count > 0)
+                    //    {
+                    //        for_tutor = Math.Abs(item.Cost / 100 * 60);
+                    //        for_manager = Math.Abs(item.Cost / 100 * 40);
+                    //        user.Money.FirstOrDefault(m => m.Cost == item.Cost && item.Count > 0).Count--;
+                    //        initPay = (int)Math.Abs(item.Cost);
+                    //        break;
+                    //    }
+                    //}
+                    //tutor.Balance += for_tutor;
+                    //tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" });
 
-                    manager.Balance += for_manager;
-                    manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
+                    //manager.Balance += for_manager;
+                    //manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
 
 
 
                 }
                 else
                 {
+                    user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
                     user.Credit.Add(new UserCredit() { Amount = 1000, TutorId = tutor.UserId, ScheduleId = schedule.Id, ScheduleSkippedDate = dateCurr });
                 }
 
@@ -563,6 +574,45 @@ namespace web_server.Services
             }
 
         }
+
+        private void MakePayment(StudentDTO user, TutorDTO tutor, User manager, ref int initPay, Status status, ScheduleDTO schedule, DateTime dateCurr,
+            string userMessage, string tutorMesasge, string managerMessage)
+        {
+
+            user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = userMessage });
+
+            var for_tutor = 0.0;
+            var for_manager = 0.0;
+
+            var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
+
+            foreach (var item in f)
+            {
+                if (item.Count > 0)
+                {
+                    for_tutor = Math.Abs(item.Cost / 100 * 60);
+                    for_manager = Math.Abs(item.Cost / 100 * 40);
+                    user.Money.FirstOrDefault(m => m.Cost == item.Cost && item.Count > 0).Count--;
+                    if(status == Status.Пропущен)
+                    {
+                        initPay = (int)Math.Abs(item.Cost);
+                    }
+                    else if(status == Status.Проведен)
+                    {
+                        schedule.PaidLessons.Add(new PaidLesson() { PaidDate = dateCurr, PaidCount = (int)Math.Abs(item.Cost) });
+                    }
+
+                    break;
+                }
+            }
+            tutor.Balance += for_tutor;
+            tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = tutorMesasge });
+
+            manager.Balance += for_manager;
+            manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = managerMessage});
+
+        }
+
         private async Task ChangeStatusToReady(TutorDTO tutor, StudentDTO user, User manager, ScheduleDTO schedule,
             DateTime dateCurr, DateTime date, string status)
         {
@@ -571,36 +621,41 @@ namespace web_server.Services
 
             if (user.LessonsCount >= 0)
             {
-                user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
+                int x = 0;
+                MakePayment(user, tutor, manager, ref x, Status.Проведен, schedule,dateCurr,
+                    $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}",
+                    $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}",
+                    $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}");
+
+                //user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
 
 
-                if (user.Money.Count > 0)
-                {
-                    var for_tutor = 0.0;
-                    var for_manager = 0.0;
+                //if (user.Money.Count > 0)
+                //{
+                //    var for_tutor = 0.0;
+                //    var for_manager = 0.0;
 
-                    var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
+                //    var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
 
-                    foreach (var item in f)
-                    {
-                        if (item.Count != 0)
-                        {
-                            for_tutor = Math.Abs(item.Cost / 100 * 60);
-                            for_manager = Math.Abs(item.Cost / 100 * 40);
-                            user.Money.FirstOrDefault(m => m.Cost == item.Cost && m.Cost > 0).Count--;
-                            schedule.PaidLessons.Add(new PaidLesson() { PaidDate = dateCurr, PaidCount = (int)Math.Abs(item.Cost) });
-                            break;
-                        }
-                    }
+                //    foreach (var item in f)
+                //    {
+                //        if (item.Count != 0)
+                //        {
+                //            for_tutor = Math.Abs(item.Cost / 100 * 60);
+                //            for_manager = Math.Abs(item.Cost / 100 * 40);
+                //            user.Money.FirstOrDefault(m => m.Cost == item.Cost && m.Cost > 0).Count--;
+                //            schedule.PaidLessons.Add(new PaidLesson() { PaidDate = dateCurr, PaidCount = (int)Math.Abs(item.Cost) });
+                //            break;
+                //        }
+                //    }
 
-                    tutor.Balance += for_tutor;
-                    tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}" });
+                //    tutor.Balance += for_tutor;
+                //    tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}" });
+                //    manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
 
-                    manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за проведенный урок. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
+                //    manager.Balance += for_manager;
 
-                    manager.Balance += for_manager;
-
-                }
+                //}
 
 
             }

@@ -329,10 +329,10 @@ namespace web_server.Database.Repositories
             try
             {
                 var d = await _context.Students.Include(m => m.Credit).Include(m=>m.Chat).ThenInclude(m=>m.Contacts).Include(m => m.Money).Include(m=>m.Schedules)
-                    //                    .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
-                    //.Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
-                    //.Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
-                    //.Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
+                                        .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
+                    .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
+                    .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
+                    .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
 
                     .FirstOrDefaultAsync(m => m.UserId == userId);
   
