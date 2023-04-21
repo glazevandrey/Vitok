@@ -9,8 +9,8 @@ namespace web_server.Controllers
     [Route("api/ServerCourses")]
     public class ServerCoursesController : Controller
     {
-        IJsonService _jsonService;
-        ICourseService _courseService;
+        private readonly IJsonService _jsonService;
+        private readonly ICourseService _courseService;
         public ServerCoursesController(IJsonService jsonService, ICourseService courseService)
         {
             _jsonService = jsonService;

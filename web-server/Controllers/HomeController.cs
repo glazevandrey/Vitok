@@ -22,15 +22,15 @@ namespace web_server.Controllers
     public class HomeController : Controller
     {
         private readonly IHubContext<NotifHub> _hubContext;
-        IAuthService _authService;
-        IJsonService _jsonService;
-        IScheduleService _scheduleService;
-        IStatisticsService _statisticsService;
-        UserRepository _userRepository;
-        ContactsRepository _contactsRepository;
-        CourseRepository _courseRepository;
-        DataContext data;
-        IMapper map;
+        private readonly IAuthService _authService;
+        private readonly IJsonService _jsonService;
+        private readonly IScheduleService _scheduleService;
+        private readonly IStatisticsService _statisticsService;
+        private readonly UserRepository _userRepository;
+        private readonly ContactsRepository _contactsRepository;
+        private readonly CourseRepository _courseRepository;
+        private readonly DataContext data;
+        private readonly IMapper map;
         public HomeController(IMapper maз, DataContext data, UserRepository userRepository, CourseRepository courseRepository, ContactsRepository contactsRepository, IStatisticsService statisticsService, IAuthService authService, IHubContext<NotifHub> hub, IJsonService jsonService, IScheduleService scheduleService)
         {
             map = maз;

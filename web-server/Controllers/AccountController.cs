@@ -15,11 +15,11 @@ namespace web_server.Controllers
     [Route("/api/[controller]")]
     public class AccountController : Controller
     {
-        IJsonService _jsonService;
-        ILessonsService _lessonsService;
-        IAccountService _accountService;
-        IScheduleService _scheduleService;
-        IMapper _mapper;
+        private readonly IJsonService _jsonService;
+        private readonly ILessonsService _lessonsService;
+        private readonly IAccountService _accountService;
+        private readonly IScheduleService _scheduleService;
+        private readonly IMapper _mapper;
 
         NotificationRepository _notificationRepository;
         public AccountController(IMapper mapper, IJsonService jsonService, ILessonsService lessonsService, IAccountService accountService, IScheduleService scheduleService, NotificationRepository notificationRepository)

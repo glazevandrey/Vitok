@@ -13,11 +13,12 @@ namespace vitok.Controllers
     public class TutorController : Controller
     {
 
-        IJsonService _jsonService;
-        ILessonsService _lessonsService;
-        ITutorService _tutorService;
-        IScheduleService _scheduleService;
-        IHubContext<NotifHub> _hubContext;
+        private readonly IJsonService _jsonService;
+        private readonly ILessonsService _lessonsService;
+        private readonly ITutorService _tutorService;
+        private readonly IScheduleService _scheduleService;
+
+        private readonly IHubContext<NotifHub> _hubContext;
 
         public TutorController(IJsonService jsonService, ILessonsService lessonsService, ITutorService tutorService, IScheduleService scheduleService, IHubContext<NotifHub> hubContext)
         {
