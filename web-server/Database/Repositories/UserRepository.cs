@@ -449,7 +449,7 @@ namespace web_server.Database.Repositories
         }
         public async Task<TutorDTO> GetTutor(int id)
         {
-            return await _context.Tutors.Include(m => m.Courses).Include(m => m.Schedules).ThenInclude(m => m.Course).Include(m => m.Schedules).ThenInclude(m => m.Tasks).Include(m => m.Chat).ThenInclude(m => m.Contacts).FirstOrDefaultAsync(m => m.UserId == id);
+            return await _context.Tutors.Include(m => m.Courses).Include(m=>m.UserDates).Include(m => m.Schedules).ThenInclude(m => m.Course).Include(m => m.Schedules).ThenInclude(m => m.Tasks).Include(m => m.Chat).ThenInclude(m => m.Contacts).FirstOrDefaultAsync(m => m.UserId == id);
         }
 
         public async Task<User> GetUserById(int id)

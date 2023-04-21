@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -157,7 +158,10 @@ namespace web_app.Controllers
             {
                 return Redirect("/login");
             }
-            var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString());
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new UserConverter());
+
+            var currUser = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res4.result.ToString(), settings);
             ViewData["usertoken"] = currUser.UserId;
             ViewData["photoUrl"] = currUser.PhotoUrl;
             ViewData["role"] = "Manager";

@@ -40,7 +40,7 @@ namespace web_app.Controllers
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
             if (user.Role != "Student" && user.Role != "Tutor")
             {
-                return Redirect("/login");
+                return Redirect("/manageschool");
             }
 
             ViewData["usertoken"] = user.UserId;

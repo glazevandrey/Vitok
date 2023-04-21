@@ -267,12 +267,20 @@ namespace web_server.Services
 
                 ScheduleDTO schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == Convert.ToInt32(tutor_id) && m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id) && m.RemoveDate == DateTime.MinValue);
                 //var schedule = TestData.Schedules.FirstOrDefault();
+                
                 if (schedule != null)
                 {
                     schedule.RemoveDate = curr;
                 }
                 await _scheduleRepository.Update(schedule);
-
+                if(user_id == "1")
+                {
+                    var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
+                    var date = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
+                    tutor.UserDates.Remove(date);
+                    await _userRepository.SaveChanges(tutor);
+                }
+                
                 var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
                 list.Reverse();
                 foreach (var item in list)

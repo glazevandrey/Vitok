@@ -163,8 +163,6 @@ namespace web_server.Controllers
 
             var userSchedules = _scheduleService.GetSchedules(args[0].ToString()); //TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
 
-            //var userSchedules = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
-
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(userSchedules));
         }
 

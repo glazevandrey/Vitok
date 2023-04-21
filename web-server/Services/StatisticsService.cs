@@ -24,13 +24,13 @@ namespace web_server.Services
 
             var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(args));
             //var user = TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args));
-            var schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
+            var schedules = user.Schedules;
             //var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId);
 
             var startDate = DateTime.Parse("01." + DateTime.Now.Month + "." + DateTime.Now.Year + " 12:00");
             user.BalanceHistory.Reverse();
             var keys = new Dictionary<DateTime, List<StudentPayment>>();
-            var balanceHistories = user.BalanceHistory.GroupBy(x => x.Date.ToShortDateString()).ToList();
+            var balanceHistories = user.BalanceHistory.Where(m=>m.CashFlow != null).GroupBy(x => x.Date.ToShortDateString()).ToList();
             for (int i = 0; i < balanceHistories.Count; i++)
             {
                 balanceHistories[i].OrderBy(m => m.Date).Reverse();
