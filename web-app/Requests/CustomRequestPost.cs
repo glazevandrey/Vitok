@@ -23,7 +23,7 @@ namespace web_app.Requests
             Address = address;
             Tutor = user;
         }
-    
+
         public CustomRequestPost(string address, TransferModel data)
         {
             Address = address;
