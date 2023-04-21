@@ -146,13 +146,13 @@ td {
                     <td>@tutor.FirstName @tutor.LastName</td>
                     @{
                             var tutor_schedule = Model.Schedules.Where(m => m.TutorId == tutor.UserId);
-                            var tutor_reschedule = new List<RescheduledLessons>();
-                            tutor_reschedule = (List<RescheduledLessons>)ViewData["rescheduled"];
+                            //var tutor_reschedule = new List<RescheduledLessons>();
+                           // tutor_reschedule = (List<RescheduledLessons>)ViewData["rescheduled"];
                             foreach (var hour in hours)
                             {
                                 <td>
                                 
-                                @{
+                                    @{
                                         var date = DateTime.ParseExact(Model.Date.ToString("dd.MM.yyyy") + " " + hour, "dd.MM.yyyy H", CultureInfo.InvariantCulture);
 
                                         foreach (var schedule in tutor_schedule)
@@ -178,39 +178,37 @@ td {
                                                 }
 
                                             }
-                                                if (schedule.StartDate.DayOfWeek == date.DayOfWeek)
+                                            if (schedule.StartDate.DayOfWeek == date.DayOfWeek)
+                                            {
+                                                if (schedule.Looped != true)
                                                 {
-                                                    if (schedule.Looped != true)
+                                                    if (schedule.StartDate != date)
                                                     {
-                                                        if (schedule.StartDate != date)
-                                                        {
-                                                            continue;
-                                                        }    
-                                                    }
+                                                        continue;
+                                                    }    
+                                                }
 
-                                                    if (schedule.StartDate.Hour == date.Hour)
+                                                if (schedule.StartDate.Hour == date.Hour)
+                                                {
+                                                    var textMouse = $"Курс: {schedule.Course?.Title}; Цель: {schedule.Course?.Goal?.Title}; Имя и фамилия: {schedule.UserName}; ";
+                                                    textMouse += $"Репетитор: {schedule.TutorFullName}";
+                                                    if (schedule.Status == Status.Перенесен || schedule.RescheduledLessons.Count > 0)
                                                     {
-                                                        var textMouse = $"Курс: {schedule.Course?.Title}; Цель: {schedule.Course?.Goal?.Title}; Имя и фамилия: {schedule.UserName}; ";
-                                                        textMouse += $"Репетитор: {schedule.TutorFullName}";
-                                                        if (schedule.Status == Status.Перенесен || schedule.RescheduledLessons.Count > 0)
+
+                                                        foreach (var resc in schedule.RescheduledLessons)
                                                         {
-                                                            var rescheduled = schedule.RescheduledLessons;
-
-                                                            foreach (var resc in rescheduled)
-                                                            {
-                                                                //if (resc.TutorId == schedule.TutorId && resc.UserId == schedule.UserId)
-                                                                //{
-
+                                                                if(date == resc.OldTime)
+                                                                {
                                                                     textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
-                                                                    break;
-                                                                //}
-                                                            }
-
-                                                            if(schedule.RescheduledDate == date)
-                                                            {
-                                                                    textMouse += $"Постоянный перенос на: {schedule.NewDate.ToString("dd.MM.yyyy HH:mm")}";
-                                                            }
+                                                                        break;
+                                                                }  
                                                         }
+
+                                                        if(schedule.RescheduledDate == date)
+                                                        {
+                                                                textMouse += $"Постоянный перенос на: {schedule.NewDate.ToString("dd.MM.yyyy HH:mm")}";
+                                                        }
+                                                    }
 
                                                         var label = $"label_{schedule.UserId}_{schedule.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
                                                         <style>
@@ -573,6 +571,7 @@ td {
                                                                     </script>
                                                                 }
                                                             }
+                                                           
                                                         }
 
                                                     }

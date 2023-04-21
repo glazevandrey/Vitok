@@ -157,11 +157,7 @@ namespace web_server.Database.Repositories
                 var res2 = await _context.RescheduledLessons.ToListAsync();
                 foreach (var item in res2)
                 {
-
-
                     _context.Entry(item).State = EntityState.Detached;
-
-
                 }
 
                 return res2;

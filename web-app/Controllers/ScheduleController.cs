@@ -9,7 +9,6 @@ using web_app.Requests.Get;
 using web_app.Services;
 using web_server.Models;
 using web_server.Models.DBModels;
-using web_server.Services.Interfaces;
 
 namespace web_app.Controllers
 {
@@ -17,12 +16,10 @@ namespace web_app.Controllers
     [Route("/schedule")]
     public class ScheduleController : Controller
     {
-        IJsonService _jsonService;
         IRequestService _requestService;
 
-        public ScheduleController(IJsonService jsonService, IRequestService requestService)
+        public ScheduleController(IRequestService requestService)
         {
-            _jsonService = jsonService;
             _requestService = requestService;
         }
         public IActionResult Index([FromQuery] string date = null, [FromQuery] string error = null)
@@ -41,61 +38,57 @@ namespace web_app.Controllers
             }
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
-            ViewData["usertoken"] = user.UserId;
+            if (user.Role != "Student" && user.Role != "Tutor")
+            {
+                return Redirect("/login");
+            }
 
+            ViewData["usertoken"] = user.UserId;
             ViewData["role"] = user.Role;
             ViewData["userid"] = user.UserId;
-            var model = new List<Schedule>();
 
+            var model = new List<Schedule>();
             if (user.Role == "Tutor")
             {
                 ViewData["courses"] = ((Tutor)user).Courses != null ? ((Tutor)user).Courses : new List<Course>();
                 model = ((Tutor)user).Schedules;
-
             }
             else
             {
-
                 var _req = new GetCourses();
                 var _res = _requestService.SendGet(_req);
                 var _list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(_res.result.ToString());
                 ViewData["courses"] = _list;
-            }
-
-            if (user.Role == "Student")
-            {
                 ViewData["lessons"] = ((Student)user).LessonsCount;
                 model = ((Student)user).Schedules;
             }
+
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
-
-
-            if (user.Role == "Manager")
-            {
-                return Redirect("/manageschool");
-
-            }
-
-
             CustomRequestGet request2 = new GetAllUsersRequest(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var result2 = _requestService.SendGet(request2, HttpContext);
+
             if (!result2.success)
             {
                 return Redirect("/account/logout");
             }
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new UserConverter());
-            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString(), settings);
+
+
+            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Student>>(result2.result.ToString(), settings);
             Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
+
             foreach (var item in users.Where(m => m.Role == "Student"))
             {
-                if (((Student)item).StartWaitPayment != DateTime.MinValue)
+                if ((item).StartWaitPayment != DateTime.MinValue)
                 {
-                    keyValuePairs.Add(item.UserId, ((Student)item).StartWaitPayment);
+                    keyValuePairs.Add(item.UserId, item.StartWaitPayment);
                 }
             }
+
+            ViewData["waited"] = keyValuePairs;
 
             if (user.Role == "Student")
             {
@@ -117,7 +110,6 @@ namespace web_app.Controllers
             }
 
 
-            ViewData["waited"] = keyValuePairs;
             var modl = new DisplayModelShedule()
             {
                 Date = date == null ? DateTime.Now : DateTime.Parse(date),

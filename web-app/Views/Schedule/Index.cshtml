@@ -1043,8 +1043,7 @@ form{
                                                                 foreach (var resc in rescheduled)
                                                                 {
 
-                                                                //if (resc.TutorId == model1.TutorId && resc.UserId == model1.UserId)
-                                                                    //{
+                                                                
                                                                     if(resc.OldTime == s_date)
                                                                     {
                                                                         textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
@@ -1052,7 +1051,7 @@ form{
                                                                         break;
                                                                     }
                                                                   
-                                                                     //   }
+                                                                 
                                                                     }
                                                                     if (model1.RescheduledDate == _date)
                                                                     {

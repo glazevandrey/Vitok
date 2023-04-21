@@ -42,7 +42,7 @@ namespace vitok.Controllers
 
         [Authorize]
         [HttpPost("addtutor", Name = "addtutor")]
-        public string AddTutor()
+        public async Task<string> AddTutor()
         {
             var form = Request.Form;
             if (form.Keys.Count == 0)
@@ -50,7 +50,7 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Tutor not found");
             }
             var args = form.First().Key;
-            var tutor = _tutorService.AddTutor(args);
+            var tutor = await _tutorService.AddTutor(args);
             if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Неудачная попытка добавить репетитора");

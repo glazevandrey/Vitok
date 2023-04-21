@@ -44,9 +44,11 @@ namespace web_app.Controllers
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
 
 
-            request = new GetAllReSchedules();
-            result = _requestService.SendGet(request, HttpContext);
+            //request = new GetAllReSchedules();
+            //result = _requestService.SendGet(request, HttpContext);
 
+            //var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(result.result.ToString());
+            //ViewData["rescheduled"] = rescheduled;
 
             ViewData["userid"] = user.UserId;
             ViewData["role"] = user.Role;
@@ -55,9 +57,6 @@ namespace web_app.Controllers
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
-
-            var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(result.result.ToString());
-            ViewData["rescheduled"] = rescheduled;
 
             CustomRequestGet request2 = new GetAllUsersRequest(Request.Cookies[".AspNetCore.Application.Id"]);
             var result2 = _requestService.SendGet(request2, HttpContext);
