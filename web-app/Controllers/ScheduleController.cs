@@ -122,10 +122,8 @@ namespace web_app.Controllers
             if (user.Role == "Student")
             {
                 ViewData["firstPay"] = user.WasFirstPayment;
-                if (user.FirstLogin == true)
-                {
-                    ViewData["firstLogin"] = true;
-                }
+                ViewData["firstLogin"] = ((Student)user).FirstLogin;
+
             }
             else
             {
@@ -152,6 +150,7 @@ namespace web_app.Controllers
             {
                 ViewData["error"] = error;
             }
+            var ff = model.FirstOrDefault(m => m.StartDate == DateTime.Parse("21.04.2023 10:00")); 
             return View(modl);
         }
 

@@ -34,12 +34,11 @@ namespace web_app.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register([FromQuery] string id, [FromForm] User user)
+        public IActionResult Register([FromQuery] string id, [FromForm] Student user)
         {
             if (id != null)
             {
                 user.UserId = Convert.ToInt32(id);
-
 
             }
             else
@@ -52,6 +51,7 @@ namespace web_app.Controllers
             {
                 return BadRequest("Неудачная попытка входа");
             }
+            var userid = response.result.ToString();
             if (id != null)
             {
 
@@ -77,8 +77,8 @@ namespace web_app.Controllers
                 }
             }
 
-            var hub = new HubConnectionBuilder().WithUrl(Program.web_server_ip + "/chatHub").Build();
-            hub.StartAsync();
+            //var hub = new HubConnectionBuilder().WithUrl(Program.web_server_ip + "/chatHub?token="+ userid).Build();
+            //hub.StartAsync();
 
             HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", response.result.ToString(),
               new CookieOptions

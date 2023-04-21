@@ -136,9 +136,9 @@ namespace web_app.Controllers
             ViewData["photoUrl"] = currUser.PhotoUrl;
             ViewData["displayName"] = currUser.FirstName + " " + currUser.LastName;
 
-            if (user.FirstLogin == true && user.Role == "Student")
+            if (user.Role == "Student")
             {
-                ViewData["firstLogin"] = true;
+                ViewData["firstLogin"] = ((Student)user).FirstLogin;
             }
 
 

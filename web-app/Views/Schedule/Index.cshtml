@@ -549,7 +549,6 @@ form{
                                                 }
 
 
-                                               
                                                 var m_date = model1.StartDate;
                                                  if (m_date.DayOfWeek == day)
                                                 {
@@ -562,6 +561,12 @@ form{
                                                     }
                                                     if (m_date.Hour == DateTime.Parse(item).Hour)
                                                     {
+
+
+                                                        if (model1.StartDate == DateTime.Parse("21.04.2023 10:00"))
+                                                        {
+                                                            int x = 2;
+                                                        }
 
                                                         if (ViewData["role"].ToString() == "Tutor")
                                                         {
@@ -624,7 +629,7 @@ form{
 
                                                                                    // if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
                                                                                     //{
-                                                                                if (resc.NewTime == s_date)
+                                                                                if (resc.OldTime == s_date)
                                                                                 {
                                                                                     textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
 
@@ -1040,7 +1045,7 @@ form{
 
                                                                 //if (resc.TutorId == model1.TutorId && resc.UserId == model1.UserId)
                                                                     //{
-                                                                    if(resc.NewTime == s_date)
+                                                                    if(resc.OldTime == s_date)
                                                                     {
                                                                         textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
 

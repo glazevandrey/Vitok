@@ -24,9 +24,9 @@ namespace web_server.Services
         }
         public async Task<bool> RemoveFirstLogin(string args)
         {
-            var user = await _userRepository.GetUserById(Convert.ToInt32(args));
+            var user = await _userRepository.GetStudent(Convert.ToInt32(args));
             user.FirstLogin = false;
-            await _userRepository.Update(user);
+            await _userRepository.SaveChanges(user);
             //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args)).FirstLogin = false;
             return true;
         }

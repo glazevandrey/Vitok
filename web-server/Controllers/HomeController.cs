@@ -206,7 +206,7 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(form.First().Key);
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<Student>(form.First().Key);
             var json = await _authService.Register(user, HttpContext, _hubContext);
             return json;
         }

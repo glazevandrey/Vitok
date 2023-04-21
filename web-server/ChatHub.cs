@@ -26,7 +26,7 @@ namespace web_server
             _scheduleRepository = scheduleRepository;
         }
       
-
+     
         public async Task GetMessages(string userId)
         {
             // var currChat 
@@ -211,6 +211,22 @@ namespace web_server
              
 
 
+            }
+            else if (user.Chat?.Contacts.Count == 0)
+            {
+
+                await SetNewContact(user);
+                user.Chat.ConnectionTokens.Add(new ConnectionToken() { Token = connectionId, Status = "Connected" });
+
+                try
+                {
+                    await _userRepository.SaveChanges(user);
+
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
             else
             {

@@ -52,7 +52,6 @@ namespace web_app.Controllers
 
             Int32.TryParse(form["course"], out courseId);
 
-
             var tutor = new Tutor();
 
             if (form.Count != 0)

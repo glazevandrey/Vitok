@@ -15,8 +15,6 @@ namespace web_server.Services.Interfaces
         public Task<List<RescheduledLessons>> GetAllReschedules();
         public Task<ScheduleDTO> GetScheduleById(int id);
         public Task<bool> Update(ScheduleDTO schedule);
-
-        public Task<ScheduleDTO> UpdateRange(List<ScheduleDTO> schedules); 
         public Task<string> ChangeStatus(string args, IHubContext<NotifHub> _hubContext);
     }
 }

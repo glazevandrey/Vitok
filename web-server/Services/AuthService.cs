@@ -161,7 +161,7 @@ namespace web_server.Services
                 return null;
             }
 
-            await _userRepository.AddUser(user);
+            var userid = await _userRepository.AddUser(user);
             //TestData.UserList.Add(user);
 
             var reg = await _userRepository.GetRegistrationByUserId(user.UserId);//TestData.Registations.FirstOrDefault(m => m.UserId == user.UserId);
@@ -205,7 +205,6 @@ namespace web_server.Services
                     }
 
                     var id = await _scheduleRepository.AddSchedule(sch);
-                    //TestData.Schedules.Add(sch);
 
                     TimerCallback tm = new TimerCallback(DeleteUnPaid);
 
@@ -222,8 +221,8 @@ namespace web_server.Services
                 }
 
             }
-
-            return await LogIn(user.Email, user.Password, context);
+            await LogIn(user.Email, user.Password, context);
+            return _jsonService.PrepareSuccessJson(userid.ToString());
         }
     }
 }

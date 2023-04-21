@@ -35,9 +35,9 @@ namespace web_app.Controllers
             ViewData["count"] = user.LessonsCount;
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
-            if (user.FirstLogin == true && user.Role == "Student")
+            if (user.Role == "Student")
             {
-                ViewData["firstLogin"] = true;
+                ViewData["firstLogin"] = ((Student)user).FirstLogin;
             }
 
             var req2 = new GetTariffsRequest();

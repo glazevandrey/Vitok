@@ -66,6 +66,7 @@ namespace web_server.Database.Repositories
         {
             try
             {
+                var dd = _context.ChangeTracker.Entries();
                 //var mapped = _mapper.Map<ScheduleDTO>(schedule);
                 await _context.SaveChangesAsync();
                     _context.Entry(schedule).State = EntityState.Detached;
@@ -154,7 +155,7 @@ namespace web_server.Database.Repositories
         {
             if (func == null)
             {
-                var res2 = await _context.RescheduledLessons.AsNoTracking().ToListAsync();
+                var res2 = await _context.RescheduledLessons.ToListAsync();
                 foreach (var item in res2)
                 {
 
