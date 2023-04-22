@@ -205,20 +205,17 @@ namespace web_server
                 {
                     throw ex;
                 }
-
-
-
             }
             else if (user.Chat?.Contacts.Count == 0)
             {
 
                 await SetNewContact(user);
                 user.Chat.ConnectionTokens.Add(new ConnectionToken() { Token = connectionId, Status = "Connected" });
+                user.Chat.Messages.Add(new Messages() { Id = 0, MessageTime = DateTime.Now, ReceiverId = userId.ToString(), SenderId = (await _userRepository.GetManagerId()).ToString(), Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!" });
 
                 try
                 {
                     await _userRepository.SaveChanges(user);
-
                 }
                 catch (Exception ex)
                 {
@@ -260,9 +257,6 @@ namespace web_server
         }
         public async Task SetNewContact(UserDTO user)
         {
-            //var user = await _userRepository.GetUserById(userId);
-            //var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
-
             List<ScheduleDTO> userSchediles;
 
             if (user.Role == "Manager")
@@ -275,8 +269,6 @@ namespace web_server
                     {
                         continue;
                     }
-
-
 
                     var userContct = new Contact()
                     {
@@ -313,9 +305,10 @@ namespace web_server
                 }
                 else
                 {
-                    userSchediles = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == user.UserId);
+                    userSchediles = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);
 
                 }
+
                 await _scheduleRepository.UpdateRange(userSchediles);
             }
 
@@ -329,9 +322,12 @@ namespace web_server
                 //var managerChat = TestData.Chats.FirstOrDefault(m => m.UserId == manager.UserId);
                 if (manager?.Chat != null)
                 {
+                    manager.Chat?.Messages.Add(new Messages() { Message = "Здравствуйте! Добро пожаловать! Если у Вас есть какие-то вопросы, смело обращайтесь!", MessageTime = DateTime.Now, ReceiverId = user.UserId.ToString(), SenderId = manager.UserId.ToString() });
+
                     if (manager.Chat.Contacts.FirstOrDefault(m => m.UserId == user.UserId) == null)
                     {
                         manager.Chat?.Contacts?.Add(new Contact() { UserId = user.UserId });
+                       
                         var active = manager.Chat?.ConnectionTokens?.Where(m => m.Status == "Connected");
 
                         if (active != null)
@@ -343,7 +339,6 @@ namespace web_server
                         }
                         try
                         {
-                            await _userRepository.Update(manager);
 
                         }
                         catch (Exception ex)
@@ -353,6 +348,9 @@ namespace web_server
                         }
 
                     }
+
+                    await _userRepository.Update(manager);
+
                 }
 
 
@@ -373,10 +371,9 @@ namespace web_server
                 };
 
 
-
-                if (user.UserId != item.UserId)
+               if (user.UserId != item.UserId)
                 {
-                    var itemUser = await _userRepository.GetUserById(item.UserId);
+                    var itemUser = await _userRepository.GetStudent(item.UserId);
 
                     if (itemUser.Chat == null)
                     {
@@ -413,7 +410,7 @@ namespace web_server
                         }
                     }
 
-                    await _userRepository.Update(itemUser);
+                    await _userRepository.SaveChanges(itemUser);
 
                 }
 
@@ -424,7 +421,7 @@ namespace web_server
 
                 if (user.UserId != item.TutorId)
                 {
-                    var tutor = await _userRepository.GetUserById(item.TutorId);
+                    var tutor = await _userRepository.GetTutor(item.TutorId);
                     //var tutor = await _chatRepository.GetChatByUserId(item.TutorId); //TestData.Chats.FirstOrDefault(m => m.UserId == item.TutorId);
                     if (tutor.Chat == null)
                     {
@@ -448,7 +445,11 @@ namespace web_server
                             }
 
                             tutor.Chat.Contacts.Add(contact);
-                            user.Chat.Contacts.Add(new Contact() { UserId = item.TutorId });
+                            
+                            if (user.Chat.Contacts.FirstOrDefault(m => m.UserId == item.TutorId) == null)
+                            {
+                                user.Chat.Contacts.Add(new Contact() { UserId = item.TutorId });
+                            }
 
                         }
                         else
@@ -459,7 +460,7 @@ namespace web_server
                             }
                         }
                     }
-                    await _userRepository.Update(tutor);
+                    await _userRepository.SaveChanges(tutor);
 
                 }
 

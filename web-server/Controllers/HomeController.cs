@@ -50,10 +50,12 @@ namespace web_server.Controllers
         {
             await InitializeDataBase();
             var form = Request.Form;
+
             if (form == null || form.Keys.Count == 0)
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
+
             var args = form.Keys.First().Split(";");
             var json = await _authService.LogIn(args[0], args[1], HttpContext);
 
@@ -68,9 +70,9 @@ namespace web_server.Controllers
             {
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
-
+            var id = Request.Query["id"];
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<Student>(form.First().Key);
-            var json = await _authService.Register(user, HttpContext, _hubContext);
+            var json = await _authService.Register(user,id, HttpContext, _hubContext);
             return json;
         }
 
@@ -325,7 +327,7 @@ namespace web_server.Controllers
 
                 foreach (var item in TestData.Schedules)
                 {
-                    item.CourseId = TestData.Courses.First(m => m.Title == "ЕГЭ").Id;
+                    item.CourseId = TestData.Courses.First(m => m.Title == "ОГЭ").Id;
                 }
                 data.Schedules.AddRange(map.Map<List<ScheduleDTO>>(TestData.Schedules));
                 data.Tariffs.AddRange(TestData.Tariffs);

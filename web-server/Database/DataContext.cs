@@ -62,6 +62,7 @@ namespace web_server.Database
             .OnDelete(DeleteBehavior.Cascade); // Устанавл
 
 
+
             modelBuilder.Entity<UserDTO>()
             .HasOne(pt => pt.Chat)
             .WithOne(t => t.User)
@@ -73,9 +74,6 @@ namespace web_server.Database
             .WithMany(t => t.Notifications)
             .HasForeignKey(pt => pt.UserId)
             .OnDelete(DeleteBehavior.Cascade); // Устанавливаем DeleteBehavior.Restrict, чтобы не было конфликтов с внешним ключом
-
-
-
 
 
             modelBuilder.Entity<ScheduleDTO>()

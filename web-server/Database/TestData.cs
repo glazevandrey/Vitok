@@ -9,8 +9,6 @@ namespace web_server.DbContext
 {
     public static class TestData
     {
-        //public static List<Goal> Goals { get; set; } = new List<Goal>() { new Goal() { Id = 0, Title = "sd"} };
-
         public static List<GoalDTO> Goals { get; set; } = new List<GoalDTO>() {  new GoalDTO() { Title = "Сдать экзамен" },
             new GoalDTO() {Title = "Изучить с нуля" }, new GoalDTO() {  Title = "Работать" }, new GoalDTO() {  Title = "Преодолеть языковой барьер" },
             new GoalDTO() {Title = "Проходить собеседование" }, new GoalDTO() {  Title = "Путешествовать" }, new GoalDTO() { Title = "Повысить уровень" },
@@ -38,7 +36,7 @@ namespace web_server.DbContext
         public static List<Notifications> Notifications = new List<Notifications>();
         public static List<ScheduleDTO> Schedules = new List<ScheduleDTO>() {
             new ScheduleDTO() { UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 4, UserId = 3,
-
+                WaitPaymentDate = DateTime.Parse("23.04.2023 13:00"),
                 StartDate = DateTime.Parse("23.04.2023 13:00")},
 
 

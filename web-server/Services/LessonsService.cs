@@ -73,7 +73,7 @@ namespace web_server.Services
             {
                 if (isTrial)
                 {
-                    user.BalanceHistory.Add(new BalanceHistory() { Date = DateTime.Now.AddDays(2), CashFlow = new CashFlow() { Amount = 250, Count = 1 }, CustomMessage = $"Оплачено пробное занятие" });
+                    user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = 250, Count = 1 }, CustomMessage = $"Оплачено пробное занятие" });
                 }
                 else
                 {
@@ -119,7 +119,7 @@ namespace web_server.Services
                         var f_manag = Math.Abs(item.Cost / 100 * 40);
 
                         tutor.Balance += f_tut;
-                        tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_tut) }, CustomMessage = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" });
+                        tutor.BalanceHistory.Add(new BalanceHistory() {  CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_tut) }, CustomMessage = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" });
 
 
 
@@ -206,13 +206,14 @@ namespace web_server.Services
                     return null;
                 }
 
-                var new_model = new Schedule
+                var new_model = new ScheduleDTO
                 {
                     TutorId = tutor_id,
                     UserId = user_id,
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     UserName = user.FirstName + " " + user.LastName,
-                    Course = _mapper.Map<Course>(tutor.Courses.FirstOrDefault(m => m.CourseId == courseId).Course),
+                    //CourseId = courseId,
+                    Course = tutor.Courses.FirstOrDefault(m => m.CourseId == courseId).Course,
                     StartDate = newDateTime,
                     Looped = true,
                 };
@@ -228,9 +229,11 @@ namespace web_server.Services
                 model.RescheduledDate = cureDate;
                 model.NewDate = newDateTime;
 
-                await _scheduleRepository.AddSchedule(new_model);
-                user.Schedules.Add(_mapper.Map<ScheduleDTO>(new_model));
+                user.Schedules.Add(new_model);
 
+               // await _scheduleRepository.AddSchedule(_mapper.Map<>new_model);
+
+                //user.Schedules.FirstOrDefault(m=>m.StartDate == new_model.StartDate).CourseId = courseId;
                 await CalculateNoPaidWarn(user, _hubContext);
 
 
@@ -249,7 +252,7 @@ namespace web_server.Services
                     .Replace("{dateNew}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
 
-                return new_model;
+                return _mapper.Map<Schedule>(new_model);
             }
             else
             {

@@ -57,7 +57,6 @@ namespace web_server.Models.DBModels
 
         public virtual bool UsedTrial { get; set; } = false;
 
-        // поля Репетитора
         [NotMapped]
 
         public virtual List<Course> Courses { get; set; }

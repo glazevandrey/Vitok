@@ -67,7 +67,6 @@ namespace web_server
         }
         public async Task SetNotifications(List<NotificationsDTO> notifs)
         {
-
             foreach (var item in notifs)
             {
                 await Clients.Client(Context.ConnectionId).SendAsync("ReceiveNotification", item.Message, item.Readed, item.Id);
@@ -83,7 +82,6 @@ namespace web_server
             }
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
             var user = await _userRepository.GetUser(userId);
-            // var user = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
             if (user == null)
             {
                 return;
@@ -91,10 +89,10 @@ namespace web_server
             if (user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId) == null)
             {
                 await _userRepository.AddTonificationTokenToUser(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" }, user);
-                //TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.Add(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" });
             }
 
-
+            user.Notifications = user.Notifications.OrderBy(m=>m.DateTime).ToList();
+            user.Notifications.Reverse();
             await SetNotifications(user.Notifications);
         }
         public async override Task OnDisconnectedAsync(Exception ex)
@@ -104,12 +102,8 @@ namespace web_server
             var user = await _userRepository.GetUser(userId);
             var rem = user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId);
             user.NotificationTokens.Remove(rem);
+
             await _userRepository.SaveChanges(user);
-            // await _userRepository.ChangeNotifTokenStatus("Disconnected", connectionId, user);
-
-
-
-            //TestData.UserList.FirstOrDefault(m => m.UserId == userId).NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId).TokenValue = "Disconnected";
         }
 
     }

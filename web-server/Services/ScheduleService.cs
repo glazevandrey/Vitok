@@ -34,7 +34,7 @@ namespace web_server.Services
         public async Task<Schedule> AddScheduleFromUser(string args, IHubContext<NotifHub> _hubContext)
         {
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(args);
-            var user = await _userRepository.GetStudent(model.UserId);
+            var user = await _userRepository.GetStudent(model.ExistUserId);
             //var user = TestData.UserList.FirstOrDefault(m => m.UserId == model.UserId);
             if (user.Role != "Student")
             {
@@ -49,7 +49,7 @@ namespace web_server.Services
             //var schedule = TestData.Schedules.FirstOrDefault();
             schedule.CourseId = _mapper.Map<CourseDTO>(model.Course).Id;
             //schedule.Course =  _mapper.Map<CourseDTO>(model.Course);
-            schedule.UserId = model.UserId;
+            schedule.UserId = model.ExistUserId;
             schedule.WaitPaymentDate = user.LessonsCount > 0 ? DateTime.MinValue : model.WantThis.First().dateTime;
             schedule.Status = Status.Ожидает;
             schedule.UserName = user.FirstName + " " + user.LastName;
@@ -62,11 +62,11 @@ namespace web_server.Services
             var tutor = await _userRepository.GetTutor(model.TutorId);
             //var tutor = (Tutor)await _userRepository.GetUserById(model.TutorId);
 
-            if (tutor.Chat != null && tutor.Chat?.Contacts?.FirstOrDefault(m => m.UserId == model.UserId) == null)
+            if (tutor.Chat != null && tutor.Chat?.Contacts?.FirstOrDefault(m => m.UserId == model.ExistUserId) == null)
             {
-                tutor.Chat.Contacts.Add(new Contact() { UserId = model.UserId });
+                tutor.Chat.Contacts.Add(new Contact() { UserId = model.ExistUserId });
             }
-            if (user.Chat != null && user.Chat?.Contacts?.FirstOrDefault(m => m.UserId == model.UserId) == null)
+            if (user.Chat != null && user.Chat?.Contacts?.FirstOrDefault(m => m.UserId == model.ExistUserId) == null)
             {
                 user.Chat.Contacts.Add(new Contact() { UserId = model.TutorId });
             }
@@ -207,7 +207,18 @@ namespace web_server.Services
 
         public async Task<bool> Update(ScheduleDTO schedule)
         {
-            await _scheduleRepository.Update(schedule);
+            try
+            {
+                await _scheduleRepository.Update(schedule);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
             return true;
         }
 

@@ -36,31 +36,26 @@ namespace web_app.Controllers
         {
             if (id != null)
             {
-                user.UserId = Convert.ToInt32(id);
+                user.UserId = 0;
 
             }
-            else
-            {
-            }
             user.Role = "Student";
-            CustomRequestPost req = new CustomRequestPost("api/home/registeruser", user);
+            CustomRequestPost req = new CustomRequestPost($"api/home/registeruser?id={id}", user);
             var response = _requestService.SendPost(req, HttpContext);
             if (response == null)
             {
                 return BadRequest("Неудачная попытка входа");
             }
-            var userid = response.result.ToString();
+
             if (id != null)
             {
 
-                CustomRequestGet req2 = new GetRegistrationByUserId(user.UserId.ToString());
-                var response2 = _requestService.SendGet(req2, HttpContext);
                 if (response.success == false)
                 {
                     return BadRequest("Что-то пошло не так =(");
                 }
 
-                var sch = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(response2.result.ToString());
+                var sch = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(response.result.ToString());
                 if (sch != null)
                 {
                     foreach (var item in sch.WantThis)
@@ -75,8 +70,6 @@ namespace web_app.Controllers
                 }
             }
 
-            //var hub = new HubConnectionBuilder().WithUrl(Program.web_server_ip + "/chatHub?token="+ userid).Build();
-            //hub.StartAsync();
 
             HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", response.result.ToString(),
               new CookieOptions

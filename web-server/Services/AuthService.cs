@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.Models;
 using web_server.Models.DBModels;
+using web_server.Models.DTO;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
@@ -151,9 +152,9 @@ namespace web_server.Services
             Program.Timers.Remove(id);
         }
 
-        public async Task<string> Register(User user, HttpContext context, IHubContext<NotifHub> _hubContext)
+        public async Task<string> Register(User user, string guid, HttpContext context, IHubContext<NotifHub> _hubContext)
         {
-            user.StartWaitPayment = DateTime.Now;
+            ((Student)user).StartWaitPayment = DateTime.Now;
 
             if (await _userRepository.GetUserByEmail(user.Email) != null)
             {
@@ -161,9 +162,11 @@ namespace web_server.Services
             }
 
             var userid = await _userRepository.AddUser(user);
-            //TestData.UserList.Add(user);
 
-            var reg = await _userRepository.GetRegistrationByUserId(user.UserId);//TestData.Registations.FirstOrDefault(m => m.UserId == user.UserId);
+            Registration reg = null;
+            
+            reg = await _userRepository.GetRegistrationByGuid(Guid.Parse(guid));
+            
             if (reg != null)
             {
                 var nearest = reg.WantThis.First().dateTime;
@@ -183,6 +186,8 @@ namespace web_server.Services
                 var tutor = await _userRepository.GetUserById(reg.TutorId);
                 foreach (var item in reg.WantThis)
                 {
+                    var scheduleToRemove = tutor.Schedules.FirstOrDefault(m => m.StartDate == item.dateTime);
+                    await _scheduleRepository.RemoveSchedule(_mapper.Map<ScheduleDTO>(scheduleToRemove));
 
 
                     var sch = new Schedule()
@@ -190,9 +195,10 @@ namespace web_server.Services
                         TutorId = reg.TutorId,
                         Course = reg.Course,
                         TutorFullName = tutor.FirstName + " " + tutor.LastName,
-                        UserId = reg.UserId,
-                        UserName = user.FirstName,
+                        UserId = userid,
+                        UserName = user.FirstName + " " + user.LastName,
                         CreatedDate = DateTime.Now,
+                        WaitPaymentDate = item.dateTime,
                         StartDate = item.dateTime,
                         Looped = true,
                         Status = Status.Ожидает
@@ -220,8 +226,9 @@ namespace web_server.Services
                 }
 
             }
+
             await LogIn(user.Email, user.Password, context);
-            return _jsonService.PrepareSuccessJson(userid.ToString());
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(reg));
         }
     }
 }

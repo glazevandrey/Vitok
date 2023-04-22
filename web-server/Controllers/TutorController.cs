@@ -30,15 +30,20 @@ namespace vitok.Controllers
         }
 
         [HttpGet("getall", Name = "GetAll")]
-        public async Task<string> GetAllTutors() =>
-            _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _tutorService.GetAll()));
+        public async Task<string> GetAllTutors() 
+        {
+            var tutors = await _tutorService.GetAll();
+            var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutors));
+            return json;
+        }
 
 
         [HttpGet("gettutor", Name = "gettutor")]
         public async Task<string> GetTutor([FromQuery] string args)
         {
             var tutor = await _tutorService.GetTutor(args);
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(tutor);
+            return _jsonService.PrepareSuccessJson(json);
         }
 
         [Authorize]
@@ -224,7 +229,7 @@ namespace vitok.Controllers
 
 
         [HttpPost("removetutortime", Name = "removetotortime")]
-        public string RemoveTutorTime()
+        public async Task<string> RemoveTutorTime()
         {
             var form = Request.Form;
             if (form.Keys.Count == 0)
@@ -233,13 +238,13 @@ namespace vitok.Controllers
             }
             var args = form.First().Key;
 
-            var tutor = _tutorService.RemoveTutorTime(args);
+            var tutor =await _tutorService.RemoveTutorTime(args);
             if (tutor == null)
             {
                 return _jsonService.PrepareErrorJson("Tutor not found");
             }
 
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(true));
         }
     }
 }

@@ -23,6 +23,7 @@ namespace web_server.Database.Repositories
         public async Task<int> AddSchedule(Schedule schedule)
         {
             var mapped = _mapper.Map<ScheduleDTO>(schedule);
+            var db = _context.ChangeTracker.Entries();
             await _context.Schedules.AddAsync(mapped);
             try
             {
@@ -66,14 +67,12 @@ namespace web_server.Database.Repositories
             try
             {
                 var dd = _context.ChangeTracker.Entries();
-                //var mapped = _mapper.Map<ScheduleDTO>(schedule);
                 await _context.SaveChangesAsync();
                 _context.Entry(schedule).State = EntityState.Detached;
 
             }
             catch (Exception ex)
             {
-                var ff = _context.ChangeTracker.Entries();
                 Thread.Sleep(1000);
                 await Update(schedule);
             }
@@ -85,6 +84,7 @@ namespace web_server.Database.Repositories
             {
                 var mapped = _mapper.Map<ScheduleDTO>(schedule);
                 _context.Schedules.Update(mapped);
+                var ff = _context.ChangeTracker.Entries();
                 await _context.SaveChangesAsync();
                 _context.Entry(mapped).State = EntityState.Detached;
 

@@ -17,8 +17,9 @@
        var f = document.querySelector(fs);
        if(f.style.color == 'blue'){
            f.style.color = "black";
+       }else{
+            f.style.color = "blue";
        }
-       f.style.color = "blue";
 
          if(time.includes(date)){
             time = time.filter(function (letter) {
@@ -28,6 +29,7 @@
            time.push(date);
        }
 
+       console.log(time);
      
         document.getElementById('textTime;' + id).value = time;
 
@@ -106,12 +108,13 @@
 
                                 foreach (var day in w_days)
                                 {
-                                    <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
-                                    y = 0;
-                                    <br />
-                                    <br />
-
-                                    foreach (var time in item.UserDates)
+                                        <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                                        y = 0;
+                                        <br />
+                                        <br />
+                                        var dates = item.UserDates.OrderBy(m => m.dateTime);
+                                        dates.Reverse();
+                                        foreach (var time in dates)
                                     { 
                                         if(time.dateTime.DayOfWeek == day)
                                         {

@@ -66,7 +66,9 @@ namespace web_app.Controllers
                 }
 
                 tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(response.result.ToString(), Program.settings);
+                
                 var time = form["textTime"];
+
                 if (string.IsNullOrEmpty(time))
                 {
                     return Redirect("/about/tutors");
@@ -75,7 +77,8 @@ namespace web_app.Controllers
 
                 foreach (var item in times)
                 {
-                    date.Add(new UserDate() { dateTime = DateTime.Parse(item) });
+                    var date22 = DateTime.Parse(item);
+                    date.Add(new UserDate() { dateTime = date22});
                 }
             }
             var req2 = new GetCourses();
@@ -85,6 +88,7 @@ namespace web_app.Controllers
 
             Registration registration = new Registration
             {
+                NewUserGuid = Guid.NewGuid(),
                 WantThis = date,
                 Course = courses.FirstOrDefault(m => m.Id == courseId),
                 TutorId = tutorId
@@ -97,21 +101,25 @@ namespace web_app.Controllers
             if (result.success != false)
             {
                 var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(result.result.ToString(), Program.settings);
-                registration.UserId = user.UserId;
+                registration.ExistUserId = user.UserId;
                 var req = new CustomRequestPost("api/home/addschedulefromuser", registration);
                 _requestService.SendPost(req, HttpContext);
 
                 return Redirect($"/login");
             }
+          
 
             CustomRequestPost requestPost = new CustomRequestPost("api/home/AddUserRegistration", data: registration);
             var res = _requestService.SendPost(requestPost, null);
+
             if (res.success == false)
             {
                 return BadRequest("Что-то пошло не так =(");
             }
 
-            return Redirect($"/login?id={registration.UserId}");
+            var id = registration.ExistUserId.ToString() == "0" ? registration.NewUserGuid.ToString() : registration.ExistUserId.ToString();
+
+            return Redirect($"/login?id={id}");
         }
 
         [HttpPost("details", Name = "details")]

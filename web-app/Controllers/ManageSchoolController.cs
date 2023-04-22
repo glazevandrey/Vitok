@@ -31,24 +31,15 @@ namespace web_app.Controllers
 
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<Manager>(result.result.ToString());
 
-
-            result = new ResponseModel();
             request = new GetAllSchedules();
             result = _requestService.SendGet(request, HttpContext);
 
             CustomRequestGet req3 = new GetAllTutorsRequest();
             var res3 = _requestService.SendGet(req3, HttpContext);
+
             ViewData["Tutors"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tutor>>(res3.result.ToString());
 
-
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
-
-
-            //request = new GetAllReSchedules();
-            //result = _requestService.SendGet(request, HttpContext);
-
-            //var rescheduled = Newtonsoft.Json.JsonConvert.DeserializeObject<List<RescheduledLessons>>(result.result.ToString());
-            //ViewData["rescheduled"] = rescheduled;
 
             ViewData["userid"] = user.UserId;
             ViewData["role"] = user.Role;
@@ -65,7 +56,7 @@ namespace web_app.Controllers
             Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
             foreach (var item in users)
             {
-                if (item.StartWaitPayment != DateTime.MinValue)
+                if (item is Student && ((Student)item).StartWaitPayment != DateTime.MinValue)
                 {
                     keyValuePairs.Add(item.UserId, item.StartWaitPayment);
                 }

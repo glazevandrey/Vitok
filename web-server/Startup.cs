@@ -11,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 using System;
 using web_server.Database.Repositories;
 using web_server.Injection;
+using web_server.Quartz;
+using web_server.Quartz.Jobs;
 using web_server.Services;
 
 namespace web_server
@@ -36,7 +38,6 @@ namespace web_server
                 o.MaximumReceiveMessageSize = 31457280; // bytes
             });
             services.AddControllers();
-
 
 
             services.AddAuthentication(options =>
@@ -67,20 +68,18 @@ namespace web_server
                   ClockSkew = TimeSpan.Zero
               };
           });
+           
             services.AddCustomServices(Configuration);
-            // ...
-            //var mapperConfig = new MapperConfiguration(mc =>
-            //{
-            //    mc.AddProfile(new MappingProfile());
-            //});
-            //IMapper mapper = mapperConfig.CreateMapper();
-            //services.AddSingleton(mapper);
-            // ...
+
+            services.AddScoped<IQuartzService, QuartzService>();
+
+            services.AddScoped<MainParseJob>();
+
+            var serviceProvider = services.BuildServiceProvider();
+            QuartzStartup.Start(serviceProvider, Configuration); // запуск выполнения планировщика задач 
 
 
-
-
-            services.AddSingleton<IHostedService, NotificationBackgroundService>();
+            //services.AddSingleton<IHostedService, NotificationBackgroundService>();
 
             //            services.AddHostedService<NotificationBackgroundService>();
 
@@ -132,22 +131,22 @@ namespace web_server
                 }
                 else
                 {
-                    token = context.Request.Headers[".AspNetCore.Application.Id"];
-                    if (token != null && token != "")
-                    {
-                        if (context.Request.Headers["Authorization"].Count > 0)
-                        {
-                            context.Request.Headers["Authorization"] = "Bearer " + token;
-                        }
-                        else
-                        {
-                            context.Request.Headers.Add("Authorization", "Bearer " + token);
+                    //token = context.Request.Headers[".AspNetCore.Application.Id"];
+                    //if (token != null && token != "")
+                    //{
+                    //    if (context.Request.Headers["Authorization"].Count > 0)
+                    //    {
+                    //        context.Request.Headers["Authorization"] = "Bearer " + token;
+                    //    }
+                    //    else
+                    //    {
+                    //        context.Request.Headers.Add("Authorization", "Bearer " + token);
 
-                        }
-                    }
+                    //    }
+                    //}
+
                     if (context.Request.Query.ContainsKey("token"))
                     {
-                        //var user = userRepository.GetUserById(Convert.ToInt32(context.Request.Query["token"])).GetAwaiter().GetResult();
                         if (context.Request.Headers["Authorization"].Count > 0)
                         {
                             context.Request.Headers["Authorization"] = "Bearer " + context.Request.Query["token"];

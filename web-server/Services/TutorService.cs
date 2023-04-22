@@ -89,12 +89,10 @@ namespace web_server.Services
 
             var dateTime = DateTime.Parse(split[1]);
             var tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
-            var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(user_id));
+            var user = await _userRepository.GetStudent(Convert.ToInt32(course_id));
+            //var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(user_id));
             var course = await _courseRepository.GetCourseById(Convert.ToInt32(course_id));
 
-            //var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
-            //var user = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(user_id));
-            // var course = TestData.Courses.FirstOrDefault(m => m.Id == Convert.ToInt32(course_id));
             if (user.Credit.Where(m => m.Repaid == false).ToList().Count >= 3)
             {
                 return null;
@@ -102,6 +100,9 @@ namespace web_server.Services
 
             if (tutor != null)
             {
+                
+
+               
                 var sch = new Schedule()
                 {
                     UserName = user.FirstName + " " + user.LastName,
@@ -116,43 +117,39 @@ namespace web_server.Services
                 };
 
 
+                user.Schedules.Add(_mapper.Map<ScheduleDTO>(sch));
 
-                foreach (var item in user.Schedules)
-                {
-                    item.WaitPaymentDate = DateTime.MinValue;
-                    await _scheduleRepository.Update(item);
+                await _userRepository.SaveChanges(user);
 
-                }
-
-                await _scheduleRepository.AddSchedule(sch);
-                //TestData.Schedules.Add(sch);
-
-                var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
-                list.Reverse();
-
-                //  var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
-
+                //var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).ToList();
+                var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue);
+                //list.OrderBy(m=>m.StartDate);
 
                 var sorted = ScheduleService.SortSchedulesForUnpaid(list);
-
-
                 foreach (var item in sorted)
                 {
+                    foreach (var sch2 in list)
+                    {
+                        if(item.ScheduleId == sch2.Id)
+                        {
+                            sch2.WaitPaymentDate = item.Nearest;
 
-                    var sch2 = await _scheduleRepository.GetScheduleById(item.ScheduleId);
-                    //var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+                        }
+                        else
+                        {
+                            sch2.WaitPaymentDate = DateTime.MinValue;
+                        }
+                        await _scheduleRepository.Update(sch2);
 
-                    sch2.WaitPaymentDate = item.Nearest;
-                    await _scheduleRepository.Update(sch2);
+                    }
+
                 }
 
-
-                // отправка что новый урок у репетитора
+                
                 var type = Convert.ToBoolean(split[2]) == true ? "постоянное" : "разовое";
 
                 await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName).Replace("{type}", type)
                     .Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
-
 
                 await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName).Replace("{type}", type)
                   .Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
@@ -321,16 +318,19 @@ namespace web_server.Services
             var split = args.Split(';');
             var tutor_id = split[0];
             var dateTime = DateTime.Parse(split[1]);
+
+            
             var tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
+
+            //var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
             if (tutor != null)
             {
                 var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
-                tutor.UserDates.Remove(rem);
-                await _userRepository.Update(tutor);
+                await _userRepository.RemoveTutorTime(rem);
                 //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
             }
 
-            return tutor;
+            return _mapper.Map<Tutor>(tutor);
         }
 
         public async Task<Tutor> UpdateTutor(string args)
@@ -380,8 +380,16 @@ namespace web_server.Services
             old.Phone = tutor.Phone;
 
             //old.Courses = (tutor.Courses);
-
-            old.Courses = _mapper.Map<List<TutorCourse>>(tutor.Courses);
+            var mapped = _mapper.Map<List<TutorCourse>>(tutor.Courses);
+            foreach (var item in mapped)
+            {
+                item.Id = 0;
+                if(item.TutorId == null)
+                {
+                    item.TutorId = old.UserId;
+                }
+            }
+            old.Courses = mapped;
             //foreach (var item in old.Courses)
             //{
             //    if (item.TutorId == 0 || item.TutorId == null || item.Id != 0)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -27,13 +28,28 @@ namespace web_server.Database.Repositories
         {
             var f = _mapper.Map<RegistrationDTO>(registration);
             _context.Registrations.Add(f);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
             _context.Entry(f).State = EntityState.Detached;
             return true;
         }
         public async Task<Registration> GetRegistrationByUserId(int userId)
         {
-            var reg = await _context.Registrations.FirstOrDefaultAsync(m => m.UserId == userId);
+            var reg = await _context.Registrations.FirstOrDefaultAsync(m => m.ExistUserId == userId);
+
+            return _mapper.Map<Registration>(reg);
+        }
+        public async Task<Registration> GetRegistrationByGuid(Guid guid)
+        {
+            var reg = await _context.Registrations.Include(m=>m.Course).Include(m=>m.WantThis).FirstOrDefaultAsync(m => m.NewUserGuid== guid);
 
             return _mapper.Map<Registration>(reg);
         }
@@ -195,11 +211,11 @@ namespace web_server.Database.Repositories
         }
 
 
-        //public async Task RemoveTutorTime(UserDate date)
-        //{
-        //    _context.UserDates.Remove(date);
-        //    await _context.SaveChangesAsync(); 
-        //}
+        public async Task RemoveTutorTime(UserDate date)
+        {
+            _context.UserDates.Remove(date);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task UpdateTutorCourses(TutorDTO old)
         {
@@ -307,14 +323,13 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                var ff = _context.ChangeTracker.Entries();
+                var f = _context.ChangeTracker.Entries();
                 await _context.SaveChangesAsync();
                 _context.Entry(userDTO).State = EntityState.Detached;
 
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
         }
@@ -449,14 +464,21 @@ namespace web_server.Database.Repositories
         }
         public async Task<TutorDTO> GetTutor(int id)
         {
-            return await _context.Tutors.Include(m => m.Courses).Include(m=>m.UserDates).Include(m => m.Schedules).ThenInclude(m => m.Course).Include(m => m.Schedules).ThenInclude(m => m.Tasks).Include(m => m.Chat).ThenInclude(m => m.Contacts).FirstOrDefaultAsync(m => m.UserId == id);
+            try
+            {
+                return await _context.Tutors.Include(m => m.Courses).Include(m => m.UserDates).Include(m => m.Schedules).ThenInclude(m => m.Course).Include(m => m.Schedules).ThenInclude(m => m.Tasks).Include(m => m.Chat).ThenInclude(m => m.Contacts).FirstOrDefaultAsync(m => m.UserId == id);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
 
         public async Task<User> GetUserById(int id)
         {
-            var gg = _context.ChangeTracker.Entries();
 
-            //lock(_context){
             try
             {
                 var tutor = await _context.Tutors.Include(m => m.Schedules)
@@ -505,8 +527,6 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-
-            //}
         }
 
         public async Task<User> GetUserByEmail(string email)
