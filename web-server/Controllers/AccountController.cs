@@ -51,6 +51,37 @@ namespace web_server.Controllers
 
             return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
         }
+
+        [HttpGet("getalltutorstudents", Name = "getalltutorstudents")]
+        public async Task<string> GetAllTutorStudents([FromQuery] string args)
+        {
+            
+            var users = await _accountService.GetAllUserContacts(args, "Tutor");
+            //var user = await _accountService.SaveAccountInfo(form.First().Key);
+            if (users != null)
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(users);
+                return _jsonService.PrepareSuccessJson(json);
+            }
+
+            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+        }
+        
+        [HttpGet("getallstudenttutors", Name = "getallstudenttutors")]
+        public async Task<string> GetAllStudentTutors([FromQuery] string args)
+        {
+            var users = await _accountService.GetAllUserContacts(args, "Student");
+
+            //var user = await _accountService.SaveAccountInfo(form.First().Key);
+            if (users != null)
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(users);
+                return _jsonService.PrepareSuccessJson(json);
+            }
+
+            return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+        }
+
         [Models.Authorize]
         [HttpPost("removeFirstLogin", Name = "removeFirstLogin")]
         public async Task<string> RemoveFirstLogin()

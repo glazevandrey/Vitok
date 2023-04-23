@@ -358,7 +358,7 @@
                       
                     }
                 </script>
-                <div class="card-footer">
+                <div class="card-footer" id="inputMessage" style="display:none">
                     <div class="input-group">
                         <div class="input-group-append">
                             <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
@@ -404,12 +404,18 @@
         $('#chat-with-name').text(userId);
 
         connection.invoke("GetMessages", $('#chat-with-id').text()).then((result) => {
+
+            document.getElementById('inputMessage').style.display = 'block';
+
         }).catch(err => console.error(err.toString()));
         event.preventDefault();
     }
     var sendMessage = function () {
 
-        const message = document.getElementById("messageInput").value;
+        const message = $.trim(document.getElementById("messageInput").value);
+        if(!message){
+            return;
+        }
         var hasFiles= document.getElementById("fileInput");
         if (hasFiles.files.length > 0) {
             const file = document.getElementById("fileInput").files[0];

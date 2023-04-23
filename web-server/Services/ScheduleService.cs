@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
@@ -33,6 +34,8 @@ namespace web_server.Services
         }
         public async Task<Schedule> AddScheduleFromUser(string args, IHubContext<NotifHub> _hubContext)
         {
+            Stopwatch s = new Stopwatch();
+            s.Start();
             var model = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(args);
             var user = await _userRepository.GetStudent(model.ExistUserId);
             //var user = TestData.UserList.FirstOrDefault(m => m.UserId == model.UserId);
@@ -56,7 +59,9 @@ namespace web_server.Services
             schedule.CreatedDate = DateTime.Now;
 
             schedule.Looped = true;
-
+            s.Stop();
+            var time1 = s.Elapsed;
+            s.Restart();
             await _scheduleRepository.Update(schedule);
 
             var tutor = await _userRepository.GetTutor(model.TutorId);
@@ -72,13 +77,17 @@ namespace web_server.Services
             }
 
             var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == model.WantThis.FirstOrDefault().dateTime);
+
             tutor.UserDates.Remove(rem);
+
             await _userRepository.SaveChanges(tutor);
             await _userRepository.SaveChanges(user);
-
+            s.Stop();
+            var time2 = s.Elapsed;
             var text = Constants.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
             await NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
-
+            s.Restart();
+            var time3 = s.Elapsed;
             return new Schedule();
         }
 

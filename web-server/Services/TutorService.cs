@@ -88,9 +88,9 @@ namespace web_server.Services
             var course_id = split[4];
 
             var dateTime = DateTime.Parse(split[1]);
-            var tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
+            var tutor = (Tutor)await _userRepository.GetLiteUser(Convert.ToInt32(tutor_id));
             var user = await _userRepository.GetStudent(Convert.ToInt32(course_id));
-            //var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(user_id));
+            //var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(user_id)); //await _userRepository.GetStudent(Convert.ToInt32(course_id));
             var course = await _courseRepository.GetCourseById(Convert.ToInt32(course_id));
 
             if (user.Credit.Where(m => m.Repaid == false).ToList().Count >= 3)
@@ -101,8 +101,6 @@ namespace web_server.Services
             if (tutor != null)
             {
                 
-
-               
                 var sch = new Schedule()
                 {
                     UserName = user.FirstName + " " + user.LastName,
@@ -111,19 +109,18 @@ namespace web_server.Services
                     TutorId = tutor.UserId,
                     CreatedDate = DateTime.Now,
                     UserId = user.UserId,
+                    //CourseId = Convert.ToInt32(course_id),
                     Course = course,
                     Status = Status.Ожидает,
                     StartDate = dateTime
                 };
 
-
+                //await _scheduleRepository.AddSchedule(sch);
                 user.Schedules.Add(_mapper.Map<ScheduleDTO>(sch));
 
                 await _userRepository.SaveChanges(user);
 
-                //var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue).ToList();
                 var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue);
-                //list.OrderBy(m=>m.StartDate);
 
                 var sorted = ScheduleService.SortSchedulesForUnpaid(list);
                 foreach (var item in sorted)

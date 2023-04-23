@@ -476,6 +476,44 @@ namespace web_server.Database.Repositories
             }
         }
 
+        public async Task<User> GetLiteUser(int id)
+        {
+            try
+            {
+                var tutor = await _context.Tutors.FirstOrDefaultAsync(m => m.UserId == (id));
+                if (tutor != null)
+                {
+                    _context.Entry(tutor).State = EntityState.Detached;
+
+                    return _mapper.Map<Tutor>(tutor);
+                }
+
+                var student = await _context.Students.FirstOrDefaultAsync(m => m.UserId == id);
+                if (student != null)
+                {
+                    _context.Entry(student).State = EntityState.Detached;
+
+
+                    return _mapper.Map<Student>(student);
+                }
+
+                var manager = await _context.Managers.FirstOrDefaultAsync(m => m.UserId == id);
+                if (manager != null)
+                {
+                    _context.Entry(manager).State = EntityState.Detached;
+
+                    return _mapper.Map<Manager>(manager);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
         public async Task<User> GetUserById(int id)
         {
 
@@ -488,7 +526,7 @@ namespace web_server.Database.Repositories
                                     .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
 
                 .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
-                .Include(m => m.Notifications).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefaultAsync(m => m.UserId == (id));
+                .Include(m => m.Notifications).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).AsNoTracking().Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefaultAsync(m => m.UserId == (id));
                 if (tutor != null)
                 {
                     _context.Entry(tutor).State = EntityState.Detached;
@@ -496,14 +534,26 @@ namespace web_server.Database.Repositories
                     return _mapper.Map<Tutor>(tutor);
                 }
 
+
+
+
                 var student = await _context.Students.Include(m => m.Credit).Include(m => m.Notifications).Include(m => m.Money).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow)
                 .Include(m => m.Schedules)
                 .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
                 .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
-                                    .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
+                    .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
 
                 .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
-                .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).FirstOrDefaultAsync(m => m.UserId == id);
+                .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == id);
+
+                //var student = await _context.Students.Include(m => m.Credit).Include(m => m.Notifications).Include(m => m.Money).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow)
+                //.Include(m => m.Schedules)
+                //.Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
+                //.Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
+                //                    .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
+
+                //.Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
+                //.Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == id);
                 if (student != null)
                 {
                     _context.Entry(student).State = EntityState.Detached;
@@ -512,7 +562,7 @@ namespace web_server.Database.Repositories
                     return _mapper.Map<Student>(student);
                 }
 
-                var manager = await _context.Managers.Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == id);
+                var manager = await _context.Managers.Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).AsNoTracking().Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == id);
                 if (manager != null)
                 {
                     _context.Entry(manager).State = EntityState.Detached;

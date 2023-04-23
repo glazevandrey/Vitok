@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.Models.DBModels;
@@ -19,6 +20,36 @@ namespace web_server.Services
             _scheduleRepository = scheduleRepository;
             _userRepository = userRepository;
         }
+
+        public async Task<List<User>> GetAllUserContacts(string id, string role)
+        {
+            List<User> res = new List<User>();
+            if(role == "Tutor")
+            {
+                var schedules = await _scheduleRepository.GetSchedulesByFunc(m=>m.TutorId == Convert.ToInt32(id));
+                foreach (var item in schedules)
+                {
+                    if(res.FirstOrDefault(m=>m.UserId == item.UserId) == null)
+                    {
+                        res.Add(await _userRepository.GetLiteUser(item.UserId));
+                    }
+                }
+            }
+            else
+            {
+                var schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(id));
+                foreach (var item in schedules)
+                {
+                    if (res.FirstOrDefault(m => m.UserId == item.TutorId) == null)
+                    {
+                        res.Add(await _userRepository.GetLiteUser(item.TutorId));
+                    }
+                }
+            }
+
+            return res;
+        }
+
         public async Task<bool> RemoveFirstLogin(string args)
         {
             var user = await _userRepository.GetStudent(Convert.ToInt32(args));
