@@ -172,7 +172,7 @@ namespace web_server.Services
           user_id.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
             }
 
-            if (!warn)
+            if (!warn && (Status)Enum.Parse(typeof(Status), status) == Status.Пропущен)
             {
                 await NotifHub.SendNotification(Constants.NOTIF_USER_SKIPP_NO_WARN.
               Replace("{userName}", user.FirstName + " " + user.LastName).
