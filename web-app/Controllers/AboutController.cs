@@ -78,7 +78,15 @@ namespace web_app.Controllers
                 foreach (var item in times)
                 {
                     var date22 = DateTime.Parse(item);
-                    date.Add(new UserDate() { dateTime = date22});
+                    if((date22 - DateTime.Now).TotalHours <= 24)
+                    {
+                        date.Add(new UserDate() { dateTime = date22.AddDays(7) });
+                    }
+                    else
+                    {
+                        date.Add(new UserDate() { dateTime = date22 });
+
+                    }
                 }
             }
             var req2 = new GetCourses();

@@ -14,8 +14,7 @@ namespace web_server.Services
     public class LessonsService : ILessonsService
     {
         UserRepository _userRepository;
-        ScheduleRepository _scheduleRepository;
-        CourseRepository _courseRepository;
+    
         TariffRepositories _tariffRepositories;
         NotificationRepository _notificationRepository;
         IMapper _mapper;
@@ -23,10 +22,8 @@ namespace web_server.Services
             CourseRepository courseRepository, NotificationRepository notificationRepository)
         {
             _mapper = mapper;
-            _scheduleRepository = scheduleRepository;
             _userRepository = userRepository;
             _tariffRepositories = tariffRepositories;
-            _courseRepository = courseRepository;
             _notificationRepository = notificationRepository;
         }
 

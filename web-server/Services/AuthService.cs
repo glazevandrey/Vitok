@@ -184,11 +184,24 @@ namespace web_server.Services
                 }
 
                 var tutor = await _userRepository.GetUserById(reg.TutorId);
+
                 foreach (var item in reg.WantThis)
                 {
                     var scheduleToRemove = tutor.Schedules.FirstOrDefault(m => m.StartDate == item.dateTime);
+                    if(scheduleToRemove == null)
+                    {
+                        scheduleToRemove = tutor.Schedules.FirstOrDefault(m => m.StartDate == item.dateTime.AddDays(-7));
+                    }
+
                     await _scheduleRepository.RemoveSchedule(_mapper.Map<ScheduleDTO>(scheduleToRemove));
 
+                    if(item.dateTime < DateTime.Now)
+                    {
+                        while(item.dateTime < DateTime.Now)
+                        {
+                            item.dateTime = item.dateTime.AddDays(7);
+                        }
+                    }
 
                     var sch = new Schedule()
                     {
@@ -220,7 +233,8 @@ namespace web_server.Services
 
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
                         Replace("{studentName}", user.FirstName + " " + user.LastName).
-                        Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName),
+                        Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).
+                        Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")),
                         (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
                 }

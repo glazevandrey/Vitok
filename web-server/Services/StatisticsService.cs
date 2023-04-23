@@ -61,7 +61,10 @@ namespace web_server.Services
                     {
                         continue;
                     }
-
+                    //if(balanceHistories.Count == 1)
+                    //{
+                    //    date = DateTime.MinValue;
+                    //}
                     DateTime date2 = DateTime.MaxValue;
                     if (balanceHistories.Count > 1)
                     {
@@ -210,7 +213,7 @@ namespace web_server.Services
                                 var paid = credit.Repaid;
                                 var amount = credit.Amount;
 
-                                if (ready >= date && ready < date2)
+                                if ((ready >= date && ready < date2 && balanceHistories.Count > 1) || (ready >= DateTime.MinValue && ready < date2 && balanceHistories.Count == 1))
                                 {
                                     if (keys.Count == 0)
                                     {

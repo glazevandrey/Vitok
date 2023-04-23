@@ -326,6 +326,10 @@ namespace web_server.Services
             if (tutor != null)
             {
                 var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
+                if(rem == null)
+                {
+                    rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime.AddDays(-7));
+                }
                 await _userRepository.RemoveTutorTime(rem);
                 //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
             }

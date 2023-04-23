@@ -575,7 +575,7 @@ namespace web_server.Services
                 }
                 else
                 {
-                    user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
+                    //user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
                     user.Credit.Add(new UserCredit() { Amount = 1000, TutorId = tutor.UserId, ScheduleId = schedule.Id, ScheduleSkippedDate = dateCurr });
                 }
 

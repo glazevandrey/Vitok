@@ -24,6 +24,10 @@ namespace web_server.Database.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<CourseDTO> GetCourse(int id)
+        {
+            return await _context.Courses.Include(m => m.Goal).FirstOrDefaultAsync(m => m.Id == id);
+        }
 
         public async Task<Course> GetCourseById(int id)
         {
@@ -77,17 +81,41 @@ namespace web_server.Database.Repositories
             var res = await _context.Goals.Include(m => m.Courses).FirstOrDefaultAsync(m => m.Id == id);
             return _mapper.Map<Goal>(res);
         }
+        public async Task Save(CourseDTO course)
+        {
+            try
+            {
+                await _context.SaveChangesAsync();
+
+            }
+            catch (System.Exception ex)
+            {
+
+                throw ex;
+            }
+            _context.Entry(course).State = EntityState.Detached;
+        }
+
         public async Task<bool> Update(CourseDTO course)
         {
-            _context.Courses.Update(course);
-            await _context.SaveChangesAsync();
-            _context.Entry(course).State = EntityState.Detached;
-            var dd = _context.ChangeTracker.Entries();
-            foreach (var item in dd)
+            try
             {
-                item.State = EntityState.Detached;
+                _context.Courses.Update(course);
+                await _context.SaveChangesAsync();
+                _context.Entry(course).State = EntityState.Detached;
+                var dd = _context.ChangeTracker.Entries();
+                foreach (var item in dd)
+                {
+                    item.State = EntityState.Detached;
+                }
+                return true;
             }
-            return true;
+            catch (System.Exception ex)
+            {
+
+                throw ex;
+            }
+           
         }
         public async Task<bool> AddCourse(CourseDTO course)
         {

@@ -31,11 +31,10 @@ namespace web_server.Services
             var id = Convert.ToInt32(args[0]);
             var title = args[1];
             var goal = args[2];
-            var course = _mapper.Map<CourseDTO>(await _courseRepository.GetCourseById(id));
+            var course = await _courseRepository.GetCourse(id);//_mapper.Map<CourseDTO>(await _courseRepository.GetCourseById(id));
             course.Title = title;
-            course.Goal = new GoalDTO();
-            course.Goal = _mapper.Map<GoalDTO>(await _courseRepository.GetGoalById(Convert.ToInt32(goal)));
-            await _courseRepository.Update(course);
+            course.GoalId = Convert.ToInt32(goal);
+            await _courseRepository.Save(course);
             return Newtonsoft.Json.JsonConvert.SerializeObject("OK");
         }
 

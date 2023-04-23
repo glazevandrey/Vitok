@@ -179,8 +179,6 @@ namespace web_server
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
 
             var user = await _userRepository.GetUser(userId);
-            //var user = await _userRepository.GetUserById(userId);
-            var photo = user.PhotoUrl;
 
             if (user.Chat == null)
             {
@@ -443,8 +441,6 @@ namespace web_server
                             {
                                 await Clients.Client(token.Token).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
                             }
-
-                            tutor.Chat.Contacts.Add(contact);
                             
                             if (user.Chat.Contacts.FirstOrDefault(m => m.UserId == item.TutorId) == null)
                             {
@@ -464,8 +460,6 @@ namespace web_server
 
                 }
 
-                //await _userRepository.Update(user);
-
             }
 
             var contact2 = new Contact()
@@ -482,16 +476,18 @@ namespace web_server
 
         public async Task GetContacts(UserDTO curUser)
         {
-            //var Chat = await _chatRepository.GetChatByUserId(userId);
-            //var Chat = TestData.Chats.FirstOrDefault(m => m.UserId == userId);
+            
             foreach (var item in curUser.Chat.Contacts)
             {
                 if (item.UserId == 1)
                 {
                     continue;
                 }
+                if(item.UserId == curUser.UserId)
+                {
+                    continue;
+                }
                 var user = await _userRepository.GetUserById(item.UserId);
-                //var user = TestData.UserList.FirstOrDefault(m => m.UserId == item.UserId);
 
                 await Clients.Clients(Context.ConnectionId).SendAsync("UserList", item.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
             }

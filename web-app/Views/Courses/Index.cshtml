@@ -16,7 +16,7 @@
                 <h3 class="modal-title">
                     Добавить курс
                 </h3>
-                <a onclick="#" title="Close" class="close">×</a>
+                <a onclick="window.location.href='#'" title="Close" class="close">×</a>
             </div>
             <div class="modal-body">
                 
@@ -29,7 +29,6 @@
                         <label>Цель:</label>
 
                     <select name="goalId" id="goalId">
-                        <option value=""></option>
                         @foreach (Goal item in (List<Goal>)ViewData["goals"])
                         {
                             <option value="@item.Id">@item.Title</option>
@@ -39,7 +38,7 @@
                     <br />
                     <br />
                     <input type="submit" value="Сохранить"/>
-                        <input type="button" onclick="window.location.href='#'" value="отмена" />
+                        <input type="button" onclick="window.location.href='#'" value="Отмена" />
 
                     <br />
                     <br />

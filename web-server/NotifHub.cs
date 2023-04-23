@@ -100,6 +100,10 @@ namespace web_server
             var connectionId = Context.ConnectionId;
             var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
             var user = await _userRepository.GetUser(userId);
+            if(user == null)
+            {
+                return;
+            }
             var rem = user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId);
             user.NotificationTokens.Remove(rem);
 
