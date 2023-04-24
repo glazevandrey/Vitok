@@ -76,8 +76,11 @@ namespace web_server.Services
                 {
                     user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = 1000 * lessonCount, Count = lessonCount }, CustomMessage = $"Оплачено занятий: {lessonCount}" });
                 }
-
-                if (user.Money.FirstOrDefault(m => m.Cost == 1000) != null)
+                if (isTrial)
+                {
+                    user.Money.Add(new UserMoney() { Cost = 250, Count = 1 });
+                }
+                else if (user.Money.FirstOrDefault(m => m.Cost == 1000) != null)
                 {
                     user.Money.FirstOrDefault(m => m.Cost == 1000).Count += lessonCount;
 

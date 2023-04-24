@@ -89,7 +89,7 @@ namespace web_server.Services
 
             var dateTime = DateTime.Parse(split[1]);
             var tutor = (Tutor)await _userRepository.GetLiteUser(Convert.ToInt32(tutor_id));
-            var user = await _userRepository.GetStudent(Convert.ToInt32(course_id));
+            var user = await _userRepository.GetStudent(Convert.ToInt32(user_id));
             //var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(user_id)); //await _userRepository.GetStudent(Convert.ToInt32(course_id));
             var course = await _courseRepository.GetCourseById(Convert.ToInt32(course_id));
 

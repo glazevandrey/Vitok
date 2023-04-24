@@ -27,7 +27,7 @@ namespace web_server
             CreateMap<Tutor, TutorDTO>();
 
 
-            CreateMap<CourseDTO, CourseDTO>();            //            CreateMap<TutorCourse, CourseDTO>();
+            CreateMap<CourseDTO, CourseDTO>();         
             CreateMap<CourseDTO, TutorCourse>().ForMember(m => m.Course, m => m.MapFrom(m => m)).ForMember(m => m.CourseId, m => m.MapFrom(m => m.Id)).ReverseMap();
 
             CreateMap<Course, TutorCourse>().ForMember(m => m.Course, m => m.MapFrom(m => m)).ForMember(m => m.CourseId, m => m.MapFrom(m => m.Id)).AfterMap((src, dest) => { dest.Course = null; }).ReverseMap();
@@ -37,7 +37,7 @@ namespace web_server
             CreateMap<ManagerDTO, Manager>();
 
 
-            CreateMap<ScheduleDTO, Schedule>();//.ForMember(m=>m.CourseId, m=>m.MapFrom(m=>m.Course.Id)).AfterMap((src, dest) => { dest.Course = null; });
+            CreateMap<ScheduleDTO, Schedule>();
             CreateMap<Schedule, ScheduleDTO>().ForMember(m => m.CourseId, m => m.MapFrom(m => m.Course.Id)).AfterMap((src, dest) => { src.Course = null ; dest.Course = null; });//.ForMember(m=>m.CourseId, m=>m.MapFrom(m=>m.Course.Id));
 
 
@@ -47,7 +47,7 @@ namespace web_server
             CreateMap<Registration, RegistrationDTO>().AfterMap((src, dest) => { dest.Course.Id = 0; dest.Course.Goal = null; });
             CreateMap<RegistrationDTO, Registration>();//.AfterMap((src, dest) => { dest.Course=  null;); ;
 
-            CreateMap<Course, CourseDTO>();//.ForMember(m=>m.GoalId , m=>m.MapFrom(m=>m.Goal.Id)).ForMember(m=>m.Id , m=>m.MapFrom(m=>m.Id));
+            CreateMap<Course, CourseDTO>();
             CreateMap<CourseDTO, Course>();
 
             CreateMap<Chat, ChatDTO>();

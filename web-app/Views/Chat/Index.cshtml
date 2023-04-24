@@ -413,10 +413,11 @@
     var sendMessage = function () {
 
         const message = $.trim(document.getElementById("messageInput").value);
-        if(!message){
+       
+        var hasFiles= document.getElementById("fileInput");
+        if (!message && hasFiles.files.length == 0) {
             return;
         }
-        var hasFiles= document.getElementById("fileInput");
         if (hasFiles.files.length > 0) {
             const file = document.getElementById("fileInput").files[0];
             const reader = new FileReader();

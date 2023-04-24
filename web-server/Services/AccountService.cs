@@ -178,9 +178,9 @@ namespace web_server.Services
                 file.CopyTo(stream);
             }
 
-            var user = await _userRepository.GetUserById(Convert.ToInt32(id));
+            var user = await _userRepository.GetUser(Convert.ToInt32(id));
             user.PhotoUrl = "http://localhost:23382/" + "avatars/" + imageName;
-            await _userRepository.Update(user);
+            await _userRepository.SaveChanges(user);
             //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id)).PhotoUrl = "http://localhost:23382/" + "avatars/" + imageName;
 
             return savePath;

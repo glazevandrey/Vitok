@@ -444,9 +444,7 @@ namespace web_server.Services
                         else
                         {
 
-                            // когда стартдейт больше на 3 дня , dur1 > dur2
-                            //var dur1 = (cur.StartDate - DateTime.Now).Duration();
-                            //var dur2 = (date2 - DateTime.Now).Duration();
+         
                             if ((date2 > cur.StartDate) && cur.Status == Status.Ожидает)
                             {
 
@@ -470,19 +468,6 @@ namespace web_server.Services
             DateTime dateCurr, bool warn)
         {
             int initPay = 0;
-
-            if (schedule.Looped)
-            {
-                schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr, WasWarn = warn, InitPaid = initPay });
-            }
-            else
-            {
-                schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr, WasWarn = warn, InitPaid = initPay });
-                schedule.Status = Status.Пропущен;
-            }
-
-            schedule.WaitPaymentDate = DateTime.MinValue;
-            await _scheduleRepository.Update(schedule);
 
             if (warn)
             {
@@ -545,10 +530,6 @@ namespace web_server.Services
                 user.LessonsCount--;
 
 
-                // уведомление ученику и менеджеру что не предупредил
-
-
-
                 if (user.Money.Where(m => m.Count > 0).ToList().Count > 0)
                 {
                     MakePayment(user, tutor, manager, ref initPay, Status.Пропущен, null, DateTime.MinValue,
@@ -557,39 +538,29 @@ namespace web_server.Services
                         $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}");
 
 
-                    //var for_tutor = 0.0;
-                    //var for_manager = 0.0;
-
-                    //var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
-
-                    //foreach (var item in f)
-                    //{
-                    //    if (item.Count > 0)
-                    //    {
-                    //        for_tutor = Math.Abs(item.Cost / 100 * 60);
-                    //        for_manager = Math.Abs(item.Cost / 100 * 40);
-                    //        user.Money.FirstOrDefault(m => m.Cost == item.Cost && item.Count > 0).Count--;
-                    //        initPay = (int)Math.Abs(item.Cost);
-                    //        break;
-                    //    }
-                    //}
-                    //tutor.Balance += for_tutor;
-                    //tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" });
-
-                    //manager.Balance += for_manager;
-                    //manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
-
-
-
                 }
                 else
                 {
-                    //user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
                     user.Credit.Add(new UserCredit() { Amount = 1000, TutorId = tutor.UserId, ScheduleId = schedule.Id, ScheduleSkippedDate = dateCurr });
                 }
 
 
             }
+
+
+            if (schedule.Looped)
+            {
+                schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr, WasWarn = warn, InitPaid = initPay });
+            }
+            else
+            {
+                schedule.SkippedDates.Add(new SkippedDate() { Date = dateCurr, WasWarn = warn, InitPaid = initPay });
+                schedule.Status = Status.Пропущен;
+            }
+
+            schedule.WaitPaymentDate = DateTime.MinValue;
+            await _scheduleRepository.Update(schedule);
+
 
         }
 

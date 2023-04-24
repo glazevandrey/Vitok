@@ -34,10 +34,7 @@ namespace web_server
 
             var currUser = await _userRepository.GetUserByChatToken(Context.ConnectionId);
 
-
-
             currUser.Chat.InChat = Convert.ToInt32(userId);
-
 
             try
             {
@@ -49,10 +46,9 @@ namespace web_server
 
                 throw ex;
             }
-            var user = await _userRepository.GetUserById(Convert.ToInt32(userId));
-            //var user = await _chatRepository.GetChatByUserId(Convert.ToInt32(userId));
-            //var user = TestData.Chats.FirstOrDefault(m => m.UserId == Convert.ToInt32(userId));
 
+            var user = await _userRepository.GetLiteUserWithChat(Convert.ToInt32(userId));
+         
             if (user.Chat == null) { await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow"); return; }
 
             var messages = currUser.Chat.Messages.ToList();
@@ -104,14 +100,11 @@ namespace web_server
         public async Task SendMessage(string message, string token, string filePath)
         {
             var user = await _userRepository.GetUser(Convert.ToInt32(token));
-            //  var user = await _chatRepository.GetChatByUserId(Convert.ToInt32(token));
-            //var user = TestData.Chats.FirstOrDefault(m => m.UserId == Convert.ToInt32(token));
-
+    
             var own = await _userRepository.GetUserByChatToken(Context.ConnectionId);
-            //var own =await  _chatRepository.GetChatByFunc(m => m.ConnectionTokens.Any(m => m.Token == Context.ConnectionId));
-            //var own = TestData.Chats.FirstOrDefault(m => m.ConnectionTokens.Any(m=>m.Token == Context.ConnectionId));
+         
             var ownPhoto = own.PhotoUrl;
-            //var ownPhoto = TestData.UserList.FirstOrDefault(m => m.UserId == own.UserId).PhotoUrl;
+
             if (user.Chat == null) { return; }
 
             var active = user.Chat.ConnectionTokens.Where(m => m.Status == "Connected").ToList();
@@ -239,10 +232,7 @@ namespace web_server
 
             }
 
-
             await GetContacts(user);
-
-
 
             await base.OnConnectedAsync();
         }

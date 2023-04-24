@@ -82,7 +82,6 @@ namespace web_server.DbContext
                     Email = "petr@mail.ru",
                     BirthDate = DateTime.Parse("14.04.2000"),
                     Phone = "+79188793839",
-                    //UserId = 3
                 },
             new StudentDTO()
 

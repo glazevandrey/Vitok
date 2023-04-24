@@ -466,7 +466,7 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                var tutor = await _context.Tutors.Include(m => m.Notifications).Include(m => m.BalanceHistory).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Courses).Include(m => m.UserDates).FirstOrDefaultAsync(u => u.Chat.ConnectionTokens.Any(t => t.Token == token));
+                var tutor = await _context.Tutors.Include(m => m.Notifications).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).FirstOrDefaultAsync(u => u.Chat.ConnectionTokens.Any(t => t.Token == token));
                 if (tutor != null)
                 {
 
@@ -475,7 +475,7 @@ namespace web_server.Database.Repositories
                     //return _mapper.Map<Tutor>(tutor);
                 }
 
-                var student = await _context.Students.Include(m => m.Credit).Include(m => m.Notifications).Include(m => m.Money).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.BalanceHistory).FirstOrDefaultAsync(u => u.Chat.ConnectionTokens.Any(t => t.Token == token));
+                var student = await _context.Students.Include(m => m.Notifications).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).FirstOrDefaultAsync(u => u.Chat.ConnectionTokens.Any(t => t.Token == token));
                 if (student != null)
                 {
 
@@ -521,6 +521,45 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
+        }
+
+        public async Task<User> GetLiteUserWithChat(int id)
+        {
+            try
+            {
+                var tutor = await _context.Tutors.Include(m=>m.Chat).ThenInclude(m=>m.ConnectionTokens).Include(m=>m.Chat).ThenInclude(m=>m.Contacts).Include(m=>m.Chat).ThenInclude(m=>m.Messages).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == (id));
+                if (tutor != null)
+                {
+                    _context.Entry(tutor).State = EntityState.Detached;
+
+                    return _mapper.Map<Tutor>(tutor);
+                }
+
+                var student = await _context.Students.Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.Messages).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == id);
+                if (student != null)
+                {
+                    _context.Entry(student).State = EntityState.Detached;
+
+
+                    return _mapper.Map<Student>(student);
+                }
+
+                var manager = await _context.Managers.Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.Messages).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == id);
+                if (manager != null)
+                {
+                    _context.Entry(manager).State = EntityState.Detached;
+
+                    return _mapper.Map<Manager>(manager);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
         }
 
         public async Task<User> GetLiteUser(int id)

@@ -1,6 +1,6 @@
 ﻿@using web_server.Models;
 @using web_server.Models.DBModels;
-@model User
+@model Student
 @{
     Layout = "_Layout";
 }
@@ -72,6 +72,12 @@
                 <br />             <br />
 
             </label>
+        <label>
+            <span>Пожелания</span>
+            <input name="wish" id="wish" value="@Model.Wish" />
+            <br />             <br />
+
+        </label>
                 </div>
             </fieldset>
             <br/>

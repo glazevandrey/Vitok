@@ -176,7 +176,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
 
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(data.result.ToString(), Program.settings);
+            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<Student>(data.result.ToString(), Program.settings);
 
             return View(user);
         }

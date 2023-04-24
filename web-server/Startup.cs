@@ -72,7 +72,6 @@ namespace web_server
             services.AddCustomServices(Configuration);
 
             services.AddScoped<IQuartzService, QuartzService>();
-
             services.AddScoped<MainParseJob>();
 
             var serviceProvider = services.BuildServiceProvider();

@@ -23,9 +23,7 @@ namespace web_server.Services
         {
 
             var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(args));
-            //var user = TestData.UserList.FirstOrDefault(m=>m.UserId == Convert.ToInt32(args));
-            var schedules = user.Schedules;
-            //var schedules = TestData.Schedules.Where(m => m.UserId == user.UserId);
+            var schedules = user.Schedules.Where(m=>m.RemoveDate == DateTime.MinValue);
 
             var startDate = DateTime.Parse("01." + DateTime.Now.Month + "." + DateTime.Now.Year + " 12:00");
             user.BalanceHistory.Reverse();
@@ -116,6 +114,10 @@ namespace web_server.Services
                                     {
                                         if (keys.ContainsKey(date))
                                         {
+                                            if (keys[date].FirstOrDefault(m => m.LessonDate == date4) != null)
+                                            {
+                                                continue;
+                                            }
                                             keys[date].Add(new StudentPayment()
                                             {
                                                 LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == date4).PaidCount,
@@ -135,6 +137,10 @@ namespace web_server.Services
                                 {
                                     if (keys.ContainsKey(date))
                                     {
+                                        if (keys[date].FirstOrDefault(m => m.LessonDate == date4) != null)
+                                        {
+                                            continue;
+                                        }
                                         keys[date].Add(new StudentPayment()
                                         {
                                             LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == date4).PaidCount,
@@ -163,11 +169,11 @@ namespace web_server.Services
                             {
                                 var ready = skiped.Date;
                                 var credit = user.Credit.FirstOrDefault(m => m.ScheduleId == item.Id && m.ScheduleSkippedDate == ready);
-                                if (credit == null)
-                                {
-                                    continue;
-                                }
-                                if (item.SkippedDates[0].WasWarn == true)
+                                //if (credit == null)
+                                //{
+                                //    continue;
+                                //}
+                                if (skiped.WasWarn == true)
                                 {
                                     continue;
                                 }
@@ -187,7 +193,7 @@ namespace web_server.Services
 
                                         keys[date].Add(new StudentPayment()
                                         {
-                                            LessonAmount = item.SkippedDates[0].InitPaid,
+                                            LessonAmount = skiped.InitPaid,
                                             StudentName = item.UserName,
                                             LessonLooped = item.Looped,
                                             LessonDate = ready
@@ -198,7 +204,7 @@ namespace web_server.Services
 
                                         keys.Add(date, new List<StudentPayment>(){ new StudentPayment()
                                         {
-                                            LessonAmount = item.SkippedDates[0].InitPaid,
+                                            LessonAmount = skiped.InitPaid,
                                             PaymentDate = date,
                                             PaymentAmount = paymentAmount,
                                             StudentName = item.UserName,

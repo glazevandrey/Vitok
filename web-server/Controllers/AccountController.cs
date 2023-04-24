@@ -127,11 +127,11 @@ namespace web_server.Controllers
         }
 
         [HttpPost("savephoto", Name = "savephoto")]
-        public IActionResult SavePhoto([FromQuery] string id)
+        public async Task<IActionResult> SavePhoto([FromQuery] string id)
         {
             var file = Request.Form.Files[0];
 
-            _accountService.SavePhoto(file, id);
+            await _accountService.SavePhoto(file, id);
 
             return Redirect($"{Program.web_app_ip}/account");
         }

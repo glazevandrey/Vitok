@@ -25,8 +25,8 @@ namespace web_server.Services
 
             MailMessage message = new System.Net.Mail.MailMessage();
             string fromEmail = "ivanivanov202311@mail.ru";
-            string password = "Y8vH7uFBpbBytddc3HCt";
-            string toEmail = address;
+            string password = "yiKbKgPPjQmEMHRfeMuR";
+            // string password = "Xs3-6jr-fAH-TdM";
 
             MailMessage mail = new MailMessage();
             mail.From = new MailAddress(fromEmail, "Администрация Vitok");
