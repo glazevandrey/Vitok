@@ -30,14 +30,9 @@ namespace web_server
 
             return new ClaimsIdentity(claims, "token");
         }
-        public async Task<Dictionary<string, string>> LoginUser(string email, string Password)
+        public Dictionary<string, string> LoginUser(string email, string Password, User user)
         {
-            var user = await _userRepository.GetUserByEmail(email);
-            //var user = TestData.UserList.FirstOrDefault(x => x.Email == email);
-
-            if (user == null)
-                return null;
-
+       
 
             if (Password == user.Password)
             {
@@ -56,8 +51,10 @@ namespace web_server
                 );
 
                 var token = new JwtSecurityTokenHandler().WriteToken(JWToken);
-                var res = new Dictionary<string, string>();
-                res.Add(token, user.Role);
+                var res = new Dictionary<string, string>
+                {
+                    { token, user.Role }
+                };
                 return res;
             }
             else

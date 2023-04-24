@@ -2,12 +2,20 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace web_app
 {
+    public class RequestTime
+    {
+        public string url { get; set; }
+        public TimeSpan time { get; set; }
+    }
     public class Program
     {
+        public static List<RequestTime> requestTimes = new List<RequestTime>();
         public static HubConnection Conn;
         public static string web_server_ip = "";
         public static JsonSerializerSettings settings = new JsonSerializerSettings();

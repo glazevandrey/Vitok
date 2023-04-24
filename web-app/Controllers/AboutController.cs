@@ -102,7 +102,7 @@ namespace web_app.Controllers
                 TutorId = tutorId
             };
 
-            //  пользователь уже зарегисттирован?
+            //  пользователь уже зарегистирован?
             CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
             var result = _requestService.SendGet(request, HttpContext);
 

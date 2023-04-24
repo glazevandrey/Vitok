@@ -122,7 +122,7 @@
             }
         </script>
 
-        
+
 
         if (ViewData["role"].ToString() == "Tutor")
         {
@@ -130,7 +130,9 @@
             {
                 foreach (var el in item.Value)
                 {
-                    <label>Ученик: @el.Key Осталось занятий: @el.Value Курс: @Model.FirstOrDefault(m=>m.UserId == item.Key).Course?.Title</label>
+                    var ff = (List<User>)ViewData["users"];
+                    var wish = ((Student)ff.FirstOrDefault(m => m.UserId == item.Key)).Wish;
+                    <label>Ученик: @el.Key Осталось занятий: @el.Value Курс: @Model.FirstOrDefault(m=>m.UserId == item.Key).Course?.Title Пожелания: @wish </label>
 
                     <button onclick="openRemoveStudent('@ViewData["usertoken"].ToString()', '@item.Key')">Отказаться от ученика</button>
                     <br/>

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -208,8 +209,6 @@ namespace web_server.Services
         public async Task<List<ScheduleDTO>> GetAllSchedules() =>
             await _scheduleRepository.GetSchedulesByFunc(null);
 
-        public async Task<List<RescheduledLessons>> GetAllReschedules() =>
-            await _scheduleRepository.GetReschedulesByFunc(null);
 
         public async Task<ScheduleDTO> GetScheduleById(int id) =>
             await _scheduleRepository.GetScheduleById(id);
@@ -319,6 +318,10 @@ namespace web_server.Services
 
                             if (cur.ReadyDates.Count > 0)
                             {
+                                if (cur.ReadyDates.FirstOrDefault(m => m.Date == date2) != null)
+                                {
+                                    continue;
+                                }
                                 date2 = cur.ReadyDates.Last().Date.AddDays(7);
                                 model3.TutorId = item.Key;
                                 model3.ScheduleId = cur.Id;
@@ -327,8 +330,12 @@ namespace web_server.Services
 
                             if (cur.RescheduledLessons.Count > 0)
                             {
-                                if (date2 < cur.RescheduledLessons.Last().NewTime)
+                                if (date2 < cur.RescheduledLessons.Last().NewTime )
                                 {
+                                    if(cur.RescheduledLessons.FirstOrDefault(m=>m.OldTime == date2) != null)
+                                    {
+                                        continue;
+                                    }
                                     date2 = cur.RescheduledLessons.Last().NewTime;
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -340,6 +347,10 @@ namespace web_server.Services
                             {
                                 if (date2 < cur.RescheduledDate)
                                 {
+                                    if(date2 == cur.RescheduledDate)
+                                    {
+                                        continue;
+                                    }
                                     date2 = cur.RescheduledDate;
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -350,7 +361,10 @@ namespace web_server.Services
                             if (cur.SkippedDates.Count > 0)
                             {
                                 if (date2 < cur.SkippedDates.Last().Date.AddDays(7))
-                                {
+                                {if (cur.SkippedDates.FirstOrDefault(m => m.Date == date2) != null)
+                                    {
+                                        continue;
+                                    }
                                     date2 = cur.SkippedDates.Last().Date.AddDays(7);
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -390,6 +404,10 @@ namespace web_server.Services
                             {
                                 if ((cur.ReadyDates.Last().Date.AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
+                                    if (cur.ReadyDates.FirstOrDefault(m => m.Date == date2) != null)
+                                    {
+                                        continue;
+                                    }
                                     date2 = cur.ReadyDates.Last().Date.AddDays(7);
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -401,6 +419,14 @@ namespace web_server.Services
                             {
                                 if ((cur.RescheduledLessons.Last().NewTime - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
+                                    if (cur.RescheduledLessons.FirstOrDefault(m => m.OldTime == date2) != null)
+                                    {
+                                        continue;
+                                    }
+                                    if(item.Value.FirstOrDefault(m=>m.RescheduledLessons.FirstOrDefault(m=>m.OldTime == date2) != null) == null)
+                                    {
+                                        continue;
+                                    }
                                     date2 = cur.RescheduledLessons.Last().NewTime;
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -411,6 +437,10 @@ namespace web_server.Services
                             {
                                 if ((cur.RescheduledDate - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
+                                    if (cur.RescheduledDate == date2)
+                                    {
+                                        continue;
+                                    }
                                     date2 = cur.RescheduledDate;
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -422,6 +452,10 @@ namespace web_server.Services
                             {
                                 if ((cur.SkippedDates.Last().Date.AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
                                 {
+                                    if (cur.SkippedDates.FirstOrDefault(m => m.Date == date2) != null)
+                                    {
+                                        continue;
+                                    }
                                     date2 = cur.SkippedDates.Last().Date.AddDays(7);
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -431,8 +465,9 @@ namespace web_server.Services
 
                             }
 
-                            if (date2 > cur.StartDate && cur.ReadyDates?.FirstOrDefault(m => m.Date == cur.StartDate) == null && cur.SkippedDates?.FirstOrDefault(m => m.Date == cur.StartDate) == null)
+                            if (date2 > cur.StartDate && cur.ReadyDates?.FirstOrDefault(m => m.Date == cur.StartDate) == null && cur.SkippedDates?.FirstOrDefault(m => m.Date == cur.StartDate) == null && cur.RescheduledLessons?.FirstOrDefault(m=>m.OldTime == cur.StartDate) == null)
                             {
+
                                 date2 = cur.StartDate;
                                 model3.TutorId = item.Key;
                                 model3.ScheduleId = cur.Id;
@@ -485,34 +520,7 @@ namespace web_server.Services
                              $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}");
 
 
-                        //user.BalanceHistory.Add(new BalanceHistory() { CustomMessage = $"-1 занятие с репетитором {tutor.FirstName} {tutor.LastName}" });
-                        //if (user.Money.Count > 0)
-                        //{
-                        //    var for_tutor = 0.0;
-                        //    var for_manager = 0.0;
-
-                        //    var f = user.Money.OrderBy(m => m.Cost).ToList();
-
-                        //    foreach (var item in f)
-                        //    {
-                        //        if (item.Count != 0)
-                        //        {
-                        //            for_tutor = Math.Abs(item.Cost / 100 * 60);
-                        //            for_manager = Math.Abs(item.Cost / 100 * 40);
-                        //            user.Money.FirstOrDefault(m => m.Cost == item.Cost).Count--;
-                        //            initPay = (int)Math.Abs(item.Cost);
-                        //            break;
-                        //        }
-                        //    }
-
-                        //    tutor.Balance += for_tutor;
-                        //    tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_tutor) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}" });
-                        //    manager.Balance += for_manager;
-                        //    manager.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(for_manager) }, CustomMessage = $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}" });
-
-
-                        //}
-
+         
 
                     }
                     else
@@ -572,8 +580,9 @@ namespace web_server.Services
 
             var for_tutor = 0.0;
             var for_manager = 0.0;
-
-            var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
+            var f = user.Money.Where(m => m.Count > 0);
+            f.Reverse();
+            //var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
 
             foreach (var item in f)
             {

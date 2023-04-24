@@ -468,13 +468,15 @@
         $('#messageListId').empty();
     });
     connection.on("OwnMessage", (message, filePath, photo) => {
-        $('#messageListId').append('<li><div class="d-flex justify-content-end mb-4">' +
-            '<div class= ""msg_cotainer">' + message + '<span class= "msg_time_send" ></span></div>' +
-            '<div class="img_cont_msg">' +
-            '<img src="' + photo + '" alt="find and solve" class="rounded-circle user_img_msg"> </div> </div></li>')
+        if(message){
+            $('#messageListId').append('<li><div class="d-flex justify-content-end mb-4">' +
+                '<div class= ""msg_cotainer">' + message + '<span class= "msg_time_send" ></span></div>' +
+                '<div class="img_cont_msg">' +
+                '<img src="' + photo + '" alt="find and solve" class="rounded-circle user_img_msg"> </div> </div></li>')
+        }
+       
 
             if(filePath){
-
                     $('#messageListId').append('<li><div class="d-flex justify-content-end mb-4">' +
                 '<div class= ""msg_cotainer"><a download href="' + '@web_app.Program.web_server_ip' +'/files/' + filePath + '">' + filePath + '</a><span class= "msg_time_send"></span></div>' +
         '<div class="img_cont_msg">' +
@@ -484,11 +486,15 @@
     connection.on("ReceiveMessage", (message, senderId, senderName, filePath, photo) => {
         $('#chat-with-id').text(senderId);
         $('#chat-with-name').text(senderName);
-        $('#messageListId').append('<li><div class="d-flex justify-content-start mb-4">' +
-            '<div class="img_cont_msg">' +
-            '<img src="'+photo+'" alt="find and solve" class="rounded-circle user_img_msg"> </div> ' +
-            '<div class= ""msg_cotainer">' + message + '<span class= "msg_time_send" ></span></div>' +
-            '</div ></li>')
+
+        if(message){
+            $('#messageListId').append('<li><div class="d-flex justify-content-start mb-4">' +
+                '<div class="img_cont_msg">' +
+                '<img src="' + photo + '" alt="find and solve" class="rounded-circle user_img_msg"> </div> ' +
+                '<div class= ""msg_cotainer">' + message + '<span class= "msg_time_send" ></span></div>' +
+                '</div ></li>')
+        }
+        
 
             if(filePath){
             $('#messageListId').append('<li><div class="d-flex justify-content-start mb-4">' +

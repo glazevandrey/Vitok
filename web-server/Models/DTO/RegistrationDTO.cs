@@ -13,5 +13,6 @@ namespace web_server.Models.DTO
         public int TutorId { get; set; }
         public List<UserDate> WantThis { get; set; }
         public CourseDTO Course { get; set; }
+        public int CourseId { get; set; }
     }
 }

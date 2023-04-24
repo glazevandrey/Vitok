@@ -82,11 +82,7 @@ namespace web_server.Controllers
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(map.Map<List<Schedule>>(await _scheduleService.GetAllSchedules())));
         }
 
-        [HttpGet("getAllReSchedules", Name = "getAllReSchedules")]
-        public async Task<string> GetAllReSchedules()
-        {
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await _scheduleService.GetAllReschedules()));
-        }
+        
 
         [Authorize]
         [HttpGet("getuser", Name = "getuser")]
@@ -163,7 +159,7 @@ namespace web_server.Controllers
                 return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
             }
 
-            var userSchedules = _scheduleService.GetSchedules(args[0].ToString()); //TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
+            var userSchedules = await _scheduleService.GetSchedules(args[0].ToString()); //TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(args[0].ToString())).ToList();
 
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(userSchedules));
         }

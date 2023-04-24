@@ -322,7 +322,7 @@ form{
                             Dictionary<int, string> d = new Dictionary<int, string>();
                             foreach (var item in Model.Schedules)
                             {
-                                if (d.ContainsKey(item.UserId)){
+                                if (d.ContainsKey(item.UserId) || string.IsNullOrEmpty(item.UserName)){
                                     continue;
                                 }
 

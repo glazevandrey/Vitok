@@ -60,18 +60,15 @@ namespace web_app.Controllers
             }
             ViewData["role"] = "Manager";
             var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Student>>(res.result.ToString(), Program.settings);
-            users = users.Where(m => m.Role == "Student").ToList();
+            users = users.Where(m => m.Role == "Student").Distinct().ToList();
             var schedules = new List<Schedule>();
 
             foreach (var user in users)
             {
-                //var req2 = new GetSchedulesByUserId(user.UserId.ToString());
-                //res = _requestService.SendGet(req2, HttpContext);
-
+   
                 if (res.success)
                 {
                     schedules.AddRange(user.Schedules);
-                    //  schedules.AddRange(Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(res.result.ToString()));
                 }
 
             }

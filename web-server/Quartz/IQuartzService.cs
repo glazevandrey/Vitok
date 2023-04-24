@@ -6,6 +6,6 @@ namespace web_server.Quartz
 {
     public interface IQuartzService
     {
-        Task MainParse(ISenderService _senderService, IScheduleService _scheduleService, ICustomNotificationService _notificationService);
+        Task MainParse(ISenderService _senderService, IScheduleService _scheduleService);
     }
 }

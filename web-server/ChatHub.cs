@@ -26,12 +26,6 @@ namespace web_server
 
         public async Task GetMessages(string userId)
         {
-            // var currChat 
-            // var currChat =await  _chatRepository.GetChatByFunc(u => u.ConnectionTokens.Any(t => t.Token == Context.ConnectionId));
-            // var currChat = TestData.Chats.FirstOrDefault(u => u.ConnectionTokens.Any(t => t.Token == Context.ConnectionId));
-            // var currUser =await _userRepository.GetUserById(currChat.UserId);
-            // var currUser = TestData.UserList.FirstOrDefault(m => m.UserId == currChat.UserId);
-
             var currUser = await _userRepository.GetUserByChatToken(Context.ConnectionId);
 
             currUser.Chat.InChat = Convert.ToInt32(userId);

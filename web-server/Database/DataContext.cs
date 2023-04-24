@@ -62,7 +62,6 @@ namespace web_server.Database
             .OnDelete(DeleteBehavior.Cascade); // Устанавл
 
 
-
             modelBuilder.Entity<UserDTO>()
             .HasOne(pt => pt.Chat)
             .WithOne(t => t.User)

@@ -38,31 +38,31 @@ namespace web_server.Services
             for (int i = 0; i < balanceHistories.Count; i++)
             {
                 var list2 = balanceHistories[i].ToList();
+                list2.Reverse();
                 var payments = list2.Where(m => m.CashFlow != null);
 
                 string paymentAmount = "";
+
                 foreach (var item in payments)
                 {
                     paymentAmount += item.CashFlow.Amount + " + ";
                 }
+
                 paymentAmount = paymentAmount.Trim().TrimEnd('+').Trim();
 
                 for (int j = 0; j < list2.Count; j++)
                 {
-
                     if (list2[j].CashFlow == null)
                     {
                         continue;
                     }
+
                     var date = balanceHistories[i].FirstOrDefault().Date;
                     if (date < startDate)
                     {
                         continue;
                     }
-                    //if(balanceHistories.Count == 1)
-                    //{
-                    //    date = DateTime.MinValue;
-                    //}
+                   
                     DateTime date2 = DateTime.MaxValue;
                     if (balanceHistories.Count > 1)
                     {
@@ -96,7 +96,6 @@ namespace web_server.Services
                                 }
                                 if (date4 >= date && date4 <= date2)
                                 {
-
                                     if (keys.Count == 0)
                                     {
 

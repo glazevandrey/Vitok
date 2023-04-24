@@ -102,11 +102,17 @@ namespace web_server.Services
             return json;
         }
 
-        public async Task<string> LogIn(string login, string password, HttpContext context)
+        public async Task<string> LogIn(string email, string password, HttpContext context)
         {
 
             TokenProvider _tokenProvider = new TokenProvider(_userRepository);
-            var res = await _tokenProvider.LoginUser(login, password.Trim());
+
+            var user = await _userRepository.GetUserByEmail(email);
+
+            if (user == null)
+                return null;
+
+            var res = _tokenProvider.LoginUser(email, password.Trim(), user);
             if (res == null || res.Count == 0)
             {
                 return _jsonService.PrepareErrorJson("Неверное имя пользователя или пароль");
@@ -116,12 +122,11 @@ namespace web_server.Services
             var role = res.First().Value;
             if (userToken != null)
             {
-                var user = await _userRepository.GetUserByEmail(login);
+                //var user = await _userRepository.GetUserByEmail(login);
                 user.ActiveToken = userToken;
                 try
                 {
                     await _userRepository.Update(user);
-
                 }
                 catch (Exception ex)
                 {

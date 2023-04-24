@@ -11,7 +11,6 @@ namespace web_server.Services.Interfaces
         public Task<Schedule> AddScheduleFromUser(string args, IHubContext<NotifHub> _hubContext);
         public Task<List<ScheduleDTO>> GetSchedules(string args);
         public Task<List<ScheduleDTO>> GetAllSchedules();
-        public Task<List<RescheduledLessons>> GetAllReschedules();
         public Task<ScheduleDTO> GetScheduleById(int id);
         public Task<bool> Update(ScheduleDTO schedule);
         public Task<string> ChangeStatus(string args, IHubContext<NotifHub> _hubContext);

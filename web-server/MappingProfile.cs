@@ -43,8 +43,9 @@ namespace web_server
 
             CreateMap<GoalDTO, Goal>();
             CreateMap<Goal, GoalDTO>();
+            CreateMap<Registration, RegistrationDTO>().AfterMap((src, dest) => { dest.Course = null; });
 
-            CreateMap<Registration, RegistrationDTO>().AfterMap((src, dest) => { dest.Course.Id = 0; dest.Course.Goal = null; });
+            // CreateMap<Registration, RegistrationDTO>().AfterMap((src, dest) => { dest.Course.Id = 0; dest.Course.Goal = null; });
             CreateMap<RegistrationDTO, Registration>();//.AfterMap((src, dest) => { dest.Course=  null;); ;
 
             CreateMap<Course, CourseDTO>();

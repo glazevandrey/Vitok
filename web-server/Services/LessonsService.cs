@@ -91,12 +91,13 @@ namespace web_server.Services
                 }
             }
 
-
-            var manager = await _userRepository.GetUser(await _userRepository.GetManagerId());
+            var managerId = await _userRepository.GetManagerId();
+            var manager = await _userRepository.GetUser(managerId);
 
             int how_minus = 0;
             if (user.Credit.Where(m => m.Repaid == false).ToList().Count != 0)
             {
+                user.Money.Reverse();
                 foreach (var item in user.Money)
                 {
 

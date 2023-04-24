@@ -205,12 +205,7 @@ namespace web_server.Services
                 await _scheduleRepository.Update(sch2);
             }
 
-            //await _scheduleRepository.UpdateRange(sorted);
-
-            var managerId = _userRepository.GetManagerId();
-            // TestData.UserList.FirstOrDefault(m => m.Role == "Manager").UserId;
-
-
+            var managerId = await _userRepository.GetManagerId();
 
             await NotifHub.SendNotification(Constants.NOTIF_TUTOR_REJECT_USER_FMANAGER
                 .Replace("{tutorName}", tutorName.FirstName + " " + tutorName.LastName)

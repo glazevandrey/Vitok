@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Web.Http;
 using web_app.Requests;
 using web_server.Models.DBModels;
@@ -24,26 +26,11 @@ namespace web_app.Services
         {
             return SendGet(request, null);
         }
-        public IActionResult JsonToResult(string json)
-        {
-            HttpResponseMessage msg = new HttpResponseMessage();
-            if (json.Contains("недостаточно прав"))
-            {
-                msg = new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "У Вас недостаточно прав для просмотра данной страницы" };
-                throw new HttpResponseException(msg);
-            }
-            else if (json.Contains("401 (Unauthorized)"))
-            {
-                msg = new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "401" };
-                throw new HttpResponseException(msg);
-            }
-
-
-            return new OkObjectResult(json);
-        }
 
         public ResponseModel SendGet(CustomRequestGet request, HttpContext context)
         {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             try
             {
                 using (var client = new HttpClient())
@@ -73,6 +60,8 @@ namespace web_app.Services
                         url = Program.web_server_ip + "/" + request.Address + $"?args={request.Args}";
                     }
                     var responseString = client.GetStringAsync(url).Result;
+                    watch.Stop();
+                    Program.requestTimes.Add(new RequestTime() { time = watch.Elapsed, url = url.Split('?')[0] });
                     return Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(responseString);
                 }
 
@@ -88,6 +77,8 @@ namespace web_app.Services
 
         public ResponseModel SendPost(CustomRequestPost req, HttpContext context)
         {
+            Stopwatch watch= new Stopwatch();
+            watch.Start();
             try
             {
                 string url = "";
@@ -180,12 +171,14 @@ namespace web_app.Services
                 }
 
 
-                using var response = request.GetResponse();
+                using var response = request.GetResponseAsync().Result;
 
                 using var respStream = response.GetResponseStream();
 
                 using var reader = new StreamReader(respStream);
                 string data = reader.ReadToEnd();
+                watch.Stop();
+                Program.requestTimes.Add(new RequestTime() { time = watch.Elapsed, url = url.Split('?')[0] });
 
                 return Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(data);
             }

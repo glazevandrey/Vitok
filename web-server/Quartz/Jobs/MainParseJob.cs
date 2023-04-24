@@ -12,17 +12,15 @@ namespace web_server.Quartz.Jobs
         private readonly IServiceCollection _services;
         ISenderService _senderService;
         IScheduleService _scheduleService;
-        ICustomNotificationService _notificationService;
-        public MainParseJob(IQuartzService quartzService, ISenderService senderService, IScheduleService scheduleService, ICustomNotificationService notificationService)
+        public MainParseJob(IQuartzService quartzService, ISenderService senderService, IScheduleService scheduleService)
         {
-            _notificationService = notificationService;
             _senderService = senderService;
             _scheduleService = scheduleService;
             _quartzService = quartzService;
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            await _quartzService.MainParse(_senderService, _scheduleService, _notificationService);
+            await _quartzService.MainParse(_senderService, _scheduleService);
         }
     }
 }

@@ -120,8 +120,7 @@ namespace web_app.Controllers
             {
                 ViewData["error"] = error;
             }
-            var ff = model.FirstOrDefault(m => m.StartDate == DateTime.Parse("21.04.2023 10:00"));
-            return View(modl);
+                return View(modl);
         }
 
         [HttpPost("AddFreeTime", Name = "AddFreeTime")]

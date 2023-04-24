@@ -63,37 +63,11 @@ namespace web_app.Controllers
             var res2 = _requestService.SendGet(req2, HttpContext);
             model2 = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(res2.result.ToString(), Program.settings);
 
-            //foreach (var item in model)
-            //{
-            //    CustomRequestGet req2;
-
-            //    if (user.Role == "Student")
-            //    {
-            //        if (model2.FirstOrDefault(m => m.UserId == item.TutorId) == null)
-            //        {
-            //            req2 = new GetUserById(item.TutorId.ToString() + $";{user.Role}");
-            //            var res2 = _requestService.SendGet(req2, HttpContext);
-            //            model2.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(res2.result.ToString(), Program.settings));
-            //        }
-
-            //    }
-            //    else
-            //    {
-            //        if (model2.FirstOrDefault(m => m.UserId == item.UserId) == null)
-            //        { 
-            //            req2 = new GetUserById(item.UserId.ToString() + $";{user.Role}");
-            //            var res2 = _requestService.SendGet(req2, HttpContext);
-            //            model2.Add(Newtonsoft.Json.JsonConvert.DeserializeObject<Student>(res2.result.ToString(), Program.settings));
-            //        }
-
-            //    }
-            //}
             ViewData["users"] = model2;
 
 
-                return View(model);
+            return View(model);
             
-            //return View();
         }
 
 

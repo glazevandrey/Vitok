@@ -127,13 +127,13 @@ namespace web_server.Database.Repositories
             {
                 if (func == null)
                 {
-                    var res = await _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.Tasks).Include(m => m.RescheduledLessons).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).ToListAsync();
+                    var res = await _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.Tasks).Include(m => m.RescheduledLessons).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).AsSplitQuery().ToListAsync();
                     return res;
 
                     //return _mapper.Map<List<Schedule>>(res);
                 }
 
-                return _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.Tasks).Include(m => m.RescheduledLessons).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).Where(func).ToList();
+                return _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.Tasks).Include(m => m.RescheduledLessons).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).AsSplitQuery().Where(func).ToList();
             }
             catch (Exception ex)
             {
@@ -144,7 +144,7 @@ namespace web_server.Database.Repositories
         }
         public async Task<ScheduleDTO> GetScheduleByFunc(Func<ScheduleDTO, bool> func)
         {
-            var res = _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).Include(m => m.RescheduledLessons).Include(m => m.Tasks).FirstOrDefault(func);
+            var res = _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).Include(m => m.RescheduledLessons).Include(m => m.Tasks).AsSplitQuery().FirstOrDefault(func);
             //_context.Entry(res).State = EntityState.Detached;
             return res;
             //return (_mapper.Map<Schedule>(res));
