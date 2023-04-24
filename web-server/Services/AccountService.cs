@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.Models.DBModels;
@@ -26,7 +27,7 @@ namespace web_server.Services
             List<User> res = new List<User>();
             if(role == "Tutor")
             {
-                var schedules = await _scheduleRepository.GetSchedulesByFunc(m=>m.TutorId == Convert.ToInt32(id));
+                var schedules = await _scheduleRepository.GetSchedulesByFunc(m=>m.TutorId == Convert.ToInt32(id) && m.UserId != 1 && m.UserName != "");
                 foreach (var item in schedules)
                 {
                     if(res.FirstOrDefault(m=>m.UserId == item.UserId) == null)
@@ -58,12 +59,52 @@ namespace web_server.Services
             //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args)).FirstLogin = false;
             return true;
         }
+        
+        private async Task SaveMainInfo(UserDTO old, User user)
+        {
+            old.FirstName = user.FirstName;
+            old.LastName = user.LastName;
+            old.BirthDate = user.BirthDate;
 
+            old.Email = user.Email;
+            old.Password = user.Password;
+            old.Phone = user.Phone;
+        }
         public async Task<User> SaveAccountInfo(string args)
         {
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(args, Program.settings);
-            var old = await _userRepository.GetUserById(user.UserId);
-            //var old = TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId);
+            
+            StudentDTO student= new StudentDTO();
+            TutorDTO tutor = new TutorDTO();
+            UserDTO manager = new UserDTO();
+            
+            if(user.Role == "Tutor")
+            {
+                tutor = await _userRepository.GetTutor(user.UserId);
+                await SaveMainInfo(tutor, user);
+                tutor.About= ((Tutor)user).About;
+
+                await _userRepository.SaveChanges(tutor);
+
+
+            }
+            else if (user.Role == "Student")
+            {
+                student = await _userRepository.GetStudent(user.UserId);
+                await SaveMainInfo(student, user);
+                student.Wish = ((Student)user).Wish;
+                await _userRepository.SaveChanges(student);
+
+
+            }
+            else
+            {
+                manager = await _userRepository.GetUser(user.UserId);
+                await SaveMainInfo(manager, user);
+                await _userRepository.SaveChanges(manager);
+
+            }
+
 
             var schedules = new List<ScheduleDTO>();
             if (user.Role == "Tutor")
@@ -74,6 +115,7 @@ namespace web_server.Services
             {
                 schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId);//TestData.Schedules.Where(m => m.UserId == user.UserId).ToList();
             }
+
             foreach (var item in schedules)
             {
                 var new_name = "";
@@ -120,16 +162,7 @@ namespace web_server.Services
             }
             await _scheduleRepository.UpdateRange(schedules);
 
-            old.FirstName = user.FirstName;
-            old.LastName = user.LastName;
-            old.BirthDate = user.BirthDate;
-            old.About = user.About;
-            old.Email = user.Email;
-            old.Wish = user.Wish;
-            old.Password = user.Password;
-            old.Phone = user.Phone;
 
-            await _userRepository.Update(old);
             //var index = TestData.UserList.FindIndex(m => m.UserId == user.UserId);
             //TestData.UserList[index] = old;
 

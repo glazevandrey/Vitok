@@ -46,7 +46,7 @@ namespace web_server
                           ("YourKey-2374-OFFKDI940NG7:56753253-tyuw-5769-0921-kfirox29zoxv");
 
                 var JWToken = new JwtSecurityToken(
-                    issuer: "http://localhost:35944/",
+                    issuer: "http://localhost:23571/",
                     audience: Program.web_app_ip + "/",
                     claims: GetUserClaims(user).Claims,
                     notBefore: DateTime.Now,

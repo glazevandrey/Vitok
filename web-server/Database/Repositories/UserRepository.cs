@@ -354,14 +354,61 @@ namespace web_server.Database.Repositories
                 throw ex;
             }
         }
+
+        public async Task Update(UserDTO user)
+        {
+            try
+            {
+                if (user is StudentDTO)
+                {
+
+                    var st = _mapper.Map<StudentDTO>(user);
+                    //_context.Entry(st).State = EntityState.Modified;
+                    _context.Students.Update(st);
+                    await _context.SaveChangesAsync();
+
+                    _context.Entry(st).State = EntityState.Detached;
+
+                }
+                if (user is TutorDTO)
+                {
+
+                    var st = _mapper.Map<TutorDTO>(user);
+                    //_context.Entry(st).State = EntityState.Modified;
+                    _context.Tutors.Update(st);
+                    await _context.SaveChangesAsync();
+
+                    _context.Entry(st).State = EntityState.Detached;
+
+                }
+                
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                await SaveModel(_mapper.Map<UserDTO>(user));
+            }
+            catch (Exception ex)
+            {
+                Thread.Sleep(1000);
+                var f = _context.ChangeTracker.Entries();
+
+                foreach (var entry in f)
+                {
+                    if (entry.Entity != null && entry.State == EntityState.Unchanged)
+                    {
+                        entry.State = EntityState.Detached;
+                    }
+                }
+                await Update(user);
+            }
+
+        }
         public async Task Update(User user)
         {
-            var dd = _context.ChangeTracker.Entries();
             try
             {
                 if (user is Student)
                 {
-
                     var st = _mapper.Map<StudentDTO>((Student)user);
                     //_context.Entry(st).State = EntityState.Modified;
                     _context.Students.Update(st);
@@ -537,14 +584,16 @@ namespace web_server.Database.Repositories
 
 
 
-                var student = await _context.Students.Include(m => m.Credit).Include(m => m.Notifications).Include(m => m.Money).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow)
-                .Include(m => m.Schedules)
-                .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
-                .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
+                var student = await _context.Students.Include(m => m.Credit).Include(m => m.Notifications).Include(m => m.Money)
+                    .Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens)
+                    .Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow)
+                    .Include(m => m.Schedules)
+                    .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
+                    .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
                     .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
 
-                .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
-                .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == id);
+                    .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
+                    .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal).AsNoTracking().FirstOrDefaultAsync(m => m.UserId == id);
 
                 //var student = await _context.Students.Include(m => m.Credit).Include(m => m.Notifications).Include(m => m.Money).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow)
                 //.Include(m => m.Schedules)

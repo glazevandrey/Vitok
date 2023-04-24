@@ -85,8 +85,9 @@
                             </div>
                             <div class="modal-body">
                                 @{
+                                    var sorted = item.BalanceHistory.OrderBy(m => m.Date).Reverse();
 
-                                    foreach (var balance in item.BalanceHistory)
+                                    foreach (var balance in sorted)
                                     {
                                         <label><b>@balance.Date.ToString("dd MMMM ddd HH:mm")</b></label>
                                         <br />

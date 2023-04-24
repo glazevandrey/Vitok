@@ -61,7 +61,7 @@ namespace web_server
                   ValidateIssuer = true,
                   ValidateAudience = true,
                   ValidAudience = Program.web_app_ip + "/",
-                  ValidIssuer = "http://localhost:35944/",
+                  ValidIssuer = "http://localhost:23571/",
                   IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes("YourKey-2374-OFFKDI940NG7:56753253-tyuw-5769-0921-kfirox29zoxv"))
                   ,
                   ValidateLifetime = true,
@@ -131,20 +131,6 @@ namespace web_server
                 }
                 else
                 {
-                    //token = context.Request.Headers[".AspNetCore.Application.Id"];
-                    //if (token != null && token != "")
-                    //{
-                    //    if (context.Request.Headers["Authorization"].Count > 0)
-                    //    {
-                    //        context.Request.Headers["Authorization"] = "Bearer " + token;
-                    //    }
-                    //    else
-                    //    {
-                    //        context.Request.Headers.Add("Authorization", "Bearer " + token);
-
-                    //    }
-                    //}
-
                     if (context.Request.Query.ContainsKey("token"))
                     {
                         if (context.Request.Headers["Authorization"].Count > 0)

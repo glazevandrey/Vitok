@@ -59,15 +59,15 @@ namespace web_app.Controllers
         }
 
         [HttpPost("saveinfo", Name = "saveinfo")]
-        public IActionResult SaveInfo(int userId,
-    string firstName,
-    string lastName,
-    string photoUrl,
-    DateTime birthDate,
-    string email,
-    string password,
-    string phone,
-    string wish, string role, string about
+        public IActionResult SaveInfo([FromForm]int userId,
+    [FromForm] string firstName,
+    [FromForm] string lastName,
+    [FromForm] string photoUrl,
+    [FromForm] DateTime birthDate,
+    [FromForm] string email,
+    [FromForm] string password,
+    [FromForm] string phone,
+    [FromForm] string wish, [FromForm] string role, [FromForm] string about
 )
         {
             if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))

@@ -184,7 +184,7 @@ namespace web_server.Services
                 }
 
                 var tutor = await _userRepository.GetUserById(reg.TutorId);
-
+                var datewarn = reg.WantThis.OrderBy(m=>m.dateTime).First().dateTime;
                 foreach (var item in reg.WantThis)
                 {
                     var scheduleToRemove = tutor.Schedules.FirstOrDefault(m => m.StartDate == item.dateTime);
@@ -211,7 +211,7 @@ namespace web_server.Services
                         UserId = userid,
                         UserName = user.FirstName + " " + user.LastName,
                         CreatedDate = DateTime.Now,
-                        WaitPaymentDate = item.dateTime,
+                        WaitPaymentDate = datewarn == item.dateTime? item.dateTime : DateTime.MinValue,
                         StartDate = item.dateTime,
                         Looped = true,
                         Status = Status.Ожидает
@@ -229,7 +229,7 @@ namespace web_server.Services
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24 * 3600000, 24 * 3600000));
                     var timer = Program.Timers[id];
 
-                    await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
+                    await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
                         Replace("{studentName}", user.FirstName + " " + user.LastName).
@@ -237,7 +237,9 @@ namespace web_server.Services
                         Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")),
                         (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
 
+
                 }
+
 
             }
 

@@ -65,36 +65,36 @@
     <input type="hidden" name="Role" value="@Model.Role" />
 
     <label>Имя</label>
-    <input type="text" name="FirstName" class="form-control txtbox" value="@Model.FirstName" />
+    <input type="text" id="firstName" name="firstName" class="form-control txtbox" value="@Model.FirstName" />
     <br />
     <br />
 
     <label>Фамилия</label>
-    <input type="text" name="LastName" class="form-control txtbox" value="@Model.LastName" />
+    <input type="text" id="lastName" name="lastName" class="form-control txtbox" value="@Model.LastName" />
     <br />
     <br />
 
-    <input type="hidden" name="PhotoUrl" value="@Model.PhotoUrl" />
+    <input type="hidden" id="photoUrl" name="photoUrl" value="@Model.PhotoUrl" />
     <br />
     <br />
 
     <label>Дата рождения</label>
-    <input type="date" name="BirthDate" class="form-control txtbox" id="BirthDate" min="1920-01-01" max="2050-12-31" value="@Model.BirthDate.ToString("yyyy-MM-dd")" />
+    <input type="date" id="birthDate" name="birthDate" class="form-control txtbox" id="BirthDate" min="1920-01-01" max="2050-12-31" value="@Model.BirthDate.ToString("yyyy-MM-dd")" />
     <br />
     <br />
 
     <label>Почта</label>
-    <input type="text" name="Email" class="form-control txtbox" value="@Model.Email" />
+    <input type="text" id="email" name="email" class="form-control txtbox" value="@Model.Email" />
     <br />
     <br />
 
     <label>Пароль</label>
-    <input type="password" name="Password" class="form-control txtbox" />
+    <input type="password" id="password" name="password" class="form-control txtbox" />
     <br />
     <br />
 
     <label>Номер телефона</label>
-    <input type="text" name="Phone" class="form-control txtbox" value="@Model.Phone" />
+    <input type="text" id="phone" name="phone" class="form-control txtbox" value="@Model.Phone" />
     <br />
     <br />
     <input value="@Model.Role" name="role" id="role" hidden="hidden"/>
@@ -144,25 +144,42 @@
               
                         </tr>
                     }
-                    }
+                }
 
-                </table>
+            </table>
 
 
-                <br />
+            <br />
 
-                <label>О себе:</label>
-                <br/>
-                <input value="@{((Tutor)Model).About.ToString();}">
+            <label>О себе:</label>
+            <br/>
+
+            var sw = ((Tutor)Model).About;
+            if(sw != null)
+            {
+        <input id="about" name="about" value="@sw.ToString()"/>
+            }
+            else
+            {
+        <input id="about" name="about" value=""/>
+
+            }
             //@Html.TextAreaFor(m => m.About, new { @class = "form-control rich-textbox" })
         }
         else if (Model.Role == "Student")
         {
             <label>Пожелания</label>
-            <input value="@{
-            ((Student)Model).Wish.ToString();}">
 
-           // @Html.TextAreaFor(m => m.Wish, new { @class = "form-control rich-textbox" })
+            var sw = ((Student)Model).Wish; 
+            if(sw != null)
+            {
+                            <input id="wish" name="wish" value="@sw.ToString()" />
+            }
+            else
+            {
+                <input id="wish" name="wish" value="" />
+            }
+
         }
     }
 

@@ -106,7 +106,18 @@ namespace web_app.Services
                 }
                 else
                 {
-                    json = JsonSerializer.Serialize(req.User);
+                    if(req.User is Student)
+                    {
+                        json = JsonSerializer.Serialize((Student)req.User);
+                    }
+                    else if (req.User is Tutor)
+                    {
+                        json = JsonSerializer.Serialize((Tutor)req.User);
+                    }
+                    else
+                    {
+                        json = JsonSerializer.Serialize((Manager)req.User);
+                    }
                     byteArray = Encoding.UTF8.GetBytes(json);
 
                 }

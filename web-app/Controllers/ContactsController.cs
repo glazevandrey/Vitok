@@ -21,10 +21,10 @@ namespace web_app.Controllers
         public IActionResult Index()
         {
 
-            CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-            var result = _requestService.SendGet(request, HttpContext);
-            var model = new List<Schedule>();
-            model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
+            //CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+            //var result = _requestService.SendGet(request, HttpContext);
+            //var model = new List<Schedule>();
+            //model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
             CustomRequestGet req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
 
@@ -33,6 +33,8 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
+            var model = user.Schedules.Where(m=>m.UserName != "" && m.UserName != null).ToList();
+
             ViewData["role"] = user.Role;
 
             if (user.Role == "Student")
@@ -47,9 +49,6 @@ namespace web_app.Controllers
                 ViewData["firstLogin"] = ((Student)user).FirstLogin;
             }
 
-
-            //var model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
-            //model.RemoveAll(m => m.UserId == 1);
             List<User> model2;
             CustomRequestGet req2;
             if(user.Role == "Student")

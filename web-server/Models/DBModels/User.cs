@@ -29,9 +29,7 @@ namespace web_server.Models.DBModels
         public Chat Chat { get; set; } = new Chat();
 
         // поля студента
-        [NotMapped]
-
-        public virtual string Wish { get; set; }
+        public string Wish { get; set; }
         [NotMapped]
 
         public virtual DateTime StartWaitPayment { get; set; }
