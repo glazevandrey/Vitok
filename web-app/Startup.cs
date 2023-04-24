@@ -9,6 +9,8 @@ using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using web_app.Services;
 using web_server.Injection;
+using web_server.Services.Interfaces;
+using web_server.Services;
 
 namespace web_app
 {
@@ -33,6 +35,8 @@ namespace web_app
             //   services.AddSignalR();
             // services.AddSession();
             services.AddScoped<IRequestService, RequestService>();
+            services.AddScoped<IJsonService, JsonService>();
+
             services.AddControllersWithViews();
             services.Configure<WebEncoderOptions>(options =>
             {
@@ -40,7 +44,7 @@ namespace web_app
             });
             //  services.AddSignalR();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddCustomServices(Configuration);
+       
 
         }
 

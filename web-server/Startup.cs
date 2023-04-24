@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -5,10 +6,12 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using web_server.Database;
 using web_server.Database.Repositories;
 using web_server.Injection;
 using web_server.Quartz;
@@ -68,12 +71,22 @@ namespace web_server
                   ClockSkew = TimeSpan.Zero
               };
           });
-           
+
+            string connection = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlServer(connection);
+                options.EnableSensitiveDataLogging();
+
+            }, ServiceLifetime.Scoped);
+
+
+            services.AddCustomRepositories(Configuration);
             services.AddCustomServices(Configuration);
 
             services.AddScoped<IQuartzService, QuartzService>();
-            services.AddScoped<MainParseJob>();
-
+            services.AddCustomJobs(Configuration);
             var serviceProvider = services.BuildServiceProvider();
             QuartzStartup.Start(serviceProvider, Configuration); // запуск выполнения планировщика задач 
 

@@ -138,9 +138,9 @@ namespace web_server.Services
                                     if (keys.ContainsKey(date))
                                     {
                                         if (keys[date].FirstOrDefault(m => m.LessonDate == date4) != null)
-                                        {
-                                            continue;
-                                        }
+                                            {
+                                                continue;
+                                            }
                                         keys[date].Add(new StudentPayment()
                                         {
                                             LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == date4).PaidCount,
