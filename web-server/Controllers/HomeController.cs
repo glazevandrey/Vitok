@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server.Database;
@@ -12,6 +14,7 @@ using web_server.DbContext;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
+using web_server.Services;
 using web_server.Services.Interfaces;
 
 namespace web_server.Controllers
@@ -345,6 +348,27 @@ namespace web_server.Controllers
             }
 
 
+        }
+        private List<ScheduleDTO> GetTen()
+        {
+            return data.Schedules.Include(m => m.RescheduledLessons).Include(m => m.ReadyDates).Include(m => m.PaidLessons).Include(m => m.SkippedDates).Take(10).ToList();
+        }
+        private  void TestSort()
+        {
+            var res = new List<ScheduleDTO>();
+            int count = 1000; // * 10
+
+            for (int i = 0; i < count; i++)
+            {
+                res.AddRange(GetTen());
+            }
+            Stopwatch s = Stopwatch.StartNew();
+            ScheduleService.SortSchedulesForUnpaid(res);
+            s.Stop();
+            // 100 -  00565
+            // 1000 - 00822
+            // 10000
+            var time = s.Elapsed;
         }
 
     }

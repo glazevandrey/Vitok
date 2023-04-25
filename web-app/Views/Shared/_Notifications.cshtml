@@ -15,7 +15,7 @@
         notificationsConnection.start().then(function () {
             notificationsConnection.on("ReceiveNotification", function (message, read, id) {
                 var notification = $("<li id='li_" + id +"' data-id='" + id + "'>").text(message);
-                $("#notif-list").append(notification);
+                $("#notif-list").prepend(notification);
 
                 if (read === false) {
                     notification.click(function () {

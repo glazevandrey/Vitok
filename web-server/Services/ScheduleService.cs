@@ -402,12 +402,13 @@ namespace web_server.Services
                         {
                             if (cur.ReadyDates.Count > 0)
                             {
-                                if ((cur.ReadyDates.Last().Date.AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
+                                if ((cur.ReadyDates.Last().Date.AddDays(7) - DateTime.Now) < (date2 - DateTime.Now))
                                 {
                                     if (cur.ReadyDates.FirstOrDefault(m => m.Date == date2) != null)
                                     {
                                         continue;
                                     }
+
                                     date2 = cur.ReadyDates.Last().Date.AddDays(7);
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -417,16 +418,18 @@ namespace web_server.Services
 
                             if (cur.RescheduledLessons.Count > 0)
                             {
-                                if ((cur.RescheduledLessons.Last().NewTime - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
+                                if ((cur.RescheduledLessons.Last().NewTime - DateTime.Now) < (date2 - DateTime.Now))
                                 {
                                     if (cur.RescheduledLessons.FirstOrDefault(m => m.OldTime == date2) != null)
                                     {
                                         continue;
                                     }
+
                                     if(item.Value.FirstOrDefault(m=>m.RescheduledLessons.FirstOrDefault(m=>m.OldTime == date2) != null) == null)
                                     {
                                         continue;
                                     }
+
                                     date2 = cur.RescheduledLessons.Last().NewTime;
                                     model3.TutorId = item.Key;
                                     model3.ScheduleId = cur.Id;
@@ -435,7 +438,7 @@ namespace web_server.Services
                             }
                             if (cur.RescheduledDate != DateTime.MinValue)
                             {
-                                if ((cur.RescheduledDate - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
+                                if ((cur.RescheduledDate - DateTime.Now) < (date2 - DateTime.Now))
                                 {
                                     if (cur.RescheduledDate == date2)
                                     {
@@ -450,7 +453,7 @@ namespace web_server.Services
 
                             if (cur.SkippedDates.Count > 0)
                             {
-                                if ((cur.SkippedDates.Last().Date.AddDays(7) - DateTime.Now).Duration() < (date2 - DateTime.Now).Duration())
+                                if ((cur.SkippedDates.Last().Date.AddDays(7) - DateTime.Now) < (date2 - DateTime.Now))
                                 {
                                     if (cur.SkippedDates.FirstOrDefault(m => m.Date == date2) != null)
                                     {

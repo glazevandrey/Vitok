@@ -372,7 +372,7 @@ namespace web_server
                             //user.Chat = itemUser.Chat;
                             itemUser.Chat.Contacts.Add(contact);
 
-                            foreach (var token in user.Chat.ConnectionTokens.Where(m => m.Status == "Connected"))
+                            foreach (var token in itemUser.Chat.ConnectionTokens.Where(m => m.Status == "Connected"))
                             {
                                 await Clients.Client(token.Token).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
                             }
@@ -488,22 +488,10 @@ namespace web_server
 
             var rem = user.Chat.ConnectionTokens.FirstOrDefault(m=>m.Token == Context.ConnectionId);
             user.Chat.ConnectionTokens.Remove(rem);
-            //user.Chat.ConnectionTokens.FirstOrDefault(m => m.Token == Context.ConnectionId).Status = "Disconnected";
-
             await _userRepository.SaveChanges(user);
-            //await Clients.All.SendAsync("DisconnectUser", Context.ConnectionId);
+
             await base.OnDisconnectedAsync(ex);
         }
-        public async Task OnlineUsers()
-        {
-
-            //var who =await  _chatRepository.GetChatByFunc(m => m.ConnectionTokens.Any(m => m.Token == connectionId));
-            //var who = TestData.Chats.FirstOrDefault(m => m.ConnectionTokens.Any( m=>m.Token == connectionId));
-            var user = await _userRepository.GetUserByChatToken(Context.ConnectionId);
-            //var user = TestData.UserList.FirstOrDefault(m => m.UserId == who.UserId);
-            await Clients.All.SendAsync("UserList", Context.ConnectionId, user.FirstName + " " + user.LastName, user.PhotoUrl);
-            await _userRepository.SaveChanges(user);
-
-        }
+      
     }
 }

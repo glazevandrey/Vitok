@@ -35,6 +35,8 @@ form{
 </style>
 
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
+<link rel="stylesheet" href="~/css/flatpickr/flatpickr.min.css">
+<script src="~/js/flatpickr.js"></script>
 
 <label>Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")</label>
 
@@ -135,10 +137,7 @@ form{
                         }
 
                         <br/>
-                        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
                         <script>
-
-
                             flatpickr("#newTime", {
                                 enableTime: true,
                                 noCalendar: true,
@@ -193,7 +192,6 @@ form{
                             <br />
                             <label style="display:none;color:darkred" id="timeError">*Некорректная дата</label>
                             <br/>
-                            <link rel="stylesheet" href="~/css/flatpickr/flatpickr.min.css">
                             <input type="date" id="newDate" min="2002-01-01" max="2050-12-31" name="newDate" />
 
                             <input type="text" style="width:40px" id="newTime" name="newTime">
@@ -574,7 +572,10 @@ form{
                                                             {                              
                                                                  <script>
                                                                     var elem = document.getElementsByClassName('@btn');
-                                                                    elem[0].parentNode.removeChild(elem[0]);
+                                                                    if(elem.length > 0){
+                                                                        elem[0].parentNode.removeChild(elem[0]);
+
+                                                                    }
                                                                  </script>
 
                                                                btn = $"btn_{model1.UserId}_{model1.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
@@ -610,7 +611,10 @@ form{
                                                             {
                                                                 <script>
                                                                     var elem = document.getElementsByClassName('@btn');
-                                                                    elem[0].parentNode.removeChild(elem[0]);
+                                                                    if(elem.length > 0){
+                                                                                                                                            elem[0].parentNode.removeChild(elem[0]);
+
+                                                                    }
                                                                     </script>
                                                                     var label = $"label_{model1.UserId}_{model1.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
                                                                     <div id="tooltrip">
@@ -1030,7 +1034,10 @@ form{
                                                         { 
                                                             <script>
                                                                     var elem = document.getElementsByClassName('@btn');
+                                                                    if(elem.length > 0){
                                                                     elem[0].parentNode.removeChild(elem[0]);
+
+                                                                    }
                                                             </script>
 
                                                             var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.TutorFullName}; ";

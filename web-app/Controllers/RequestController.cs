@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.IO;
+using System.Linq;
 
 namespace web_app.Controllers
 {
@@ -9,19 +11,13 @@ namespace web_app.Controllers
     {
         public string Index()
         {
-            using (var stream = new StreamWriter("/time.txt"))
-            {
+            var text = "";
                 foreach (var item in Program.requestTimes)
                 {
-                    stream.WriteLine(item.url + " : " + item.time);
+                    text += (item.url + " : " + item.time);
+                     text += Environment.NewLine;
                 }
-            }
-
-            var text = "";
-            using (var stream = new StreamReader("/time.txt"))
-            {
-                text = stream.ReadToEnd();
-            }
+            
             return text;
         }
     }

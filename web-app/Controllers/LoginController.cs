@@ -61,7 +61,11 @@ namespace web_app.Controllers
 
             CustomRequestPost req = new CustomRequestPost("api/home/LoginUser", $"{email};{password}");
             var response = _requestService.SendPost(req, HttpContext);
-            if (!response.success || response == null)
+            if(response == null || response.result == null)
+            {
+                return RedirectToAction("login", new { error = "Неудачная попытка входа" });
+            }
+            if (!response.success )
             {
                 return RedirectToAction("login", new { error = response.result });
             }

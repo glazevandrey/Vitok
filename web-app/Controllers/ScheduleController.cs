@@ -55,9 +55,17 @@ namespace web_app.Controllers
             }
             else
             {
-                var _req = new GetCourses();
-                var _res = _requestService.SendGet(_req);
-                var _list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(_res.result.ToString());
+                //var _req = new GetCourses();
+                //var _res = _requestService.SendGet(_req);
+                //var _list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(_res.result.ToString());
+                var _list = new List<Course>();
+                foreach (var course in user.Schedules)
+                {
+                    if(_list.FirstOrDefault(m=>m.Title == course.Course.Title) == null) 
+                    {
+                        _list.Add(course.Course);
+                    }
+                }
                 ViewData["courses"] = _list;
                 ViewData["lessons"] = ((Student)user).LessonsCount;
                 model = ((Student)user).Schedules;
