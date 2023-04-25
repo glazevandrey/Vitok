@@ -7,6 +7,7 @@ namespace web_server.Models.DBModels
     public class Registration : TransferModel
     {
         [Key]
+        public int Id { get; set; }
         public int ExistUserId { get; set; }
         public Guid NewUserGuid { get; set; }
         public int TutorId { get; set; }

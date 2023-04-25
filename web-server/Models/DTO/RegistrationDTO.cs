@@ -8,6 +8,7 @@ namespace web_server.Models.DTO
     public class RegistrationDTO
     {
         [Key]
+        public int Id { get; set; }
         public int ExistUserId { get; set; }
         public Guid NewUserGuid { get; set; }
         public int TutorId { get; set; }

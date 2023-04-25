@@ -479,20 +479,20 @@ namespace web_server
         }
         public async override Task OnDisconnectedAsync(Exception ex)
         {
-            //var connectionId = Context.ConnectionId;
-            //  var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
-
             var user = await _userRepository.GetUserByChatToken(Context.ConnectionId);
-            // var user = await _chatRepository.GetChatByUserId(userId);
+
             if (user.Chat == null)
             {
                 return;
             }
-            user.Chat.ConnectionTokens.FirstOrDefault(m => m.Token == Context.ConnectionId).Status = "Disconnected";
-            await _userRepository.SaveChanges(user);
-            await Clients.All.SendAsync("DisconnectUser", Context.ConnectionId);
 
-            await Task.CompletedTask;
+            var rem = user.Chat.ConnectionTokens.FirstOrDefault(m=>m.Token == Context.ConnectionId);
+            user.Chat.ConnectionTokens.Remove(rem);
+            //user.Chat.ConnectionTokens.FirstOrDefault(m => m.Token == Context.ConnectionId).Status = "Disconnected";
+
+            await _userRepository.SaveChanges(user);
+            //await Clients.All.SendAsync("DisconnectUser", Context.ConnectionId);
+            await base.OnDisconnectedAsync(ex);
         }
         public async Task OnlineUsers()
         {
