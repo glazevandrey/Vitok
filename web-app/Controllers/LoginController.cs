@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using web_app.Requests;
 using web_app.Services;
@@ -74,14 +75,24 @@ namespace web_app.Controllers
             HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", keys.First().Key.ToString(),
             new CookieOptions
             {
-                // TODO: сделать больше
+                // TODO: сколько нужно?
                 MaxAge = TimeSpan.FromMinutes(1160)
             });
 
             HttpContext.Request.Headers.Add(".AspNetCore.Application.Id", keys.First().Key.ToString());
 
 
-            return RedirectToAction("login", new { role = keys.First().Value.ToString() });
+            if (keys.First().Value.ToString() == "Manager")
+            {
+                return Redirect("/manageschool");
+
+            }
+            else
+            {
+                return Redirect("/schedule");
+
+            }
+            //return RedirectToAction("login", new { role = keys.First().Value.ToString() });
 
 
         }

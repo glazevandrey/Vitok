@@ -55,9 +55,7 @@ namespace web_app.Controllers
             }
             else
             {
-                //var _req = new GetCourses();
-                //var _res = _requestService.SendGet(_req);
-                //var _list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(_res.result.ToString());
+               
                 var _list = new List<Course>();
                 foreach (var course in user.Schedules)
                 {
@@ -66,6 +64,7 @@ namespace web_app.Controllers
                         _list.Add(course.Course);
                     }
                 }
+
                 ViewData["courses"] = _list;
                 ViewData["lessons"] = ((Student)user).LessonsCount;
                 model = ((Student)user).Schedules;
@@ -74,38 +73,28 @@ namespace web_app.Controllers
             ViewData["photoUrl"] = user.PhotoUrl;
             ViewData["displayName"] = user.FirstName + " " + user.LastName;
 
-            CustomRequestGet request2 = new GetAllUsersRequest(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-            var result2 = _requestService.SendGet(request2, HttpContext);
 
-            if (!result2.success)
-            {
-                return Redirect("/account/logout");
-            }
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new UserConverter());
 
-
-            var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Student>>(result2.result.ToString(), settings);
-            Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
-
-            foreach (var item in users.Where(m => m.Role == "Student"))
+            if(user.Role == "Tutor")
             {
-                if ((item).StartWaitPayment != DateTime.MinValue)
+                var request2 = new GetAllTutorStudentsRequest(user.UserId.ToString());
+                //CustomRequestGet request2 = new GetAllUsersRequest(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+                var result2 = _requestService.SendGet(request2, HttpContext);
+                var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Student>>(result2.result.ToString(), settings);
+                Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
+
+                foreach (var item in users.Where(m => m.Role == "Student"))
                 {
-                    keyValuePairs.Add(item.UserId, item.StartWaitPayment);
+                    if ((item).StartWaitPayment != DateTime.MinValue)
+                    {
+                        keyValuePairs.Add(item.UserId, item.StartWaitPayment);
+                    }
                 }
-            }
 
-            ViewData["waited"] = keyValuePairs;
+                ViewData["waited"] = keyValuePairs;
 
-            if (user.Role == "Student")
-            {
-                ViewData["firstPay"] = ((Student)user).WasFirstPayment;
-                ViewData["firstLogin"] = ((Student)user).FirstLogin;
-
-            }
-            else
-            {
                 var dic = new Dictionary<int, bool>();
                 foreach (var item in users.Where(m => m.Role == "Student").ToList())
                 {
@@ -114,8 +103,17 @@ namespace web_app.Controllers
                         dic.Add(item.UserId, ((Student)item).WasFirstPayment);
                     }
                 }
+
                 ViewData["firstPay"] = dic;
             }
+            else{
+                Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
+                keyValuePairs.Add(user.UserId, ((Student)user).StartWaitPayment);
+                ViewData["waited"] = keyValuePairs;
+                ViewData["firstPay"] = ((Student)user).WasFirstPayment;
+                ViewData["firstLogin"] = ((Student)user).FirstLogin;
+            }
+
 
 
             var modl = new DisplayModelShedule()
