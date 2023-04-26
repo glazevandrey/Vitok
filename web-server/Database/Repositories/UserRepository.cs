@@ -332,6 +332,7 @@ namespace web_server.Database.Repositories
                      .AsSplitQuery();
                 var d = await dd.FirstOrDefaultAsync(m => m.UserId == userId);
 
+                
                 var sql = ((dynamic)dd).Sql;
 
                 return d;
