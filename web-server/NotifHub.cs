@@ -76,23 +76,26 @@ namespace web_server
         {
             var connectionId = Context.ConnectionId;
             var ctx = Context.GetHttpContext();
+            
             if (!ctx.Request.Query.ContainsKey("token"))
             {
                 return;
             }
+
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
             var user = await _userRepository.GetUser(userId);
+           
             if (user == null)
             {
                 return;
             }
+
             if (user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId) == null)
             {
                 await _userRepository.AddTonificationTokenToUser(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" }, user);
             }
 
             user.Notifications = user.Notifications.OrderBy(m=>m.DateTime).ToList();
-            user.Notifications.Reverse();
             await SetNotifications(user.Notifications);
         }
         public async override Task OnDisconnectedAsync(Exception ex)

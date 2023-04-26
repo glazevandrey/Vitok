@@ -58,22 +58,11 @@ namespace web_app.Controllers
 
             Int32.TryParse(form["course"], out courseId);
 
-            //var tutor = new Tutor();
 
             if (form.Count != 0)
             {
                 tutorId = Convert.ToInt32(form["tutor"]);
-
-                //CustomRequestGet req = new GetTutorByIdRequest(tutorId.ToString());
-                //var response = _requestService.SendGet(req, HttpContext);
-
-                //if (response.success == false)
-                //{
-                //    return BadRequest("Что-то пошло не так =(");
-                //}
-
-                //tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(response.result.ToString(), Program.settings);
-                
+   
                 var time = form["textTime"];
 
                 if (string.IsNullOrEmpty(time))

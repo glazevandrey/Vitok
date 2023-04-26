@@ -189,11 +189,12 @@ namespace web_server.Services
                     }
                 }
 
-                var tutor = await _userRepository.GetTutor(reg.TutorId);
                // var tutor = await _userRepository.GetUserById(reg.TutorId);
                 var datewarn = reg.WantThis.OrderBy(m=>m.dateTime).First().dateTime;
                 foreach (var item in reg.WantThis)
                 {
+                    var tutor = await _userRepository.GetTutor(reg.TutorId);
+
                     var scheduleToRemove = tutor.Schedules.FirstOrDefault(m => m.StartDate == item.dateTime);
                     if(scheduleToRemove == null)
                     {
@@ -205,10 +206,10 @@ namespace web_server.Services
                     {
                         rem = tutor.UserDates.FirstOrDefault(m=>m.dateTime == item.dateTime.AddDays(-7));
                     }
+
                     tutor.UserDates.Remove(rem);
 
                     tutor.Schedules.Remove(scheduleToRemove);
-                   // await _scheduleRepository.RemoveSchedule(scheduleToRemove);
 
                     if(item.dateTime < DateTime.Now)
                     {
@@ -222,6 +223,7 @@ namespace web_server.Services
                     {
                         TutorId = reg.TutorId,
                         Course = reg.Course,
+                        CourseId = reg.Course.Id,
                         TutorFullName = tutor.FirstName + " " + tutor.LastName,
                         UserId = userid,
                         UserName = user.FirstName + " " + user.LastName,
@@ -236,6 +238,7 @@ namespace web_server.Services
                     {
                         sch.WaitPaymentDate = nearest;
                     }
+                    await _userRepository.SaveChanges(tutor);
 
                     var id = await _scheduleRepository.AddSchedule(sch);
 
@@ -254,7 +257,6 @@ namespace web_server.Services
 
 
                 }
-                await _userRepository.SaveChanges(tutor);
 
 
             }

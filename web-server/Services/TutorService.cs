@@ -109,13 +109,11 @@ namespace web_server.Services
                     TutorId = tutor.UserId,
                     CreatedDate = DateTime.Now,
                     UserId = user.UserId,
-                    //CourseId = Convert.ToInt32(course_id),
                     Course = course,
                     Status = Status.Ожидает,
                     StartDate = dateTime
                 };
 
-                //await _scheduleRepository.AddSchedule(sch);
                 user.Schedules.Add(_mapper.Map<ScheduleDTO>(sch));
 
                 await _userRepository.SaveChanges(user);
@@ -136,10 +134,9 @@ namespace web_server.Services
                         {
                             sch2.WaitPaymentDate = DateTime.MinValue;
                         }
+
                         await _scheduleRepository.Update(sch2);
-
                     }
-
                 }
 
                 
@@ -245,23 +242,18 @@ namespace web_server.Services
             var user_id = split[1];
             var curr = DateTime.Parse(split[3]);
             var manager_id = await _userRepository.GetManagerId();
-            //var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
-            //var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
-            //var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
+            
             if (tutor_id != null)
             {
-                //var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
-                //tutor.UserDates.Remove(rem);
-                //await _userRepository.Update(tutor);
-
                 ScheduleDTO schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == Convert.ToInt32(tutor_id) && m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id) && m.RemoveDate == DateTime.MinValue);
-                //var schedule = TestData.Schedules.FirstOrDefault();
                 
                 if (schedule != null)
                 {
                     schedule.RemoveDate = curr;
                 }
+
                 await _scheduleRepository.Update(schedule);
+
                 if(user_id == "1")
                 {
                     var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
