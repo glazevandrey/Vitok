@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace web_server.Database.Repositories
 {
@@ -323,13 +324,15 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                var d = await _context.Students.Include(m => m.Credit).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Money).Include(m => m.Schedules)
+                IQueryable<StudentDTO> dd = _context.Students.Include(m => m.Credit).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Money).Include(m => m.Schedules)
                                         .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
                     .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
                     .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
                     .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
-                     .AsSplitQuery()
-                    .FirstOrDefaultAsync(m => m.UserId == userId);
+                     .AsSplitQuery();
+                var d = await dd.FirstOrDefaultAsync(m => m.UserId == userId);
+
+                var sql = ((dynamic)dd).Sql;
 
                 return d;
 

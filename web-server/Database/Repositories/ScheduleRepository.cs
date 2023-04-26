@@ -66,7 +66,6 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                var dd = _context.ChangeTracker.Entries();
                 await _context.SaveChangesAsync();
                 _context.Entry(schedule).State = EntityState.Detached;
 
