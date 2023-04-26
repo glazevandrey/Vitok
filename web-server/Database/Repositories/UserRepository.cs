@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace web_server.Database.Repositories
 {
@@ -324,16 +323,13 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                IQueryable<StudentDTO> dd = _context.Students.Include(m => m.Credit).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Money).Include(m => m.Schedules)
+                var d = await _context.Students.Include(m => m.Credit).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Money).Include(m => m.Schedules)
                                         .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
                     .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
                     .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
                     .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
-                     .AsSplitQuery();
-                var d = await dd.FirstOrDefaultAsync(m => m.UserId == userId);
-
-                
-                var sql = ((dynamic)dd).Sql;
+                     .AsSplitQuery()
+                    .FirstOrDefaultAsync(m => m.UserId == userId);
 
                 return d;
 
@@ -590,6 +586,53 @@ namespace web_server.Database.Repositories
             }
 
         }
+        public async Task<User> GetLiteUserWithNotif(int id)
+        {
+            try
+            {
+                var tutor = await _context.Tutors.Include(m => m.Notifications)//.Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).AsNoTracking().Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
+                 
+                .FirstOrDefaultAsync(m => m.UserId == (id));
+                if (tutor != null)
+                {
+                    _context.Entry(tutor).State = EntityState.Detached;
+
+                    return _mapper.Map<Tutor>(tutor);
+                }
+
+
+
+
+                var student = await _context.Students.Include(m => m.Notifications)
+                    .FirstOrDefaultAsync(m => m.UserId == id);
+
+               
+                if (student != null)
+                {
+                    _context.Entry(student).State = EntityState.Detached;
+
+
+                    return _mapper.Map<Student>(student);
+                }
+
+                var manager = await _context.Managers.Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == id);
+                if (manager != null)
+                {
+                    _context.Entry(manager).State = EntityState.Detached;
+
+                    return _mapper.Map<Manager>(manager);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
         public async Task<User> GetUserById(int id)
         {
 
@@ -694,6 +737,53 @@ namespace web_server.Database.Repositories
             return null;
 
         }
+        public async Task<User> GetLiteUserByToken(string id)
+        {
+            try
+            {
+                var tutor = await _context.Tutors.AsNoTracking()
+                     .FirstOrDefaultAsync(x => x.ActiveToken == id);
+                if (tutor != null)
+                {
+
+                    _context.Entry(tutor).State = EntityState.Detached;
+
+                    var mapped = _mapper.Map<Tutor>(tutor);
+                    return mapped;
+                }
+
+                var student = await _context.Students
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.ActiveToken == id);
+                if (student != null)
+                {
+
+                    _context.Entry(student).State = EntityState.Detached;
+
+
+                    return _mapper.Map<Student>(student);
+                }
+
+                var manager = await _context.Managers.AsNoTracking().FirstOrDefaultAsync(x => x.ActiveToken == id);
+                if (manager != null)
+                {
+
+
+                    _context.Entry(manager).State = EntityState.Detached;
+
+                    return _mapper.Map<Manager>(manager);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
         public async Task<User> GetUserByToken(string id)
         {
             try
@@ -816,11 +906,6 @@ namespace web_server.Database.Repositories
 
 
         //}
-        public async Task<List<Notifications>> GetUserNotifications(int id)
-        {
-            var user = await GetUserById(id);
-
-            return _mapper.Map<List<Notifications>>(user.Notifications);
-        }
+        
     }
 }

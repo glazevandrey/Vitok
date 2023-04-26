@@ -60,7 +60,7 @@ namespace web_server.Services
             return true;
         }
         
-        private async Task SaveMainInfo(UserDTO old, User user)
+        private Task SaveMainInfo(UserDTO old, User user)
         {
             old.FirstName = user.FirstName;
             old.LastName = user.LastName;
@@ -69,6 +69,8 @@ namespace web_server.Services
             old.Email = user.Email;
             old.Password = user.Password;
             old.Phone = user.Phone;
+
+            return Task.CompletedTask;
         }
         public async Task<User> SaveAccountInfo(string args)
         {

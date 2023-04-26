@@ -232,7 +232,7 @@ namespace web_server.Services
 
         public async Task<List<ScheduleDTO>> GetSchedules(string args)
         {
-            var user = await _userRepository.GetUserByToken(args);
+            var user = await _userRepository.GetLiteUserByToken(args);
             if (user == null)
             {
                 return null;

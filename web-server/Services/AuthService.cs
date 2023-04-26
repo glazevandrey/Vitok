@@ -47,31 +47,32 @@ namespace web_server.Services
             var split = args.Split(';');
             var id = split[0];
             var role = split[1];
-            var tutor = new Tutor();
-            var student = new Student();
-            var manager = new Manager();
-            var userRole = (await _userRepository.GetUserById(Convert.ToInt32(id))).Role;
+
+            var user = await _userRepository.GetUserById(Convert.ToInt32(id));
+
+           // var userRole = (await _userRepository.GetUserById(Convert.ToInt32(id))).Role;
             //var userRole = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id)).Role;
             string json = "";
-            if (userRole == "Student")
-            {
-                student = (Student)await _userRepository.GetUserById(Convert.ToInt32(id));
+            json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+            //if (userRole == "Student")
+            //{
+            //    student = (Student)await _userRepository.GetUserById(Convert.ToInt32(id));
 
-                //student = (Student)TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
-                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(student));
+            //    //student = (Student)TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
+            //    json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(student));
 
-            }
-            else if (userRole == "Tutor")
-            {
-                tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(id));
-                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
+            //}
+            //else if (userRole == "Tutor")
+            //{
+            //    tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(id));
+            //    json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
 
-            }
-            else
-            {
-                manager = (Manager)await _userRepository.GetUserById(Convert.ToInt32(id));
-                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(manager));
-            }
+            //}
+            //else
+            //{
+            //    manager = (Manager)await _userRepository.GetUserById(Convert.ToInt32(id));
+            //    json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(manager));
+            //}
 
             return json;
         }
@@ -188,7 +189,8 @@ namespace web_server.Services
                     }
                 }
 
-                var tutor = await _userRepository.GetUserById(reg.TutorId);
+                var tutor = await _userRepository.GetTutor(reg.TutorId);
+               // var tutor = await _userRepository.GetUserById(reg.TutorId);
                 var datewarn = reg.WantThis.OrderBy(m=>m.dateTime).First().dateTime;
                 foreach (var item in reg.WantThis)
                 {
@@ -198,7 +200,15 @@ namespace web_server.Services
                         scheduleToRemove = tutor.Schedules.FirstOrDefault(m => m.StartDate == item.dateTime.AddDays(-7));
                     }
 
-                    await _scheduleRepository.RemoveSchedule(_mapper.Map<ScheduleDTO>(scheduleToRemove));
+                    var rem = tutor.UserDates.FirstOrDefault(m=>m.dateTime == item.dateTime);
+                    if(rem == null)
+                    {
+                        rem = tutor.UserDates.FirstOrDefault(m=>m.dateTime == item.dateTime.AddDays(-7));
+                    }
+                    tutor.UserDates.Remove(rem);
+
+                    tutor.Schedules.Remove(scheduleToRemove);
+                   // await _scheduleRepository.RemoveSchedule(scheduleToRemove);
 
                     if(item.dateTime < DateTime.Now)
                     {
@@ -244,6 +254,7 @@ namespace web_server.Services
 
 
                 }
+                await _userRepository.SaveChanges(tutor);
 
 
             }

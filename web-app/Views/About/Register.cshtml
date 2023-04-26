@@ -6,7 +6,7 @@
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
 <script src="~/js/jquery/jquery.min.js"></script>
-<script src="~/js/moment.js"></script>
+<script src="~/js/moment.min.js"></script>
 <script>
     let time = [];
 
@@ -219,12 +219,10 @@
 <script>
 
     function processDates(dates) {
-        console.log(dates);
         // Преобразуем даты в объекты moment
         var momentObjects = dates.map(function (dateString) {
             return moment(dateString, "DD.MM.YYYY HH:mm");
         });
-        console.log(momentObjects);
         // Проверяем каждую дату и при необходимости прибавляем 7 дней
         momentObjects.forEach(function (momentObj, index) {
             var now = moment();
@@ -232,13 +230,11 @@
                 momentObj.add(7, 'days');
             }
         });
-        console.log('sdsd');
-        console.log(momentObjects);
+     
         // Преобразуем объекты moment обратно в строки и объединяем их в одну строку
         var formattedDates = momentObjects.map(function (momentObj) {
             return momentObj.format('DD.MM.YYYY HH:mm');
         });
-        console.log(formattedDates);
         //var result = 'Выбранные даты: ' + formattedDates.join(' ');
 
         var dateLabels = document.getElementById('date-labels');

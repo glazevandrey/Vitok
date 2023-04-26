@@ -33,11 +33,18 @@ namespace web_app.Controllers
             {
                 return BadRequest("Технические проблемы. Мы уже исправляем!");
             }
-            var req2 = new GetCourses();
-            var response2 = _requestService.SendGet(req2, HttpContext);
-
-            ViewData["courses"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
+            // var req2 = new GetCourses();
+            //var response2 = _requestService.SendGet(req2, HttpContext);
             var data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(response.result.ToString(), Program.settings);
+
+            List<Course> courses= new List<Course>();
+            foreach (var item in data)
+            {
+                courses.AddRange(((Tutor)item).Courses);
+            }
+            courses = courses.GroupBy(m=>m.Title).Select(m=>m.First()).ToList();
+            ViewData["courses"] = courses;
+            //ViewData["courses"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
             return View(data);
         }
 
@@ -51,21 +58,21 @@ namespace web_app.Controllers
 
             Int32.TryParse(form["course"], out courseId);
 
-            var tutor = new Tutor();
+            //var tutor = new Tutor();
 
             if (form.Count != 0)
             {
                 tutorId = Convert.ToInt32(form["tutor"]);
 
-                CustomRequestGet req = new GetTutorByIdRequest(tutorId.ToString());
-                var response = _requestService.SendGet(req, HttpContext);
+                //CustomRequestGet req = new GetTutorByIdRequest(tutorId.ToString());
+                //var response = _requestService.SendGet(req, HttpContext);
 
-                if (response.success == false)
-                {
-                    return BadRequest("Что-то пошло не так =(");
-                }
+                //if (response.success == false)
+                //{
+                //    return BadRequest("Что-то пошло не так =(");
+                //}
 
-                tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(response.result.ToString(), Program.settings);
+                //tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(response.result.ToString(), Program.settings);
                 
                 var time = form["textTime"];
 

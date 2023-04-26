@@ -16,7 +16,7 @@ namespace web_server.Services
         }
         public async Task SendMessage(int id, string message2)
         {
-            var user = await _userRepository.GetUserById(id);
+            var user = await _userRepository.GetLiteUser(id);
             if (user == null)
             {
                 return;

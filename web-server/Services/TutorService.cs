@@ -159,10 +159,10 @@ namespace web_server.Services
         {
             var tutorId = Convert.ToInt32(args[0]);
             var userId = Convert.ToInt32(args[1]);
-            var tutorName = await _userRepository.GetUserById(tutorId);
+            var tutorName = await _userRepository.GetLiteUser(tutorId);
             //TestData.UserList.FirstOrDefault(m => m.UserId == tutorId);
             //var userName = TestData.UserList.FirstOrDefault(m => m.UserId == userId);
-            var userName = await _userRepository.GetUserById(userId);
+            var userName = await _userRepository.GetLiteUser(userId);
             while (Program.BackInAir == true)
             {
                 Thread.Sleep(10);
@@ -305,29 +305,31 @@ namespace web_server.Services
             return null;
         }
 
-        public async Task<Tutor> RemoveTutorTime(string args)
-        {
-            var split = args.Split(';');
-            var tutor_id = split[0];
-            var dateTime = DateTime.Parse(split[1]);
+        //public async Task<Tutor> RemoveTutorTime(string args)
+        //{
+        //    var split = args.Split(';');
+        //    var tutor_id = split[0];
+        //    var dateTime = DateTime.Parse(split[1]);
 
             
-            var tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
+        //    var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
 
-            //var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
-            if (tutor != null)
-            {
-                var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
-                if(rem == null)
-                {
-                    rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime.AddDays(-7));
-                }
-                await _userRepository.RemoveTutorTime(rem);
-                //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
-            }
+        //    //var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
+        //    if (tutor != null)
+        //    {
+        //        var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
+        //        if(rem == null)
+        //        {
+        //            rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime.AddDays(-7));
+        //        }
+        //        tutor.UserDates.Remove(rem);
+        //        await _userRepository.SaveChanges(tutor);
+        //        //await _userRepository.RemoveTutorTime(rem);
+        //        //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
+        //    }
 
-            return _mapper.Map<Tutor>(tutor);
-        }
+        //    return _mapper.Map<Tutor>(tutor);
+        //}
 
         public async Task<Tutor> UpdateTutor(string args)
         {

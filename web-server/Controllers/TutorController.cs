@@ -228,23 +228,23 @@ namespace vitok.Controllers
         }
 
 
-        [HttpPost("removetutortime", Name = "removetotortime")]
-        public async Task<string> RemoveTutorTime()
-        {
-            var form = Request.Form;
-            if (form.Keys.Count == 0)
-            {
-                return _jsonService.PrepareErrorJson("Tutor not found");
-            }
-            var args = form.First().Key;
+        //[HttpPost("removetutortime", Name = "removetotortime")]
+        //public async Task<string> RemoveTutorTime()
+        //{
+        //    var form = Request.Form;
+        //    if (form.Keys.Count == 0)
+        //    {
+        //        return _jsonService.PrepareErrorJson("Tutor not found");
+        //    }
+        //    var args = form.First().Key;
 
-            var tutor =await _tutorService.RemoveTutorTime(args);
-            if (tutor == null)
-            {
-                return _jsonService.PrepareErrorJson("Tutor not found");
-            }
+        //    var tutor =await _tutorService.RemoveTutorTime(args);
+        //    if (tutor == null)
+        //    {
+        //        return _jsonService.PrepareErrorJson("Tutor not found");
+        //    }
 
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(true));
-        }
+        //    return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(true));
+        //}
     }
 }

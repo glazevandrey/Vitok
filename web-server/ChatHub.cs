@@ -295,7 +295,7 @@ namespace web_server
             }
 
             var managerId = await _userRepository.GetManagerId();
-            var manager = (Manager)await _userRepository.GetUserById(managerId);
+            var manager = (Manager)await _userRepository.GetLiteUserWithChat(managerId);
 
 
 
@@ -319,16 +319,7 @@ namespace web_server
                                 await Clients.Client(item.Token).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
                             }
                         }
-                        try
-                        {
-
-                        }
-                        catch (Exception ex)
-                        {
-
-                            throw ex;
-                        }
-
+                       
                     }
 
                     await _userRepository.Update(manager);
@@ -471,7 +462,7 @@ namespace web_server
                 {
                     continue;
                 }
-                var user = await _userRepository.GetUserById(item.UserId);
+                var user = await _userRepository.GetLiteUser(item.UserId);
 
                 await Clients.Clients(Context.ConnectionId).SendAsync("UserList", item.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
             }
