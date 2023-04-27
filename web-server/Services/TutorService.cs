@@ -145,7 +145,7 @@ namespace web_server.Services
                 var type = Convert.ToBoolean(split[2]) == true ? "постоянное" : "разовое";
                 Task.Run(async () =>
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(1000);
                     await NotifHub.SendNotification("SSSS", tutor.UserId.ToString(), _hubContext, _userRepository, _mapper);
 
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName).Replace("{type}", type)

@@ -20,6 +20,7 @@ namespace web_server
             _mapper = mapper;
             _userRepository = userRepository;
         }
+//        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, IMapper mapper)
 
         public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, IMapper mapper)
         {
