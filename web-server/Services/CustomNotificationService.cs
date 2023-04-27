@@ -21,7 +21,7 @@ namespace web_server.Services
     //    }
     //    public async Task SendMessage(string message, string to)
     //    {
-    //        await NotifHub.SendNotification(message, to, _hubContext, _userRepository, _notificationRepository, _mapper);
+    //        await NotifHub.SendNotification(message, to, _hubContext, _userRepository, _mapper);
     //    }
     //}
 }

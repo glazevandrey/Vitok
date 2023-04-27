@@ -72,7 +72,7 @@ namespace web_server.Database.Repositories
             }
             catch (Exception ex)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
                 await Update(schedule);
             }
 

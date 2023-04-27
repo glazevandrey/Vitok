@@ -103,7 +103,7 @@ namespace vitok.Controllers
                 return _jsonService.PrepareErrorJson("Неудачная попытка удалить репетитора");
             }
 
-            return _jsonService.PrepareSuccessJson("OK");
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(true));
         }
 
         [Authorize]

@@ -121,16 +121,70 @@ namespace web_server.Database.Repositories
         }
         public async Task Remove(int id)
         {
-            var res = await _context.Tutors.Include(m => m.Schedules).FirstOrDefaultAsync(m => m.UserId == id);
-            _context.Entry(res).State = EntityState.Deleted;
+            TutorDTO res = new TutorDTO();
             try
             {
+                 res = await _context.Tutors.Include(m => m.Schedules)
+                .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
+                .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
+                .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
+                .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
+                .Include(m => m.NotificationTokens).Include(m => m.UserDates)
+                .Include(m => m.Chat).Include(m => m.Chat).Include(m => m.Chat.ConnectionTokens).Include(m=>m.Chat.Messages).Include(m => m.Chat.Contacts)
+                .FirstOrDefaultAsync(m => m.UserId == id);
+                _context.Entry(res).State = EntityState.Deleted;
                 await _context.SaveChangesAsync();
 
             }
             catch (Exception ex)
             {
 
+                //foreach (var item in res.UserDates)
+                //{
+                //    _context.Entry(item).State = EntityState.Deleted;
+                  
+                //}
+                //foreach (var item in res.NotificationTokens)
+                //{
+                //    _context.Entry(item).State = EntityState.Deleted;
+                //}
+
+                //foreach (var item in res.Schedules)
+                //{
+                //    foreach (var resc in item.RescheduledLessons)
+                //    {
+                //        _context.Entry(resc).State = EntityState.Deleted;
+
+                //    }
+                //    foreach (var resc in item.ReadyDates)
+                //    {
+                //        _context.Entry(resc).State = EntityState.Deleted;
+
+                //    }
+                //    foreach (var resc in item.PaidLessons)
+                //    {
+                //        _context.Entry(resc).State = EntityState.Deleted;
+
+                //    }
+                //    foreach (var resc in item.SkippedDates)
+                //    {
+                //        _context.Entry(resc).State = EntityState.Deleted;
+
+                //    }
+                //}
+
+                //try
+                //{
+                //    _context.SaveChanges();
+
+                //}
+                //catch (Exception exx)
+                //{
+
+                //    throw exx;
+                //}
+                //_context.Entry(res).State = EntityState.Deleted;
+                //_context.SaveChanges();
                 throw ex;
             }
         }
@@ -164,8 +218,21 @@ namespace web_server.Database.Repositories
                 var mapped = _mapper.Map<TutorDTO>((Tutor)user);
                 if (!_context.Tutors.Contains(mapped))
                 {
+                    if(mapped.Courses.First().Id != 0)
+                    {
+                        mapped.Courses.First().Id = 0;
+                    }
                     await _context.Tutors.AddAsync(mapped);
-                    await _context.SaveChangesAsync();
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw ex;
+                    }
                     return mapped.UserId;
                 }
 
@@ -493,7 +560,16 @@ namespace web_server.Database.Repositories
 
         public async Task<UserDTO> GetUser(int id)
         {
-            return await _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens).FirstOrDefaultAsync(m => m.UserId == id);
+            try
+            {
+                return await _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens).FirstOrDefaultAsync(m => m.UserId == id);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
         public async Task<TutorDTO> GetTutor(int id)
         {

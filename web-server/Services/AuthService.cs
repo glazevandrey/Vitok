@@ -247,13 +247,13 @@ namespace web_server.Services
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24 * 3600000, 24 * 3600000));
                     var timer = Program.Timers[id];
 
-                    await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")), reg.TutorId.ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
+                    await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")), reg.TutorId.ToString(), _hubContext, _userRepository, _mapper);
 
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
                         Replace("{studentName}", user.FirstName + " " + user.LastName).
                         Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).
                         Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")),
-                        (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _notificationRepository, _mapper);
+                        (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _mapper);
 
 
                 }

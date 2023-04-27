@@ -29,7 +29,10 @@
 
 <script>
     function closeModal(){
-        window.location.hash = "#closeModal";
+        if (#('addForm')[0].checkValidity()){
+            window.location.hash = "#closeModal";
+
+        }
     }
 </script>
 <div id="openModalAdd" class="modal">
@@ -50,26 +53,26 @@
 
                             <label>
                                 <span>Фамилия</span>
-                                <input id="lastName" name="lastName" value="" />
+                                <input id="lastName" required name="lastName" value="" />
                             </label>
                             <br />
                             <br />
 
                             <label>
                                 <span>Имя</span>
-                                <input name="firstName" id="firstName" value="" />
+                                <input name="firstName" required id="firstName" value="" />
                                 <br />             <br />
 
                             </label>
                             <label>
                                 <span>Отчество</span>
-                                <input id="middleName" name="middleName" value="" />
+                                <input id="middleName" required name="middleName" value="" />
                                 <br />             <br />
 
                             </label>
                             <label>
                                 <span>Дата рождения</span>
-                                <input name="birthDate" id="birthDate" value="" />
+                                <input name="birthDate" required id="birthDate" value="" />
                                 <br />             <br />
 
                             </label>
@@ -80,25 +83,25 @@
 
                                 <span>Почта</span>
 
-                                <input name="email" id="email" onchange="validateEmail(this)" value="" />
+                                <input required name="email" id="email" onchange="validateEmail(this)" value="" />
                                 <br />             <br />
 
                             </label>
                             <label>
                                 <span>Пароль</span>
-                                <input name="password" id="password" value="" />
+                                <input required name="password" id="password" value="" />
                                 <br />             <br />
 
                             </label>
                             <label>
                                 <span>Телефон</span>
-                                <input name="phone" id="phone" value="" />
+                                <input required name="phone" id="phone" value="" />
                                 <br />             <br />
 
                             </label>
                             <label>
                                 <span>Курсы</span>
-                                <input name="courses" id="courses" placeholder="(напр. ЕГЭ;Общий ангийский;ОГЭ)" value="" />
+                                <input required name="courses" id="courses" placeholder="(напр. ЕГЭ;Общий ангийский;ОГЭ)" value="" />
                                 <br />             <br />
 
                             </label>
@@ -108,7 +111,7 @@
                     <br />
 
                     <div align="center">
-                        <input type="submit" onclick="closeModal()" value="Добавить" />
+                        <input type="submit" onclick="closeModal1()" value="Добавить" />
 
                     </div>
 
@@ -127,6 +130,8 @@
 <input type="button" value="Добавить нового репетитора" onclick="window.location.hash = '#openModalAdd';" />
 
 <br/>
+
+
          <table id="table">
         <thead>
             <tr>
@@ -384,4 +389,20 @@
         }
 
         }
+
+
+
     </script>
+
+
+@{
+
+    if(ViewData["error"] != null)
+    {
+    
+        <script>
+ 
+      alert('@ViewData["error"].ToString()');
+        </script>
+    }
+}

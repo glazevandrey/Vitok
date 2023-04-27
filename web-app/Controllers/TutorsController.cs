@@ -23,7 +23,7 @@ namespace web_app.Controllers
             _requestService = requestService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index([FromQuery] string error = null)
         {
             CustomRequestGet req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
 
@@ -51,22 +51,17 @@ namespace web_app.Controllers
             var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tutor>>(res2.result.ToString(), Program.settings);
             users = users.Where(m => m.Role == "Tutor").ToList();
 
+            if(error != null)
+            {
+                ViewData["error"] = error;
+            }
+
             return View(users);
         }
         [HttpPost("removeTutor", Name = "removeTutor")]
         public IActionResult RemoveTutor([FromForm] string userIdRemove)
         {
-            var req1 = new GetUserById(userIdRemove + ";Tutor");
-            var res1 = _requestService.SendGet(req1, HttpContext);
-
-            if (!res1.success)
-            {
-                return Redirect("/login");
-            }
-
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res1.result.ToString(), Program.settings);
-
-            var req = new CustomRequestPost("api/tutor/removeTutorServer", user);
+            var req = new CustomRequestPost("api/tutor/removeTutorServer", userIdRemove);
             var res = _requestService.SendPost(req, HttpContext);
             if (!res.success)
             {
@@ -74,6 +69,7 @@ namespace web_app.Controllers
             }
             return RedirectToAction("Index", "Tutors");
         }
+
         [HttpPost("updateTutor", Name = "updateTutor")]
         public IActionResult UpdateTutor([FromForm] string userIdEdit, [FromForm] string firstNameEdit, [FromForm] string lastNameEdit, [FromForm] string middleNameEdit, [FromForm] string birthDateEdit,
         [FromForm] string emailEdit, [FromForm] string passwordEdit, [FromForm] string phoneEdit, [FromForm] string coursesEdit)
@@ -98,7 +94,10 @@ namespace web_app.Controllers
                 }
 
             }
-
+            if(listCourses.Count == 0)
+            {
+                return RedirectToAction("Index", "Tutors", new {error="Необходимо ввести существующий курс" });
+            }
             var user = new Tutor()
             {
                 FirstName = firstNameEdit,
@@ -151,7 +150,10 @@ namespace web_app.Controllers
                     listCourses.Add(c);
                 }
             }
-
+            if (listCourses.Count == 0 || listCourses.First() == null)
+            {
+                return RedirectToAction("Index", "Tutors", new { error = "Необходимо ввести существующий курс" });
+            }
             var user = new Tutor()
             {
                 FirstName = firstName,

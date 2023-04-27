@@ -119,7 +119,7 @@ namespace web_server.Quartz
                                 await _scheduleService.Update(lesson);
 
                                 await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_DONT_FORGET_SET_STATUS);
-                                    await NotifHub.SendNotification(Constants.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hub, _userRepository, _notificationRepository, _mapper);
+                                    await NotifHub.SendNotification(Constants.NOTIF_DONT_FORGET_SET_STATUS, lesson.TutorId.ToString(), _hub, _userRepository, _mapper);
 
 
 
@@ -136,10 +136,10 @@ namespace web_server.Quartz
                                     lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_TOMORROW_LESSON && m.Id != 0).NotifValue = true;
 
                                     await _scheduleService.Update(lesson);
-                                    await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hub,_userRepository,_notificationRepository, _mapper);
+                                    await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hub,_userRepository, _mapper);
                                     await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_TOMORROW_LESSON);
 
-                                    await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hub, _userRepository, _notificationRepository, _mapper);
+                                    await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hub, _userRepository, _mapper);
                                     await _senderService.SendMessage(lesson.UserId, Constants.NOTIF_TOMORROW_LESSON);
 
                             }
@@ -155,12 +155,12 @@ namespace web_server.Quartz
                                 lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue = true;
 
                                 await _scheduleService.Update(lesson);
-                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hub, _userRepository, _notificationRepository, _mapper);
+                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hub, _userRepository, _mapper);
                                     //var tutor =await _userRepository.GetUserById(lesson.TutorId); //TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
                                     await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
 
 
-                                    await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.UserId.ToString(), _hub, _userRepository, _notificationRepository, _mapper);
+                                    await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.UserId.ToString(), _hub, _userRepository, _mapper);
                                     //  var student = await _userRepository.GetUserById(lesson.UserId);// TestData.UserList.FirstOrDefault(m => m.UserId == lesson.UserId).Email;
                                     await _senderService.SendMessage(lesson.UserId, Constants.NOTIF_START_LESSON);
 
@@ -188,11 +188,11 @@ namespace web_server.Quartz
 
                                 lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_TOMORROW_LESSON && m.Id != 0).NotifValue = true;
                                 await _scheduleService.Update(lesson);
-                                await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hub, _userRepository, _notificationRepository, _mapper);
+                                await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hub, _userRepository, _mapper);
                                     // var tutor = await _userRepository.GetUserById(lesson.TutorId);
                                     await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_TOMORROW_LESSON);
 
-                                    await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hub, _userRepository, _notificationRepository, _mapper);
+                                    await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.UserId.ToString(), _hub, _userRepository, _mapper);
                                     //var student = await _userRepository.GetUserById(lesson.UserId);
                                     await _senderService.SendMessage(lesson.UserId, Constants.NOTIF_TOMORROW_LESSON);
 
@@ -216,10 +216,10 @@ namespace web_server.Quartz
                                 //await _scheduleService.Update(lesson);
                                 lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue = true;
                                 await _scheduleService.Update(lesson) ;
-                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hub, _userRepository, _notificationRepository, _mapper);
+                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hub, _userRepository, _mapper);
                                     await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
 
-                                    await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.UserId.ToString(), _hub, _userRepository, _notificationRepository, _mapper);
+                                    await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.UserId.ToString(), _hub, _userRepository, _mapper);
                                     await _senderService.SendMessage(lesson.UserId, Constants.NOTIF_START_LESSON);
 
 

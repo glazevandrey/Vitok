@@ -36,8 +36,8 @@ namespace web_server.DbContext
         public static List<Notifications> Notifications = new List<Notifications>();
         public static List<ScheduleDTO> Schedules = new List<ScheduleDTO>() {
             new ScheduleDTO() { UserName = "Петр Иванов", TutorFullName = "Иван Петров", TutorId = 4, UserId = 3,
-                WaitPaymentDate = DateTime.Parse("23.04.2023 13:00"),
-                StartDate = DateTime.Parse("23.04.2023 13:00")},
+                WaitPaymentDate = DateTime.Parse("27.04.2023 13:00"),
+                StartDate = DateTime.Parse("27.04.2023 13:00")},
 
 
             //new Schedule() { UserName ="Петр Иванов", TutorFullName = "Сергей Глузер", TutorId = 6, UserId = 3,
