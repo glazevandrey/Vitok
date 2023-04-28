@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Writers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using web_server.Database;
 using web_server.Database.Repositories;
 using web_server.Models;
 using web_server.Models.DBModels;
@@ -15,21 +19,29 @@ namespace web_server
     {
         UserRepository _userRepository;
         IMapper _mapper;
+        private static IServiceProvider _serviceProvider;
         public NotifHub(IMapper mapper, UserRepository userRepository)
         {
             _mapper = mapper;
             _userRepository = userRepository;
         }
+        public static void Configure(IServiceProvider serviceProvider)
+        {
+            _serviceProvider= serviceProvider;
+        }
 //        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, IMapper mapper)
 
-        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, IMapper mapper)
+        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, IMapper mapper)
         {
             if (to == "-1" || to == "1")
             {
                 return;
             }
+            var scope = _serviceProvider.CreateScope();
 
-            var user = await userRepository.GetUser(Convert.ToInt32(to));
+            DataContext db = scope.ServiceProvider.GetRequiredService<DataContext>();
+            var user = await db.Users.Include(m=>m.NotificationTokens).Include(m=>m.Notifications).FirstOrDefaultAsync(m=>m.UserId == Convert.ToInt32(to));
+            //var user = await userRepository.GetUser(Convert.ToInt32(to));
             if (user == null)
             {
                 return;
@@ -43,7 +55,9 @@ namespace web_server
 
             try
             {
-                await userRepository.SaveChanges(user);
+                await db.SaveChangesAsync();
+                db.Entry(user).State = EntityState.Detached;
+                db.Dispose();
 
             }
             catch (Exception ex)

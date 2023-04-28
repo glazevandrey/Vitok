@@ -145,16 +145,13 @@ namespace web_server.Services
                 var type = Convert.ToBoolean(split[2]) == true ? "постоянное" : "разовое";
                 Task.Run(async () =>
                 {
-                    Thread.Sleep(1000);
-                    await NotifHub.SendNotification("SSSS", tutor.UserId.ToString(), _hubContext, _userRepository, _mapper);
-
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName).Replace("{type}", type)
                     .Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}",
-                    dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _userRepository, _mapper).ConfigureAwait(false);
+                    dateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _mapper).ConfigureAwait(false);
 
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON.Replace("{studentName}", user.FirstName + " " + user.LastName).Replace("{type}", type)
                       .Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).Replace("{date}",
-                      dateTime.ToString("dd.MM.yyyy HH:mm")), (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _mapper).ConfigureAwait(false);
+                      dateTime.ToString("dd.MM.yyyy HH:mm")), (await _userRepository.GetManagerId()).ToString(), _hubContext, _mapper).ConfigureAwait(false);
 
                 });
             }
@@ -213,14 +210,15 @@ namespace web_server.Services
             }
 
             var managerId = await _userRepository.GetManagerId();
-
-            await NotifHub.SendNotification(Constants.NOTIF_TUTOR_REJECT_USER_FMANAGER
+            Task.Run(async () =>
+            {
+                await NotifHub.SendNotification(Constants.NOTIF_TUTOR_REJECT_USER_FMANAGER
                 .Replace("{tutorName}", tutorName.FirstName + " " + tutorName.LastName)
-                .Replace("{userName}", userName.FirstName + " " + userName.LastName), managerId.ToString(), _hubContext, _userRepository, _mapper);
+                .Replace("{userName}", userName.FirstName + " " + userName.LastName), managerId.ToString(), _hubContext, _mapper);
 
 
-            await NotifHub.SendNotification(Constants.NOTIF_TUTOR_REJECT_USER_FUSER.Replace("{tutorName}", tutorName.FirstName + " " + tutorName.LastName), userId.ToString(), _hubContext, _userRepository, _mapper);
-
+                await NotifHub.SendNotification(Constants.NOTIF_TUTOR_REJECT_USER_FUSER.Replace("{tutorName}", tutorName.FirstName + " " + tutorName.LastName), userId.ToString(), _hubContext, _mapper);
+            });
 
             return true;
         }
@@ -231,13 +229,7 @@ namespace web_server.Services
             if (user != null)
             {
                 await _userRepository.Remove(user.UserId);
-                //TestData.UserList.RemoveAll(m => m.UserId == user.UserId);
-                //if (TestData.UserList.FirstOrDefault(m => m.UserId == user.UserId) != null)
-                //{
-                //    ChatHub.RemoveContact(user.UserId);
-                //    TestData.UserList.RemoveAll(m => m.UserId == user.UserId);
-                //    return true;
-                //}
+
             }
 
             return true;
@@ -252,31 +244,27 @@ namespace web_server.Services
             var user_id = split[1];
             var curr = DateTime.Parse(split[3]);
             var manager_id = await _userRepository.GetManagerId();
-            //var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
-            //var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
-            //var tutor =(Tutor) await _userRepository.GetUserById(Convert.ToInt32(tutor_id));
+
             if (tutor_id != null)
             {
-                //var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
-                //tutor.UserDates.Remove(rem);
-                //await _userRepository.Update(tutor);
 
                 ScheduleDTO schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == Convert.ToInt32(tutor_id) && m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id) && m.RemoveDate == DateTime.MinValue);
-                //var schedule = TestData.Schedules.FirstOrDefault();
-                
+
                 if (schedule != null)
                 {
                     schedule.RemoveDate = curr;
                 }
+
                 await _scheduleRepository.Update(schedule);
-                if(user_id == "1")
+
+                if (user_id == "1")
                 {
                     var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
                     var date = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
                     tutor.UserDates.Remove(date);
                     await _userRepository.SaveChanges(tutor);
                 }
-                
+
                 var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
                 list.Reverse();
                 foreach (var item in list)
@@ -294,7 +282,6 @@ namespace web_server.Services
                 {
 
                     var sch2 = await _scheduleRepository.GetScheduleById(item.ScheduleId);
-                    //var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
 
                     sch2.WaitPaymentDate = item.Nearest;
 
@@ -303,48 +290,22 @@ namespace web_server.Services
 
 
                 string type = schedule.Looped == true ? "постоянное" : "разовое";
+                Task.Run(async () =>
+                {
+                    await NotifHub.SendNotification(Constants.NOTIF_REMOVE_LESSON.Replace("{tutorName}", schedule.TutorFullName).Replace("{type}", type).Replace("{studentName}", schedule.UserName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id, _hubContext, _mapper);
 
-                await NotifHub.SendNotification(Constants.NOTIF_REMOVE_LESSON.Replace("{tutorName}", schedule.TutorFullName).Replace("{type}", type).Replace("{studentName}", schedule.UserName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id, _hubContext, _userRepository, _mapper);
+                    await NotifHub.SendNotification(Constants.NOTIF_REMOVE_LESSON.Replace("{tutorName}", schedule.TutorFullName).Replace("{type}", type).Replace("{studentName}", schedule.UserName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), manager_id.ToString(), _hubContext, _mapper);
 
-                await NotifHub.SendNotification(Constants.NOTIF_REMOVE_LESSON.Replace("{tutorName}", schedule.TutorFullName).Replace("{type}", type).Replace("{studentName}", schedule.UserName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), manager_id.ToString(), _hubContext, _userRepository, _mapper);
+                });
             }
-
             return null;
         }
-
-        //public async Task<Tutor> RemoveTutorTime(string args)
-        //{
-        //    var split = args.Split(';');
-        //    var tutor_id = split[0];
-        //    var dateTime = DateTime.Parse(split[1]);
-
-            
-        //    var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
-
-        //    //var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
-        //    if (tutor != null)
-        //    {
-        //        var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
-        //        if(rem == null)
-        //        {
-        //            rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime.AddDays(-7));
-        //        }
-        //        tutor.UserDates.Remove(rem);
-        //        await _userRepository.SaveChanges(tutor);
-        //        //await _userRepository.RemoveTutorTime(rem);
-        //        //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(tutor_id)).UserDates.dateTimes.Remove(dateTime);
-        //    }
-
-        //    return _mapper.Map<Tutor>(tutor);
-        //}
 
         public async Task<Tutor> UpdateTutor(string args)
         {
 
             var tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(args);
-            // var old = (Tutor)await _userRepository.GetUserById(tutor.UserId);
-            // var old = (Tutor)await _userRepository.GetUserById(tutor.UserId);
-            // var old = TestData.UserList.FirstOrDefault(m => m.UserId == tutor.UserId);
+      
             var old = await _userRepository.GetTutor(tutor.UserId);
             var schedules = old.Schedules;
             //  var schedules = TestData.Schedules.Where(m => m.TutorId == tutor.UserId).ToList();
@@ -384,7 +345,6 @@ namespace web_server.Services
             old.Password = tutor.Password;
             old.Phone = tutor.Phone;
 
-            //old.Courses = (tutor.Courses);
             var mapped = _mapper.Map<List<TutorCourse>>(tutor.Courses);
             foreach (var item in mapped)
             {
@@ -394,22 +354,11 @@ namespace web_server.Services
                     item.TutorId = old.UserId;
                 }
             }
-            old.Courses = mapped;
-            //foreach (var item in old.Courses)
-            //{
-            //    if (item.TutorId == 0 || item.TutorId == null || item.Id != 0)
-            //    {
-            //        item.Id = 0;
-            //        item.TutorId = old.UserId;
-            //    }
-            //}
-            await _userRepository.SaveChanges(old);
-            // await _userRepository.Update(_mapper.Map<Tutor>(old));
-            //await _userRepository.UpdateTutorCourses(old);
 
-            //old.Courses = new List<TutorCourse>();
-            //await _userRepository.Update(old);
-            //await _userRepository.SaveModel(old);
+            old.Courses = mapped;
+            
+
+            await _userRepository.SaveChanges(old);
 
             return tutor;
         }

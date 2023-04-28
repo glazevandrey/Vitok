@@ -88,6 +88,7 @@ namespace web_server
             services.AddScoped<IQuartzService, QuartzService>();
             services.AddCustomJobs(Configuration);
             var serviceProvider = services.BuildServiceProvider();
+            NotifHub.Configure(serviceProvider);
             QuartzStartup.Start(serviceProvider, Configuration); // запуск выполнения планировщика задач 
 
 

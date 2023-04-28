@@ -56,7 +56,6 @@ namespace web_server.Services
             var user = await _userRepository.GetStudent(Convert.ToInt32(args));
             user.FirstLogin = false;
             await _userRepository.SaveChanges(user);
-            //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(args)).FirstLogin = false;
             return true;
         }
         
@@ -165,8 +164,6 @@ namespace web_server.Services
             await _scheduleRepository.UpdateRange(schedules);
 
 
-            //var index = TestData.UserList.FindIndex(m => m.UserId == user.UserId);
-            //TestData.UserList[index] = old;
 
             return user;
         }
@@ -183,7 +180,6 @@ namespace web_server.Services
             var user = await _userRepository.GetUser(Convert.ToInt32(id));
             user.PhotoUrl = "http://localhost:23382/" + "avatars/" + imageName;
             await _userRepository.SaveChanges(user);
-            //TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id)).PhotoUrl = "http://localhost:23382/" + "avatars/" + imageName;
 
             return savePath;
         }
@@ -200,7 +196,6 @@ namespace web_server.Services
             user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = Convert.ToInt32(count) }, CustomMessage = $"Вывод средств" });
 
             await _userRepository.SaveChanges(user);
-            //.CustomMessages.Add(new CustomMessage() { MessageKey = DateTime.Now, MessageValue = $"Вывод средств: {count} p." });
 
             return true;
         }

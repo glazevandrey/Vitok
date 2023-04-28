@@ -50,30 +50,9 @@ namespace web_server.Services
 
             var user = await _userRepository.GetUserById(Convert.ToInt32(id));
 
-           // var userRole = (await _userRepository.GetUserById(Convert.ToInt32(id))).Role;
-            //var userRole = TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id)).Role;
             string json = "";
             json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
-            //if (userRole == "Student")
-            //{
-            //    student = (Student)await _userRepository.GetUserById(Convert.ToInt32(id));
-
-            //    //student = (Student)TestData.UserList.FirstOrDefault(m => m.UserId == Convert.ToInt32(id));
-            //    json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(student));
-
-            //}
-            //else if (userRole == "Tutor")
-            //{
-            //    tutor = (Tutor)await _userRepository.GetUserById(Convert.ToInt32(id));
-            //    json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor));
-
-            //}
-            //else
-            //{
-            //    manager = (Manager)await _userRepository.GetUserById(Convert.ToInt32(id));
-            //    json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(manager));
-            //}
-
+            
             return json;
         }
 
@@ -246,14 +225,16 @@ namespace web_server.Services
 
                     Program.Timers.Add(id, new System.Threading.Timer(tm, id, 24 * 3600000, 24 * 3600000));
                     var timer = Program.Timers[id];
+                    Task.Run(async () =>
+                    {
+                        await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")), reg.TutorId.ToString(), _hubContext, _mapper);
 
-                    await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")), reg.TutorId.ToString(), _hubContext, _userRepository, _mapper);
-
-                    await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
-                        Replace("{studentName}", user.FirstName + " " + user.LastName).
-                        Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).
-                        Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")),
-                        (await _userRepository.GetManagerId()).ToString(), _hubContext, _userRepository, _mapper);
+                        await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
+                            Replace("{studentName}", user.FirstName + " " + user.LastName).
+                            Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).
+                            Replace("{date}", sch.StartDate.ToString("dd.MM.yyyy HH:mm")),
+                            (await _userRepository.GetManagerId()).ToString(), _hubContext, _mapper);
+                    });
 
 
                 }
