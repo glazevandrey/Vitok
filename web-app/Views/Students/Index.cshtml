@@ -53,7 +53,7 @@
                                 keys.Add(lesson.TutorId, lesson.Course?.Title);
                             }
                         }
-
+                        var name = item.FirstName+ "_" + item.LastName;
                         foreach (var key in keys)
                         {
                             <label>Курс @key.Value с @schedules.FirstOrDefault(m=>m.TutorId == key.Key).TutorFullName</label>
@@ -65,10 +65,12 @@
                         <br />
                         var idModal = "openModal" + item.UserId;
                         var closeModal = "closeModal" + item.UserId;
-
+                        
                         <input type="button" onclick="balance('@idModal')" value="Посмотреть баланс" />
                         <form action="/students/statistics" method="get">
                             <input value="@item.UserId.ToString()" id="userid" name="userid" hidden="hidden" />
+                            <input value="@name" id="username" name="username" hidden="hidden" />
+
                             <input type="submit" value="Посмотреть статистику" />
                         </form>
                     }

@@ -75,7 +75,7 @@ namespace web_server.Controllers
             }
             var id = Request.Query["id"];
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<Student>(form.First().Key);
-            var json = await _authService.Register(user,id, HttpContext, _hubContext);
+            var json = await _authService.Register(user, id, HttpContext, _hubContext);
             return json;
         }
 
@@ -85,7 +85,23 @@ namespace web_server.Controllers
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(map.Map<List<Schedule>>(await _scheduleService.GetAllSchedules())));
         }
 
-        
+
+
+
+
+        [Authorize]
+        [HttpGet("getliteuser", Name = "getliteuser")]
+        public async Task<string> GetLiteUser([FromQuery] string args)
+        {
+            if (args == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+
+            var json = await _authService.GetLiteUserByToken(args);
+
+            return json;
+        }
 
         [Authorize]
         [HttpGet("getuser", Name = "getuser")]
@@ -353,7 +369,7 @@ namespace web_server.Controllers
         {
             return data.Schedules.Include(m => m.RescheduledLessons).Include(m => m.ReadyDates).Include(m => m.PaidLessons).Include(m => m.SkippedDates).Take(10).ToList();
         }
-        private  void TestSort()
+        private void TestSort()
         {
             var res = new List<ScheduleDTO>();
             int count = 1000; // * 10

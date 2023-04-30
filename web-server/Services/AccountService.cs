@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.Models.DBModels;
@@ -25,12 +24,12 @@ namespace web_server.Services
         public async Task<List<User>> GetAllUserContacts(string id, string role)
         {
             List<User> res = new List<User>();
-            if(role == "Tutor")
+            if (role == "Tutor")
             {
-                var schedules = await _scheduleRepository.GetSchedulesByFunc(m=>m.TutorId == Convert.ToInt32(id) && m.UserId != 1 && m.UserName != "");
+                var schedules = await _scheduleRepository.GetSchedulesByFunc(m => m.TutorId == Convert.ToInt32(id) && m.UserId != 1 && m.UserName != "");
                 foreach (var item in schedules)
                 {
-                    if(res.FirstOrDefault(m=>m.UserId == item.UserId) == null)
+                    if (res.FirstOrDefault(m => m.UserId == item.UserId) == null)
                     {
                         res.Add(await _userRepository.GetLiteUser(item.UserId));
                     }
@@ -58,7 +57,7 @@ namespace web_server.Services
             await _userRepository.SaveChanges(user);
             return true;
         }
-        
+
         private Task SaveMainInfo(UserDTO old, User user)
         {
             old.FirstName = user.FirstName;
@@ -74,16 +73,16 @@ namespace web_server.Services
         public async Task<User> SaveAccountInfo(string args)
         {
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(args, Program.settings);
-            
-            StudentDTO student= new StudentDTO();
+
+            StudentDTO student = new StudentDTO();
             TutorDTO tutor = new TutorDTO();
             UserDTO manager = new UserDTO();
-            
-            if(user.Role == "Tutor")
+
+            if (user.Role == "Tutor")
             {
                 tutor = await _userRepository.GetTutor(user.UserId);
                 await SaveMainInfo(tutor, user);
-                tutor.About= ((Tutor)user).About;
+                tutor.About = ((Tutor)user).About;
 
                 await _userRepository.SaveChanges(tutor);
 

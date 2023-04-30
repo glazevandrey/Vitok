@@ -14,7 +14,7 @@ namespace web_server.Services.Interfaces
         public Task<List<Tutor>> GetAll();
         public Task<Tutor> AddTutorSchedule(string args, IHubContext<NotifHub> _hubContext);
         public Task<Tutor> RemoveTutorSchedule(string args, IHubContext<NotifHub> _hubContext);
-       // public Task<Tutor> RemoveTutorTime(string args);
+        // public Task<Tutor> RemoveTutorTime(string args);
         public Task<Tutor> GetTutor(string args);
         public Task<bool> RejectStudent(string[] args, IHubContext<NotifHub> _hubContext);
 

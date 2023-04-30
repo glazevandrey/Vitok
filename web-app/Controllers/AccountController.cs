@@ -59,7 +59,7 @@ namespace web_app.Controllers
         }
 
         [HttpPost("saveinfo", Name = "saveinfo")]
-        public IActionResult SaveInfo([FromForm]int userId,
+        public IActionResult SaveInfo([FromForm] int userId,
     [FromForm] string firstName,
     [FromForm] string lastName,
     [FromForm] string photoUrl,

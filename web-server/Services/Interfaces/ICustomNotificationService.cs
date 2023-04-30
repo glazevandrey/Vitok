@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace web_server.Services.Interfaces
+﻿namespace web_server.Services.Interfaces
 {
     //public interface ICustomNotificationService
     //{

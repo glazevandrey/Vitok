@@ -8,9 +8,8 @@ using Microsoft.Extensions.WebEncoders;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using web_app.Services;
-using web_server.Injection;
-using web_server.Services.Interfaces;
 using web_server.Services;
+using web_server.Services.Interfaces;
 
 namespace web_app
 {
@@ -44,7 +43,7 @@ namespace web_app
             });
             //  services.AddSignalR();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-       
+
 
         }
 

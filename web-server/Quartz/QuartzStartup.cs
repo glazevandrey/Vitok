@@ -1,8 +1,8 @@
-﻿using web_server.Quartz.Jobs;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Quartz;
 using Quartz.Impl;
 using System;
+using web_server.Quartz.Jobs;
 
 namespace web_server.Quartz
 {

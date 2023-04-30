@@ -37,12 +37,12 @@ namespace web_app.Controllers
             //var response2 = _requestService.SendGet(req2, HttpContext);
             var data = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(response.result.ToString(), Program.settings);
 
-            List<Course> courses= new List<Course>();
+            List<Course> courses = new List<Course>();
             foreach (var item in data)
             {
                 courses.AddRange(((Tutor)item).Courses);
             }
-            courses = courses.GroupBy(m=>m.Title).Select(m=>m.First()).ToList();
+            courses = courses.GroupBy(m => m.Title).Select(m => m.First()).ToList();
             ViewData["courses"] = courses;
             //ViewData["courses"] = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(response2.result.ToString());
             return View(data);
@@ -62,7 +62,7 @@ namespace web_app.Controllers
             if (form.Count != 0)
             {
                 tutorId = Convert.ToInt32(form["tutor"]);
-   
+
                 var time = form["textTime"];
 
                 if (string.IsNullOrEmpty(time))
@@ -74,7 +74,7 @@ namespace web_app.Controllers
                 foreach (var item in times)
                 {
                     var date22 = DateTime.Parse(item);
-                    if((date22 - DateTime.Now).TotalHours <= 24)
+                    if ((date22 - DateTime.Now).TotalHours <= 24)
                     {
                         date.Add(new UserDate() { dateTime = date22.AddDays(7) });
                     }
@@ -111,7 +111,7 @@ namespace web_app.Controllers
 
                 return Redirect($"/login");
             }
-          
+
 
             CustomRequestPost requestPost = new CustomRequestPost("api/home/AddUserRegistration", data: registration);
             var res = _requestService.SendPost(requestPost, null);

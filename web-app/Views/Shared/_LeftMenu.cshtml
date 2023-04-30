@@ -1,4 +1,14 @@
-﻿<ul class="list-group">
+﻿<style>
+
+    li{
+        font-size:20px;
+        margin: 15px 0; /*расстояние между пунктами по высоте*/
+    }
+    a{
+        color:black;
+    }
+</style>
+<ul class="list-group" style="list-style-type: none;">
 
     @{
         if(ViewData["role"].ToString() == "Student")
@@ -7,65 +17,101 @@
             <a class="nav-link text-dark">Осталось занятий: @ViewData["lessons"]</a>
              </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/schedule">Расписание</a>
+                <a class="nav-link text-dark" href="/schedule">            <img src="~/content/images/schedule.svg" style="width:20px;height:20px"/>
+Расписание</a>
             </li>
             <li class="nav-item">
+
                 @{
                     if(ViewData["firstLogin"] != null && (bool)ViewData["firstLogin"] == true)
                     {
-                        <a class="nav-link text-dark" href="/chat">Чаты</a><label style="color:darkred">(+1)</label>
+                        <a class="nav-link text-dark" href="/chat">                <img src="~/content/images/chat.svg" style="width:20px;height:20px" />
+Чаты</a><label style="color:darkred">(+1)</label>
                     }else{
-                        <a class="nav-link text-dark" href="/chat">Чаты</a>
+                        <a class="nav-link text-dark" href="/chat">
+                            <img src="~/content/images/chat.svg" style="width:20px;height:20px" />
+                            Чаты
+                        </a>
                     }
                 
             }
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/contacts">Репетиторы</a>
+
+                <a class="nav-link text-dark" href="/contacts">                <img src="~/content/images/users.svg" style="width:20px;height:20px" />
+Репетиторы</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/balance">Баланс</a>
+
+                <a class="nav-link text-dark" href="/balance">
+                    <img src="~/content/images/coins.svg style="width:20px;height:20px" />
+                    Баланс
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/tariff">Тарифы</a>
+
+                <a class="nav-link text-dark" href="/tariff">                <img src="~/content/images/feed.svg" style="width:20px;height:20px" />
+Тарифы</a>
             </li>
         }
         if (ViewData["role"].ToString() == "Tutor")
         {
         
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/schedule">Расписание</a>
+
+                <a class="nav-link text-dark" href="/schedule">                <img src="~/content/images/schedule.svg" style="width:20px;height:20px" />
+Расписание</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/chat">Чаты</a>
+
+                <a class="nav-link text-dark" href="/chat">                <img src="~/content/images/chat.svg" style="width:20px;height:20px" />
+Чаты</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/contacts">Ученики</a>
+
+                <a class="nav-link text-dark" href="/contacts">                <img src="~/content/images/users.svg" style="width:20px;height:20px" />
+Ученики</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/balance">Баланс</a>
+
+                <a class="nav-link text-dark" href="/balance">                <img src="~/content/images/coins.svg" style="width:20px;height:20px" />
+Баланс</a>
             </li>
         }
         if (ViewData["role"].ToString() == "Manager")
         {
 
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/manageschool">Управление школой</a>
+
+                <a class="nav-link text-dark" href="/manageschool">                <img src="~/content/images/schedule.svg" style="width:20px;height:20px" />
+Управление школой</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/chat">Чаты</a>
+
+                <a class="nav-link text-dark" href="/chat">                <img src="~/content/images/chat.svg" style="width:20px;height:20px" />
+Чаты</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/courses">Курсы</a>
+
+                <a class="nav-link text-dark" href="/courses">                <img src="~/content/images/task-square.svg" style="width:20px;height:20px" />
+Курсы</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/tutors">Репетиторы</a>
+
+                <a class="nav-link text-dark" href="/tutors">                <img src="~/content/images/users.svg" style="width:20px;height:20px" />
+Репетиторы</a>
             </li>
              <li class="nav-item">
-                <a class="nav-link text-dark" href="/students">Ученики</a>
+
+                <a class="nav-link text-dark" href="/students">                <img src="~/content/images/local_library.svg" style="width:20px;height:20px" />
+Ученики</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="/balance">Баланс</a>
+
+                <a class="nav-link text-dark" href="/balance">
+                    <img src="~/content/images/coins.svg" style="width:20px;height:20px" />
+                    Баланс
+                </a>
             </li>
         }
     }

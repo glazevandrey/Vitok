@@ -42,7 +42,7 @@ namespace web_server
             }
 
             var user = await _userRepository.GetLiteUserWithChat(Convert.ToInt32(userId));
-         
+
             if (user.Chat == null) { await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow"); return; }
 
             var messages = currUser.Chat.Messages.ToList();
@@ -94,9 +94,9 @@ namespace web_server
         public async Task SendMessage(string message, string token, string filePath)
         {
             var user = await _userRepository.GetUser(Convert.ToInt32(token));
-    
+
             var own = await _userRepository.GetUserByChatToken(Context.ConnectionId);
-         
+
             var ownPhoto = own.PhotoUrl;
 
             if (user.Chat == null) { return; }
@@ -309,7 +309,7 @@ namespace web_server
                     if (manager.Chat.Contacts.FirstOrDefault(m => m.UserId == user.UserId) == null)
                     {
                         manager.Chat?.Contacts?.Add(new Contact() { UserId = user.UserId });
-                       
+
                         var active = manager.Chat?.ConnectionTokens?.Where(m => m.Status == "Connected");
 
                         if (active != null)
@@ -319,7 +319,7 @@ namespace web_server
                                 await Clients.Client(item.Token).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
                             }
                         }
-                       
+
                     }
 
                     await _userRepository.Update(manager);
@@ -344,7 +344,7 @@ namespace web_server
                 };
 
 
-               if (user.UserId != item.UserId)
+                if (user.UserId != item.UserId)
                 {
                     var itemUser = await _userRepository.GetStudent(item.UserId);
 
@@ -416,7 +416,7 @@ namespace web_server
                             {
                                 await Clients.Client(token.Token).SendAsync("UserList", user.UserId, user.FirstName + " " + user.LastName, user.PhotoUrl);
                             }
-                            
+
                             if (user.Chat.Contacts.FirstOrDefault(m => m.UserId == item.TutorId) == null)
                             {
                                 user.Chat.Contacts.Add(new Contact() { UserId = item.TutorId });
@@ -451,14 +451,14 @@ namespace web_server
 
         public async Task GetContacts(UserDTO curUser)
         {
-            
+
             foreach (var item in curUser.Chat.Contacts)
             {
                 if (item.UserId == 1)
                 {
                     continue;
                 }
-                if(item.UserId == curUser.UserId)
+                if (item.UserId == curUser.UserId)
                 {
                     continue;
                 }
@@ -477,12 +477,12 @@ namespace web_server
                 return;
             }
 
-            var rem = user.Chat.ConnectionTokens.FirstOrDefault(m=>m.Token == Context.ConnectionId);
+            var rem = user.Chat.ConnectionTokens.FirstOrDefault(m => m.Token == Context.ConnectionId);
             user.Chat.ConnectionTokens.Remove(rem);
             await _userRepository.SaveChanges(user);
 
             await base.OnDisconnectedAsync(ex);
         }
-      
+
     }
 }

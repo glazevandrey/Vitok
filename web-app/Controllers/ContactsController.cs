@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http.Results;
 using web_app.Requests;
 using web_app.Requests.Get;
 using web_app.Services;
@@ -21,10 +20,6 @@ namespace web_app.Controllers
         public IActionResult Index()
         {
 
-            //CustomRequestGet request = new GetSchedulesByUserToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
-            //var result = _requestService.SendGet(request, HttpContext);
-            //var model = new List<Schedule>();
-            //model = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Schedule>>(result.result.ToString());
             CustomRequestGet req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res = _requestService.SendGet(req, HttpContext);
 
@@ -33,7 +28,7 @@ namespace web_app.Controllers
                 return Redirect("/login");
             }
             var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(res.result.ToString(), Program.settings);
-            var model = user.Schedules.Where(m=>m.UserName != "" && m.UserName != null).ToList();
+            var model = user.Schedules.Where(m => m.UserName != "" && m.UserName != null).ToList();
 
             ViewData["role"] = user.Role;
 
@@ -51,7 +46,7 @@ namespace web_app.Controllers
 
             List<User> model2;
             CustomRequestGet req2;
-            if(user.Role == "Student")
+            if (user.Role == "Student")
             {
                 req2 = new GetAllStudentTutorsRequest(user.UserId.ToString());
             }
@@ -67,7 +62,7 @@ namespace web_app.Controllers
 
 
             return View(model);
-            
+
         }
 
 

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Writers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +26,9 @@ namespace web_server
         }
         public static void Configure(IServiceProvider serviceProvider)
         {
-            _serviceProvider= serviceProvider;
+            _serviceProvider = serviceProvider;
         }
-//        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, IMapper mapper)
+        //        public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, UserRepository userRepository, IMapper mapper)
 
         public async static Task SendNotification(string message, string to, IHubContext<NotifHub> hub, IMapper mapper)
         {
@@ -40,7 +39,7 @@ namespace web_server
             var scope = _serviceProvider.CreateScope();
 
             DataContext db = scope.ServiceProvider.GetRequiredService<DataContext>();
-            var user = await db.Users.Include(m=>m.NotificationTokens).Include(m=>m.Notifications).FirstOrDefaultAsync(m=>m.UserId == Convert.ToInt32(to));
+            var user = await db.Users.Include(m => m.NotificationTokens).Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == Convert.ToInt32(to));
             //var user = await userRepository.GetUser(Convert.ToInt32(to));
             if (user == null)
             {
@@ -91,7 +90,7 @@ namespace web_server
         {
             var connectionId = Context.ConnectionId;
             var ctx = Context.GetHttpContext();
-            
+
             if (!ctx.Request.Query.ContainsKey("token"))
             {
                 return;
@@ -99,7 +98,7 @@ namespace web_server
 
             var userId = Convert.ToInt32(ctx.Request.Query["token"]);
             var user = await _userRepository.GetUser(userId);
-           
+
             if (user == null)
             {
                 return;
@@ -110,7 +109,7 @@ namespace web_server
                 await _userRepository.AddTonificationTokenToUser(new NotificationTokens() { TokenKey = connectionId, TokenValue = "Connected" }, user);
             }
 
-            user.Notifications = user.Notifications.OrderBy(m=>m.DateTime).ToList();
+            user.Notifications = user.Notifications.OrderBy(m => m.DateTime).ToList();
             await SetNotifications(user.Notifications);
         }
         public async override Task OnDisconnectedAsync(Exception ex)
@@ -118,7 +117,7 @@ namespace web_server
             var connectionId = Context.ConnectionId;
             var userId = Convert.ToInt32(Context.GetHttpContext().Request.Query["token"]);
             var user = await _userRepository.GetUser(userId);
-            if(user == null)
+            if (user == null)
             {
                 return;
             }

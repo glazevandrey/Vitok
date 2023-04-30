@@ -115,7 +115,7 @@ namespace web_server.Database.Repositories
 
                 throw ex;
             }
-           
+
         }
         public async Task<bool> AddCourse(CourseDTO course)
         {

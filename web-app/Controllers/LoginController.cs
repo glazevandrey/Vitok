@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using web_app.Requests;
 using web_app.Services;
@@ -62,11 +61,11 @@ namespace web_app.Controllers
 
             CustomRequestPost req = new CustomRequestPost("api/home/LoginUser", $"{email};{password}");
             var response = _requestService.SendPost(req, HttpContext);
-            if(response == null || response.result == null)
+            if (response == null || response.result == null)
             {
                 return RedirectToAction("login", new { error = "Неудачная попытка входа" });
             }
-            if (!response.success )
+            if (!response.success)
             {
                 return RedirectToAction("login", new { error = response.result });
             }

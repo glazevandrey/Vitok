@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using web_server.Database.Repositories;
 using web_server.Models.DBModels;
 
@@ -32,7 +31,7 @@ namespace web_server
         }
         public Dictionary<string, string> LoginUser(string email, string Password, User user)
         {
-       
+
 
             if (Password == user.Password)
             {

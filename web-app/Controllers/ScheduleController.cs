@@ -55,11 +55,11 @@ namespace web_app.Controllers
             }
             else
             {
-               
+
                 var _list = new List<Course>();
                 foreach (var course in user.Schedules)
                 {
-                    if(_list.FirstOrDefault(m=>m.Title == course.Course.Title) == null) 
+                    if (_list.FirstOrDefault(m => m.Title == course.Course.Title) == null)
                     {
                         _list.Add(course.Course);
                     }
@@ -77,7 +77,7 @@ namespace web_app.Controllers
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(new UserConverter());
 
-            if(user.Role == "Tutor")
+            if (user.Role == "Tutor")
             {
                 var request2 = new GetAllTutorStudentsRequest(user.UserId.ToString());
                 //CustomRequestGet request2 = new GetAllUsersRequest(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
@@ -106,7 +106,8 @@ namespace web_app.Controllers
 
                 ViewData["firstPay"] = dic;
             }
-            else{
+            else
+            {
                 Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
                 keyValuePairs.Add(user.UserId, ((Student)user).StartWaitPayment);
                 ViewData["waited"] = keyValuePairs;
@@ -126,7 +127,7 @@ namespace web_app.Controllers
             {
                 ViewData["error"] = error;
             }
-                return View(modl);
+            return View(modl);
         }
 
         [HttpPost("AddFreeTime", Name = "AddFreeTime")]
@@ -224,9 +225,9 @@ namespace web_app.Controllers
             return RedirectToAction("Index", "Schedule", new { date = date2.ToString("dd.MM.yyyy") });
         }
         [HttpGet("SetDate", Name = "SetDate")]
-        public IActionResult SetDate(string date)
+        public IActionResult SetDate([FromQuery] string setdate)
         {
-            var date2 = DateTime.Parse(date);
+            var date2 = DateTime.Parse(setdate);
             return RedirectToAction("Index", "Schedule", new { date = date2.ToString("dd.MM.yyyy") });
         }
         [HttpPost]

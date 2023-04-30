@@ -14,7 +14,7 @@ namespace web_server.Services
     public class LessonsService : ILessonsService
     {
         UserRepository _userRepository;
-    
+
         TariffRepositories _tariffRepositories;
         NotificationRepository _notificationRepository;
         IMapper _mapper;
@@ -120,7 +120,7 @@ namespace web_server.Services
                         var f_manag = Math.Abs(item.Cost / 100 * 40);
 
                         tutor.Balance += f_tut;
-                        tutor.BalanceHistory.Add(new BalanceHistory() {  CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_tut) }, CustomMessage = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" });
+                        tutor.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(f_tut) }, CustomMessage = $"Оплата долга за 1 занятие. Студент: {user.FirstName} {user.LastName}" });
 
 
 
@@ -232,7 +232,7 @@ namespace web_server.Services
 
                 user.Schedules.Add(new_model);
 
-               // await _scheduleRepository.AddSchedule(_mapper.Map<>new_model);
+                // await _scheduleRepository.AddSchedule(_mapper.Map<>new_model);
 
                 //user.Schedules.FirstOrDefault(m=>m.StartDate == new_model.StartDate).CourseId = courseId;
                 await CalculateNoPaidWarn(user, _hubContext);

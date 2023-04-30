@@ -27,18 +27,18 @@ namespace web_server
             CreateMap<Tutor, TutorDTO>();
 
 
-            CreateMap<CourseDTO, CourseDTO>();         
+            CreateMap<CourseDTO, CourseDTO>();
             CreateMap<CourseDTO, TutorCourse>().ForMember(m => m.Course, m => m.MapFrom(m => m)).ForMember(m => m.CourseId, m => m.MapFrom(m => m.Id)).ReverseMap();
 
             CreateMap<Course, TutorCourse>().ForMember(m => m.Course, m => m.MapFrom(m => m)).ForMember(m => m.CourseId, m => m.MapFrom(m => m.Id)).AfterMap((src, dest) => { dest.Course = null; }).ReverseMap();
 
-      
+
             CreateMap<StudentDTO, Student>();
             CreateMap<ManagerDTO, Manager>();
 
 
             CreateMap<ScheduleDTO, Schedule>();
-            CreateMap<Schedule, ScheduleDTO>().ForMember(m => m.CourseId, m => m.MapFrom(m => m.Course.Id)).AfterMap((src, dest) => { src.Course = null ; dest.Course = null; });//.ForMember(m=>m.CourseId, m=>m.MapFrom(m=>m.Course.Id));
+            CreateMap<Schedule, ScheduleDTO>().ForMember(m => m.CourseId, m => m.MapFrom(m => m.Course.Id)).AfterMap((src, dest) => { src.Course = null; dest.Course = null; });//.ForMember(m=>m.CourseId, m=>m.MapFrom(m=>m.Course.Id));
 
 
             CreateMap<GoalDTO, Goal>();

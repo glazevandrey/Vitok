@@ -8,7 +8,7 @@
         public const string NOTIF_USER_SKIPP_NO_WARN = "Ученик {userName} пропустил занятие у репетитора {tutorName} запланированное на {date} без предупреждения. Платный пропуск."; // за день + на почту
         public const string NOTIF_USER_SKIPP_NO_SKIP = "У ученика {userName} закончились бесплатные пропуски! В следующий раз будет списана плата или начислен долг."; // за день + на почту
         public const string NOTIF_USER_SKIPP_WARN = "Ученик {userName} пропустил занятие у репетитора {tutorName} запланированное на {date}, предупредив репетитора. Платный пропуск."; // за день + на почту
-      
+
         public const string NOTIF_DONT_FORGET_SET_STATUS = "Не забудьте отметить статус занятия!"; // окончание занятия
         public const string NOTIF_NEW_STUDENT_FOR_TUTOR = "У вас появился новый ученик {name}. Занятие: {date}"; // новый ученик записался
         public const string NOTIF_NEW_LESSON_TUTOR = "У вас новое занятие с учеником {name} на {date}"; // новый ученик записался

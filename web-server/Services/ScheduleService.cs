@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -84,11 +83,13 @@ namespace web_server.Services
             await _userRepository.SaveChanges(tutor);
             await _userRepository.SaveChanges(user);
             s.Stop();
+
             Task.Run(async () =>
             {
                 var text = Constants.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
                 await NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext, _mapper);
             });
+
             return new Schedule();
         }
 
@@ -135,7 +136,10 @@ namespace web_server.Services
 
             if (user.LessonsCount == 1)
             {
-                await NotifHub.SendNotification(Constants.NOTIF_ONE_LESSON_LEFT, user.UserId.ToString(), _hubContext, _mapper);
+                Task.Run(async () =>
+                {
+                    await NotifHub.SendNotification(Constants.NOTIF_ONE_LESSON_LEFT, user.UserId.ToString(), _hubContext, _mapper);
+                });
             }
 
             if (user.SkippedInThisMonth == 1)
@@ -341,9 +345,9 @@ namespace web_server.Services
 
                             if (cur.RescheduledLessons.Count > 0)
                             {
-                                if (date2 < cur.RescheduledLessons.Last().NewTime )
+                                if (date2 < cur.RescheduledLessons.Last().NewTime)
                                 {
-                                    if(cur.RescheduledLessons.FirstOrDefault(m=>m.OldTime == date2) != null)
+                                    if (cur.RescheduledLessons.FirstOrDefault(m => m.OldTime == date2) != null)
                                     {
                                         continue;
                                     }
@@ -358,7 +362,7 @@ namespace web_server.Services
                             {
                                 if (date2 < cur.RescheduledDate)
                                 {
-                                    if(date2 == cur.RescheduledDate)
+                                    if (date2 == cur.RescheduledDate)
                                     {
                                         continue;
                                     }
@@ -372,7 +376,8 @@ namespace web_server.Services
                             if (cur.SkippedDates.Count > 0)
                             {
                                 if (date2 < cur.SkippedDates.Last().Date.AddDays(7))
-                                {if (cur.SkippedDates.FirstOrDefault(m => m.Date == date2) != null)
+                                {
+                                    if (cur.SkippedDates.FirstOrDefault(m => m.Date == date2) != null)
                                     {
                                         continue;
                                     }
@@ -436,7 +441,7 @@ namespace web_server.Services
                                         continue;
                                     }
 
-                                    if(item.Value.FirstOrDefault(m=>m.RescheduledLessons.FirstOrDefault(m=>m.OldTime == date2) != null) == null)
+                                    if (item.Value.FirstOrDefault(m => m.RescheduledLessons.FirstOrDefault(m => m.OldTime == date2) != null) == null)
                                     {
                                         continue;
                                     }
@@ -479,7 +484,7 @@ namespace web_server.Services
 
                             }
 
-                            if (date2 > cur.StartDate && cur.ReadyDates?.FirstOrDefault(m => m.Date == cur.StartDate) == null && cur.SkippedDates?.FirstOrDefault(m => m.Date == cur.StartDate) == null && cur.RescheduledLessons?.FirstOrDefault(m=>m.OldTime == cur.StartDate) == null)
+                            if (date2 > cur.StartDate && cur.ReadyDates?.FirstOrDefault(m => m.Date == cur.StartDate) == null && cur.SkippedDates?.FirstOrDefault(m => m.Date == cur.StartDate) == null && cur.RescheduledLessons?.FirstOrDefault(m => m.OldTime == cur.StartDate) == null)
                             {
 
                                 date2 = cur.StartDate;
@@ -493,7 +498,7 @@ namespace web_server.Services
                         else
                         {
 
-         
+
                             if ((date2 > cur.StartDate) && cur.Status == Status.Ожидает)
                             {
 
@@ -534,7 +539,7 @@ namespace web_server.Services
                              $"Оплата за 1 пропущенное занятие. Студент: {user.FirstName} {user.LastName}. Репетитор: {tutor.FirstName} {tutor.LastName}");
 
 
-         
+
 
                     }
                     else

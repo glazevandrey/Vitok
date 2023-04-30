@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using web_server.Models;
 using web_server.Models.DTO;
 
 namespace web_server.Database.Repositories

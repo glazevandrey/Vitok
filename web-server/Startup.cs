@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -15,8 +14,6 @@ using web_server.Database;
 using web_server.Database.Repositories;
 using web_server.Injection;
 using web_server.Quartz;
-using web_server.Quartz.Jobs;
-using web_server.Services;
 
 namespace web_server
 {

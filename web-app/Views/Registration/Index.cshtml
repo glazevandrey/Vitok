@@ -10,54 +10,81 @@
     }
    
 }
-<form method='post' action="@s">
-    <div>
-        @Html.AntiForgeryToken()
-        <div>
-            <label>First Name</label><br />
-        </div>
 
-        <div>
-            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control txtbox" })
-        </div>
-        <div>
-            <label>Last Name</label><br />
-        </div>
-        <div>
-            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control txtbox" })
-        </div>
-        <div>
-            <label>Birth Day</label><br />
-        </div>
-        <div>
-            @Html.TextBoxFor(m => m.BirthDate, new { @class = "form-control txtbox", @type="date", @min="1920-01-01", @max="2050-12-31" })
-        </div>
-        <div>
-            <label>Email</label><br />
-        </div>
-        <div>
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control txtbox", @type="email" })
-        </div>
-        <div style="padding-top:20px;"></div>
-        <div>
-            <label>Password</label><br />
-        </div>
-        <div>
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control txtbox" })
-        </div>
-        <div>
-            <label>Phone</label><br />
-        </div>
-        <div>
-            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control txtbox" })
-        </div>
-       
-    </div>
+<!DOCTYPE html>
+<html style="font-size: 16px;" lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/content/nicepage.css" media="screen">
+    <link rel="stylesheet" href="/content/registration/Регистрация.css" media="screen">
+    <link id="u-page-google-font" rel="stylesheet" href="~/css/fonts/Montserrat.css">
+    <link id="u-theme-google-font" rel="stylesheet" href="~/css/fonts//Roboto.css">
 
-    <br/>
-    <input class="btn btn-primary btn-lg rph-login-button" type="submit" value="Register" />
-    <br />
-    <br />
-    <a href="/login/">Есть аккаунт? Войти!</a>
+    <meta name="theme-color" content="#478ac9">
+    <meta property="og:title" content="Регистрация">
+    <meta property="og:type" content="website">
+</head>
+<body class="u-body u-xl-mode" data-lang="ru">
+    <header class="u-clearfix u-header u-valign-middle u-header" id="sec-676a">
+        <div class="u-clearfix u-group-elements u-group-elements-1">
+            <img class="logo u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="/content/images/image6.png" alt="" data-image-width="94" data-image-height="95">
+            <h3 class="logo-text-vitok u-custom-font u-font-montserrat u-text u-text-1">ВИТОК</h3>
+            <h3 class="logo-text-online u-custom-font u-font-montserrat u-text u-text-2">
+                онлайн-школа<br>
+            </h3>
+        </div>
+    </header>
+    <section class="u-clearfix u-section-1" id="sec-e3f3">
+        <div class="u-clearfix u-sheet u-sheet-1">
+            <h1 class="u-align-center u-text u-text-1">Регистрация</h1>
+            <div class="u-form u-form-1">
+                <form id="form-1" action="@s" class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form"method="post" source="email" name="form-1" style="padding: 10px;">
+                    <div class="u-form-group u-label-none u-form-group-1">
+                        <label for="text-955e" class="u-label u-label-1">Поле ввода</label>
+                        @Html.TextBoxFor(m => m.FirstName, new {@id="text-955e", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-1", @placeholder="Имя" })
+                    </div>
+                    <div class="u-form-group u-label-none u-form-group-2">
+                        <label for="text-a400" class="u-label u-label-2">Поле ввода</label>
+                        @Html.TextBoxFor(m => m.LastName, new {@id="text-a400", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-2", @placeholder="Фамилия" })
 
-</form>   
+                    </div>
+                    <div class="u-form-group u-label-none u-form-group-3">
+                        <label for="text-5785" class="u-label">Поле ввода</label>
+                        @Html.TextBoxFor(m => m.BirthDate, new {@id="text-5785", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-3", @type="date", @min="1920-01-01", @max="2050-12-31" })
+                   </div>
+                    <div class="u-form-group u-form-name u-label-none">
+                        <label for="name-266d" class="u-label">Имя</label>
+                        @Html.TextBoxFor(m => m.Email, new {@id="name-266d", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-4", @type="email", @placeholder="E-mail"})
+                    </div>
+                    <div class="u-form-group u-label-none">
+                        <label for="email-266d" class="u-label">password</label>
+                        @Html.PasswordFor(m => m.Password, new {@id="email-266d", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-5", @placeholder="Пароль"})
+                   </div>
+                    <div class="u-form-group u-label-none u-form-group-6">
+                        <label for="text-c326" class="u-label u-label-6">Поле ввода</label>
+                        @Html.TextBoxFor(m => m.Phone, new {@id="text-c326", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-6", @placeholder="Номер телефона" })
+                  </div>
+                    <div class="u-align-left u-form-group u-form-submit u-label-none">
+                        <a onclick="document.getElementById('form-1').submit()" class="u-btn u-btn-round u-btn-submit u-button-style u-custom-color-2 u-radius-10 u-btn-1">
+                            Зарегистрироваться<br>
+                        </a>
+                    </div>
+                    <div class="u-form-send-message u-form-send-success"> Спасибо! Ваше сообщение отправлено. </div>
+                    <div class="u-form-send-error u-form-send-message"> Отправка не удалась. Пожалуйста, исправьте ошибки и попробуйте еще раз. </div>
+
+                </form>
+            </div>
+            <h3 class="u-align-center u-text u-text-2">
+                Есть аккаунт?<span style="font-weight: 700;"></span>
+            </h3>
+            <a href="/login" class="u-align-center u-border-none u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10 u-btn-2">Войти</a>
+        </div>
+    </section>
+
+
+   
+
+</body>
+</html>

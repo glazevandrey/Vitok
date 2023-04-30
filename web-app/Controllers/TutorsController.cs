@@ -51,7 +51,7 @@ namespace web_app.Controllers
             var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Tutor>>(res2.result.ToString(), Program.settings);
             users = users.Where(m => m.Role == "Tutor").ToList();
 
-            if(error != null)
+            if (error != null)
             {
                 ViewData["error"] = error;
             }
@@ -94,9 +94,9 @@ namespace web_app.Controllers
                 }
 
             }
-            if(listCourses.Count == 0)
+            if (listCourses.Count == 0)
             {
-                return RedirectToAction("Index", "Tutors", new {error="Необходимо ввести существующий курс" });
+                return RedirectToAction("Index", "Tutors", new { error = "Необходимо ввести существующий курс" });
             }
             var user = new Tutor()
             {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System.Threading.Tasks;
-using web_server.Services;
 using web_server.Services.Interfaces;
 
 namespace web_server.Quartz.Jobs

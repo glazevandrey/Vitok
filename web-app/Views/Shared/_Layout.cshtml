@@ -4,23 +4,44 @@
 
     .FullContent {
         display: flex;
-        margin-top: 50px;
+        background-color: #FAFAFA
+        
+        
     }
 
     .CustomLeftnavbar {
+        position:absolute;
         height: 100%;
-        background-color: aqua;
+        background-color: white;
+        width:230px;
         flex: 0 0 300px;
     }
     .container {
-        margin-top: 50px;
-            margin-left: 10px;
-       }
+        margin-top: 100px;
+            margin-left: 250px;
+        margin-right: 20px;
+        
+        height:100vh;
+    }
+  /*  .u-header .u-text-1 {
+  font-weight: 700;
+  font-size: 2.25rem;
+  margin: -56px 75px 0 94px;
+}
 
+.u-header .u-text-2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 22px 0 0 19px;
+}
 
+*/
 
 
 </style>
+<link href="~/content/nicepage.css" rel="stylesheet">
+<link href="~/content/login/Вход.css" rel="stylesheet">
+
 <style>
     /*.notification-wrapper {
         position: relative;
@@ -30,6 +51,7 @@
     .notification-wrapper {
         position: absolute;
         display: inline-block;
+        height:10vh;
         float: right;
         top: 20px;
         right: 0;
@@ -179,7 +201,15 @@
                     
             <div  class="CustomLeftnavbar">
             @{
-
+                <div class="u-clearfix u-group-elements u-group-elements-1">
+                    <img class="logo u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="/content/images/image6.png" align="left" alt="" data-image-width="94" data-image-height="95">
+                                        <br/>
+                    <h3 style="font-weight:bold" class="logo-text-vitok u-custom-font u-font-montserrat u-text u-text-1">ВИТОК</h3>
+                    <h3 style="font-weight:bold" class="logo-text-online u-custom-font u-font-montserrat u-text u-text-2">
+                        онлайн-школа<br>
+                    </h3>
+                 
+                </div>
                 Html.RenderPartial("~/Views/Shared/_LeftMenu.cshtml");
             }
 

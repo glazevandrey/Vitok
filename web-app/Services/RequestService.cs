@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,8 +6,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Web.Http;
 using web_app.Requests;
 using web_server.Models.DBModels;
 using web_server.Services.Interfaces;
@@ -77,7 +74,7 @@ namespace web_app.Services
 
         public ResponseModel SendPost(CustomRequestPost req, HttpContext context)
         {
-            Stopwatch watch= new Stopwatch();
+            Stopwatch watch = new Stopwatch();
             watch.Start();
             try
             {
@@ -97,7 +94,7 @@ namespace web_app.Services
                 }
                 else
                 {
-                    if(req.User is Student)
+                    if (req.User is Student)
                     {
                         json = JsonSerializer.Serialize((Student)req.User);
                     }

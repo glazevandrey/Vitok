@@ -29,7 +29,7 @@ namespace web_server.Quartz.Jobs
             {
                 throw e;
             }
-            
+
             return job;
         }
 

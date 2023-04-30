@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.IO;
-using System.Linq;
 
 namespace web_app.Controllers
 {
@@ -12,12 +10,12 @@ namespace web_app.Controllers
         public string Index()
         {
             var text = "";
-                foreach (var item in Program.requestTimes)
-                {
-                    text += (item.url + " : " + item.time);
-                     text += Environment.NewLine;
-                }
-            
+            foreach (var item in Program.requestTimes)
+            {
+                text += (item.url + " : " + item.time);
+                text += Environment.NewLine;
+            }
+
             return text;
         }
     }

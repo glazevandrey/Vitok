@@ -23,15 +23,16 @@ namespace web_server.Services
         {
 
             var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(args));
-            var schedules = user.Schedules.Where(m=>m.RemoveDate == DateTime.MinValue);
+            var schedules = user.Schedules.Where(m => m.RemoveDate == DateTime.MinValue);
 
             var startDate = DateTime.Parse("01." + DateTime.Now.Month + "." + DateTime.Now.Year + " 12:00");
             user.BalanceHistory.Reverse();
             var keys = new Dictionary<DateTime, List<StudentPayment>>();
-            var balanceHistories = user.BalanceHistory.Where(m=>m.CashFlow != null).GroupBy(x => x.Date.ToShortDateString()).ToList();
+            var balanceHistories = user.BalanceHistory.Where(m => m.CashFlow != null).GroupBy(x => x.Date.ToShortDateString()).ToList();
+            balanceHistories.Reverse();
             for (int i = 0; i < balanceHistories.Count; i++)
             {
-                balanceHistories[i].OrderBy(m => m.Date).Reverse();
+                balanceHistories[i].OrderBy(m => m.Date);
 
             }
 
@@ -62,7 +63,7 @@ namespace web_server.Services
                     {
                         continue;
                     }
-                   
+
                     DateTime date2 = DateTime.MaxValue;
                     if (balanceHistories.Count > 1)
                     {
@@ -137,9 +138,9 @@ namespace web_server.Services
                                     if (keys.ContainsKey(date))
                                     {
                                         if (keys[date].FirstOrDefault(m => m.LessonDate == date4) != null)
-                                            {
-                                                continue;
-                                            }
+                                        {
+                                            continue;
+                                        }
                                         keys[date].Add(new StudentPayment()
                                         {
                                             LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == date4).PaidCount,
@@ -302,6 +303,22 @@ namespace web_server.Services
                             if (item.Status == Status.Пропущен)
                             {
                                 var ready = item.SkippedDates[0].Date;
+
+                                if (keys.Values.FirstOrDefault(m => m.FirstOrDefault(m => m.LessonDate == ready) != null) != null)
+                                {
+                                    continue;
+                                }
+
+                                //foreach (var dd in keys.Values)
+                                //{
+                                //    foreach (var bb in dd)
+                                //    {
+                                //        if(bb.LessonDate == ready)
+                                //        {
+                                //            continue;
+                                //        }
+                                //    }
+                                //}
                                 var credit = user.Credit.FirstOrDefault(m => m.ScheduleId == item.Id && m.ScheduleSkippedDate == ready);
 
 
@@ -314,10 +331,7 @@ namespace web_server.Services
                                 {
                                     if (keys.ContainsKey(date))
                                     {
-                                        if (keys[date].FirstOrDefault(m => m.LessonDate == ready) != null)
-                                        {
-                                            continue;
-                                        }
+
                                         keys[date].Add(new StudentPayment()
                                         {
                                             LessonAmount = item.SkippedDates[0].InitPaid,
@@ -352,7 +366,7 @@ namespace web_server.Services
                                 var paid = credit.Repaid;
                                 var amount = credit.Amount;
 
-                                if (ready >= date && ready < date2)
+                                if ((ready >= date && ready < date2 && balanceHistories.Count > 1) || (ready >= DateTime.MinValue && ready < date2 && balanceHistories.Count == 1))
                                 {
                                     if (keys.Count == 0)
                                     {

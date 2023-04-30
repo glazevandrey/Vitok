@@ -67,12 +67,10 @@ namespace web_server.Services
                 };
 
                 await _scheduleRepository.AddSchedule(model);
-                //tutor.Schedules.Add(_mapper.Map<ScheduleDTO>(model));
                 await _userRepository.SaveChanges(tutor);
 
 
 
-                //await _scheduleRepository.AddSchedule(model);
             }
 
 
@@ -91,7 +89,7 @@ namespace web_server.Services
             var tutor = (Tutor)await _userRepository.GetLiteUser(Convert.ToInt32(tutor_id));
             var user = await _userRepository.GetStudent(Convert.ToInt32(user_id));
             //var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(user_id)); //await _userRepository.GetStudent(Convert.ToInt32(course_id));
-           // var course = await _courseRepository.GetCourseById(Convert.ToInt32(course_id));
+            // var course = await _courseRepository.GetCourseById(Convert.ToInt32(course_id));
 
             if (user.Credit.Where(m => m.Repaid == false).ToList().Count >= 3)
             {
@@ -100,7 +98,7 @@ namespace web_server.Services
 
             if (tutor != null)
             {
-                
+
                 var sch = new ScheduleDTO()
                 {
                     UserName = user.FirstName + " " + user.LastName,
@@ -127,7 +125,7 @@ namespace web_server.Services
                 {
                     foreach (var sch2 in list)
                     {
-                        if(item.ScheduleId == sch2.Id)
+                        if (item.ScheduleId == sch2.Id)
                         {
                             sch2.WaitPaymentDate = item.Nearest;
 
@@ -141,7 +139,7 @@ namespace web_server.Services
                     }
                 }
 
-                
+
                 var type = Convert.ToBoolean(split[2]) == true ? "постоянное" : "разовое";
                 Task.Run(async () =>
                 {
@@ -225,10 +223,10 @@ namespace web_server.Services
 
         public async Task<bool> RemoveTutor(string args)
         {
-            var user = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(args);
-            if (user != null)
+
+            if (args != null)
             {
-                await _userRepository.Remove(user.UserId);
+                await _userRepository.Remove(Convert.ToInt32(args));
 
             }
 
@@ -244,28 +242,30 @@ namespace web_server.Services
             var user_id = split[1];
             var curr = DateTime.Parse(split[3]);
             var manager_id = await _userRepository.GetManagerId();
+            var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
 
             if (tutor_id != null)
             {
-
-                ScheduleDTO schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == Convert.ToInt32(tutor_id) && m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id) && m.RemoveDate == DateTime.MinValue);
+                var schedule = tutor.Schedules.FirstOrDefault(m => m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id) && m.RemoveDate == DateTime.MinValue);
+                //ScheduleDTO schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == Convert.ToInt32(tutor_id) && m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id) && m.RemoveDate == DateTime.MinValue);
 
                 if (schedule != null)
                 {
                     schedule.RemoveDate = curr;
                 }
 
-                await _scheduleRepository.Update(schedule);
+                // await _scheduleRepository.Update(schedule);
 
                 if (user_id == "1")
                 {
-                    var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
                     var date = tutor.UserDates.FirstOrDefault(m => m.dateTime == dateTime);
                     tutor.UserDates.Remove(date);
-                    await _userRepository.SaveChanges(tutor);
                 }
 
-                var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
+
+
+                var list = tutor.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.UserId == Convert.ToInt32(user_id)).ToList();
+                //var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
                 list.Reverse();
                 foreach (var item in list)
                 {
@@ -275,18 +275,22 @@ namespace web_server.Services
                     }
                 }
 
+
+
                 var sorted = ScheduleService.SortSchedulesForUnpaid(list);
 
 
                 foreach (var item in sorted)
                 {
 
-                    var sch2 = await _scheduleRepository.GetScheduleById(item.ScheduleId);
+                    var sch2 = list.FirstOrDefault(m => m.Id == item.ScheduleId); //_scheduleRepository.GetScheduleById(item.ScheduleId);
 
                     sch2.WaitPaymentDate = item.Nearest;
 
-                    await _scheduleRepository.Update(sch2);
+                    // await _scheduleRepository.Update(sch2);
                 }
+
+                await _userRepository.SaveChanges(tutor);
 
 
                 string type = schedule.Looped == true ? "постоянное" : "разовое";
@@ -305,7 +309,7 @@ namespace web_server.Services
         {
 
             var tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(args);
-      
+
             var old = await _userRepository.GetTutor(tutor.UserId);
             var schedules = old.Schedules;
             //  var schedules = TestData.Schedules.Where(m => m.TutorId == tutor.UserId).ToList();
@@ -349,14 +353,14 @@ namespace web_server.Services
             foreach (var item in mapped)
             {
                 item.Id = 0;
-                if(item.TutorId == null)
+                if (item.TutorId == null)
                 {
                     item.TutorId = old.UserId;
                 }
             }
 
             old.Courses = mapped;
-            
+
 
             await _userRepository.SaveChanges(old);
 

@@ -30,7 +30,7 @@ namespace vitok.Controllers
         }
 
         [HttpGet("getall", Name = "GetAll")]
-        public async Task<string> GetAllTutors() 
+        public async Task<string> GetAllTutors()
         {
             var tutors = await _tutorService.GetAll();
             var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutors));
