@@ -9,7 +9,7 @@ namespace web_server.Models.DTO
         public int Id { get; set; }
         public bool Readed { get; set; } = false;
         public int UserId { get; set; }
-        public UserDTO User { get; set; }
+        public virtual UserDTO User { get; set; }
         public string Message { get; set; }
         public DateTime DateTime { get; set; }
     }

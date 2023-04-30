@@ -54,27 +54,7 @@ namespace web_app.Controllers
                     return BadRequest("Что-то пошло не так =(");
                 }
 
-                //var sch = Newtonsoft.Json.JsonConvert.DeserializeObject<Registration>(response.result.ToString());
-                //if (sch != null)
-                //{
-                //    foreach (var item in sch.WantThis)
-                //    {
-                //        var req3 = new CustomRequestPost("api/tutor/removetutortime", $"{sch.TutorId};{item.dateTime}");
-                //        var response3 = _requestService.SendPost(req3, HttpContext);
-                //        if (response3 == null)
-                //        {
-                //            return BadRequest("Неудачная попытка входа");
-                //        }
-                //    }
-                //}
             }
-
-
-            HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", response.result.ToString(),
-              new CookieOptions
-              {
-                  MaxAge = TimeSpan.FromMinutes(60)
-              });
             ViewData["Auth"] = true;
 
             return Redirect("/login");

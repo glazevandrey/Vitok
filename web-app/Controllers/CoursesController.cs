@@ -27,7 +27,7 @@ namespace web_app.Controllers
 
             var courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Course>>(res.result.ToString());
 
-            req = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+            req = new GetLiteUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             res = _requestService.SendGet(req, HttpContext);
             if (res.success == false)
             {

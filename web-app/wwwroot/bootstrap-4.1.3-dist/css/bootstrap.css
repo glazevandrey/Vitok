@@ -205,10 +205,6 @@ figure {
   margin: 0 0 1rem;
 }
 
-img {
-  vertical-align: middle;
-  border-style: none;
-}
 
 svg {
   overflow: hidden;
@@ -5106,14 +5102,6 @@ input[type="button"].btn-block {
   flex: 1;
 }
 
-.list-group {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  padding-left: 0;
-  margin-bottom: 0;
-}
 
 .list-group-item-action {
   width: 100%;
@@ -7415,10 +7403,6 @@ button.bg-dark:focus {
   height: 75% !important;
 }
 
-.h-100 {
-  height: 100% !important;
-}
-
 .h-auto {
   height: auto !important;
 }
@@ -8909,13 +8893,7 @@ a.text-light:hover, a.text-light:focus {
   color: #dae0e5 !important;
 }
 
-.text-dark {
-  color: #343a40 !important;
-}
 
-a.text-dark:hover, a.text-dark:focus {
-  color: #1d2124 !important;
-}
 
 .text-body {
   color: #212529 !important;
@@ -8974,9 +8952,6 @@ a.text-dark:hover, a.text-dark:focus {
     display: table-header-group;
   }
   tr,
-  img {
-    page-break-inside: avoid;
-  }
   p,
   h2,
   h3 {

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -328,6 +329,35 @@ namespace web_server.Database.Repositories
 
             }
         }
+
+        public async Task RemoveConnectionToken(string token)
+        {
+            try
+            {
+                var ent = await _context.ConnectionTokens.FirstOrDefaultAsync(m=>m.Token == token);
+                _context.Entry(ent).State = EntityState.Deleted;
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public async Task RemoveNotificationToken(string token)
+        {
+            try
+            {
+                var ent = await _context.NotificationTokens.FirstOrDefaultAsync(m=>m.TokenKey == token);
+                _context.Entry(ent).State = EntityState.Deleted;
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public async Task SaveChanges(UserDTO userDTO)
         {
             try
@@ -518,7 +548,16 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                return await _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications).Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens).FirstOrDefaultAsync(m => m.UserId == id);
+                var gd2 = _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications)
+                    .Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens)
+                    .OfType<UserDTO>()
+                    .AsSingleQuery();
+
+                var gd = _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications)
+                    .Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens).AsSingleQuery();
+
+                var user = await gd2.FirstOrDefaultAsync(m => m.UserId == id);
+                return user;
 
             }
             catch (Exception ex)
@@ -626,7 +665,7 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                var tutor = await _context.Tutors.Include(m => m.Notifications)//.Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).AsNoTracking().Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
+                var tutor = await _context.Tutors.Include(m => m.Notifications).Include(m=>m.NotificationTokens)//.Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).AsNoTracking().Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
 
                 .FirstOrDefaultAsync(m => m.UserId == (id));
                 if (tutor != null)

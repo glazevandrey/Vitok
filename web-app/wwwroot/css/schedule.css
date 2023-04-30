@@ -1,0 +1,20 @@
+﻿td {
+    width: 100%;
+}
+
+@media (min-width: 280px) {
+    td {
+        width: 50px;
+    }
+}
+@media (min-width: 768px) {
+    td {
+        width: 100px;
+    }
+}
+
+@media (min-width: 1024px) {
+    td {
+        width: 150px;
+    }
+}

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -172,10 +173,11 @@ namespace web_server.Services
 
             Registration reg = null;
 
-            reg = await _userRepository.GetRegistrationByGuid(Guid.Parse(guid));
 
-            if (reg != null)
+            if (!string.IsNullOrEmpty(guid))
             {
+                reg = await _userRepository.GetRegistrationByGuid(Guid.Parse(guid));
+              
                 var nearest = reg.WantThis.First().dateTime;
 
                 if (reg.WantThis.Count > 1)
@@ -266,8 +268,13 @@ namespace web_server.Services
 
             }
 
-            await LogIn(user.Email, user.Password, context);
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(reg));
+            var token = await LogIn(user.Email, user.Password, context);
+            if (!string.IsNullOrEmpty(guid))
+            {
+                return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(reg));
+            }
+
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(token));
         }
     }
 }

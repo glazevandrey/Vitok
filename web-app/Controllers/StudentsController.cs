@@ -130,7 +130,7 @@ namespace web_app.Controllers
         [HttpGet("info", Name = "info")]
         public IActionResult Info([FromQuery] string id)
         {
-            CustomRequestGet req4 = new GetUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
+            CustomRequestGet req4 = new GetLiteUserByToken(HttpContext.Request.Cookies[".AspNetCore.Application.Id"]);
             var res4 = _requestService.SendGet(req4, HttpContext);
 
             if (!res4.success)
@@ -148,7 +148,7 @@ namespace web_app.Controllers
 
 
 
-            var req = new GetUserById(id + ";Manager");
+            var req = new GetLiteUserByToken(id + ";Manager");
             var data = _requestService.SendGet(req, HttpContext);
             if (!data.success)
             {

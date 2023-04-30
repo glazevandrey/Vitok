@@ -13,6 +13,9 @@ namespace web_server.Database
         public DbSet<ChatDTO> Chats { get; set; }
         public DbSet<UserDate> UserDates { get; set; }
         public DbSet<GoalDTO> Goals { get; set; }
+        public DbSet<NotificationTokens> NotificationTokens { get; set; }
+        public DbSet<ConnectionToken> ConnectionTokens{ get; set; }
+
 
         public DbSet<NotificationsDTO> Notifications { get; set; }
         public DbSet<NotificationTaskDTO> NotificationTasks { get; set; }

@@ -15,7 +15,7 @@ namespace web_app.Controllers
         }
         public IActionResult Index()
         {
-            CustomRequestGet request = new GetUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
+            CustomRequestGet request = new GetLiteUserByToken(Request.Cookies[".AspNetCore.Application.Id"]);
             var result = _requestService.SendGet(request, HttpContext);
 
             if (result.success == false)

@@ -470,16 +470,17 @@ namespace web_server
         }
         public async override Task OnDisconnectedAsync(Exception ex)
         {
-            var user = await _userRepository.GetUserByChatToken(Context.ConnectionId);
+          //  var user = await _userRepository.GetUserByChatToken(Context.ConnectionId);
 
-            if (user.Chat == null)
-            {
-                return;
-            }
+            //if (user.Chat == null)
+            //{
+             //   return;
+            //}
 
-            var rem = user.Chat.ConnectionTokens.FirstOrDefault(m => m.Token == Context.ConnectionId);
-            user.Chat.ConnectionTokens.Remove(rem);
-            await _userRepository.SaveChanges(user);
+            //var rem = user.Chat.ConnectionTokens.FirstOrDefault(m => m.Token == Context.ConnectionId);
+            //user.Chat.ConnectionTokens.Remove(rem);
+            //await _userRepository.SaveChanges(user);
+            await _userRepository.RemoveConnectionToken(Context.ConnectionId);
 
             await base.OnDisconnectedAsync(ex);
         }
