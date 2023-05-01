@@ -3,6 +3,11 @@
  * License https://froala.com/wysiwyg-editor/terms/
  * Copyright 2014-2021 Froala Labs
  */
+@font-face {
+    font-family: 'Poppins';
+    src: url('/Fonts/Poppins.ttf');
+}
+
 
 .fr-clearfix::after {
   clear: both;
@@ -39114,8 +39119,8 @@ a.u-link.u-text-hover-grey-90:hover {
         }
         p:not(.u-text-variant)
         {
-        margin-top: 20px;
-        margin-bottom: 20px;
+        margin-top: 0px;
+        margin-bottom: 8px;
         }
         .u-btn
         {

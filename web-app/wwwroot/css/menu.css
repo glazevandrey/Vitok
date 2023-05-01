@@ -1,0 +1,25 @@
+﻿
+@media (min-width: 280px) {
+    .CustomLeftnavbar {
+        width: 100px !important;
+    }
+
+    .nav-link2 a {
+        text-indent: -9999px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .CustomLeftnavbar {
+        width: 100px !important;
+    }
+
+}
+
+@media (min-width: 1024px) {
+    .CustomLeftnavbar {
+        width: 230px !important;
+    }
+
+   
+}

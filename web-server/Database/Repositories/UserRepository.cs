@@ -501,6 +501,28 @@ namespace web_server.Database.Repositories
             }
 
         }
+
+        public async Task<UserDTO> GetLiteUserByChatToken(string token)
+        {
+            try
+            {
+                var user = await _context.Users.Include(m=>m.Chat.ConnectionTokens).FirstOrDefaultAsync(u => u.Chat.ConnectionTokens.Any(t => t.Token == token));
+                if (user != null)
+                {
+                    return user;
+                }
+
+                return null;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
         public async Task<UserDTO> GetUserByChatToken(string token)
         {
             try
@@ -508,28 +530,19 @@ namespace web_server.Database.Repositories
                 var tutor = await _context.Tutors.Include(m => m.Notifications).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).FirstOrDefaultAsync(u => u.Chat.ConnectionTokens.Any(t => t.Token == token));
                 if (tutor != null)
                 {
-
-
-                    return tutor;
-                    //return _mapper.Map<Tutor>(tutor);
+                   return tutor;
                 }
 
                 var student = await _context.Students.Include(m => m.Notifications).Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).FirstOrDefaultAsync(u => u.Chat.ConnectionTokens.Any(t => t.Token == token));
                 if (student != null)
                 {
-
-
                     return student;
-                    //return _mapper.Map<Student>(student);
                 }
 
                 var manager = await _context.Managers.Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.Notifications).FirstOrDefaultAsync(u => u.Chat.ConnectionTokens.Any(t => t.Token == token));
                 if (manager != null)
                 {
-
-
                     return manager;
-                    //return _mapper.Map<Manager>(manager);
                 }
 
                 return null;
@@ -548,15 +561,10 @@ namespace web_server.Database.Repositories
         {
             try
             {
-                var gd2 = _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications)
+
+                var user = await _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications)
                     .Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens)
-                    .OfType<UserDTO>()
-                    .AsSingleQuery();
-
-                var gd = _context.Users.Include(m => m.NotificationTokens).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Notifications)
-                    .Include(m => m.Chat).ThenInclude(m => m.Contacts).Include(m => m.Chat).ThenInclude(m => m.ConnectionTokens).AsSingleQuery();
-
-                var user = await gd2.FirstOrDefaultAsync(m => m.UserId == id);
+                    .AsSplitQuery().FirstOrDefaultAsync(m => m.UserId == id);
                 return user;
 
             }

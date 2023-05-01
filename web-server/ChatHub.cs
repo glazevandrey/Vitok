@@ -15,7 +15,6 @@ namespace web_server
     public class ChatHub : Microsoft.AspNetCore.SignalR.Hub
     {
         UserRepository _userRepository;
-        //  ChatRepository _chatRepository;
         ScheduleRepository _scheduleRepository;
         public ChatHub(UserRepository userRepository, ScheduleRepository scheduleRepository)
         {
@@ -26,6 +25,8 @@ namespace web_server
 
         public async Task GetMessages(string userId)
         {
+            await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow");
+
             var currUser = await _userRepository.GetUserByChatToken(Context.ConnectionId);
 
             currUser.Chat.InChat = Convert.ToInt32(userId);
@@ -48,8 +49,6 @@ namespace web_server
             var messages = currUser.Chat.Messages.ToList();
             var result = new List<Messages>();
 
-            await Clients.Clients(Context.ConnectionId).SendAsync("ClearNow");
-            //messages.Reverse();
             foreach (var message in messages)
             {
                 if (user.Chat.ConnectionTokens.Any(t => t.Token == message.SenderId) || user.Chat.ConnectionTokens.Any(t => t.Token == message.ReceiverId))
@@ -81,34 +80,50 @@ namespace web_server
                 {
                     if (item.FilePath == null)
                     {
-                        await Clients.Clients(Context.ConnectionId).SendAsync("OwnMessage", item.Message, null, currUser.PhotoUrl);
+                        await Clients.Clients(Context.ConnectionId).SendAsync("OwnMessage", item.Message, null, currUser.PhotoUrl, currUser.FirstName + " " + currUser.LastName);
                     }
                     else
                     {
-                        await Clients.Clients(Context.ConnectionId).SendAsync("OwnMessage", item.Message, item.FilePath, currUser.PhotoUrl);
+                        await Clients.Clients(Context.ConnectionId).SendAsync("OwnMessage", item.Message, item.FilePath, currUser.PhotoUrl, currUser.FirstName + " " + currUser.LastName);
                     }
                 }
             }
+
         }
 
         public async Task SendMessage(string message, string token, string filePath)
         {
-            var user = await _userRepository.GetUser(Convert.ToInt32(token));
 
-            var own = await _userRepository.GetUserByChatToken(Context.ConnectionId);
+            var own = await _userRepository.GetLiteUserByChatToken(Context.ConnectionId);
 
             var ownPhoto = own.PhotoUrl;
+            foreach (var item in own.Chat.ConnectionTokens.Where(m => m.Status == "Connected"))
+            {
+                if (filePath == null)
+                {
+                    await Clients.Clients(item.Token).SendAsync("OwnMessage", message, null, ownPhoto, own.FirstName + " " + own.LastName);
+                }
+                else
+                {
+                    await Clients.Clients(item.Token).SendAsync("OwnMessage", message, filePath, ownPhoto, own.FirstName + " " + own.LastName);
+                }
+            }
+
+
+            var user = await _userRepository.GetUser(Convert.ToInt32(token));
+
 
             if (user.Chat == null) { return; }
 
             var active = user.Chat.ConnectionTokens.Where(m => m.Status == "Connected").ToList();
+
             foreach (var item in active)
             {
                 if (user.Chat.InChat == own.UserId)
                 {
                     if (filePath == null)
                     {
-                        await Clients.Clients(item.Token).SendAsync("ReceiveMessage", message, own.UserId, user.FirstName + " " + user.LastName, null, ownPhoto);
+                        await Clients.Clients(item.Token).SendAsync("ReceiveMessage", message, own.UserId, user.FirstName + " " + user.LastName, null, ownPhoto );
                     }
                     else
                     {
@@ -143,17 +158,7 @@ namespace web_server
                 throw ex;
             }
 
-            foreach (var item in own.Chat.ConnectionTokens.Where(m => m.Status == "Connected"))
-            {
-                if (filePath == null)
-                {
-                    await Clients.Clients(item.Token).SendAsync("OwnMessage", message, null, ownPhoto);
-                }
-                else
-                {
-                    await Clients.Clients(item.Token).SendAsync("OwnMessage", message, filePath, ownPhoto);
-                }
-            }
+          
         }
         public override async Task OnConnectedAsync()
         {

@@ -1,0 +1,32 @@
+﻿@media (min-height: 667px) {
+   .card{
+       height:80vh;
+   }
+}
+
+@media (min-width: 280px) {
+    .contacts_card {
+        width: 100px !important;
+    }
+    .card{
+        margin-left:30px;
+    }
+}
+@media (min-width: 414px) {
+    .contacts_card {
+        width:200px !important;
+    }
+}
+
+
+@media (min-width: 768px) {
+    .contacts_card {
+        width: 100px !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .contacts_card {
+        width: 350px !important;
+    }
+}

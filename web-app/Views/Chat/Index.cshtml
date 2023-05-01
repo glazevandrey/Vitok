@@ -7,34 +7,39 @@
 @{
     Layout = "_Layout";
 }
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
     .chat {
         margin-top: auto;
         margin-bottom: auto;
     }
-
+    .bd-highlight.user_info span{
+        font-size:26px;
+    }
     .card {
         height: 500px;
-        border-radius: 15px !important;
-        background-color: rgba(0,0,0,0.4) !important;
+        background-color: #FAFAFA !important;
+        width:140%;
+/*        margin-left:60px;
+*/        height:80vh;
     }
-
+    .messagerName {
+        padding-left:20px;
+        font-weight:bold;
+    }
     .contacts_body {
         padding: 0.75rem 0 !important;
         overflow-y: auto;
         white-space: nowrap;
     }
-
-    /*        overflow-y: auto;
-    */
 .msg_card_body {
         overflow-y: auto;
     }
 
     .card-header {
-        border-radius: 15px 15px 0 0 !important;
         border-bottom: 0 !important;
+        background-color: #FAFAFA !important;
     }
 
     .card-footer {
@@ -47,10 +52,7 @@
     }
 
     .search {
-        border-radius: 15px 0 0 15px !important;
-        background-color: rgba(0,0,0,0.3) !important;
-        border: 0 !important;
-        color: white !important;
+        color: black !important;
     }
 
         .search:focus {
@@ -59,11 +61,13 @@
         }
 
     .type_msg {
-        background-color: rgba(0,0,0,0.3) !important;
+        background-color: #fff !important;
         border: 0 !important;
-        color: white !important;
+        color: black !important;
+        padding-top:18px !important;
         height: 60px !important;
         overflow-y: auto;
+        resize: none;
     }
 
         .type_msg:focus {
@@ -72,16 +76,14 @@
         }
 
     .attach_btn {
-        border-radius: 15px 0 0 15px !important;
-        background-color: rgba(0,0,0,0.3) !important;
+        background-color: white !important;
         border: 0 !important;
         color: white !important;
         cursor: pointer;
     }
 
     .send_btn {
-        border-radius: 0 15px 15px 0 !important;
-        background-color: rgba(0,0,0,0.3) !important;
+        background-color: white !important;
         border: 0 !important;
         color: white !important;
         cursor: pointer;
@@ -101,19 +103,25 @@
     }
 
         .contacts li {
-            width: 100% !important;
-            padding: 5px 10px;
+            width: 90% !important;
+            /*height:15%;*/
+            padding-top:10px;
+            padding-left:10px;
+            margin-left:15px;
             margin-bottom: 15px !important;
         }
 
     .active {
-        background-color: rgba(0,0,0,0.3);
+        background-color: #DDDBDB;
     }
 
     .user_img {
-        height: 70px;
-        width: 70px;
+        height: 60px;
+        width: 60px;
         border: 1.5px solid #f5f6fa;
+            margin-top: 2px;
+            border-radius:50% !important;
+            
     }
 
     .user_img_msg {
@@ -131,6 +139,8 @@
     .img_cont_msg {
         height: 40px;
         width: 40px;
+          margin-bottom: 10px;
+
     }
 
     .online_icon {
@@ -152,40 +162,34 @@
         margin-top: auto;
         margin-bottom: auto;
         margin-left: 15px;
+        font-family:Poppins;
     }
 
         .user_info span {
-            font-size: 20px;
-            color: white;
+            font-size: 23px;
+            color: black;
+            font-weight: 700;
         }
 
+  
         .user_info p {
-            font-size: 10px;
-            color: rgba(255,255,255,0.6);
+            font-size: 16px;
+            color: black;
+            font-family:Poppins;
+            padding-left: 30px;
+            font-weight: 700;
         }
 
-    .video_cam {
-        margin-left: 50px;
-        margin-top: 5px;
-    }
 
-        .video_cam span {
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            margin-right: 20px;
-        }
 
-    .msg_cotainer {
-        margin-top: auto;
+    .msg_container {
+       /* margin-top: auto;
         margin-bottom: auto;
         margin-left: 10px;
-        border-radius: 25px;
-        background-color: #82ccdd;
-        padding: 10px;
         position: relative;
-  max-width: 100px;
-        word-break: break-all;
+        max-width: 100px;*/
+        padding-left: 60px;
+        font-family:Poppins;
     }
 
     .msg_cotainer_send {
@@ -218,6 +222,10 @@
 
     .msg_head {
         position: relative;
+        display: flex;
+    align-items: center;
+        justify-content: right;
+        font-size:20px;
     }
 
     #action_menu_btn {
@@ -263,25 +271,25 @@
                 }
 
     .justify-content-end {
-        background-color: #e09b1ecc;
-        color: white;
-        border-radius: 28px;
+        background-color: #FAFAFA;
+        color: black;
     }
 
     .justify-content-start {
-        background-color: #ff005e6b;
-        color: white;
-        border-radius: 28px;
+        background-color: #FAFAFA;
+        color: black;
 
     }
 
     ul {
         list-style-type: none;
     }
+
 </style>
 <script src="~/js/signalR/signalr.min.js"></script>
 <link href="~/bootstrap-4.1.3-dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="~/bootstrap-4.1.3-dist/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="~/css/chat.css">
 <style>
 
     li {
@@ -325,13 +333,25 @@
 
             }
     }
+    function getLastMessageForUser(userId) {
+        const messages = getMessagesForUser(userId);
+        // возвращаем последнее сообщение из списка
+        return messages[messages.length - 1];
+    }
+
+
 
 </script>
+
+
 <div class="container-fluid h-100">
+
     <div class="row justify-content-center h-100">
         <div class="col-md-4 col-xl-3 chat">
-            <div class="card mb-sm-3 mb-md-0 contacts_card">
+
+            <div class="card mb-sm-3 mb-md-0 contacts_card" style="width:350px;height:80vh;">
                 <div class="card-header">
+
                     <div class="input-group">
                         <input type="text" placeholder="Поиск..." id="searchInput" class="form-control search">
                     </div>
@@ -344,20 +364,38 @@
                 <div class="card-footer"></div>
             </div>
         </div>
-        <div class="col-md-8 col-xl-6 chat">
+        <div class="col-md-8 col-xl-6 chat" style="margin-left:60px; position:static !important">
             <div class="card">
                 <div class="card-header msg_head">
                     <div class="d-flex bd-highlight">
                         <div class="user_info">
-                            <span>Чат с: <span id="chat-with-name"></span></span>
-
-                            <span hidden="hidden">Чат с: <span id="chat-with-id"></span></span>
+                            <span><span style="padding-right:120px;font-size:32px !important" id="chat-with-name"></span></span>
+                            <span hidden="hidden"><span id="chat-with-id"></span></span>
+                        </div>
+                        <div style="padding-right:20px;" class="img_cont">
+                            <img id="currUserPhoto" class="user_img" hidden="hidden" src="">
                         </div>
                     </div>
+
+
+
+                    @*<div class="d-flex bd-highlight">
+                        <div class="user_info">
+                            <span><span id="chat-with-name"></span></span>
+
+                            <span hidden="hidden"><span id="chat-with-id"></span></span>
+                        </div>
+                        <div align="right">
+                            <img id="currUserPhoto" class="user_img" hidden="hidden" src="">
+                        </div>
+                    </div>*@
                 </div>
-                <div class="card-body msg_card_body">
-                    <ul>
-                        <li id="messageListId"></li>
+                <div class="card-body msg_card_body" id="mm">
+                    <ul id="messages">
+                        <li id="messageListId">
+                       
+
+                        </li>
                     </ul>
                 </div>
                 <script>
@@ -380,19 +418,24 @@
                     }
                 </script>
                 <div class="card-footer" id="inputMessage" style="display:none">
-                    <div class="input-group">
+                    <div class="input-group" style="box-shadow: 0 5px 10px -2px grey;">
+                        <input onchange="ShowX(this)" type="file" id="fileInput" class="fileInput" style="display: none;">
+                      
                         <div class="input-group-append">
-                            <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+                            <span class="input-group-text attach_btn">
+                                <img style="width:30px;height:40px;" class="attach_btn" id="attachButton" src="~/content/images/attach.svg" />
+                            </span>
                         </div>
-                        <textarea name="" class="form-control type_msg" id="messageInput" placeholder="Написать......">
+                        <textarea name="" class="form-control type_msg" id="messageInput" placeholder="Напишите сообщение...">
                          </textarea>
                         <div class="input-group-append">
-                            <span class="input-group-text send_btn" id="sendButton"><i class="fas fa-location-arrow"><b>></b></i></span>
+
+
+                            <span class="input-group-text send_btn">
+                                <img style="width:45px;height:40px;" class="input-group-text send_btn" id="sendButton" src="~/content/images/sendarrow.svg" />
+                            </span>
                         </div>
-                        <input onchange="ShowX(this)" type="file" id="fileInput" class="fileInput" style="display: none;">
-                        <div class="input-group-append">
-                            <span class="attach_btn" id="attachButton"><i class="fas fa-paperclip">&#128206;</i></span>
-                        </div>  
+                        
                         <div id="loading-spinner" style="display: none;">
                             <i class="fa fa-spinner fa-spin"></i> Загрузка файла...
                         </div>
@@ -423,8 +466,31 @@
     var receiverId = function (id, userId) {
         $('#chat-with-id').text(id);
         $('#chat-with-name').text(userId);
+        document.getElementById("messageInput").value = "";
 
+        var imgSrc = '';
+
+        $('#onlineUsersList li').each(function () {
+            if ($(this).css('background-color') === 'rgb(143, 225, 215)') {
+                $(this).css('background-color', '#DDDBDB');
+            }
+        });
+
+        $('#onlineUsersList li').each(function () {
+            var userId2 = $(this).find('#user_info p').text();
+            if (userId2 == userId) {
+                imgSrc = $(this).find('img').attr('src');
+                $(this).css('background-color','#8FE1D7');
+
+                return false; // выход из цикла each() при нахождении нужного элемента
+            }
+        });
+        
+        document.getElementById('currUserPhoto').src = imgSrc;
+        document.getElementById('currUserPhoto').removeAttribute('hidden');
         connection.invoke("GetMessages", $('#chat-with-id').text()).then((result) => {
+           
+
 
             document.getElementById('inputMessage').style.display = 'block';
 
@@ -474,34 +540,51 @@
         }
     });
     connection.on("UserList", (connectionId, userId, photo) => {
-        $('#onlineUsersList').append('<li class="active" onclick="receiverId(' + "'" + connectionId + "', '" + userId + "'" + ')">' +
+        $('#onlineUsersList').append('<li style="border-radius:10px" class="active" onclick="receiverId(' + "'" + connectionId + "', '" + userId + "'" + ')">' +
             '<div class="d-flex bd-highlight">' +
             '<div class="img_cont">' +
-            '<a href=""><img src='+photo+' alt="find and solve" class="rounded-circle user_img"></a>' +
+            '<a href=""><img src='+photo+' class="rounded-circle user_img"></a>' +
             '</div>' +
             '<div id="user_info" class="user_info">' +
-            '<p>' + userId + '</p>></div> </div></li>'
-        )
+            '<p>' + userId + '</p></div> </div></li>')
     });
     connection.on("DisconnectUser", (connectionId) => {$('li:contains('+ connectionId +')').remove();});
 
     connection.on("ClearNow", () => {
         $('#messageListId').empty();
     });
-    connection.on("OwnMessage", (message, filePath, photo) => {
+
+
+
+    connection.on("OwnMessage", (message, filePath, photo, username) => {
         if(message){
-            $('#messageListId').append('<li><div class="d-flex justify-content-end mb-4">' +
-                '<div class= ""msg_cotainer">' + message + '<span class= "msg_time_send" ></span></div>' +
+            $('#messageListId').append('<li><div class="d-flex justify-content-start ">' +
                 '<div class="img_cont_msg">' +
-                '<img src="' + photo + '" alt="find and solve" class="rounded-circle user_img_msg"> </div> </div></li>')
+                '<img src="' + photo + '" class="rounded-circle user_img_msg"> </div>' +
+                '<div class="messagerName" id="messagerName">' + username + '</div>' +
+                '</div>' +
+                '<div class="msg_container">' +
+                '<span class="msg_time_send"></span>' +
+                message +
+                '</div>' +
+                '</li>');
+
+           
         }
        
-
             if(filePath){
-                    $('#messageListId').append('<li><div class="d-flex justify-content-end mb-4">' +
-                '<div class= ""msg_cotainer"><a download href="' + '@web_app.Program.web_server_ip' +'/files/' + filePath + '">' + filePath + '</a><span class= "msg_time_send"></span></div>' +
-        '<div class="img_cont_msg">' +
-        '<img src="'+photo+'" alt="find and solve" class="rounded-circle user_img_msg"> </div> </div></li>')
+
+            $('#messageListId').append('<li><div class="d-flex justify-content-start ">' +
+                '<div class="img_cont_msg">' +
+                '<img src="' + photo + '" alt="find and solve" class="rounded-circle user_img_msg"> </div>' +
+                '<div class="messagerName" id="messagerName">' + username + '</div>' +
+                '</div>' +
+                '<div class="msg_container">' +
+                '<span class="msg_time_send"></span>' +
+                '<a download href="' + '@web_app.Program.web_server_ip' + '/files/' + filePath + '">' + filePath + '</a>' +
+                '</div>' +
+                '</li>');
+           
                     }
     });
     connection.on("ReceiveMessage", (message, senderId, senderName, filePath, photo) => {
@@ -509,24 +592,41 @@
         $('#chat-with-name').text(senderName);
 
         if(message){
-            $('#messageListId').append('<li><div class="d-flex justify-content-start mb-4">' +
+            $('#messageListId').append('<li><div class="d-flex justify-content-start ">' +
                 '<div class="img_cont_msg">' +
-                '<img src="' + photo + '" alt="find and solve" class="rounded-circle user_img_msg"> </div> ' +
-                '<div class= ""msg_cotainer">' + message + '<span class= "msg_time_send" ></span></div>' +
-                '</div ></li>')
+                '<img src="' + photo + '" class="rounded-circle user_img_msg"> </div>' +
+                '<div class="messagerName" id="messagerName">' + senderName + '</div>' +
+                '</div>' +
+                '<div class="msg_container">' +
+                '<span class="msg_time_send"></span>' +
+                message +
+                '</div>' +
+                '</li>');
+       
+
+           
         }
         
 
             if(filePath){
-            $('#messageListId').append('<li><div class="d-flex justify-content-start mb-4">' +
+
+
+                  $('#messageListId').append('<li><div class="d-flex justify-content-start ">' +
                 '<div class="img_cont_msg">' +
-                '<img src="'+photo+'" alt="find and solve" class="rounded-circle user_img_msg"> </div> ' +
-                '<div class= ""msg_cotainer"><a download href="'+'@web_app.Program.web_server_ip'+'/files/' + filePath + '">' + filePath + '</a><span class= "msg_time_send"></span></div>' +
-                '</div ></li>')
+                '<img src="' + photo + '" class="rounded-circle user_img_msg"> </div>' +
+                '<div class="messagerName" id="messagerName">' + senderName + '</div>' +
+                '</div>' +
+                '<div class="msg_container">' +
+                '<span class="msg_time_send"></span>' +
+                '<a download href="'+'@web_app.Program.web_server_ip'+'/files/' + filePath + '">' + filePath + '</a>' +
+                '</div>' +
+                '</li>');
+    
             }
     });
 
     document.getElementById('attachButton').addEventListener('click', () => {
         document.getElementById('fileInput').click();
     });
+
 </script>

@@ -1251,12 +1251,12 @@ html {
 
 .justify-content-end {
   -ms-flex-pack: end !important;
-  justify-content: flex-end !important;
+  justify-content: left;
 }
 
 .justify-content-center {
   -ms-flex-pack: center !important;
-  justify-content: center !important;
+  justify-content: left;
 }
 
 .justify-content-between {

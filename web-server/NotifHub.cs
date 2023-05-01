@@ -115,15 +115,6 @@ namespace web_server
         public async override Task OnDisconnectedAsync(Exception ex)
         {
             var connectionId = Context.ConnectionId;
-            //var user = await _userRepository.GetUser(userId);
-            //if (user == null)
-            //{
-             //   return;
-           // }
-            //var rem = user.NotificationTokens.FirstOrDefault(m => m.TokenKey == connectionId);
-            //user.NotificationTokens.Remove(rem);
-
-            //await _userRepository.SaveChanges(user);
             await _userRepository.RemoveNotificationToken(connectionId);
         }
 

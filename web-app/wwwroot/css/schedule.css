@@ -1,20 +1,38 @@
 ﻿td {
-    width: 100%;
+    width: 90%;
 }
 
 @media (min-width: 280px) {
     td {
         width: 50px;
     }
+        td button {
+            width: 50px;
+        }
+        td label {
+            width: 150px;
+        }
 }
 @media (min-width: 768px) {
     td {
         width: 100px;
     }
+        td button {
+            width: 100px;
+        }
+        td label {
+            width: 150px;
+        }
 }
 
 @media (min-width: 1024px) {
     td {
         width: 150px;
     }
+        td button {
+            width: 150px;
+        }
+        td label {
+            width: 150px;
+        }
 }
