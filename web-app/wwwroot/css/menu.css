@@ -1,11 +1,19 @@
 ﻿
 @media (min-width: 280px) {
     .CustomLeftnavbar {
-        width: 100px !important;
+        width: 70px !important;
     }
-
-    .nav-link2 a {
-        text-indent: -9999px !important;
+    .logo-text-online {
+        display: none;
+    }
+    .logo-text-vitok {
+        display: none;
+    }
+    .nav-link2 span {
+        display:none;
+    }
+    .logo {
+        width: 70px;
     }
 }
 

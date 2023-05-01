@@ -2667,8 +2667,8 @@ base {
   display: none;
 }
 a {
-  color: #259bca;
-  text-decoration: none;
+/*  color: #259bca;
+*/  text-decoration: none;
 }
 a:hover {
   color: #0676a4;
