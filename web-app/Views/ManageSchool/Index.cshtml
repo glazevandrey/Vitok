@@ -117,23 +117,24 @@ form{
 
     .tableHeader {
        width:200px;
-       padding-bottom:15px;
+       padding-bottom:20px;
 }
 thead{
-        /*border: 2px solid black;
-        border-radius: 10px;*/
-        /*border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-        border: 2px solid #000;*/
+ 
         background-color: white;
         letter-spacing: 1px;
 }
+
+
 </style>
 
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 <script src="~/js/datepicker_ru.js"></script>
+<link rel="stylesheet" type="text/css" href="~/css/managerSchedule.css">
 
 <div oncontextmenu="return false;">
     <script>
@@ -152,13 +153,13 @@ thead{
         <thead >
            <tr class="brd" style="height:20px">
             <th colspan="25" style="padding-top:20px;font-weight:bold !important">
-                <form method="get" action="/manageschool/setDateM" id="setDateForm" style="display: inline-block;">
-                    <input hidden="hidden" id="setdate" name="setdate" value="" />
-                    <input style="display:none" type="text" onchange="setDate(this)" id="datepicker" name="datepicker">
-                    <img id="datepicker-btn" src="~/content/images/calendar.svg" style="width:20px;height:20px;cursor:pointer;margin-right:5px" />
-                </form>
-                Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")
-
+                
+                    <form method="get" action="/manageschool/setDateM"  id="setDateForm" style="display: inline-block;">
+                        <label style="font-size:20px">Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")</label>
+                        <input hidden="hidden" id="setdate" name="setdate" value="" />
+                        <input style="display:none" type="text" onchange="setDate(this)" id="datepicker" name="datepicker">
+                        <img id="datepicker-btn" src="~/content/images/calendar.svg" style="width:20px;height:20px;cursor:pointer;margin-left:20px" />
+                    </form>
             </th>
         </tr>
             <tr class="brd2">
@@ -312,7 +313,7 @@ thead{
                                                                 label[data-title]:hover:before {
                                                                     content: attr(data-title);
                                                                     position: absolute;
-                                                                    width: 150px;
+                                                                    width: 130px;
                                                                     color: #fff;
                                                                     height: auto;
                                                                     word-wrap: break-word;
@@ -320,25 +321,25 @@ thead{
                                                                     padding: 5px;
                                                                     border-radius: 4px;
                                                                     bottom: 25px;
-                                                                    left: 50px;
+                                                                    left: 30px;
                                                                 }
                                                         </style>
 
                                                     if (string.IsNullOrEmpty(schedule.UserName))
                                                     {
-                                                    <label data-title="@textMouse" id="@label" class="@label" style="width:150px;height:50px;background-color:turquoise;border-radius:10px"></label>
+                                                    <label data-title="@textMouse" id="@label" class="@label" style="width:130px;height:30px;background-color:turquoise;border-radius:10px"></label>
                                                     }
                                                     else
                                                     {
                                                         var username = schedule.UserName.ToString().Split(" ");
-                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;width:150px;height:50px;border-radius:10px">@username[0].ToString() <br />@username[1].ToString() </label>
+                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;height:30px;border-radius:10px">@username[0].ToString() <br /> </label>
 
                                                         }
 
                                                     if (!schedule.Looped)
                                                     {
                                                         var text4 = "Разовое занятие";
-                                                        <label style="background-color:orange;width:150px" data-title="@text4">(*)</label>
+                                                        <label style="background-color:orange" data-title="@text4">(*)</label>
 
                                                     }
                                                         if (schedule.ReadyDates.Count > 0)
@@ -406,7 +407,7 @@ thead{
 
                                                                                 </script>
 
-                                                                                <label style="background-color:yellow;width:150px" data-title="@text2">(!)</label>
+                                                                                <label style="background-color:yellow;width:130px" data-title="@text2">(!)</label>
                                                                             }
                                                                         }
                                                                         else
@@ -434,7 +435,7 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow;width:150px" data-title="@text2">(!)</label>
+                                                                            <label style="background-color:yellow;width:130px" data-title="@text2">(!)</label>
                                                                         }
                                                                     }
                                                                 }
@@ -466,7 +467,7 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow;width:150px" data-title="@text2">(!)</label>
+                                                                            <label style="background-color:yellow;width:130px" data-title="@text2">(!)</label>
                                                                         }
                                                                     }
                                                                     else
@@ -495,7 +496,7 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow;width:150px" data-title="@text2">(!)</label>
+                                                                            <label style="background-color:yellow;width:130px" data-title="@text2">(!)</label>
 
                                                                         }
 
@@ -568,4 +569,19 @@ thead{
     </table>
 
 
+    <script>
+        $.datepicker.setDefaults($.datepicker.regional["ru"]);
+
+        $(document).ready(function () {
+            $('#datepicker').datepicker({
+                showOn: "button",
+            });
+            $('#datepicker-btn').click(function () {
+                $('#datepicker').datepicker('show');
+            });
+        });
+    </script>
+
 </div>
+
+

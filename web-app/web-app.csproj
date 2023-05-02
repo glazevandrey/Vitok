@@ -40,6 +40,9 @@
     <Content Update="wwwroot\css\chat.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\css\managerSchedule.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\css\schedule.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
