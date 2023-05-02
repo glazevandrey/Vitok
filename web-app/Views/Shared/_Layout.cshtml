@@ -4,7 +4,7 @@
 
     .FullContent {
         display: flex;
-        background-color: #FAFAFA
+        background-color: #FAFAFA;
         
         
     }
@@ -14,14 +14,19 @@
         height: 100%;
         background-color: white;
         width:230px;
+        border: solid 1px #CCC;
         flex: 0 0 300px;
     }
     .container {
         margin-top: 100px;
             margin-left: 250px;
         margin-right: 20px;
-        
-        height:100vh;
+/*        height:100vh;
+*/    }
+
+    .container body {
+        background-color:#FAFAFA;
+    
     }
 </style>
 <link href="~/content/nicepage.css" rel="stylesheet">
@@ -30,7 +35,8 @@
 <style>
     .notification-wrapper {
         position: absolute;
-        display: inline-block;
+        display: flex;
+        align-items:center;
         height:10vh;
         float: right;
         top: 20px;
@@ -62,9 +68,9 @@
 
     .icon-bell {
         display: block;
-        width: 20px;
-        height: 20px;
-        background: url('https://cdn-icons-png.flaticon.com/512/3221/3221952.png') no-repeat center center / cover;
+        width: 30px;
+        height: 30px;
+        background: url('/content/images/bell.svg') no-repeat center center / cover;
         float: right;
         margin-right: 20px;
     }
@@ -75,7 +81,7 @@
         right: 0;
         width: 200px;
         padding: 10px;
-        background-color: white;
+        background-color: #C1EEE9;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
         display: none;
     }
@@ -135,7 +141,13 @@
                 background-color: #00A4BD;
             }
 
-
+            #avatar{
+                   border: 1.5px solid #f5f6fa;
+            margin-top: 2px;
+            border-radius:50% !important;
+        width:50px;
+        height:50px;
+    }
 </style>
 @*<link rel="stylesheet" href="~/css/menu.css">
 *@<script>
@@ -156,12 +168,12 @@
     <header>
     </header>
   <div class="notification-wrapper">
-            <img id="avatar" width="30" height="30" src="@ViewData["photoUrl"]" />
+            <img id="avatar" src="@ViewData["photoUrl"]" />
       
-        <span style="margin-left:10px; margin-right:10px">@ViewData["displayName"]</span>
+        <span class="u-custom-font u-font-montserrat u-text" style="margin-left:10px; margin-right:10px;font-size:20px;font-weight:bold;">@ViewData["displayName"]</span>
 
         <div class="dropdown">
-            <button>↓</button>
+            <img src="~/content/images/downarrow.svg" style="width:30px;height:30px;cursor:pointer"/>
           <div class="dropdown-content">
           <a  href="~/account">Профиль</a>
           <a href="~/account/logout">Выйти</a>

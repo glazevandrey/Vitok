@@ -126,7 +126,7 @@ namespace web_app.Controllers
             return Redirect($"/login?id={id}");
         }
 
-        [HttpPost("details", Name = "details")]
+        [HttpGet("details", Name = "details")]
         public IActionResult Details([FromQuery] string id)
         {
             CustomRequestGet req = new GetTutorByIdRequest(id);

@@ -39336,7 +39336,9 @@ a.u-link.u-text-hover-grey-90:hover {
   font-size: 2.25rem;
   margin: -56px 75px 0 94px;
 }
-
+.u-text-2{
+    padding-left:10px;
+}
 .u-header .u-text-2 {
   font-size: 2.25rem;
   font-weight: 700;

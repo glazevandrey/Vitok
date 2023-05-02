@@ -1,27 +1,148 @@
-﻿td {
+﻿/*td {
+    width: 90%;
+}
+
+@media screen and (min-width: 280px) {
+    td {
+        width: 50px;
+    }
+
+        td button {
+            width: 50px;
+        }
+
+        td label {
+            width: 150px;
+        }
+}
+@media screen and (min-width: 375px) {
+    td {
+        width: 60px;
+    }
+
+        td button {
+            width: 60px;
+        }
+
+        td label {
+            width: 60px;
+        }
+}
+
+@media screen and (min-width: 768px) {
+    td {
+        width: 100px;
+    }
+
+        td button {
+            width: 100px;
+        }
+
+        td label {
+            width: 100px;
+        }
+}
+
+@media screen and (min-width: 1024px) {
+    td {
+        width: 150px;
+    }
+
+        td button {
+            width: 150px;
+        }
+
+        td label {
+            width: 150px;
+        }
+}
+@media screen and (min-width: 1920px) {
+    td {
+        width: 200px;
+    }
+
+        td button {
+            width: 200px;
+        }
+
+        td label {
+            width: 250px;
+        }
+}
+
+@media screen and (min-height: 667px) {
+    td {
+        height: 50px;
+    }
+
+        td button {
+            height: 50px !important;
+        }
+
+        td label {
+            height: 50px;
+        }
+}
+
+@media screen and (min-height: 896px) {
+    td {
+        height: 70px;
+    }
+
+        td button {
+            height: 70px !important;
+        }
+
+        td label {
+            height: 70px;
+        }
+}
+
+
+@media screen and (min-height: 914px) {
+    td {
+        height: 80px;
+    }
+
+        td button {
+            height: 80px !important;
+        }
+
+        td label {
+            height: 80px;
+        }
+}
+
+*/
+/*td {
     width: 90%;
 }
 
 @media (min-width: 280px) {
     td {
-        width: 50px;
+        width: 20px;
     }
+
         td button {
-            width: 50px;
+            width: 20px;
         }
+
         td label {
-            width: 150px;
+            width: 20px;
         }
 }
+
 @media (min-width: 768px) {
     td {
-        width: 80px;
+        width: 100px;
     }
+
         td button {
-            width: 80px;
+            width: 100px;
         }
+
         td label {
-            width: 130px;
+            width: 100px;
         }
 }
 
@@ -29,10 +150,199 @@
     td {
         width: 150px;
     }
+
         td button {
             width: 150px;
         }
+
         td label {
             width: 150px;
         }
 }
+@media screen and (min-width: 1920px) {
+    td {
+        width: 200px;
+    }
+
+        td button {
+            width: 200px;
+        }
+
+        td label {
+            width: 200px;
+        }
+}*/
+
+td {
+    width: 90%;
+}
+
+@media (min-width: 280px) {
+    td {
+        width: 50px;
+    }
+
+        td button {
+            width: 50px;
+        }
+
+        td label {
+            width: 150px;
+        }
+}
+
+@media (min-width: 768px) {
+    td {
+        width: 100px;
+    }
+
+        td button {
+            width: 100px;
+        }
+
+        td label {
+            width: 150px;
+        }
+}
+
+@media (min-width: 1024px) {
+    td {
+        width: 150px;
+    }
+
+        td button {
+            width: 150px;
+        }
+
+        td label {
+            width: 150px;
+        }
+}
+@media screen and (min-width: 1920px) {
+    td {
+        width: 200px;
+    }
+
+        td button {
+            width: 200px;
+        }
+
+        td label {
+            width: 200px;
+        }
+}
+
+
+table {
+    border-collapse: collapse;
+}
+
+form {
+    display: inline-block
+}
+
+
+table td, table th {
+    border: 3px solid #DBDBDB;
+}
+
+table tr:first-child th {
+    border-top: 0;
+}
+
+table tr:last-child td {
+    border-bottom: 0;
+}
+
+table tr td:first-child,
+table tr th:first-child {
+    border-left: 0;
+}
+
+table tr td:last-child,
+table tr th:last-child {
+    border-right: 0;
+}
+
+/*   form {
+            display: inline-block
+        }*/
+
+thead,
+tfoot {
+    background-color: #3f87a6;
+    color: #fff;
+}
+
+tbody {
+    background-color: #FAFAFA;
+}
+
+caption {
+    padding: 10px;
+    caption-side: bottom;
+}
+
+table {
+    border-collapse: collapse;
+    border: 1px solid #DBDBDB;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+td {
+    border: 1px solid #DBDBDB;
+    font-size: 12pt;
+}
+
+th {
+    border: 1px solid #DBDBDB;
+    padding: 5px 10px;
+}
+
+.myth {
+    font-size: 26pt;
+    word-wrap: normal;
+}
+
+td {
+    text-align: center;
+}
+
+.ui-datepicker-trigger {
+    display: none;
+}
+
+#datepicker {
+    background-image: url('/content/images/calendar.svg');
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 20px 20px;
+    padding-right: 30px;
+}
+
+.image-container {
+    display: inline-block;
+    position: relative;
+}
+
+    .image-container .image-description {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        bottom: -40px;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        padding: 20px;
+        width: 300px;
+        transition: visibility 0s, opacity 0.5s linear;
+    }
+
+    .image-container:hover .image-description {
+        visibility: visible;
+        opacity: 1;
+    }

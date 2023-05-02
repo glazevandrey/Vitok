@@ -7,29 +7,29 @@
     Layout = "_Layout";
 }
 <style>
-    table {
-        border-collapse: collapse;
+   
+    table{
+        /*border-collapse: collapse;*/
     }
-
-        table td, table th {
-            border: 1px solid black;
+        tbody td {
+            border: 1px solid #DBDBDB;
         }
 
-        table tr:first-child th {
+    tbody tr:first-child th {
             border-top: 0;
         }
 
-        table tr:last-child td {
+    tbody tr:last-child td {
             border-bottom: 0;
         }
 
-        table tr td:first-child,
-        table tr th:first-child {
+    tbody tr td:first-child,
+    tbody tr th:first-child {
             border-left: 0;
         }
 
-        table tr td:last-child,
-        table tr th:last-child {
+    tbody tr td:last-child,
+    tbody tr th:last-child {
             border-right: 0;
         }
 
@@ -39,13 +39,14 @@
 
     thead,
 tfoot {
-    background-color: #3f87a6;
-    color: #fff;
+    background-color: #fff;
+    color: black;
 }
 
 tbody {
-    background-color: #e4f0f5;
-}
+    background-color: #fff;
+        border: 2px solid #ccc;
+    }
 
 caption {
     padding: 10px;
@@ -53,27 +54,86 @@ caption {
 }
 
 table {
-    border-collapse: collapse;
-    border: 2px solid rgb(200, 200, 200);
-    letter-spacing: 1px;
-    font-family: sans-serif;
+         font-family: sans-serif;
+        /*border: 2px solid #DBDBDB;
+        border-radius: 10px;*/
+        background-color: white;
+       border-spacing : 0 !important;
+        letter-spacing: 1px;
     font-size: 0.8rem;
 }
 
+    .brd > th:nth-child(1) {
+        background: #fff;
+        border: 2px solid black;
+        border-bottom:0;
+        border-radius: 20px 20px 0px 0px;
+    }
+    
+    .brd2 > th:nth-child(1) {
+        background: #fff;
+        
+        border: 2px solid black;
+        border-top: 0;
+        border-right: 0;
+        border-radius: 0px 0px 0px 20px;
+    }
+
+    .brd2 > th:nth-child(25) {
+        background: #fff;
+       
+        border: 2px solid black;
+        border-top: 0;
+        border-left: 0;
+        border-radius: 0px 0px 20px 0px;
+    }
+
+ 
+    tbody {
+        border-top: 3px solid #fff;
+    }
+
+   /* tbody > tr:nth-child(1) {
+        border-top:0;
+    }*/
+    th{
+        font-size:20px;
+        font-weight:normal;
+    }
 td,
 th {
-    border: 1px solid rgb(190, 190, 190);
+    /*border: none;*/
     padding: 5px 10px;
-}
+    }
 
 td {
     text-align: center;
+    width:45px !important;
+}
+form{
+        display: inline-block;
+        height: 10px;
 }
 
+    .tableHeader {
+       width:200px;
+       padding-bottom:15px;
+}
+thead{
+        /*border: 2px solid black;
+        border-radius: 10px;*/
+        /*border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border: 2px solid #000;*/
+        background-color: white;
+        letter-spacing: 1px;
+}
 </style>
 
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
-
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="~/js/datepicker_ru.js"></script>
 
 <div oncontextmenu="return false;">
     <script>
@@ -84,56 +144,77 @@ td {
         }
 
     </script>
-    <table>
-        <thead>
-            <tr style="height:20px">
-                <th colspan="25">
-                  Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")
-                </th>
-            </tr>
-        </thead>
-       <tbody>
-        <tr>
-              <td>
-              <div>
-                <form method="get" action="/manageschool/downDateM" style="display: inline-block;">
-                  <input hidden="hidden" id="date" name="date" value="@Model.Date" />
-                  <input type="submit" value="<" />
-                </form>
-                <input id="main-date" class="main-date" disabled="disabled" type="text" value="@Model.Date.ToString("dd MMM")" style="display: inline-block; width: 80px;" />
-                <form method="get" action="/manageschool/upDateM" style="display: inline-block;">
-                  <input hidden="hidden" id="date" name="date" value="@Model.Date" />
-                  <input type="submit" value=">" />
-                </form>
-                        <form method="get" action="/manageschool/setDateM" id="setDateForm" style="display: inline-block;">
-                            <input hidden="hidden" id="setdate" name="setdate" value="@Model.Date" />
-                            <input type="date" min="1920-01-01" max="2050-12-31" onchange="setDate(this)" value="&#128197;" />
-                        </form>
-              </div>
-            </td>
 
-            @{
-                
-                var w_days = new List<DayOfWeek>()
+    <div>
+        
+    </div>
+    <table>
+        <thead >
+           <tr class="brd" style="height:20px">
+            <th colspan="25" style="padding-top:20px;font-weight:bold !important">
+                <form method="get" action="/manageschool/setDateM" id="setDateForm" style="display: inline-block;">
+                    <input hidden="hidden" id="setdate" name="setdate" value="" />
+                    <input style="display:none" type="text" onchange="setDate(this)" id="datepicker" name="datepicker">
+                    <img id="datepicker-btn" src="~/content/images/calendar.svg" style="width:20px;height:20px;cursor:pointer;margin-right:5px" />
+                </form>
+                Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")
+
+            </th>
+        </tr>
+            <tr class="brd2">
+              <th>
+                    <div class="tableHeader">
+                        <form method="get" id="downdate" action="/manageschool/downDateM" style="padding-left:10px;padding-top:20px;padding-bottom:10px;">
+                            <input hidden="hidden" id="date" name="date" value="@Model.Date" />
+                            <img onclick="document.getElementById('downdate').submit()" src="/content/images/Vector.svg" style="transform: rotate(-180deg);transform: rotate(-90deg);cursor:  pointer;width:25px" />
+                        </form>
+                        <label style="padding-top:10px;padding-bottom:10px;font-size:20pt;padding-left:10px;padding-right:10px">@Model.Date.ToString("dd MMM")</label>
+
+                        <form method="get" id="update" action="/manageschool/upDateM" style="padding-top:10px;padding-bottom:10px;">
+                            <input hidden="hidden" id="date" name="date" value="@Model.Date" />
+                            <img onclick="document.getElementById('update').submit()" src="/content/images/Vector.svg" style="cursor: pointer;width:25px;transform: rotate(90deg)" />
+                        </form>
+                       
+
+                    </div>
+            
+            </th>
+
+                @{
+
+                    var w_days = new List<DayOfWeek>()
             {
             DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
             };
 
-                var hours = new List<string>()
+                    var hours = new List<string>()
             {
             "0", "1", "2", "3", "4", "5", "6", "7","8", "9","10", "11","12", "13","14", "15","16", "17",
             "18", "19","20", "21","22", "23"
             };
 
-                foreach (var hour in hours)
-                {
-                    <td>
-                       @hour
-                        </td>
+                    foreach (var hour in hours)
+                    {
+                        if(hour == "23")
+                        {
+                            <th style="height:40px !important;border: 2px solid black;border-top:0;border-left:0">
+                                @hour
+                            </th>
+                        }
+                        else
+                        {
+                            <th style="height:40px !important;border: 2px solid black;border-top:0;border-left:0;border-right:0;">
+                                @hour
+                            </th>
+                        }
+                       
                     }
                 }
 
         </tr>
+            </thead>
+        <tbody>
+
             @{
                 var tutors = new List<Tutor>();
                 tutors = (List<Tutor>)ViewData["Tutors"];
@@ -143,7 +224,16 @@ td {
                 {
 
                     <tr>
-                    <td>@tutor.FirstName <br/> @tutor.LastName</td>
+                        <td style="vertical-align: middle;text-align: center;">
+                            @{
+                                var href = tutor.UserId;
+                            }
+                            <a href="http://localhost:23571/about/details?id=@href">
+                        
+                        <img src="@tutor.PhotoUrl" style="float:left;width:40px;height:40px; border: 1.5px solid #f5f6fa;border-radius:50% !important; margin-right:10px;margin-left:10px" />
+                            </a>
+                        <span style="font-size:16px;line-height: 40px;font-size: 16px;">@tutor.FirstName @tutor.LastName</span>
+                        </td>
                     @{
                             var tutor_schedule = Model.Schedules.Where(m => m.TutorId == tutor.UserId);
                             //var tutor_reschedule = new List<RescheduledLessons>();
@@ -241,7 +331,7 @@ td {
                                                     else
                                                     {
                                                         var username = schedule.UserName.ToString().Split(" ");
-                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;width:150px;;height:50px;border-radius:10px">@username[0].ToString() <br />@username[1].ToString() </label>
+                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;width:150px;height:50px;border-radius:10px">@username[0].ToString() <br />@username[1].ToString() </label>
 
                                                         }
 

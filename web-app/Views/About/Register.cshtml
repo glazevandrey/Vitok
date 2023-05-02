@@ -81,7 +81,7 @@
         var openmodal = "openModal" + modalId;
         var closemodal = "closeModal" + modalId;
         var url = "/about/details?id=" + item.UserId;
-       <form method="post" action="@url">
+       <form method="get" action="@url">
             <button>Подробнее</button>
         </form>
         <button onclick="window.location.href='#@openmodal'">Выбрать время</button>

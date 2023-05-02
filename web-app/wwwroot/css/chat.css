@@ -9,7 +9,7 @@
         width: 100px !important;
     }
     .card{
-        margin-left:30px;
+        margin-left:0px;
     }
 }
 @media (min-width: 414px) {
@@ -21,12 +21,45 @@
 
 @media (min-width: 768px) {
     .contacts_card {
-        width: 100px !important;
+        width: 200px !important;
+    }
+    .row{
+        flex-wrap:nowrap;
+        margin-right:10px;
+        margin-left:100px;
     }
 }
 
+@media (min-width: 280px) {
+    .contacts_card {
+        width: 100px !important;
+    }
+
+    .row{
+        flex-wrap: nowrap;
+        margin-right: 10px;
+        margin-left: 100px;
+    }
+    .col-md-8{
+        margin-left:-90px !important;
+    }
+}
 @media (min-width: 1024px) {
     .contacts_card {
         width: 350px !important;
+    }
+    .card{
+        height:80vh;
+        width:140%;
+        margin-left:0px;
+        
+    }
+    .row {
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+    .col-md-8 {
+        margin-left: 60px !important;
     }
 }
