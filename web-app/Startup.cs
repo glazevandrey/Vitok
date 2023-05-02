@@ -42,7 +42,9 @@ namespace web_app
                 options.TextEncoderSettings = new TextEncoderSettings(UnicodeRanges.All);
             });
             //  services.AddSignalR();
+#pragma warning disable CS0618 // "CompatibilityVersion.Version_2_2" является устаревшим: 'This CompatibilityVersion value is obsolete. The recommended alternatives are Version_3_0 or later.'
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+#pragma warning restore CS0618 // "CompatibilityVersion.Version_2_2" является устаревшим: 'This CompatibilityVersion value is obsolete. The recommended alternatives are Version_3_0 or later.'
 
 
         }

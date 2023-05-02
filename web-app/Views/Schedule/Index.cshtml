@@ -39,21 +39,21 @@
 
             if (ViewData["role"].ToString() == "Manager" || ViewData["role"].ToString() == "Tutor")
             {
-                <button style="background-color:turquoise;color:turquoise; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
+                <button style="background-color:turquoise;color:turquoise\nbackground-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
                 <label>-свободное время</label>
                 <br />
             }
 
-            <button style="background-color:lightblue;color:lightblue; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
+            <button style="background-color:lightblue;color:lightblue\nbackground-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
             <label>-в эту дату есть занятие</label>
             <br />
-            <button style="background-color:gray;color:gray; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
+            <button style="background-color:gray;color:gray\nbackground-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
             <label>-занятие перенесено</label>
             <br />
-            <button style="background-color:darkblue;color:darkblue; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
+            <button style="background-color:darkblue;color:darkblue\nbackground-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
             <label>-занятие проведено</label>
             <br />
-            <button style="background-color:darkred;color:darkred; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
+            <button style="background-color:darkred;color:darkred\nbackground-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:20px;border-radius:10px"></button>
             <label>-занятие пропущено</label>
         }
     </div>
@@ -490,7 +490,7 @@
                                 int s_day = -1;
                                 DateTime s_date;
                                 
-                                <td id="@tdbtn" style="; white-space:pre-wrap; height:20px; white-space: normal;word-wrap: break-word;">
+                                <td id="@tdbtn" style="\nwhite-space:pre-wrap\nheight:20px\nwhite-space: normal;word-wrap: break-word;">
                                     @{
                                         var date = new DateTime();
                                         if (@countB == 1)
@@ -530,7 +530,7 @@
                             @{
                                         if (ViewData["role"].ToString() == "Tutor")
                                         {
-                                            <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;height:40px" onclick="clicked('@item','@s_day','@s_date')"></button>
+                                            <button class="@btn" id="@btn" style="background-color:transparent;color:transparent;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;height:40px" onclick="clicked('@item','@s_day','@s_date')"></button>
                                         }
                             }
                                 <div>
@@ -589,7 +589,7 @@
                                                                  </script>
 
                                                                btn = $"btn_{model1.UserId}_{model1.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
-                                                                    <button class="@btn" id="@btn" style="background-color:transparent;color:transparent; background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;height:40px;border-radius:10px">clicked3</button>
+                                                                    <button class="@btn" id="@btn" style="background-color:transparent;color:transparent;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;height:40px;border-radius:10px">clicked3</button>
 
                                                                 <script>
                                                                         document.getElementsByClassName('@btn')[0].style.backgroundColor = "turquoise";
@@ -631,7 +631,7 @@
 
                                                                         @{
 
-                                                                            var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.UserName};";
+                                                                            var textMouse = $"Курс: {model1.Course?.Title}\nЦель: {model1.Course?.Goal?.Title}\nУченик: {model1.UserName}";
 
 
                                                                             if(model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)
@@ -1027,13 +1027,15 @@
                                                                         position: relative;
                                                                         display: inline-block;
                                                                         cursor: pointer;
+                                                                        white-space: pre-wrap;
                                                                         border-bottom: 1px dashed #000;
                                                                         }
                                                                         
                                                                         label[data-title]:hover:before {
                                                                         content: attr(data-title);
                                                                         position: absolute;
-                                                                        width: 140px;
+                                                                            z-index: 9999;
+                                                                        width: 200px;
                                                                         color: #fff;
                                                                         height:auto;
                                                                         word-wrap:break-word;
@@ -1057,7 +1059,7 @@
                                                                     }
                                                             </script>
 
-                                                            var textMouse = $"Курс: {model1.Course?.Title}; Цель: {model1.Course?.Goal?.Title}; Имя и фамилия: {model1.TutorFullName}; ";
+                                                            var textMouse = $"Курс: {model1.Course?.Title}\nЦель: {model1.Course?.Goal?.Title}\nУченик: {model1.TutorFullName}\n";
 
 
                                                             if (model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)

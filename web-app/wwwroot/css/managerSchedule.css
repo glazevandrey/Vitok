@@ -100,4 +100,14 @@
 
 td label{
     width:40px !important;
+    border-radius:10px;
+        
+}
+
+    td label:first-child {
+        height: 64px !important;
+    }
+tbody td {
+    padding: 1px 1px !important;
+    height: 64px !important;
 }

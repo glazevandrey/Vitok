@@ -99,11 +99,15 @@ table {
     th{
         font-size:20px;
         font-weight:normal;
+        font-family: Montserrat, sans-serif !important;
+        font-weight:500;
+        line-height: 24px;
+        font-style: normal;
     }
 td,
 th {
     /*border: none;*/
-    padding: 5px 10px;
+    padding: 0px 10px;
     }
 
 td {
@@ -117,7 +121,7 @@ form{
 
     .tableHeader {
        width:200px;
-       padding-bottom:20px;
+       padding-bottom:10px;
 }
 thead{
  
@@ -149,7 +153,7 @@ thead{
     <div>
         
     </div>
-    <table>
+    <table id="table1">
         <thead >
            <tr class="brd" style="height:20px">
             <th colspan="25" style="padding-top:20px;font-weight:bold !important">
@@ -165,13 +169,13 @@ thead{
             <tr class="brd2">
               <th>
                     <div class="tableHeader">
-                        <form method="get" id="downdate" action="/manageschool/downDateM" style="padding-left:10px;padding-top:20px;padding-bottom:10px;">
+                        <form method="get" id="downdate" action="/manageschool/downDateM" style="padding-left:10px;">
                             <input hidden="hidden" id="date" name="date" value="@Model.Date" />
                             <img onclick="document.getElementById('downdate').submit()" src="/content/images/Vector.svg" style="transform: rotate(-180deg);transform: rotate(-90deg);cursor:  pointer;width:25px" />
                         </form>
-                        <label style="padding-top:10px;padding-bottom:10px;font-size:20pt;padding-left:10px;padding-right:10px">@Model.Date.ToString("dd MMM")</label>
+                        <label style="font-size:20pt;padding-left:10px;padding-right:10px">@Model.Date.ToString("dd MMM")</label>
 
-                        <form method="get" id="update" action="/manageschool/upDateM" style="padding-top:10px;padding-bottom:10px;">
+                        <form method="get" id="update" action="/manageschool/upDateM">
                             <input hidden="hidden" id="date" name="date" value="@Model.Date" />
                             <img onclick="document.getElementById('update').submit()" src="/content/images/Vector.svg" style="cursor: pointer;width:25px;transform: rotate(90deg)" />
                         </form>
@@ -235,13 +239,14 @@ thead{
                             </a>
                         <span style="font-size:16px;line-height: 40px;font-size: 16px;">@tutor.FirstName @tutor.LastName</span>
                         </td>
-                    @{
+                        @{
                             var tutor_schedule = Model.Schedules.Where(m => m.TutorId == tutor.UserId);
                             //var tutor_reschedule = new List<RescheduledLessons>();
-                           // tutor_reschedule = (List<RescheduledLessons>)ViewData["rescheduled"];
+                            // tutor_reschedule = (List<RescheduledLessons>)ViewData["rescheduled"];
                             foreach (var hour in hours)
                             {
-                                <td>
+                                var id = $"{countB}\n{countA}";
+                                <td id="@id">
                                 
                                     @{
                                         var date = DateTime.ParseExact(Model.Date.ToString("dd.MM.yyyy") + " " + hour, "dd.MM.yyyy H", CultureInfo.InvariantCulture);
@@ -281,7 +286,7 @@ thead{
 
                                                 if (schedule.StartDate.Hour == date.Hour)
                                                 {
-                                                    var textMouse = $"Курс: {schedule.Course?.Title}; Цель: {schedule.Course?.Goal?.Title}; Имя и фамилия: {schedule.UserName}; ";
+                                                    var textMouse = $"Курс: {schedule.Course?.Title}\n Цель: {schedule.Course?.Goal?.Title}\n Ученик: {schedule.UserName}\n ";
                                                     textMouse += $"Репетитор: {schedule.TutorFullName}";
                                                     if (schedule.Status == Status.Перенесен || schedule.RescheduledLessons.Count > 0)
                                                     {
@@ -290,7 +295,7 @@ thead{
                                                         {
                                                                 if(date == resc.OldTime)
                                                                 {
-                                                                    textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator}";
+                                                                    textMouse += $"Перенесен на: {resc.NewTime}\nПричина:{resc.Reason}\nИнициатор:{resc.Initiator}";
                                                                         break;
                                                                 }  
                                                         }
@@ -307,17 +312,20 @@ thead{
                                                                 position: relative;
                                                                 display: inline-block;
                                                                 cursor: pointer;
-                                                                border-bottom: 1px dashed #000;
+                                                            white-space: pre-wrap;
+                                                            border-bottom: 1px dashed #000;
                                                             }
 
                                                                 label[data-title]:hover:before {
                                                                     content: attr(data-title);
                                                                     position: absolute;
-                                                                    width: 130px;
+                                                                    width: 200px;
+
                                                                     color: #fff;
                                                                     height: auto;
                                                                     word-wrap: break-word;
                                                                     background: #000;
+                                                                z-index: 9999;
                                                                     padding: 5px;
                                                                     border-radius: 4px;
                                                                     bottom: 25px;
@@ -327,12 +335,11 @@ thead{
 
                                                     if (string.IsNullOrEmpty(schedule.UserName))
                                                     {
-                                                    <label data-title="@textMouse" id="@label" class="@label" style="width:130px;height:30px;background-color:turquoise;border-radius:10px"></label>
+                                                    <label data-title="@textMouse" id="@label" class="@label" style="width:130px;height:40px;background-color:turquoise;border-radius:10px"></label>
                                                     }
                                                     else
                                                     {
-                                                        var username = schedule.UserName.ToString().Split(" ");
-                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;height:30px;border-radius:10px">@username[0].ToString() <br /> </label>
+                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;height:40px;border-radius:10px"> <br /> </label>
 
                                                         }
 
@@ -407,7 +414,7 @@ thead{
 
                                                                                 </script>
 
-                                                                                <label style="background-color:yellow;width:130px" data-title="@text2">(!)</label>
+                                                                                <label style="background-color:yellow" data-title="@text2">(!)</label>
                                                                             }
                                                                         }
                                                                         else
@@ -435,7 +442,7 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow;width:130px" data-title="@text2">(!)</label>
+                                                                            <label style="background-color:yellow" data-title="@text2">(!)</label>
                                                                         }
                                                                     }
                                                                 }
@@ -467,7 +474,7 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow;width:130px" data-title="@text2">(!)</label>
+                                                                            <label style="background-color:yellow;" data-title="@text2">(!)</label>
                                                                         }
                                                                     }
                                                                     else
@@ -496,7 +503,7 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow;width:130px" data-title="@text2">(!)</label>
+                                                                            <label style="background-color:yellow;" data-title="@text2">(!)</label>
 
                                                                         }
 
@@ -557,17 +564,20 @@ thead{
                                 }
                                  
                                 </td>
+
+
+                              
                             }
                             countB++;
                     }
                 
                     </tr>
+
                 }
         }
         </tbody>
 
     </table>
-
 
     <script>
         $.datepicker.setDefaults($.datepicker.regional["ru"]);

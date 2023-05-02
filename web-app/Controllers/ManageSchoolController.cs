@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using web_app.Requests;
 using web_app.Requests.Get;
 using web_app.Services;
@@ -54,22 +55,24 @@ namespace web_app.Controllers
 
             var users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(result2.result.ToString(), Program.settings);
             Dictionary<int, DateTime> keyValuePairs = new Dictionary<int, DateTime>();
-            foreach (var item in users)
+            var sts = users.Where(m => m.Role == "Student");
+
+            foreach (var item in sts)
             {
                 if (item is Student && ((Student)item).StartWaitPayment != DateTime.MinValue)
                 {
-                    keyValuePairs.Add(item.UserId, item.StartWaitPayment);
+                    keyValuePairs.Add(item.UserId, ((Student)item).StartWaitPayment);
                 }
             }
             ViewData["waited"] = keyValuePairs;
 
 
             var dic = new Dictionary<int, bool>();
-            foreach (var item in users)
+            foreach (var item in sts)
             {
                 if (!dic.ContainsKey(item.UserId))
                 {
-                    dic.Add(item.UserId, item.WasFirstPayment);
+                    dic.Add(item.UserId, ((Student)item).WasFirstPayment);
                 }
             }
             ViewData["firstPay"] = dic;
