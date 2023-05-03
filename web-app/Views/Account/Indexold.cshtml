@@ -1,0 +1,191 @@
+﻿@using System.Globalization;
+@using web_server.Models;
+@using web_server.Models.DBModels
+
+@model User
+@{
+    ViewData["role"] = Model.Role;
+    Layout = "_Layout";
+
+
+}
+
+<script>
+    var url = "@web_app.Program.web_server_ip" + "/chatHub" + "?" + "token=" + "@ViewData["userid"]";
+    const connection = new signalR.HubConnectionBuilder()
+        .configureLogging(signalR.LogLevel.Debug)
+        .withUrl(url)
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+    connection.start().then(() => {
+    });
+
+    function submitt(el){
+
+        console.log(el.value);
+        if (el.value.includes('.jpg') || el.value.includes('.JPG') || el.value.includes('.png') || el.value.includes('.PNG') || el.value.includes('.jpeg') || el.value.includes('.JPEG')) {
+            document.getElementById('submitError').hidden = 'hidden';
+
+            document.getElementById('form').submit();
+        }
+        else
+        {
+            document.getElementById('submitError').removeAttribute('hidden');
+        }
+    }
+</script>
+
+<form class="col-xs-12" id="form" method="post" action="@web_app.Program.web_server_ip/api/account/savephoto?id=@Model.UserId" enctype="multipart/form-data">
+    <br/>
+    <label>Фотография</label>
+    <br />
+        <br/>
+    <img width="50" height="50" src="@Model.PhotoUrl"/>
+
+    <br />
+    <label hidden="hidden" id="submitError" style="color:darkred">Доступные форматы файла: jpg, png, jpeg</label>
+    <br />
+    <br />
+    <div class="form-group">
+        <input type="file" onchange="submitt(this)" class="form-control" id="photoId" name="image" />
+    </div>
+  
+</form>
+<br/>
+
+<form method="post" action="/account/saveinfo">
+    <input type="hidden" name="UserId" value="@Model.UserId" />
+    <input type="hidden" name="ActiveToken" value="@Model.ActiveToken" />
+
+    <input type="hidden" name="Role" value="@Model.Role" />
+
+    <label>Имя</label>
+    <input required type="text" id="firstName" name="firstName" class="form-control txtbox" value="@Model.FirstName" />
+    <br />
+    <br />
+
+    <label>Фамилия</label>
+    <input required type="text" id="lastName" name="lastName" class="form-control txtbox" value="@Model.LastName" />
+    <br />
+    <br />
+
+    <input required type="hidden" id="photoUrl" name="photoUrl" value="@Model.PhotoUrl" />
+    <br />
+    <br />
+
+    <label>Дата рождения</label>
+    <input required type="date" id="birthDate" name="birthDate" class="form-control txtbox" id="BirthDate" min="1920-01-01" max="2050-12-31" value="@Model.BirthDate.ToString("yyyy-MM-dd")" />
+    <br />
+    <br />
+
+    <label>Почта</label>
+    <input required type="text" id="email" name="email" class="form-control txtbox" value="@Model.Email" />
+    <br />
+    <br />
+
+    <label>Пароль</label>
+    <input required type="password" id="password" name="password" class="form-control txtbox" value="@Model.Password" />
+    <br />
+    <br />
+
+    <label>Номер телефона</label>
+    <input required type="text" id="phone" name="phone" class="form-control txtbox" value="@Model.Phone" />
+    <br />
+    <br />
+    <input value="@Model.Role" name="role" id="role" hidden="hidden"/>
+    @{
+         var w_days = new List<DayOfWeek>()
+                                {
+                                    DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+                                };
+        if(Model.Role == "Tutor")
+        {
+
+          <label>Курсы:</label>
+          <br/>
+            foreach (var item in ((Tutor)Model).Courses)
+            {
+                <label>@item.Title</label>
+                <br />
+
+            }
+            <br />
+            <br />
+            <label>Свободное время по МСК</label>
+            <br/>
+            <br />
+            <table border="1">
+            @{
+             foreach (var day in w_days)
+                {
+                <tr>
+                <td>
+                <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                </td>
+                            @{
+                                var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
+                                foreach (var time in ordered)
+                                {
+                                if (time.dateTime.DayOfWeek == day)
+                                {
+                                        <td><label> @time.dateTime.ToString("HH:mm") </label></td>
+
+
+
+                                }
+                }
+                }
+                
+              
+                        </tr>
+                    }
+                }
+
+            </table>
+
+
+            <br />
+
+            <label>О себе:</label>
+            <br/>
+
+            var sw = ((Tutor)Model).About;
+            if(sw != null)
+            {
+        <input id="about" name="about" value="@sw.ToString()"/>
+            }
+            else
+            {
+        <input id="about" name="about" value=""/>
+
+            }
+            //@Html.TextAreaFor(m => m.About, new { @class = "form-control rich-textbox" })
+        }
+        else if (Model.Role == "Student")
+        {
+            <label>Пожелания</label>
+
+            var sw = ((Student)Model).Wish; 
+            if(sw != null)
+            {
+                            <input id="wish" name="wish" value="@sw.ToString()" />
+            }
+            else
+            {
+                <input id="wish" name="wish" value="" />
+            }
+
+        }
+    }
+
+    <br/>
+    <br />
+    <input type="submit" value="Сохранить"/>
+</form>
+@{
+    if(ViewData["error"] != null)
+    {
+        <script>alert(@ViewData["error"].ToString())</script>
+    }
+}
+<a href="/account/logout">выйти</a>

@@ -60,7 +60,7 @@ namespace web_app.Controllers
 
         [HttpPost("saveinfo", Name = "saveinfo")]
         public IActionResult SaveInfo([FromForm] int userId,
-    [FromForm] string firstName,
+    [FromForm] string name,
     [FromForm] string lastName,
     [FromForm] string photoUrl,
     [FromForm] DateTime birthDate,
@@ -70,7 +70,7 @@ namespace web_app.Controllers
     [FromForm] string wish, [FromForm] string role, [FromForm] string about
 )
         {
-            if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(lastName))
             {
                 return RedirectToAction("Index", "Account", new { error = "Неудачная попытка сохранить данные" });
             }
@@ -81,7 +81,7 @@ namespace web_app.Controllers
 
             if (role == "Student")
             {
-                student.FirstName = firstName.Trim();
+                student.FirstName = name.Trim();
                 student.LastName = lastName.Trim();
                 student.Role = role;
                 student.About = about;
@@ -96,7 +96,7 @@ namespace web_app.Controllers
             }
             else
             {
-                tutor.FirstName = firstName.Trim();
+                tutor.FirstName = name.Trim();
                 tutor.LastName = lastName.Trim();
                 tutor.Role = role;
                 tutor.About = about;

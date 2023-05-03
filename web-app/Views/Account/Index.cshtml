@@ -9,7 +9,8 @@
 
 
 }
-
+<link rel="stylesheet" href="~/content/profile/Профиль.css" >
+<link rel="stylesheet" href="/css/modal.css">
 <script>
     var url = "@web_app.Program.web_server_ip" + "/chatHub" + "?" + "token=" + "@ViewData["userid"]";
     const connection = new signalR.HubConnectionBuilder()
@@ -20,7 +21,7 @@
     connection.start().then(() => {
     });
 
-    function submitt(el){
+    function submitt(el) {
 
         console.log(el.value);
         if (el.value.includes('.jpg') || el.value.includes('.JPG') || el.value.includes('.png') || el.value.includes('.PNG') || el.value.includes('.jpeg') || el.value.includes('.JPEG')) {
@@ -28,169 +29,198 @@
 
             document.getElementById('form').submit();
         }
-        else
-        {
+        else {
             document.getElementById('submitError').removeAttribute('hidden');
         }
     }
 </script>
 
-<form class="col-xs-12" id="form" method="post" action="@web_app.Program.web_server_ip/api/account/savephoto?id=@Model.UserId" enctype="multipart/form-data">
-    <br/>
-    <label>Фотография</label>
-    <br />
-        <br/>
-    <img width="50" height="50" src="@Model.PhotoUrl"/>
-
-    <br />
-    <label hidden="hidden" id="submitError" style="color:darkred">Доступные форматы файла: jpg, png, jpeg</label>
-    <br />
-    <br />
-    <div class="form-group">
-        <input type="file" onchange="submitt(this)" class="form-control" id="photoId" name="image" />
-    </div>
-  
-</form>
-<br/>
 <script>
     $(document).ready(function () {
         var birthDate = '@Model.BirthDate.ToString("yyyy-MM-dd")';
-        $('#BirthDate').val(birthDate);
+        $('#text-1ae8').val(birthDate);
     });
 </script>
-<form method="post" action="/account/saveinfo">
-    <input type="hidden" name="UserId" value="@Model.UserId" />
-    <input type="hidden" name="ActiveToken" value="@Model.ActiveToken" />
+<html style="font-size: 16px;" lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
 
-    <input type="hidden" name="Role" value="@Model.Role" />
+    <title>Профиль</title>
+ 
+    <script class="u-script" type="text/javascript" src="jquery.js" defer=""></script>
+    <script class="u-script" type="text/javascript" src="nicepage.js" defer=""></script>
+  @*
+    <link id="u-page-google-font" rel="stylesheet" href="~/css/fonts/Montserrat.css">
+    <link id="u-theme-google-font" rel="stylesheet" href="~/css/fonts/Roboto.css">*@
+</head>
+<body class="u-xl-mode" data-lang="ru">
+    <section class="u-clearfix u-section-1" id="sec-f8be">
+        <div class="u-clearfix u-sheet u-sheet-1" style="padding-left:10%">
+            <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-1">Редактирование профиля</p>
+            <div class="u-form u-form-1">
+                <form id="form1" action="/account/saveinfo" method="post" class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form" source="email" name="form-1" style="padding: 10px;">
+                    <input type="hidden" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" name="ActiveToken" value="@Model.ActiveToken" />
 
-    <label>Имя</label>
-    <input required type="text" id="firstName" name="firstName" class="form-control txtbox" value="@Model.FirstName" />
-    <br />
-    <br />
+                    <input type="hidden" name="Role" value="@Model.Role" />
+                    <div class="u-form-group u-form-name u-label-left">
+                        <label for="name-266d" class="u-label u-spacing-72 u-label-1">Имя</label>
+                        <input type="text" id="name-266d" name="name" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-1" value="@Model.FirstName">
+                    </div>
+                    <div class="u-form-group u-label-left u-form-group-2">
+                        <label for="text-565e" class="u-label u-spacing-72 u-label-2">Фамилия</label>
+                        <input type="text" placeholder="" id="text-565e" name="lastname" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-2" value="@Model.LastName">
+                    </div>
+                    <div class="u-form-group u-label-left u-form-group-3">
+                        <label for="text-9ace" class="u-label u-spacing-72 u-label-3">Отчество</label>
+                        <input type="text" placeholder="" id="text-9ace" name="middlename" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-3" value="@Model.MiddleName">
+                    </div>
+                    <div class="u-form-group u-label-left u-form-group-4">
+                        <label for="text-1ae8" class="u-label u-spacing-72 u-label-4">Дата рождения</label>
+                        <input type="date" placeholder="" id="text-1ae8"   name="dob" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-4" value="@Model.BirthDate">
+                    </div>
+                    <div class="u-form-group u-label-left">
+                        <label for="email-266d" class="u-label u-spacing-72 u-label-5">Пароль</label>
+                        <input type="text" id="email-266d" name="password" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-5" value="@Model.Password">
+                    </div>
+                    <div class="u-form-group u-label-left u-form-group-6">
+                        <label for="text-5d98" class="u-label u-spacing-72 u-label-6">Номер телефона</label>
+                        <input type="text" id="text-5d98" name="phone" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-6" value="@Model.Phone">
+                    </div>
+                    <input value="@Model.Role" name="role" id="role" hidden="hidden" />
 
-    <label>Фамилия</label>
-    <input required type="text" id="lastName" name="lastName" class="form-control txtbox" value="@Model.LastName" />
-    <br />
-    <br />
+                    @{
+                        if(Model.Role == "Tutor")
+                        {
+                            <div class="u-form-group u-label-left u-form-group-7">
+                                <label for="text-d8c0" class="u-label u-spacing-72 u-label-7">О себе</label>
 
-    <input required type="hidden" id="photoUrl" name="photoUrl" value="@Model.PhotoUrl" />
-    <br />
-    <br />
+                                @{
+                                    var sw = ((Tutor)Model).About;
+                                    if (sw != null)
+                                    {
+                                        <input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-7" value="@sw">
+                                    }
+                                    else
+                                    {
+                                        <input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-7" value="">
 
-    <label>Дата рождения</label>
-    <input required type="date" id="birthDate" name="birthDate" class="form-control txtbox" id="BirthDate" min="1920-01-01" max="2050-12-31" value="@Model.BirthDate.ToString("yyyy-MM-dd")" />
-    <br />
-    <br />
+                                    }
+                                }
 
-    <label>Почта</label>
-    <input required type="text" id="email" name="email" class="form-control txtbox" value="@Model.Email" />
-    <br />
-    <br />
+                            </div>
 
-    <label>Пароль</label>
-    <input required type="password" id="password" name="password" class="form-control txtbox" value="@Model.Password" />
-    <br />
-    <br />
 
-    <label>Номер телефона</label>
-    <input required type="text" id="phone" name="phone" class="form-control txtbox" value="@Model.Phone" />
-    <br />
-    <br />
-    <input value="@Model.Role" name="role" id="role" hidden="hidden"/>
-    @{
-         var w_days = new List<DayOfWeek>()
+                            var w_days = new List<DayOfWeek>()
                                 {
-                                    DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+                                DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
                                 };
-        if(Model.Role == "Tutor")
-        {
 
-          <label>Курсы:</label>
-          <br/>
-            foreach (var item in ((Tutor)Model).Courses)
-            {
-                <label>@item.Title</label>
-                <br />
-
-            }
-            <br />
-            <br />
-            <label>Свободное время по МСК</label>
-            <br/>
-            <br />
-            <table border="1">
-            @{
-             foreach (var day in w_days)
-                {
-                <tr>
-                <td>
-                <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
-                </td>
-                            @{
-                                var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
-                                foreach (var time in ordered)
-                                {
-                                if (time.dateTime.DayOfWeek == day)
-                                {
-                                        <td><label> @time.dateTime.ToString("HH:mm") </label></td>
-
-
+                            <div class="u-form-group u-label-left u-form-group-6">
+                                <label for="text-5d98" class="u-label u-spacing-72 u-label-6">Курсы</label>
+                                @{
+                                    int x = 0;
+                                    foreach (var item in ((Tutor)Model).Courses)
+                                    {
+                                        if(x == 0)
+                                        {
+                                            <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10  u-input-7" style="background-color:#FAFAFA">@item.Title</label>
+                                        }
+                                    x++;
+                                    }
 
                                 }
-                }
-                }
-                
-              
-                        </tr>
+                            </div>
+
+
+                            if (((Tutor)Model).Courses.Count > 1)
+                            {
+                                var ff = ((Tutor)Model).Courses.Skip(1);
+                                foreach (var item in ff)
+                                {
+                                       <div class="u-form-group u-label-left u-form-group-6">
+                                <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
+                                        <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" style="background-color:#FAFAFA">@item.Title</label>
+                                    </div>
+                                }
+                            }
+
+                            <br />
+                            <br />
+                            <br />
+                            //<label>Свободное время по МСК</label>
+                            //<br />
+                            //<br />
+                            //<table border="1">
+                            //    @{
+                            //        foreach (var day in w_days)
+                            //        {
+                            //            <tr>
+                            //                <td>
+                            //                    <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                            //                </td>
+                            //                @{
+                            //                    var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
+                            //                    foreach (var time in ordered)
+                            //                    {
+                            //                        if (time.dateTime.DayOfWeek == day)
+                            //                        {
+                            //                            <td><label> @time.dateTime.ToString("HH:mm") </label></td>
+
+
+
+                            //                        }
+                            //                    }
+                            //                }
+
+
+                            //            </tr>
+                            //        }
+                            //    }
+
+                            //</table>
+
+                        }
+                        else if (Model.Role == "Student")
+                        {
+                             <div class="u-form-group u-label-left u-form-group-8">
+                                <label for="text-100d" class="u-label u-spacing-72 u-label-8">Пожелания</label>
+                            @{
+                                    var sw = ((Student)Model).Wish;
+                                    if (sw != null)
+                                    {
+                                        <input type="text" placeholder="" id="text-100d" name="wish" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-8" value="@sw">
+
+                                    }
+                                    else
+                                    {
+                                        <input type="text" placeholder="" id="text-100d" name="wish" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-8" value="">
+
+                                    }
+                            }
+                          
+                            </div>
+                           
+                        }
+                        
                     }
-                }
+                
+                 
+                    <div class="u-form-group u-form-submit u-label-left">
+                        <label class="u-label u-spacing-72 u-label-9"></label>
+                        <div class="u-align-left u-btn-submit-container">
+                            <a href="#" onclick="document.getElementById('form1').submit();" class="u-btn u-btn-round u-btn-submit u-button-style u-custom-color-2 u-radius-10 u-btn-1">Сохранить</a>
+                        </div>
+                        <input type="submit" value="submit" class="u-form-control-hidden">
+                    </div>
+                   
+                </form>
+            </div>
+        </div>
+    </section>
 
-            </table>
 
 
-            <br />
-
-            <label>О себе:</label>
-            <br/>
-
-            var sw = ((Tutor)Model).About;
-            if(sw != null)
-            {
-        <input id="about" name="about" value="@sw.ToString()"/>
-            }
-            else
-            {
-        <input id="about" name="about" value=""/>
-
-            }
-            //@Html.TextAreaFor(m => m.About, new { @class = "form-control rich-textbox" })
-        }
-        else if (Model.Role == "Student")
-        {
-            <label>Пожелания</label>
-
-            var sw = ((Student)Model).Wish; 
-            if(sw != null)
-            {
-                            <input id="wish" name="wish" value="@sw.ToString()" />
-            }
-            else
-            {
-                <input id="wish" name="wish" value="" />
-            }
-
-        }
-    }
-
-    <br/>
-    <br />
-    <input type="submit" value="Сохранить"/>
-</form>
-@{
-    if(ViewData["error"] != null)
-    {
-        <script>alert(@ViewData["error"].ToString())</script>
-    }
-}
-<a href="/account/logout">выйти</a>
+</body>
+</html>

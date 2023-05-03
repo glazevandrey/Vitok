@@ -25,6 +25,7 @@
     }
     .messagerName {
         padding-left:20px;
+        padding-top:10px;
         font-weight:bold;
     }
     .contacts_body {
@@ -37,7 +38,7 @@
     }
 
     .card-header {
-        border-bottom: 0 !important;
+        border-bottom: 1px solid #DBDBDB !important;
         background-color: #FAFAFA !important;
     }
 
@@ -115,8 +116,8 @@
     }
 
     .user_img {
-        height: 60px;
-        width: 60px;
+        height: 50px;
+        width: 50px;
         border: 1.5px solid #f5f6fa;
             margin-top: 2px;
             border-radius:50% !important;
@@ -131,13 +132,14 @@
 
     .img_cont {
         position: relative;
-        height: 70px;
-        width: 70px;
+        height: 50px;
+        width: 50px;
     }
 
     .img_cont_msg {
         height: 40px;
         width: 40px;
+        padding-top:10px;
           margin-bottom: 10px;
 
     }
@@ -335,7 +337,7 @@
                 <div class="card-header">
 
                     <div class="input-group">
-                        <input type="text" placeholder="Поиск..." id="searchInput" class="form-control search">
+                        <input type="text" style="height:60px;" placeholder="Поиск..." id="searchInput" class="form-control search">
                     </div>
                 </div>
                 <div class="card-body contacts_body">
@@ -349,7 +351,7 @@
         <div class="col-md-8 col-xl-6 chat" style="margin-left:60px; position:static !important">
             <div class="card">
                 <div class="card-header msg_head">
-                    <div class="d-flex bd-highlight">
+                    <div class="d-flex bd-highlight" style="padding-bottom: 5px;padding-top: 5px;" >
                         <div class="user_info">
                             <span><span style="padding-right:200px;font-size:32px !important" id="chat-with-name"></span></span>
                             <span hidden="hidden"><span id="chat-with-id"></span></span>
@@ -510,7 +512,7 @@
     });
     connection.on("UserList", (connectionId, userId, photo) => {
         $('#onlineUsersList').append('<li style="border-radius:10px" class="active" onclick="receiverId(' + "'" + connectionId + "', '" + userId + "'" + ')">' +
-            '<div class="d-flex bd-highlight">' +
+            '<div class="d-flex bd-highlight" style="height:70px">' +
             '<div class="img_cont">' +
             '<a href=""><img src='+photo+' class="rounded-circle user_img"></a>' +
             '</div>' +
