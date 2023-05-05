@@ -1,0 +1,274 @@
+﻿<style>
+
+    li{
+        font-size:20px;
+        margin: 15px 0; /*расстояние между пунктами по высоте*/
+    }
+    a{
+        color:black;
+        text-decoration: none !important;
+    }
+    ul{
+        list-style-type: none;
+    }
+</style>
+<ul class="list-group2">
+
+    @{
+        if (ViewData["role"].ToString() == "Manager")
+        {
+
+            <li class="nav-item2">
+
+                <a class="nav-link2 text-dark" href="/manageschool">                
+                <img src="~/content/images/manageSchool.svg" id="manage-image" style="width:20px;height:20px" />
+<span>Управление школой</span></a>
+            </li>
+            <li class="nav-item2">
+
+                <a class="nav-link2 text-dark" href="/chat">                
+                <img src="~/content/images/chat.svg" id="chat-image" style="width:20px;height:20px" />
+<span>Чаты</span></a>
+            </li>
+            <li class="nav-item2">
+
+                <a class="nav-link2 text-dark" href="/courses">                
+                <img src="~/content/images/task-square.svg" id="courses-image" style="width:20px;height:20px" />
+<span>Курсы</span></a>
+            </li>
+            <li class="nav-item2">
+
+                <a class="nav-link2 text-dark" href="/tutors">                
+                <img src="~/content/images/users.svg" id="tutors-image" style="width:20px;height:20px" />
+<span>Репетиторы</span></a>
+            </li>
+             <li class="nav-item2">
+
+                <a class="nav-link2 text-dark" href="/students">
+                    <img src="~/content/images/local_library.svg" id="students-image" style="width:20px;height:20px" />
+<span>Ученики</span></a>
+            </li>
+            <li class="nav-item2">
+
+                <a  class="nav-link2 text-dark" href="/balance">
+                    <img  src="~/content/images/coins.svg" id="coins-image" style="width:20px;height:20px" />
+                    <span>Баланс</span>
+                </a>
+            </li>
+        }
+    }
+    
+</ul>
+
+<script>
+
+    $(document).ready(function () {
+        // Получаем картинку из localStorage, если она там есть
+
+        var old = localStorage.getItem('last-page-url');
+        var _new = window.location.href;
+        var currentImage = '';
+        var text22 = '';
+        if (!old) {
+            old = _new;
+        }
+
+        if (old != _new) {
+
+
+            if (_new.includes('balance')) {
+                currentImage = localStorage.getItem('menu-image');
+
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                } else {
+                    currentImage = ('/content/images/coins-blue.svg');
+                }
+                localStorage.setItem('menu-image', currentImage);
+                text22 = 'menu-image';
+
+            } else if (_new.includes('manageschool')) {
+                currentImage = localStorage.getItem('manage-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                } else {
+                    currentImage = ('/content/images/manageSchool-blue.svg');
+                }
+                localStorage.setItem('manage-image', currentImage);
+                text22 = 'manage-image';
+
+
+            } 
+            else if (_new.includes('courses')) {
+                currentImage = localStorage.getItem('courses-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                } else {
+                    currentImage = ('/content/images/task-square-blue.svg');
+                }
+                localStorage.setItem('courses-image', currentImage);
+                text22 = 'courses-image';
+
+
+            } else if (_new.includes('students')) {
+                currentImage = localStorage.getItem('students-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                } else {
+                    currentImage = ('/content/images/local_library-blue.svg');
+                }
+                text22 = 'students-image';
+                localStorage.setItem('students-image', currentImage);
+
+            }
+            else if (_new.includes('tutors')) {
+                currentImage = localStorage.getItem('tutors-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                } else {
+                    currentImage = ('/content/images/users-blue.svg');
+                }
+                text22 = 'tutors-image';
+                localStorage.setItem('tutors-image', currentImage);
+
+            } else if (_new.includes('chat')) {
+                currentImage = localStorage.getItem('chat-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                } else {
+                    currentImage = ('/content/images/chat-blue.svg');
+                }
+                text22 = 'chat-image';
+                localStorage.setItem('chat-image', currentImage);
+
+            }
+        }
+        else {
+
+            if (_new.includes('balance')) {
+                text22 = 'menu-image';
+               
+
+            } else if (_new.includes('manageschool')) {
+
+                text22 = 'manage-image';
+
+
+            } else if (_new.includes('courses')) {
+
+                text22 = 'courses-image';
+
+
+            } else if (_new.includes('students')) {
+
+                text22 = 'students-image';
+
+            }
+            else if (_new.includes('tutors')) {
+
+                text22 = 'tutors-image';
+
+            }else if (_new.includes('chat')) {
+
+                text22 = 'chat-image';
+
+            }
+
+            if (!currentImage.includes('blue')) {
+                var __new = currentImage.replace('.svg', '-blue.svg');
+                localStorage.setItem(text22, __new);
+
+            }
+        }
+
+        
+
+        var currentImage = localStorage.getItem(text22);
+        if (!currentImage) {
+
+            if (_new.includes('balance')) {
+                localStorage.setItem(text22, '/content/images/coins-blue.svg');
+
+            } else if (_new.includes('manageschool')) {
+
+                localStorage.setItem(text22, '/content/images/manageSchool-blue.svg');
+
+            } else if (_new.includes('courses')) {
+
+                localStorage.setItem(text22, '/content/images/task-square-blue.svg');
+
+
+            } else if (_new.includes('students')) {
+
+                localStorage.setItem(text22, '/content/images/local_library-blue.svg');
+
+            }
+            else if (_new.includes('tutors')) {
+
+                localStorage.setItem(text22, '/content/images/users-blue.svg');
+
+            }else if (_new.includes('chat')) {
+
+                localStorage.setItem(text22, '/content/images/chat-blue.svg');
+
+            }
+        }
+        currentImage = localStorage.getItem(text22);
+        console.log(currentImage);
+
+        if (currentImage) {
+            if (_new.includes('balance')) {
+                $('#coins-image').attr('src', currentImage);
+            } else if (_new.includes('manageschool')) {
+                $('#manage-image').attr('src', currentImage);
+            } else if (_new.includes('courses')) {
+                $('#courses-image').attr('src', currentImage);
+            } else if (_new.includes('students')) {
+                $('#students-image').attr('src', currentImage);
+            } else if (_new.includes('tutors')) {
+                $('#tutors-image').attr('src', currentImage);
+            } else if (_new.includes('chat')) {
+                $('#chat-image').attr('src', currentImage);
+            }
+            console.log(currentImage);
+
+        }
+
+    });
+
+    $(window).on('beforeunload', function () {
+        localStorage.setItem('last-page-url', window.location.href);
+        var _new = window.location.href;
+
+        if (_new.includes('balance')) {
+            localStorage.setItem('menu-image', '/content/images/coins.svg');
+
+        } else if (_new.includes('manageschool')) {
+
+            localStorage.setItem('manage-image', '/content/images/manageSchool.svg');
+
+
+        } else if (_new.includes('courses')) {
+
+            localStorage.setItem('courses-image', '/content/images/task-square.svg');
+
+
+        } else if (_new.includes('students')) {
+
+            localStorage.setItem('students-image', '/content/images/local_library.svg');
+
+        } else if (_new.includes('tutors')) {
+
+            localStorage.setItem('tutors-image', '/content/images/users.svg');
+
+        } else if (_new.includes('chat')) {
+
+            localStorage.setItem('chat-image', '/content/images/chat.svg');
+
+        }
+
+
+    });
+
+   
+</script>

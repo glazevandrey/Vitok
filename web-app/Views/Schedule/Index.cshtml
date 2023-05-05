@@ -5,12 +5,11 @@
 @{
     Layout = "_Layout";
 }
-@*<link rel="stylesheet" href="/code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-*@
+
 <link rel="stylesheet" href="~/css/schedule.css">
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="~/css/jquery-ui.css">
+<script src="~/js/jquery/jquery-ui.js"></script>
+
 <script src="~/js/datepicker_ru.js"></script>
 <script>
     function setDate(el) {
@@ -1123,41 +1122,49 @@
 
                                                                 var label = $"label_{model1.UserId}_{model1.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
 
-                                                                <style>
-                                                                    label[data-title] {
-                                                                    position: relative;
-                                                                    display: inline-block;
-                                                                    cursor: pointer;
-                                                                    }
+                                                                   <style>
+                                                                        label[data-title] {
+                                                                        position: relative;
+                                                                        display: inline-block;
+                                                                        cursor: pointer;
+                                                                        white-space: pre-wrap;
+                                                                        }
+                                                                        
+                                                                        label[data-title]:hover:before {
+                                                                        content: attr(data-title);
+                                                                        position: absolute;
+                                                                            z-index: 9999;
+                                                                        width: 200px;
+                                                                        color: #000;
+                                                                        height:auto;
+                                                                        word-wrap:break-word;
+                                                                            background: #E2D7C0;
+                                                                        padding: 5px;
+                                                                        border-radius: 4px;
+                                                                        bottom: 25px;
+                                                                        left: 40px;
+                                                                        }
+                                                                    </style>
 
-                                                                    label[data-title]:hover:before {
-                                                                    content: attr(data-title);
-                                                                    position: absolute;
-                                                                    width: 140px;
-                                                                    color: #fff;
-                                                                    height:auto;
-                                                                    word-wrap:break-word;
-                                                                    background: #000;
-                                                                    padding: 5px;
-                                                                    border-radius: 4px;
-                                                                    bottom: 25px;
-                                                                    left: 40px;
-                                                                    }
-                                                                </style>
 
+                                                            var text = model1.TutorFullName;
+                                                            string[] split  = model1.TutorFullName.Split(" ");
+                                                            ;
 
-                                                                var text = model1.TutorFullName;
+                                                            if (text.Length > 17)
+                                                            {
+                                                                <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@split[0].ToString()</label>
+                                                            }
+                                                            else{
 
-                                                                if (text.Length > 17)
-                                                                {
-                                                                    text = model1.TutorFullName.Split(" ")[0];
-                                                                }
-                                                            <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@text.ToString()</label>
+                                                            <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@split[0].ToString() <br/> @split[1].ToString()</label>
+
+                                                            }
 
                                                                 if (!model1.Looped)
                                                                 {
                                                                     var text4 = "Разовое занятие";
-                                                                <img src="/content/images/circle.svg" style="height:10px;width:10px" />
+                                                                <img class="circle" src="/content/images/circle.svg" style="height:10px;width:10px" />
                                                                     //<label style="background-color:orange;border-radius:10px;" data-title="@text4">(*)</label>
 
                                                                 }

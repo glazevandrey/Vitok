@@ -1,0 +1,260 @@
+﻿<style>
+
+    li{
+        font-size:20px;
+        margin: 15px 0; /*расстояние между пунктами по высоте*/
+    }
+    a{
+        color:black;
+        text-decoration: none !important;
+    }
+    ul{
+        list-style-type: none;
+    }
+</style>
+<ul class="list-group2">
+
+    @{
+        if(ViewData["role"].ToString() == "Student")
+        {
+             <li class="nav-item22">
+            <a class="nav-link22 text-dark">Осталось занятий: @ViewData["lessons"]</a>
+             </li>
+            <li class="nav-item22">
+                <a class="nav-link22 text-dark" href="/schedule">
+                    <img id="schedule-image" src="~/content/images/schedule.svg" style="width:20px;height:20px" />
+<span>Расписание</span>
+</a>
+            </li>
+            <li class="nav-item22">
+
+                @{
+                    if(ViewData["firstLogin"] != null && (bool)ViewData["firstLogin"] == true)
+                    {
+                        <a class="nav-link22 text-dark" href="/chat">                
+                        <img id="chat-image" src="~/content/images/chat.svg" style="width:20px;height:20px" />
+<span>Чаты</span></a><label style="color:darkred">(+1)</label>
+                    }else{
+                        <a class="nav-link22 text-dark" href="/chat">
+                            <img id="chat-image" src="~/content/images/chat.svg" style="width:20px;height:20px" />
+                            <span>Чаты</span>
+                        </a>
+                    }
+                
+            }
+            </li>
+            <li class="nav-item22">
+
+                <a class="nav-link22 text-dark" href="/contacts">
+                    <img id="contacts-image" src="~/content/images/users.svg" style="width:20px;height:20px" />
+<span>Репетиторы</span></a>
+            </li>
+            <li class="nav-item22">
+
+                <a class="nav-link22 text-dark change-image" href="/balance">
+                    <img src="~/content/images/coins.svg" id="coins-image" style="width:20px;height:20px" />
+                    <span>Баланс</span>
+                </a>
+            </li>
+            <li class="nav-item22">
+
+                <a class="nav-link22 text-dark" href="/tariff">
+                    <img id="tariff-image" src="~/content/images/feed.svg" style="width:20px;height:20px" />
+<span>Тарифы</span></a>
+            </li>
+        }
+    }
+    
+</ul>
+
+<script>
+
+    $(document).ready(function () {
+        // Получаем картинку из localStorage, если она там есть
+        
+        var old = localStorage.getItem('last-page-url');
+        var _new = window.location.href;
+        var currentImage = '';
+        var text22 = '';
+        if(!old){
+            old = _new;
+        }
+       
+        if (old != _new)
+        {
+           
+          
+            if(_new.includes('balance')) {
+                currentImage = localStorage.getItem('menu-image');
+                
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                }else{
+                    currentImage = ('/content/images/coins-blue.svg');
+                }
+                localStorage.setItem('menu-image', currentImage);
+                text22 = 'menu-image';
+
+            }else if(_new.includes('schedule')) {
+                currentImage = localStorage.getItem('schedule-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                }else{
+                    currentImage = ('/content/images/schedule-blue.svg');
+                }
+                localStorage.setItem('schedule-image', currentImage);
+                text22 = 'schedule-image';
+
+
+            }else if(_new.includes('tariff')) {
+                currentImage = localStorage.getItem('tariff-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+
+                }else{
+                    currentImage = ('/content/images/feed-blue.svg');
+                }
+                text22 = 'tariff-image';
+
+                localStorage.setItem('tariff-image', currentImage);
+
+            }else if(_new.includes('contact')) {
+                currentImage = localStorage.getItem('users-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                }else{
+                    currentImage = ('/content/images/users-blue.svg');
+                }
+                text22 = 'users-image';
+                localStorage.setItem('users-image', currentImage);
+
+            }else if(_new.includes('chat')) {
+                currentImage = localStorage.getItem('chat-image');
+                if (currentImage.includes('blue')) {
+                    currentImage = currentImage.replace('-blue', '');
+                } else {
+                    currentImage = ('/content/images/chat-blue.svg');
+                }
+                text22 = 'chat-image';
+                localStorage.setItem('chat-image', currentImage);
+
+            }
+        }
+        else
+        {
+
+            if (_new.includes('balance')) {
+                text22 = 'menu-image';
+
+            } else if (_new.includes('schedule')) {
+             
+                text22 = 'schedule-image';
+
+
+            } else if (_new.includes('tariff')) {
+    
+                text22 = 'tariff-image';
+
+
+            } else if (_new.includes('contact')) {
+               
+                text22 = 'users-image';
+
+            } else if (_new.includes('chat')) {
+               
+                text22 = 'chat-image';
+
+            }
+
+
+            if (!currentImage.includes('blue')) {
+                var __new = currentImage.replace('.svg', '-blue.svg');
+                localStorage.setItem(text22, __new);
+
+            }
+        }
+
+  
+        console.log(text22);
+        var currentImage = localStorage.getItem(text22);
+        if(!currentImage){
+
+            if (_new.includes('balance')) {
+                localStorage.setItem(text22, '/content/images/coins-blue.svg');
+
+            } else if (_new.includes('schedule')) {
+             
+                localStorage.setItem(text22, '/content/images/schedule-blue.svg');
+
+
+            } else if (_new.includes('tariff')) {
+    
+                localStorage.setItem(text22, '/content/images/feed-blue.svg');
+
+
+            } else if (_new.includes('contact')) {
+               
+                localStorage.setItem(text22, '/content/images/users-blue.svg');
+
+            } else if (_new.includes('chat')) {
+               
+                localStorage.setItem(text22, '/content/images/chat-blue.svg');
+
+            }
+        }
+        currentImage = localStorage.getItem(text22);
+        console.log(currentImage);
+
+        if (currentImage) {
+             if(_new.includes('balance')) {
+            $('#coins-image').attr('src', currentImage);
+            }else if(_new.includes('schedule')) {
+                $('#schedule-image').attr('src', currentImage);
+            } else if (_new.includes('tariff')) {
+                $('#tariffs-image').attr('src', currentImage);
+            } else if (_new.includes('contact')) {
+                $('#contacts-image').attr('src', currentImage);
+            } else if (_new.includes('chat')) {
+                $('#chat-image').attr('src', currentImage);
+            }
+            console.log(currentImage);
+
+        }
+
+    });
+
+        $(window).on('beforeunload', function () {
+            localStorage.setItem('last-page-url', window.location.href);
+            var _new = window.location.href;
+
+        if (_new.includes('balance')) {
+            localStorage.setItem('menu-image', '/content/images/coins.svg');
+
+        } else if (_new.includes('schedule')) {
+
+            localStorage.setItem('schedule-image', '/content/images/schedule.svg');
+
+
+        } else if (_new.includes('tariff')) {
+
+            localStorage.setItem('tariff-image', '/content/images/feed.svg');
+
+
+        } else if (_new.includes('contact')) {
+
+            localStorage.setItem('users-image', '/content/images/users.svg');
+
+        } else if (_new.includes('chat')) {
+
+            localStorage.setItem('chat-image', '/content/images/chat.svg');
+
+        }
+
+
+        });
+
+        // Обрабатываем клики на ссылки с классом "change-image"
+        $('.change-image').on('click', function () {
+            
+        });
+</script>

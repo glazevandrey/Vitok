@@ -208,7 +208,24 @@
                     </h3>
                  
                 </div>
-                Html.RenderPartial("~/Views/Shared/_LeftMenu.cshtml");
+
+                
+                if(ViewData["role"].ToString() == "Student")
+                {
+                Html.RenderPartial("~/Views/Shared/_LeftMenuStudent.cshtml");
+
+                }
+                else if (ViewData["role"].ToString() == "Tutor")
+                {
+                    Html.RenderPartial("~/Views/Shared/_LeftMenuTutor.cshtml");
+
+                }
+                else if (ViewData["role"].ToString() == "Manager")
+                {
+                    Html.RenderPartial("~/Views/Shared/_LeftMenuManager.cshtml");
+
+                }
+                
             }
 
             </div>

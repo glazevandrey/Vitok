@@ -9,7 +9,7 @@
 @{
 
     <link rel="stylesheet" type="text/css" href="~/css/modal.css">
-
+    
     <script>
 
     function trial(){
@@ -60,7 +60,45 @@
         window.location.href = '#';
     }
     </script>
+    <style>
+        input#balance_input[disabled] {
+            background-color:white;
+        }
 
+        .hist{
+            font-size:20px;
+        }
+
+
+        @@media (min-width: 1536px) {
+            #text-d8c022 {
+                width: 200px !important;
+            }
+
+            #text-d8c0 {
+                width: 400px !important;
+            }
+        }
+        
+
+       
+
+        @@media (min-width: 1920px) {
+            #text-d8c022 {
+                width: 300px !important;
+            }
+
+            #text-d8c0 {
+                width: 600px !important;
+            }
+        }
+
+    </style>
+
+    <div>
+    
+    
+    </div>
     <div id="withdrawModal" class="modal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -92,121 +130,123 @@
             </div>
         </div>
     </div>
+    <div style="margin-left:250px">
+    @{
+            if (Model.Role == "Tutor" || Model.Role == "Manager")
+            {
+                <div id="balance">
+                    <label  type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-block;margin-left:40px;width:400px;font-size:20px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:20px"><span style="font-weight:700">Баланс</span>: <input value=0 id="balance_input" style="border:none" disabled="disabled" /><img style="width:40px;height:40px;float:right;padding-bottom:5px" src="~/content/images/goldCoins.svg"></label>
 
+                    <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" id="text-d8c022" style="margin-left:50px;height:60px;display:inline-block;margin-right: 50px;color:black !important;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);" onclick="window.location.href='#withdrawModal'">
+                        Вывод средств
+                    </button>
+                </div>
+            }
+            else
+            {
+                var stud = (Student)Model;
 
-    if (Model.Role == "Tutor" || Model.Role == "Manager")
-    {
-        <div id="balance">
-            
-
-            <label>Ваш баланс: </label>
-            <input disabled="disabled" id="balance_input" value="@Model.Balance" />
-            <br/>
-            <br/>
-            <a href="#withdrawModal">Вывод средств</a>
-        </div>
-    }
-    else
-    {
-        var stud = (Student)Model;
-
-        if (stud.Credit.Where(m => m.Repaid == false).ToList().Count > 0)
-        {
-            var cred = stud.Credit.Where(m => m.Repaid == false).ToList().Count;
-                    <br/>
+                if (stud.Credit.Where(m => m.Repaid == false).ToList().Count > 0)
+                {
+                    var cred = stud.Credit.Where(m => m.Repaid == false).ToList().Count;
+                    <br />
                     <label style="color:darkred">ВНИМАНИЕ! У вас имеется задолжность за: @cred занятие(й).</label>
 
                     <br />
 
-            <br />
-        }
-
-                                                                   <div id="count">
-                                                                       <label>Осталось: </label>
-            <input disabled="disabled" id="balance_input" value="@stud.LessonsCount занятий" />
-        </div>
-
-        <br/>
-        <br />
-        <div id="purchase">
-
-         
-            <form method="post" action="/balance/setLessons">
-                <input hidden="hidden" name="userId" id="userId" value="@stud.UserId" />
-                <input hidden="hidden" name="isTrialPay" id="isTrialPay" value="false" />
-
-                <br />
-                <br />
-                                        <label>Добавить пробное занятие стоимостью 250 рублей:</label>
-
-                @{
-
-                    if (stud.UsedTrial == false)
-                    {
-                        <input value="Добавить" onclick="trial()" type="button" />
-                       
-                    }
-                    else
-                    {
-                        <input disabled="disabled" value="Добавить" onclick="trial()" type="button" />
-
-                    }
                     <br />
-                    <br />
-
                 }
-                
-              
-                <label>Выберите пакет занятий:</label>
-                <select onchange="selectChanged(this)">
 
-                    @{
-                        <option value="0"></option>
+                <div id="count">
+                    <label>Осталось: </label>
+                    <input disabled="disabled" id="balance_input" value="@stud.LessonsCount занятий" />
+                </div>
 
-                        foreach (Tariff item in (List<Tariff>)ViewData["tariffs"])
-                        {
-                            <option value="@item.LessonsCount;@Math.Abs(item.Amount/item.LessonsCount)">@item.Title</option>
+                <br />
+                <br />
+                <div id="purchase">
+
+
+                    <form method="post" action="/balance/setLessons">
+                        <input hidden="hidden" name="userId" id="userId" value="@stud.UserId" />
+                        <input hidden="hidden" name="isTrialPay" id="isTrialPay" value="false" />
+
+                        <br />
+                        <br />
+                        <label>Добавить пробное занятие стоимостью 250 рублей:</label>
+
+                        @{
+
+                            if (stud.UsedTrial == false)
+                            {
+                                <input value="Добавить" onclick="trial()" type="button" />
+
+                            }
+                            else
+                            {
+                                <input disabled="disabled" value="Добавить" onclick="trial()" type="button" />
+
+                            }
+                            <br />
+                            <br />
+
                         }
-                    }
-
-                </select>
-                <br />
-                <br />
-
-                <label>Или</label>
-                <br />
-                <br />
-
-                <label>Выберите количество занятий (вне пакета)</label>
-                <input id="count2" onchange="changed2(this)" name="count" type="text" value="0" /><button type="button" style="width:50px;" onclick="clicked()">+</button>
-                <input id="count3" hidden="hidden" name="count3" value="0" />
 
 
+                        <label>Выберите пакет занятий:</label>
+                        <select onchange="selectChanged(this)">
+
+                            @{
+                                <option value="0"></option>
+
+                                foreach (Tariff item in (List<Tariff>)ViewData["tariffs"])
+                                {
+                                    <option value="@item.LessonsCount;@Math.Abs(item.Amount/item.LessonsCount)">@item.Title</option>
+                                }
+                            }
+
+                        </select>
+                        <br />
+                        <br />
+
+                        <label>Или</label>
+                        <br />
+                        <br />
+
+                        <label>Выберите количество занятий (вне пакета)</label>
+                        <input id="count2" onchange="changed2(this)" name="count" type="text" value="0" /><button type="button" style="width:50px;" onclick="clicked()">+</button>
+                        <input id="count3" hidden="hidden" name="count3" value="0" />
 
 
-        <br/>
-        <br />
-        <div>
 
-            <label>С вас:</label><input style="width:100px;" id="countView" value="0" /><label> рублей</label>
 
-        </div>
-        <input type="submit" value="Пополнить счет"/>
-        <br />
-        <br />
+                        <br />
+                        <br />
+                        <div>
 
-            </form>
-        </div>
+                            <label>С вас:</label><input style="width:100px;" id="countView" value="0" /><label> рублей</label>
 
+                        </div>
+                        <input type="submit" value="Пополнить счет" />
+                        <br />
+                        <br />
+
+                    </form>
+                </div>
+
+
+            }
 
     }
+    </div>
+   
 }
 
 <br />
 <br />
-<div id="history">
-    <label align="center">История</label>
-    <br/>
+<div id="history" style="margin-left:250px">
+    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-1 p12" style="margin-left:350px;font-size:26px">История</p>
+    <br />
     @{
 
         var sorted = Model.BalanceHistory.OrderBy(m=>m.Date).Reverse();
@@ -215,16 +255,19 @@
         {
             if(!string.IsNullOrEmpty(item.CustomMessage))
             {
-             <label><b>@item.Date.ToString("dd.MM.yyyy HH:mm")</b></label>   
-             <br/>
-             <label>@item.CustomMessage</label>
-                <br />
-                if(item.CashFlow != null && Model.Role != "Student")
-                {
+                <hr />
+                <div class="hist">
+                    <label><b>@item.Date.ToString("dd.MM.yyyy HH:mm")</b></label>
+                    <br />
+                    <label>@item.CustomMessage</label>
+                    <br />
+                    @{
+                        if(item.CashFlow != null && Model.Role != "Student")
+                    {
                     <label>@item.CashFlow.Amount</label>
-                }
-                <br/>
-                <br/>
+                    }
+                    }
+                </div>
             }
 
         }
