@@ -5,8 +5,7 @@
 @{
     Layout = "_Layout";
 }
-<link rel="stylesheet" type="text/css" href="~/css/modal.css">
-
+<link rel="stylesheet" href="~/content/contacts/Контакты.css">
 
 <script>
 
@@ -23,6 +22,7 @@
         window.location.href = "#closeModal";
     }
 </script>
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
 <div id="openmodal" class="modal">
     <div class="modal-dialog">
@@ -79,105 +79,172 @@
         </div>
     </div>
 </div>
-<div>
+
+
+<!DOCTYPE html>
+<html style="font-size: 16px;" lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
 
     @{
-        var mainDic = new Dictionary<int, Dictionary<string, int>>();
-        Dictionary<string, int> dic = new Dictionary<string, int>();
-        foreach (var item in Model)
+        if(ViewData["role"].ToString() == "Tutor")
         {
-            if (ViewData["role"].ToString() == "Tutor")
-            {
-                if (!mainDic.ContainsKey(item.UserId))
-                {
-                    var users = (List<User>)ViewData["users"];
-                    var user = (Student)users.FirstOrDefault(m=>m.UserId == item.UserId);
-                    Dictionary<string, int> dic2 = new Dictionary<string, int>();
-                    dic2.Add(item.UserName, user.LessonsCount);
-                    if (!mainDic.ContainsKey(item.UserId))
-                    {
-                        mainDic.Add(item.UserId, dic2);
-                    }
-                }
-
-            }
-            else
-            {
-                if (!dic.ContainsKey(item.TutorFullName))
-                {
-                    dic.Add(item.TutorFullName, 1);
-                    mainDic[item.UserId] = dic;
-                }
-            }
-        }
-        <script>
-            function openRemoveStudent(tutor, user){
-                document.getElementById('userIdReject').value = user;
-                document.getElementById('tutorIdReject').value = tutor;
-
-                window.location.hash = '#openremovemodal';
-            }
-            function closeRemoveModalWindow() {
-                window.location.hash = '#closeModal';
-            }
-        </script>
-
-
-
-        if (ViewData["role"].ToString() == "Tutor")
-        {
-            foreach (var item in mainDic)
-            {
-                foreach (var el in item.Value)
-                {
-                    var ff = (List<User>)ViewData["users"];
-                    var wish = ((Student)ff.FirstOrDefault(m => m.UserId == item.Key)).Wish;
-                    <label>Ученик: @el.Key Осталось занятий: @el.Value Курс: @Model.FirstOrDefault(m=>m.UserId == item.Key).Course?.Title Пожелания: @wish </label>
-
-                    <button onclick="openRemoveStudent('@ViewData["usertoken"].ToString()', '@item.Key')">Отказаться от ученика</button>
-                    <br/>
-                }
-            }
-
+            <title>Ученики</title>
         }
         else
         {
-            foreach (var item in dic)
-            {
-
-                foreach (Tutor tutor in (List<User>)ViewData["users"])
-                {
-                    if (tutor.UserId == Model.FirstOrDefault(m => m.TutorFullName == item.Key).TutorId)
-                    {
-
-                        var courses = "";
-
-                        foreach (var cor in tutor.Courses)
-                        {
-                            courses += cor.Title + ";";
-                        }
-
-                        courses = courses.TrimEnd(';');
-
-                        <img width="100" height="100" onclick="openInfo('@item.Key', '@tutor.About', '@courses', '@tutor.PhotoUrl')" src="@tutor.PhotoUrl" />
-                        <label>Репетитор: @item.Key Курс: @Model.FirstOrDefault(m=>m.TutorFullName == item.Key).Course?.Title</label>
-                        break;
-                    }
-
-                    <br />
-                    <br />
-
-                }
-                <br />
-                <br />
-
-
-                <br />
-
-                <br />
-            }
+            <title>Репетиторы</title>
 
         }
 
     }
-</div>
+    <link rel="stylesheet" href="nicepage.css" media="screen">
+    <link rel="stylesheet" href="Контакты.css" media="screen">
+ 
+    <meta property="og:title" content="Контакты">
+    <meta property="og:type" content="website">
+</head>
+<body class="u-xl-mode" data-lang="ru">
+    <header class="u-clearfix u-header u-header" id="sec-676a">
+    </header>
+    <section class="u-clearfix u-section-1" id="sec-38fc">
+        <div class="u-clearfix u-sheet u-sheet-1" style="margin-top: -100px;padding-left:100px">
+            @{
+                if (ViewData["role"].ToString() == "Tutor")
+                {
+                    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-1 p12" style="margin-left:400px">Мои ученики</p>
+                }
+                else
+                {
+                    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-1 p12" style="margin-left:400px">Мои репетиторы</p>
+
+                }
+            }
+            
+                @{
+                    var mainDic = new Dictionary<int, Dictionary<string, int>>();
+                    Dictionary<string, int> dic = new Dictionary<string, int>();
+                    foreach (var item in Model)
+                    {
+                        if (ViewData["role"].ToString() == "Tutor")
+                        {
+                            if (!mainDic.ContainsKey(item.UserId))
+                            {
+                                var users = (List<User>)ViewData["users"];
+                                var user = (Student)users.FirstOrDefault(m => m.UserId == item.UserId);
+                                Dictionary<string, int> dic2 = new Dictionary<string, int>();
+                                dic2.Add(item.UserName, user.LessonsCount);
+                                if (!mainDic.ContainsKey(item.UserId))
+                                {
+                                    mainDic.Add(item.UserId, dic2);
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            if (!dic.ContainsKey(item.TutorFullName))
+                            {
+                                dic.Add(item.TutorFullName, 1);
+                                mainDic[item.UserId] = dic;
+                            }
+                        }
+                    }
+                    <script>
+                        function openRemoveStudent(tutor, user) {
+                            document.getElementById('userIdReject').value = user;
+                            document.getElementById('tutorIdReject').value = tutor;
+
+                            window.location.hash = '#openremovemodal';
+                        }
+                        function closeRemoveModalWindow() {
+                            window.location.hash = '#closeModal';
+                        }
+                </script>
+
+
+
+                if (ViewData["role"].ToString() == "Tutor")
+                {
+                    foreach (var item in mainDic)
+                    {
+                        foreach (var el in item.Value)
+                        {
+                            var ff = (List<User>)ViewData["users"];
+                            var user = ((Student)ff.FirstOrDefault(m => m.UserId == item.Key));
+                            var wish = user.Wish;
+                            var photo = user.PhotoUrl;
+                            var name = @el.Key + ", " + Model.FirstOrDefault(m => m.UserId == item.Key).Course?.Title;
+                            <div class="u-container-style u-custom-color-3 u-group u-radius-10 u-shape-round u-group-1 div1" style="width:1000px ; background-color:#E9E9E9 !important">
+                                <div class="u-container-layout u-container-layout-1">
+                                    <img class="u-image u-image-1" src="@photo" alt="" data-image-width="94" data-image-height="95" style="border: 1.5px solid #f5f6fa;border-radius: 50% !important;">
+                                    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-2" style="padding-top: 10px">@name</p>
+                                    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-3">Осталось занятий: @el.Value</p>
+                                    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-4">Пожелания: @wish </p>
+                                </div>
+
+                                <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="margin-right: 50px;margin-top: 80px; color:black !important" onclick="openRemoveStudent('@ViewData["usertoken"].ToString()', '@item.Key')">
+                                    Отказаться от ученика
+                                </button>
+                            </div>
+                                //<label>Ученик: @el.Key Осталось занятий: @el.Value Курс: @Model.FirstOrDefault(m=>m.UserId == item.Key).Course?.Title Пожелания: @wish </label>
+
+                                <br />
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        foreach (var item in dic)
+                        {
+
+                            foreach (Tutor tutor in (List<User>)ViewData["users"])
+                            {
+                                if (tutor.UserId == Model.FirstOrDefault(m => m.TutorFullName == item.Key).TutorId)
+                                {
+
+                                    var courses = "";
+
+                                    foreach (var cor in tutor.Courses)
+                                    {
+                                        courses += cor.Title + ";";
+                                    }
+
+                                    courses = courses.TrimEnd(';');
+
+
+                                var photo = tutor.PhotoUrl;
+                                var name = @item.Key + ", " + Model.FirstOrDefault(m => m.TutorId == tutor.UserId).Course?.Title;
+                            <div class="u-container-style u-custom-color-3 u-group u-radius-10 u-shape-round u-group-1 div1" style="width:1000px ; background-color:#E9E9E9 !important">
+                                <div class="u-container-layout u-container-layout-1">
+                                        <img onclick="openInfo('@item.Key', '@tutor.About', '@courses', '@tutor.PhotoUrl')" class="u-image u-image-1" src="@photo" alt="" data-image-width="94" data-image-height="95" style="border: 1.5px solid #f5f6fa;border-radius: 50% !important;">
+                                        <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-2" style="margin: -60px auto 0 145px;">@name</p>
+
+                                </div>
+                            </div>
+                                  //  <label>Репетитор: @item.Key Курс: @Model.FirstOrDefault(m=>m.TutorFullName == item.Key).Course?.Title</label>
+                                    break;
+                                }
+
+
+                            }
+                         
+                        }
+
+                    }
+
+                }
+            </div>
+
+
+    </section>
+
+
+   
+
+</body>
+</html>

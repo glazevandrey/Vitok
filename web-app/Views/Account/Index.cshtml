@@ -9,6 +9,67 @@
 
 
 }
+
+<style>
+
+    .input-file {
+        position: relative;
+        display: inline-block;
+        padding-left: 50px !important;
+        width:260px !important;   
+        padding-top:100px;
+    }
+
+        .input-file span {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            outline: none;
+            text-decoration: none;
+            font-size: 24px;
+            vertical-align: middle;
+            color: rgb(0 0 0);
+            text-align: center;
+            border-radius: 10px;
+            background-color: #8fe1d7;
+            line-height: 22px;
+            height: 50px;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            border: none;
+            margin: 0;
+            transition: background-color 0.2s;
+        }
+
+        .input-file input[type=file] {
+            position: absolute;
+            z-index: -1;
+            opacity: 0;
+            display: block;
+            width: 0;
+            height: 0;
+        }
+
+            /* Focus */
+            .input-file input[type=file]:focus + span {
+                  box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+
+            }
+
+        /* Hover/active */
+        .input-file span:hover {
+            background-color: #0ca299 !important;
+        }
+
+        .input-file:active span {
+            background-color: #2E703A;
+        }
+
+        /* Disabled */
+        .input-file input[type=file]:disabled + span {
+            background-color: #eee;
+        }
+</style>
 <link rel="stylesheet" href="~/content/profile/Профиль.css" >
 <link rel="stylesheet" href="/css/modal.css">
 <script>
@@ -47,18 +108,49 @@
     <meta charset="utf-8">
 
     <title>Профиль</title>
- 
-    <script class="u-script" type="text/javascript" src="jquery.js" defer=""></script>
-    <script class="u-script" type="text/javascript" src="nicepage.js" defer=""></script>
-  @*
-    <link id="u-page-google-font" rel="stylesheet" href="~/css/fonts/Montserrat.css">
-    <link id="u-theme-google-font" rel="stylesheet" href="~/css/fonts/Roboto.css">*@
+
 </head>
+
+
 <body class="u-xl-mode" data-lang="ru">
+    <div style="text-align: center;">
+        <label id="title2" style=" vertical-align: middle; margin-left:400px;font-weight:bold;font-size:32px;font-family:Montserrat">Редактирование профиля</label>
+
+
+    </div>
+
+          
     <section class="u-clearfix u-section-1" id="sec-f8be">
         <div class="u-clearfix u-sheet u-sheet-1" style="padding-left:10%">
-            <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-1">Редактирование профиля</p>
             <div class="u-form u-form-1">
+
+                <form class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form"  id="form" method="post" action="@web_app.Program.web_server_ip/api/account/savephoto?id=@Model.UserId" enctype="multipart/form-data">
+
+
+                    <div class="u-form-group u-form-name u-label-left">
+                        <label for="name-266d" class="u-label u-spacing-72 u-label-1">Фотография</label>
+
+                        <img width="138" height="142" src="@Model.PhotoUrl" />
+                        <label  hidden="hidden" id="submitError" style="color:darkred">Доступные форматы файла: jpg, png, jpeg</label>
+                        <br />
+                        <br />
+                        <div class="form-group">
+
+                            <label class="input-file">
+                                <input onchange="submitt(this)" id="photoId" type="file" name="file">
+                                <span>Выберите файл</span>
+                            </label>
+                           @* <input type="file" onchange="submitt(this)" class="form-control" id="photoId" name="image" />
+                            *@
+                        </div>
+                            @*<input type="text" id="name-266d" name="name" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-1" value="@Model.FirstName">
+*@                    </div>
+
+                
+                  
+
+                </form>
+
                 <form id="form1" action="/account/saveinfo" method="post" class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form" source="email" name="form-1" style="padding: 10px;">
                     <input type="hidden" name="UserId" value="@Model.UserId" />
                     <input type="hidden" name="ActiveToken" value="@Model.ActiveToken" />
@@ -66,27 +158,29 @@
                     <input type="hidden" name="Role" value="@Model.Role" />
                     <div class="u-form-group u-form-name u-label-left">
                         <label for="name-266d" class="u-label u-spacing-72 u-label-1">Имя</label>
-                        <input type="text" id="name-266d" name="name" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-1" value="@Model.FirstName">
+                        <input type="text" id="name-266d" name="name" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-1" value="@Model.FirstName">
                     </div>
                     <div class="u-form-group u-label-left u-form-group-2">
                         <label for="text-565e" class="u-label u-spacing-72 u-label-2">Фамилия</label>
-                        <input type="text" placeholder="" id="text-565e" name="lastname" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-2" value="@Model.LastName">
+                        <input type="text" placeholder="" id="text-565e" name="lastname" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-2" value="@Model.LastName">
                     </div>
                     <div class="u-form-group u-label-left u-form-group-3">
                         <label for="text-9ace" class="u-label u-spacing-72 u-label-3">Отчество</label>
-                        <input type="text" placeholder="" id="text-9ace" name="middlename" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-3" value="@Model.MiddleName">
+                        <input type="text" placeholder="" id="text-9ace" name="middlename" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-3" value="@Model.MiddleName">
                     </div>
+
+                  
                     <div class="u-form-group u-label-left u-form-group-4">
                         <label for="text-1ae8" class="u-label u-spacing-72 u-label-4">Дата рождения</label>
-                        <input type="date" placeholder="" id="text-1ae8"   name="dob" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-4" value="@Model.BirthDate">
+                        <input type="date" placeholder="" id="text-1ae8"   name="dob" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-4" value="@Model.BirthDate">
                     </div>
                     <div class="u-form-group u-label-left">
                         <label for="email-266d" class="u-label u-spacing-72 u-label-5">Пароль</label>
-                        <input type="text" id="email-266d" name="password" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-5" value="@Model.Password">
+                        <input type="text" id="email-266d" name="password" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-5" value="@Model.Password">
                     </div>
                     <div class="u-form-group u-label-left u-form-group-6">
                         <label for="text-5d98" class="u-label u-spacing-72 u-label-6">Номер телефона</label>
-                        <input type="text" id="text-5d98" name="phone" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-6" value="@Model.Phone">
+                        <input type="text" id="text-5d98" name="phone" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-6" value="@Model.Phone">
                     </div>
                     <input value="@Model.Role" name="role" id="role" hidden="hidden" />
 
@@ -100,11 +194,11 @@
                                     var sw = ((Tutor)Model).About;
                                     if (sw != null)
                                     {
-                                        <input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-7" value="@sw">
+                                        <input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" value="@sw">
                                     }
                                     else
                                     {
-                                        <input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-7" value="">
+                                        <input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" value="">
 
                                     }
                                 }
@@ -125,7 +219,7 @@
                                     {
                                         if(x == 0)
                                         {
-                                            <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10  u-input-7" style="background-color:#FAFAFA">@item.Title</label>
+                                            <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="background-color:#FAFAFA;font-size:32px">@item.Title</label>
                                         }
                                     x++;
                                     }
@@ -141,7 +235,7 @@
                                 {
                                        <div class="u-form-group u-label-left u-form-group-6">
                                 <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
-                                        <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" style="background-color:#FAFAFA">@item.Title</label>
+                                        <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA">@item.Title</label>
                                     </div>
                                 }
                             }
@@ -149,37 +243,55 @@
                             <br />
                             <br />
                             <br />
-                            //<label>Свободное время по МСК</label>
-                            //<br />
-                            //<br />
-                            //<table border="1">
-                            //    @{
-                            //        foreach (var day in w_days)
-                            //        {
-                            //            <tr>
-                            //                <td>
-                            //                    <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
-                            //                </td>
-                            //                @{
-                            //                    var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
-                            //                    foreach (var time in ordered)
-                            //                    {
-                            //                        if (time.dateTime.DayOfWeek == day)
-                            //                        {
-                            //                            <td><label> @time.dateTime.ToString("HH:mm") </label></td>
+                               <div class="u-form-group u-label-left u-form-group-6">
+                                <label for="text-5d98" class="u-label u-spacing-72 u-label-6">Свободное время по МСК</label>
+                                </div>
+                            <br />
+                            <br />
+                            // <table border="1">
+
+                            var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
+
+                            foreach (var day in w_days)
+                            {
+                                //   <tr>
+                                if (ordered.Where(m => m.dateTime.DayOfWeek == day).Count() == 0)
+                                {
+                                    continue;
+                                }
+                                <div class="u-form-group u-label-left u-form-group-6">
+                                    <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
+                                    <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA">@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                                </div>
+
+                                <div class="u-form-group u-label-left u-form-group-6">
+                                    <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
+
+                                    @{
+                                        foreach (var time in ordered)
+                                        {
+
+                                            if (time.dateTime.DayOfWeek == day)
+                                            {
+
+
+                                                <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA">@time.dateTime.ToString("HH:mm")</label>
 
 
 
-                            //                        }
-                            //                    }
-                            //                }
+
+                                            }
+                                        }
 
 
-                            //            </tr>
-                            //        }
-                            //    }
 
-                            //</table>
+                                    }
+
+
+                                </div>
+                            }
+
+                          //  </table>
 
                         }
                         else if (Model.Role == "Student")
@@ -190,12 +302,12 @@
                                     var sw = ((Student)Model).Wish;
                                     if (sw != null)
                                     {
-                                        <input type="text" placeholder="" id="text-100d" name="wish" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-8" value="@sw">
+                                        <input type="text" placeholder="" id="text-100d" name="wish" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-8" value="@sw">
 
                                     }
                                     else
                                     {
-                                        <input type="text" placeholder="" id="text-100d" name="wish" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-8" value="">
+                                        <input type="text" placeholder="" id="text-100d" name="wish" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-8" value="">
 
                                     }
                             }

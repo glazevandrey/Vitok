@@ -12,6 +12,8 @@
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
 <style>
+
+
     label {
      display: block;
     }
@@ -25,6 +27,35 @@
         display: inline-block;
         width: 170px;
     }
+
+    input#search {
+        padding-left: 10px;
+    }
+    td, th{
+        text-align: center;
+    }
+    td, tr, th{
+        border: 1px solid #DBDBDB;
+        font-family: Poppins;
+    }
+    .th1{
+        width: 150px
+    }
+    @@media (min-width: 768px) {
+        .th1 {
+            width: 200px
+        }
+    }
+    .th2 {
+        width: 50px
+    }
+  /*  .updateForm{
+        text-align:center;
+    }
+
+        .updateForm input {
+        width:200px;
+    }*/
 </style>
 
 <script>
@@ -40,17 +71,17 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Выберите действие</h3>
-                <a onclick="closeModal()" title="Close" class="close">×</a>
+                <a href="#" title="Close" class="close">×</a>
             </div>
             <div class="modal-body">
 
-                <form id="addForm"method="post" action="/tutors/addnewtutor">
+                <form class="addForm" id="addForm"method="post" action="/tutors/addnewtutor">
 
                     <fieldset>
                         <legend>Добавить нового репетитора</legend>
 
-                        <div class="container" align="center">
-
+                        <div class="container2" align="center">
+                            <br/><br/>
                             <label>
                                 <span>Фамилия</span>
                                 <input id="lastName" required name="lastName" value="" />
@@ -110,8 +141,10 @@
                     </fieldset>
                     <br />
 
-                    <div align="center">
-                        <input type="submit" onclick="closeModal1()" value="Добавить" />
+                    <div style="text-align:center">
+                        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="color:black !important;display:inline-block" onclick="closeModal1()">
+                            Добавить
+                        </button>
 
                     </div>
 
@@ -126,33 +159,43 @@
         <br/>
 
         <br/>
-<input type="text" id="search" placeholder="Search...">
-<input type="button" value="Добавить нового репетитора" onclick="window.location.hash = '#openModalAdd';" />
 
+        <div>
+<input type="text" id="search" style="border-radius: 10px; border: 1px solid gray; height:50px;width:300px" placeholder="Поиск...">
+
+
+
+    <button onclick="window.location.hash = '#openModalAdd'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="margin-left: 20px;color:black !important; display:inline-block;margin-bottom:25px;height:50px;width:300px">
+    Добавить нового репетитора
+</button>
+</div>
 <br/>
 
 
-         <table id="table">
-        <thead>
+<table style="border-collapse:collapse" id="table">
+        <thead >
             <tr>
-                <th>Фамилия</th>
+            <th colspan="10" style="background-color:#C1EEE9">Список репетиторов</th>
+            </tr>
+            <tr>
+                <th class="th1">Фамилия</th>
            
-            <th>Имя</th>
+            <th class="th1">Имя</th>
       
-            <th>Отчество</th>
-       
-            <th>Дата рождения</th>
-       
-            <th>Почта</th>
-     
-                <th>Пароль</th>
-        
-                <th>Телефон</th>
+            <th class="th1">Отчество</th>
 
+            <th class="th1">Дата рождения</th>
+       
+            <th class="th1">Почта</th>
+
+            <th class="th1">Пароль</th>
         
-            <th>Курсы</th>
-            <th></th>
-            <th></th>
+                 <th class="th1">Телефон</th>
+
+
+            <th class="th1">Курсы</th>
+            <th class="th2"></th>
+            <th class="th2"></th>
 
         </tr>
         </thead>
@@ -205,10 +248,10 @@
                     </td>
 
                 <td>
-                    <button onclick="editRow(@item.UserId)">Edit</button>
+                    <img style="width:30px;height:30px;cursor:pointer" src="~/content/images/arrow-square-up.svg" onclick="editRow(@item.UserId)"/>
                 </td>
                 <td>
-                    <button onclick="openRemove(@item.UserId)">Remove</button>
+                    <img style="width:30px;height:30px;cursor:pointer" src="~/content/images/arrow-square-up-1.svg" onclick="openRemove(@item.UserId)" />
                 </td>
 
                 </tr>   
@@ -259,49 +302,88 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">
-                    Баланс
+                    Репетитор
                 </h3>
-                <a href="#closeModal" title="Close" class="close">×</a>
+                <a href="#" title="Close" class="close">×</a>
             </div>
             <div class="modal-body">
-                <form method="post" action="/tutors/updateTutor">
-                    <input hidden="hidden" value="" id="userIdEdit" name="userIdEdit"/>
-                  <label>Имя</label><br/>
-                    <input id="firstNameEdit" name="firstNameEdit" type="text" value="" />
-                <br/>
-                <br/>
-                <label>Фамилия</label><br />
-                    <input id="lastNameEdit" name="lastNameEdit" type="text" value="" />
-                <br/>
-                <br/>
-                <label>Отчество</label><br />
-                    <input id="middleNameEdit" name="middleNameEdit" type="text" value="" />
-                <br/>
-                <br/>
-                <label>Дата рождения</label><br />
-                    <input id="birthDateEdit" min="1920-01-01" max="2050-12-31" name="birthDateEdit" type="date" value="" />
-                <br />
-                <br />
-                <label>Номер телефона</label><br />
-                    <input id="phoneEdit" name="phoneEdit" type="text" value="" />
-                <br />
-                <br />
-                <label>Почта</label><br/>
-                    <input id="emailEdit" name="emailEdit" type="text" value="" />
-                <br />
-                <br />
-                <label>Пароль</label><br />
-                    <input id="passwordEdit" name="passwordEdit" type="text" value="" />
-                <br />
-                <br />
-                <label>Курсы</label><br />
-                    <input id="coursesEdit" name="coursesEdit" type="text" value="" />
-                <br />
-                <br />
-                <input type="submit" value="Сохранить" />
-                <input type="submit" onclick="window.location.href='#closeModal'" value="Отмена" />
-    
-                
+                <form id="update-form" class="updateForm" method="post" action="/tutors/updateTutor">
+
+                    <fieldset>
+                        <legend>Изменить репетитора</legend>
+                        <br/>
+                        <br />
+                        <div>
+                            <input hidden="hidden" value="" id="userIdEdit" name="userIdEdit" />
+                            <label>
+                                <span>Имя</span>
+
+                                <input id="firstNameEdit" name="firstNameEdit" type="text" value="" />
+                                <br />
+                                <br />
+                                <br />
+                            </label>
+                            <label><span>Фамилия</span>
+                                <input id="lastNameEdit" name="lastNameEdit" type="text" value="" />
+                                <br />
+                                <br />
+                                <br />
+                            </label>
+                            <label>
+                                <span>Отчество</span>                
+                                <input id="middleNameEdit" name="middleNameEdit" type="text" value="" />
+                                <br />
+                                <br />
+                                <br />
+                            </label>
+                            <label>
+                                <span>Дата рождения</span>                            <input id="birthDateEdit" min="1920-01-01" max="2050-12-31" name="birthDateEdit" type="date" value="" />
+                                <br />
+                                <br />
+                            </label>
+                       
+
+                            <label><span>Номер телефона</span>
+                                <input id="phoneEdit" name="phoneEdit" type="text" value="" />
+                                <br />
+                                <br />
+                            </label>
+                      
+                            <label><span>Почта</span>
+                                <input id="emailEdit" name="emailEdit" type="text" value="" />
+                                <br />
+                                <br />
+
+                            </label>
+
+                            <label><span>Пароль</span>
+                                <input id="passwordEdit" name="passwordEdit" type="text" value="" />
+                                <br />
+                                <br />
+
+                            </label><br />
+                         
+                            <label><span>Курсы</span>
+
+                                <input id="coursesEdit" name="coursesEdit" type="text" value="" />
+                                <br />
+                                <br />
+                            </label><br />
+                          
+                           
+
+                        </div>
+                     
+                     
+                        </fieldset>
+                    <div style="text-align:center; padding-top:20px">
+                        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px;color:black !important;display:inline-block" >
+                            Сохранить
+                        </button>
+                        <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px; color:black !important;display:inline-block" onclick="window.location.href='#closeModal'">
+                            Отмена
+                        </button>
+                    </div>
                 </form>
               
             </div>
@@ -390,7 +472,12 @@
 
         }
 
+    $('body').keydown(function (e) {
+        if (e.which == 27) {
+            window.location.href='#';
+        }
 
+    });
 
     </script>
 

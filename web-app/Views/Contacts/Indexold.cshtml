@@ -1,0 +1,183 @@
+﻿@using web_server.Models;
+@using web_server.Models.DBModels;
+@using web_server.Models.DTO;
+@model List<Schedule>
+@{
+    Layout = "_Layout";
+}
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
+
+<script>
+
+    function openInfo(name, about,course, url)
+    {
+        document.getElementById("TutorName").innerHTML = name;
+        document.getElementById("course").innerHTML = course;
+        document.getElementById("selfAbout").innerHTML = about;
+        $("#photo").attr("src", url);
+
+        window.location.href = "#openmodal";
+    }
+    function closeModalWindow() {
+        window.location.href = "#closeModal";
+    }
+</script>
+
+<div id="openmodal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Подробная информация
+                </h3>
+                <a onclick="closeModalWindow()" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+                
+                <img width="100" height="100" id="photo" src=""/>
+                <br />                <br />
+
+                <label type="text" id="TutorName"></label>
+                <br/>
+                <label type="text" id="selfAbout"></label>
+                <br /><label type="text" id="course"></label>
+                                <br />
+                <br />
+
+                <input type="button" value="Назад" onclick="closeModalWindow()" />
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="openremovemodal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Отказаться от выбранного ученика?
+                </h3>
+                <a onclick="closeRemoveModalWindow()" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+
+                
+                <br/>
+                <form method="post" action="/contacts/rejection">
+                    <input hidden="hidden" name="tutorIdReject" id="tutorIdReject" />
+                    <input hidden="hidden" name="userIdReject" id="userIdReject" />
+                    <input type="submit" value="Подтвердить" onclick="closeRemoveModalWindow()" />
+
+                    <input type="button" value="Отмена" onclick="closeRemoveModalWindow()" />
+
+                </form>
+                
+
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+
+    @{
+        var mainDic = new Dictionary<int, Dictionary<string, int>>();
+        Dictionary<string, int> dic = new Dictionary<string, int>();
+        foreach (var item in Model)
+        {
+            if (ViewData["role"].ToString() == "Tutor")
+            {
+                if (!mainDic.ContainsKey(item.UserId))
+                {
+                    var users = (List<User>)ViewData["users"];
+                    var user = (Student)users.FirstOrDefault(m=>m.UserId == item.UserId);
+                    Dictionary<string, int> dic2 = new Dictionary<string, int>();
+                    dic2.Add(item.UserName, user.LessonsCount);
+                    if (!mainDic.ContainsKey(item.UserId))
+                    {
+                        mainDic.Add(item.UserId, dic2);
+                    }
+                }
+
+            }
+            else
+            {
+                if (!dic.ContainsKey(item.TutorFullName))
+                {
+                    dic.Add(item.TutorFullName, 1);
+                    mainDic[item.UserId] = dic;
+                }
+            }
+        }
+        <script>
+            function openRemoveStudent(tutor, user){
+                document.getElementById('userIdReject').value = user;
+                document.getElementById('tutorIdReject').value = tutor;
+
+                window.location.hash = '#openremovemodal';
+            }
+            function closeRemoveModalWindow() {
+                window.location.hash = '#closeModal';
+            }
+        </script>
+
+
+
+        if (ViewData["role"].ToString() == "Tutor")
+        {
+            foreach (var item in mainDic)
+            {
+                foreach (var el in item.Value)
+                {
+                    var ff = (List<User>)ViewData["users"];
+                    var wish = ((Student)ff.FirstOrDefault(m => m.UserId == item.Key)).Wish;
+                    <label>Ученик: @el.Key Осталось занятий: @el.Value Курс: @Model.FirstOrDefault(m=>m.UserId == item.Key).Course?.Title Пожелания: @wish </label>
+
+                    <button onclick="openRemoveStudent('@ViewData["usertoken"].ToString()', '@item.Key')">Отказаться от ученика</button>
+                    <br/>
+                }
+            }
+
+        }
+        else
+        {
+            foreach (var item in dic)
+            {
+
+                foreach (Tutor tutor in (List<User>)ViewData["users"])
+                {
+                    if (tutor.UserId == Model.FirstOrDefault(m => m.TutorFullName == item.Key).TutorId)
+                    {
+
+                        var courses = "";
+
+                        foreach (var cor in tutor.Courses)
+                        {
+                            courses += cor.Title + ";";
+                        }
+
+                        courses = courses.TrimEnd(';');
+
+                        <img width="100" height="100" onclick="openInfo('@item.Key', '@tutor.About', '@courses', '@tutor.PhotoUrl')" src="@tutor.PhotoUrl" />
+                        <label>Репетитор: @item.Key Курс: @Model.FirstOrDefault(m=>m.TutorFullName == item.Key).Course?.Title</label>
+                        break;
+                    }
+
+                    <br />
+                    <br />
+
+                }
+                <br />
+                <br />
+
+
+                <br />
+
+                <br />
+            }
+
+        }
+
+    }
+</div>

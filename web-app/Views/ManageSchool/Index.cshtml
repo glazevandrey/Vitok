@@ -106,13 +106,12 @@ table {
     }
 td,
 th {
-    /*border: none;*/
     padding: 0px 10px;
     }
 
 td {
     text-align: center;
-    width:45px !important;
+    width:45px;
 }
 form{
         display: inline-block;
@@ -129,7 +128,31 @@ thead{
         letter-spacing: 1px;
 }
 
+</style>
 
+<style>
+
+    td .circle {
+        position: absolute;
+        height: 10px;
+        width: 10px;
+        float: right;
+        right: 5;
+        top: 8;
+    }
+
+    td .mini {
+        position: absolute;
+        height: 10px;
+        width: 10px;
+        float: right;
+        right: 5;
+        bottom: 8;
+    }
+
+    td {
+        position: relative;
+    }
 </style>
 
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
@@ -245,7 +268,7 @@ thead{
                             // tutor_reschedule = (List<RescheduledLessons>)ViewData["rescheduled"];
                             foreach (var hour in hours)
                             {
-                                var id = $"{countB}\n{countA}";
+                                var id = $"{countB};{countA}";
                                 <td id="@id">
                                 
                                     @{
@@ -325,28 +348,32 @@ thead{
                                                                     height: auto;
                                                                     word-wrap: break-word;
                                                                     background: #000;
-                                                                z-index: 9999;
+                                                                z-index: 9998;
                                                                     padding: 5px;
                                                                     border-radius: 4px;
                                                                     bottom: 25px;
                                                                     left: 30px;
                                                                 }
+
+                                                            
                                                         </style>
 
                                                     if (string.IsNullOrEmpty(schedule.UserName))
                                                     {
-                                                    <label data-title="@textMouse" id="@label" class="@label" style="width:130px;height:40px;background-color:turquoise;border-radius:10px"></label>
+                                                        <label data-title="@textMouse" id="@label" class="@label" style="width:130px;height:40px;background-color:#36F6F8;border-radius:10px"></label>
                                                     }
                                                     else
                                                     {
-                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:lightblue;height:40px;border-radius:10px"> <br /> </label>
+                                                        <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;height:40px;border-radius:10px"> <br /> </label>
 
-                                                        }
+                                                    }
 
                                                     if (!schedule.Looped)
                                                     {
                                                         var text4 = "Разовое занятие";
-                                                        <label style="background-color:orange" data-title="@text4">(*)</label>
+                                                        <img class="circle" src="/content/images/circle.svg" style="height:10px;width:10px" />
+
+                                                       // <label style="background-color:orange" data-title="@text4">(*)</label>
 
                                                     }
                                                         if (schedule.ReadyDates.Count > 0)
@@ -358,7 +385,7 @@ thead{
                                                                 if (readyDate.Date == date)
                                                                 {
                                                                     <script>
-                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "#0DB4AA";
                                                                         document.getElementsByClassName('@label')[0].style.color = "white";
                                                                     </script>
                                                                 }
@@ -370,7 +397,7 @@ thead{
                                                             if (schedule.Status == Status.Проведен)
                                                             {
                                                                 <script>
-                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "mediumblue";
+                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "#0DB4AA";
                                                                     document.getElementsByClassName('@label')[0].style.color = "white";
                                                                 </script>
 
@@ -395,7 +422,7 @@ thead{
                                                                                 <script>
 
                                                                                     @{
-                                                                                        var text2 = "Занятие не оплачено.";
+                                                                                        var text2 = "";
                                                                                         var mod = (Dictionary<int, bool>)ViewData["firstPay"];
                                                                                         if (mod[schedule.UserId] == false)
                                                                                         {
@@ -413,8 +440,9 @@ thead{
                                                                                     }
 
                                                                                 </script>
+                                                                                <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
 
-                                                                                <label style="background-color:yellow" data-title="@text2">(!)</label>
+                                                                               // <label style="background-color:yellow" data-title="@text2">(!)</label>
                                                                             }
                                                                         }
                                                                         else
@@ -423,7 +451,7 @@ thead{
                                                                             <script>
 
                                                                                 @{
-                                                                                    var text2 = "Занятие не оплачено.";
+                                                                                    var text2 = "";
                                                                                     var mod = (Dictionary<int, bool>)ViewData["firstPay"];
                                                                                     if (mod[schedule.UserId] == false)
                                                                                     {
@@ -442,7 +470,8 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow" data-title="@text2">(!)</label>
+                                                                            <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                            // <label style="background-color:yellow" data-title="@text2">(!)</label>
                                                                         }
                                                                     }
                                                                 }
@@ -455,7 +484,7 @@ thead{
                                                                             <script>
 
                                                                                 @{
-                                                                                    var text2 = "Занятие не оплачено.";
+                                                                                    var text2 = "";
                                                                                     var mod = (Dictionary<int, bool>)ViewData["firstPay"];
                                                                                     if (mod[schedule.UserId] == false)
                                                                                     {
@@ -474,7 +503,8 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow;" data-title="@text2">(!)</label>
+                                                                            <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                            //  <label style="background-color:yellow;" data-title="@text2">(!)</label>
                                                                         }
                                                                     }
                                                                     else
@@ -484,7 +514,7 @@ thead{
                                                                             <script>
 
                                                                                 @{
-                                                                                    var text2 = "Занятие не оплачено.";
+                                                                                    var text2 = "";
                                                                                     var mod = (Dictionary<int, bool>)ViewData["firstPay"];
                                                                                     if (mod[schedule.UserId] == false)
                                                                                     {
@@ -503,7 +533,8 @@ thead{
 
 
                                                                             </script>
-                                                                            <label style="background-color:yellow;" data-title="@text2">(!)</label>
+                                                                            <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                            // <label style="background-color:yellow;" data-title="@text2">(!)</label>
 
                                                                         }
 
@@ -521,7 +552,7 @@ thead{
                                                             if (skip.Date == date)
                                                             {
                                                                 <script>
-                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "darkred";
+                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "#F7B579";
                                                                     document.getElementsByClassName('@label')[0].style.color = "white";
                                                                 </script>
                                                             }
@@ -534,7 +565,7 @@ thead{
                                                         if (schedule.RescheduledDate == date)
                                                         {
                                                             <script>
-                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
+                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "#A4A4A4";
                                                                 document.getElementsByClassName('@label')[0].style.color = "white";
                                                             </script>
                                                         }
@@ -546,7 +577,7 @@ thead{
                                                                 if (less.OldTime == date)
                                                                 {
                                                                     <script>
-                                                                            document.getElementsByClassName('@label')[0].style.backgroundColor = "gray";
+                                                                            document.getElementsByClassName('@label')[0].style.backgroundColor = "#A4A4A4";
                                                                         document.getElementsByClassName('@label')[0].style.color = "white";
                                                                     </script>
                                                                 }
@@ -578,8 +609,24 @@ thead{
         </tbody>
 
     </table>
-
     <script>
+        const tds = document.querySelectorAll('td');
+        console.log(tds);
+        tds.forEach(td => {
+            const circle = td.querySelector('.circle');
+            const mini = td.querySelector('.mini');
+            const label = td.querySelector('label');
+
+            if (circle) {
+                console.log('cr');
+                label.style.paddingRight = '15px';
+            }
+            if (mini) {
+                console.log('mini');
+                label.style.paddingRight = '15px';
+            }
+        });
+
         $.datepicker.setDefaults($.datepicker.regional["ru"]);
 
         $(document).ready(function () {

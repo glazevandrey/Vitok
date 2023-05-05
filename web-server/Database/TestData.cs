@@ -78,7 +78,7 @@ namespace web_server.DbContext
                     Role = "Student",
                     WasFirstPayment = true,
                     StartWaitPayment = DateTime.Now,
-                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
+                     PhotoUrl = "https://mirvu.ru/wp-content/uploads/2022/03/sbkgl.jpg",
                     Email = "petr@mail.ru",
                     BirthDate = DateTime.Parse("14.04.2000"),
                     Phone = "+79188793839",
@@ -96,7 +96,7 @@ namespace web_server.DbContext
                     WasFirstPayment = true,
                     Role = "Student",
                     Email = "kurochka@mail.ru",
-                    PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
+                    PhotoUrl = "https://mirvu.ru/wp-content/uploads/2022/03/sbkgl.jpg",
                     Phone = "+79188793839",
                     //UserId = 4
                 },
@@ -105,13 +105,13 @@ namespace web_server.DbContext
                    // Courses = TestData.Courses.Where(m => m.Title == "Общий английский").ToList(),
                  //  Courses = new List<TutorCourse>(){ new TutorCourse() {CourseId = TestData.Courses.FirstOrDefault(m=>m.Title == "ЕГЭ").Id } },
                 Email = "sergey@mail.ru", Phone = "+79054769537",
-                    PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor" },
+                    PhotoUrl = "https://mirvu.ru/wp-content/uploads/2022/03/sbkgl.jpg", Password = "123", Role="Tutor" },
             new TutorDTO()
              {FirstName = "Иван", MiddleName="Сергеевич", LastName = "Петров", About = "Почти лучший", BirthDate = DateTime.Parse("14.01.2002"), UserDates = new List<UserDate>(){ },
                    // Courses = TestData.Courses.Where(m => m.Title == "ОГЭ").ToList(),  },
 
                 Email = "ivan@mail.ru", Phone = "+79188703839",
-                    PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg", Password = "123", Role="Tutor" },
+                    PhotoUrl = "https://mirvu.ru/wp-content/uploads/2022/03/sbkgl.jpg", Password = "123", Role="Tutor" },
             new ManagerDTO()
            {
                     FirstName = "Андрей",
@@ -119,7 +119,7 @@ namespace web_server.DbContext
                     LastName = "Глазев",
                     BirthDate = DateTime.Parse("02.03.1994"),
                     Password = "123",
-                     PhotoUrl = "https://i04.fotocdn.net/s119/486552b264ee5e3f/gallery_m/2711016530.jpg",
+                     PhotoUrl = "https://mirvu.ru/wp-content/uploads/2022/03/sbkgl.jpg",
                     Role = "Manager",
                     Email = "god@mail.ru",
                     Phone = "+79054769537",

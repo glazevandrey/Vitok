@@ -18,11 +18,10 @@
         flex: 0 0 300px;
     }
     .container {
-        margin-top: 100px;
-            margin-left: 250px;
+        margin-top: 150px;
+        margin-left: 250px;
         margin-right: 20px;
-/*        height:100vh;
-*/    }
+    }
 
     .container body {
         background-color:#FAFAFA;
@@ -60,7 +59,6 @@
         border-radius: 50%;
         background-color: red;
         color: white;
-        font-size: 12px;
         font-weight: bold;
         line-height: 1;
         text-align: center;
@@ -68,8 +66,8 @@
 
     .icon-bell {
         display: block;
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 43px;
         background: url('/content/images/bell.svg') no-repeat center center / cover;
         float: right;
         margin-right: 20px;
@@ -84,6 +82,7 @@
         background-color: #C1EEE9;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
         display: none;
+        z-index:99999;
     }
 
         .notification-menu.show {
@@ -168,8 +167,12 @@
     <header>
     </header>
   <div class="notification-wrapper">
+
+      <a href="/account">
+
+
             <img id="avatar" src="@ViewData["photoUrl"]" />
-      
+      </a>      
         <span class="u-custom-font u-font-montserrat u-text" style="margin-left:10px; margin-right:10px;font-size:20px;font-weight:bold;">@ViewData["displayName"]</span>
 
         <div class="dropdown">

@@ -300,7 +300,7 @@ namespace web_server.Services
                 }
 
                 old.RescheduledLessons.Add(new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason });
-
+                await _userRepository.SaveChanges(tutor);
                 user.Schedules.Add(_mapper.Map<ScheduleDTO>(new_model));
 
                 await CalculateNoPaidWarn(user, _hubContext);
@@ -367,7 +367,6 @@ namespace web_server.Services
 
                     //await _scheduleRepository.Update(sch2);
                 }
-                await _userRepository.SaveChanges(user);
 
                 var manager = (await _userRepository.GetManagerId());
                 Task.Run(async () =>
@@ -377,6 +376,9 @@ namespace web_server.Services
                         user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
                 });
             }
+
+            await _userRepository.SaveChanges(user);
+
 
         }
     }

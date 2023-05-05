@@ -4,56 +4,56 @@
 
 @media (min-width: 280px) {
     td {
-        width: 50px;
+        width: 20px !important;
     }
 
         td button {
-            width: 50px;
+            width: 10px !important;
         }
 
         td label {
-            width: 50px;
+            width: 20px !important;
         }
 }
 
 @media (min-width: 768px) {
     td {
-        width: 100px;
+        width: 30px !important;
     }
 
         td button {
-            width: 100px;
+            width: 100px !important;
         }
 
         td label {
-            width: 100px;
+            width: 30px !important;
         }
 }
 
 @media (min-width: 1024px) {
     td {
-        width: 150px;
+        width: 50px !important;
     }
 
         td button {
-            width: 150px;
+            width: 100px !important;
         }
 
         td label {
-            width: 150px;
+            width: 50px !important;
         }
 }
-@media screen and (min-width: 1920px) {
+@media  (min-width: 1920px) {
     td {
-        width: 200px;
+        width: 65px !important;
     }
 
         td button {
-            width: 200px;
+            width: 200px !important;
         }
 
         td label {
-            width: 200px;
+            width: 65px !important;
         }
 }
 .ui-datepicker-trigger {
@@ -99,12 +99,12 @@
 }
 
 td label{
-    width:40px !important;
+    width:40px;
     border-radius:10px;
         
 }
 
-    td label:first-child {
+    td label {
         height: 64px !important;
     }
 tbody td {

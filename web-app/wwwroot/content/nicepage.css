@@ -1221,10 +1221,10 @@ a {
   flex-wrap: wrap;
   align-items: flex-end;
 }
-.u-form-vertical.u-form-spacing-50 {
-  margin-left: -50px;
-  width: calc(100% +  50px);
-}
+    .u-form-vertical.u-form-spacing-50 {
+        margin-left: -50px;
+        width: calc(100% + 50px);
+    }
 .u-form-vertical.u-form-spacing-50 .u-form-group {
   margin-bottom: 50px;
 }
@@ -3627,7 +3627,7 @@ blockquote.u-text.u-indent-73 {
 }
 .u-form-vertical .u-label-left .u-spacing-72.u-label,
 .u-rating-icons.u-spacing-72 > .u-form-rating-item {
-  margin-right: 72px;
+  margin-right: -20px;
 }
 .u-spacing-72.u-countdown-counter > div + div,
 .u-spacing-72.u-price-wrapper > div + div,

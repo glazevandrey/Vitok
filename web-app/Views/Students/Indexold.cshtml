@@ -1,0 +1,145 @@
+﻿@using web_server.Models;
+@using web_server.Models.DBModels;
+@model List<Student>;
+@{
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
+<script>
+
+    function balance(id) {
+
+        window.location.hash = "#" + id
+    }
+
+
+</script>
+
+<div>
+
+    <input type="text" id="searchInput" placeholder="Поиск..." />
+    <br />
+    <br />
+
+    <div id="students">
+        
+        @{
+
+            foreach (var item in Model)
+            {
+                if (string.IsNullOrEmpty(item.FirstName))
+                {
+                    continue;
+                }
+                <div name="student">
+                    @{
+                        var info = $"/students/info?id={item.UserId}";
+                    }
+                    <a href="@info">
+                        <img src="@item.PhotoUrl" width="50" height="50" />
+                    </a>
+                    <p id="firstname"><b>@item.FirstName @item.LastName</b></p>
+
+                    <br />
+                    @{
+                        Dictionary<int, string> keys = new Dictionary<int, string>();
+                        var schedules = ((List<Schedule>)ViewData["schedules"]).Where(m => m.UserId == item.UserId);
+                        foreach (var lesson in schedules)
+                        {
+                            if (!keys.ContainsKey(lesson.TutorId))
+                            {
+                                keys.Add(lesson.TutorId, lesson.Course?.Title);
+                            }
+                        }
+                        var name = item.FirstName+ "_" + item.LastName;
+                        foreach (var key in keys)
+                        {
+                            <label>Курс @key.Value с @schedules.FirstOrDefault(m=>m.TutorId == key.Key).TutorFullName</label>
+                            <br />
+                        }
+
+                        <br />
+                        <label>Осталось занятий: @item.LessonsCount.ToString()</label>
+                        <br />
+                        var idModal = "openModal" + item.UserId;
+                        var closeModal = "closeModal" + item.UserId;
+                        
+                        <input type="button" onclick="balance('@idModal')" value="Посмотреть баланс" />
+                        <form action="/students/statistics" method="get">
+                            <input value="@item.UserId.ToString()" id="userid" name="userid" hidden="hidden" />
+                            <input value="@name" id="username" name="username" hidden="hidden" />
+
+                            <input type="submit" value="Посмотреть статистику" />
+                        </form>
+                    }
+
+                </div>
+                <div id="@idModal" class="modal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title">
+                                    Баланс
+                                </h3>
+                                <a href="#@closeModal" title="Close" class="close">×</a>
+                            </div>
+                            <div class="modal-body">
+                                @{
+                                    var sorted = item.BalanceHistory.OrderBy(m => m.Date).Reverse();
+
+                                    foreach (var balance in sorted)
+                                    {
+                                        <label><b>@balance.Date.ToString("dd MMMM ddd HH:mm")</b></label>
+                                        <br />
+                                        <label>@balance.CustomMessage</label>
+                                        <br />
+                                        if(balance.CashFlow != null)
+                                        {
+                                            <label>@balance.CashFlow.Amount.ToString()</label>
+                                        }
+                                        <br />
+                                        <br />
+                                    }
+                                }
+                                <input hidden="hidden" value="" id="userIdBalance" />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <br />
+            }
+
+        }
+    
+    </div>
+
+</div>
+<script>
+    function searchTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("students");
+        tr = table.getElementsByTagName("div");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("p");
+            for (j = 0; j < td.length; j++) {
+                txtValue = td[j].textContent || td[j].innerText || td[j].innerHTML;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                    break;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+
+        }
+    }
+
+    document.getElementById("searchInput").onkeyup = searchTable;
+
+</script>

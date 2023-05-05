@@ -4,6 +4,7 @@
 @{
     Layout = "_Layout";
 }
+<link rel="stylesheet" href="~/content/contacts/Контакты.css">
 
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
@@ -17,107 +18,198 @@
 
 </script>
 
-<div>
 
-    <input type="text" id="searchInput" placeholder="Поиск..." />
-    <br />
-    <br />
 
-    <div id="students">
+
+<!DOCTYPE html>
+<html style="font-size: 16px;" lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    
+       
+            <title>Ученики</title>
         
-        @{
 
-            foreach (var item in Model)
-            {
-                if (string.IsNullOrEmpty(item.FirstName))
-                {
-                    continue;
-                }
-                <div name="student">
-                    @{
-                        var info = $"/students/info?id={item.UserId}";
-                    }
-                    <a href="@info">
-                        <img src="@item.PhotoUrl" width="50" height="50" />
-                    </a>
-                    <p id="firstname"><b>@item.FirstName @item.LastName</b></p>
+    
+    <link rel="stylesheet" href="nicepage.css" media="screen">
+    <link rel="stylesheet" href="Контакты.css" media="screen">
 
-                    <br />
-                    @{
-                        Dictionary<int, string> keys = new Dictionary<int, string>();
-                        var schedules = ((List<Schedule>)ViewData["schedules"]).Where(m => m.UserId == item.UserId);
-                        foreach (var lesson in schedules)
+    <meta property="og:title" content="Контакты">
+    <meta property="og:type" content="website">
+</head>
+<body class="u-xl-mode" data-lang="ru">
+    <header class="u-clearfix u-header u-header" id="sec-676a">
+    </header>
+    <section class="u-clearfix u-section-1" id="sec-38fc">
+        <div class="u-clearfix u-sheet u-sheet-1" style="margin-top: -100px;padding-left:100px">
+            
+                
+                    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-1 p12" style="margin-left:400px">Ученики</p>
+
+
+            <input type="text" id="searchInput" style="border-radius: 10px; border: 1px solid gray; height:50px;width:300px" placeholder="Поиск...">
+
+            <br />
+            <br />  
+
+
+                <div id="students">
+
+               
+@{
+                        foreach (var item in Model)
+                    {
+
+                        if (string.IsNullOrEmpty(item.FirstName))
                         {
-                            if (!keys.ContainsKey(lesson.TutorId))
-                            {
-                                keys.Add(lesson.TutorId, lesson.Course?.Title);
-                            }
-                        }
-                        var name = item.FirstName+ "_" + item.LastName;
-                        foreach (var key in keys)
-                        {
-                            <label>Курс @key.Value с @schedules.FirstOrDefault(m=>m.TutorId == key.Key).TutorFullName</label>
-                            <br />
+                            continue;
                         }
 
-                        <br />
-                        <label>Осталось занятий: @item.LessonsCount.ToString()</label>
-                        <br />
-                        var idModal = "openModal" + item.UserId;
-                        var closeModal = "closeModal" + item.UserId;
-                        
-                        <input type="button" onclick="balance('@idModal')" value="Посмотреть баланс" />
-                        <form action="/students/statistics" method="get">
-                            <input value="@item.UserId.ToString()" id="userid" name="userid" hidden="hidden" />
-                            <input value="@name" id="username" name="username" hidden="hidden" />
 
-                            <input type="submit" value="Посмотреть статистику" />
-                        </form>
-                    }
+                        <div id="student" class="u-container-style u-custom-color-3 u-group u-radius-10 u-shape-round u-group-1 div1" style="width:1000px ; background-color:#E9E9E9 !important">
 
-                </div>
-                <div id="@idModal" class="modal">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title">
-                                    Баланс
-                                </h3>
-                                <a href="#@closeModal" title="Close" class="close">×</a>
-                            </div>
-                            <div class="modal-body">
+                            <div class="u-container-layout u-container-layout-1">
+
+                            
+                              
+                           
+                            <div name="student">
                                 @{
-                                    var sorted = item.BalanceHistory.OrderBy(m => m.Date).Reverse();
+                                    var info = $"/students/info?id={item.UserId}";
+                                }
 
-                                    foreach (var balance in sorted)
+                                  
+                                  
+                             
+                                <a href="@info" style="display: inline-block">
+                                        <img class="u-image u-image-1" src="@item.PhotoUrl" alt="" data-image-width="94" data-image-height="95" style="border: 1.5px solid #f5f6fa;border-radius: 50% !important;">
+                                    </a>
+
+                                    
+                                    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-2" style="padding-top: 10px">@item.FirstName @item.LastName</p>
+
+                                <br />
+                                @{
+                                    Dictionary<int, string> keys = new Dictionary<int, string>();
+                                    var schedules = ((List<Schedule>)ViewData["schedules"]).Where(m => m.UserId == item.UserId);
+                                    foreach (var lesson in schedules)
                                     {
-                                        <label><b>@balance.Date.ToString("dd MMMM ddd HH:mm")</b></label>
-                                        <br />
-                                        <label>@balance.CustomMessage</label>
-                                        <br />
-                                        if(balance.CashFlow != null)
+                                        if (!keys.ContainsKey(lesson.TutorId))
                                         {
-                                            <label>@balance.CashFlow.Amount.ToString()</label>
+                                            keys.Add(lesson.TutorId, lesson.Course?.Title);
                                         }
-                                        <br />
+                                    }
+                                    var name = item.FirstName + "_" + item.LastName;
+                                    foreach (var key in keys)
+                                    {
+                                            <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-3">Курс @key.Value с @schedules.FirstOrDefault(m=>m.TutorId == key.Key).TutorFullName</p>
                                         <br />
                                     }
+
+                                    <br />
+
+                                        <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-4">Осталось занятий: @item.LessonsCount.ToString() </p>
+
+                                    <br />
+                                    var idModal = "openModal" + item.UserId;
+                                    var closeModal = "closeModal" + item.UserId;
+
+
+
                                 }
-                                <input hidden="hidden" value="" id="userIdBalance" />
+                                </div>
 
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <br />
-                <br />
-            }
 
-        }
-    
-    </div>
+                    
+                                <button onclick="balance('@idModal')" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="margin-right: 50px;margin-top: 80px; color:black !important">
+                                    Посмотреть баланс
+                                </button>
+
+                                <form action="/students/statistics" method="get">
+
+
+
+
+                                    <input value="@item.UserId.ToString()" id="userid" name="userid" hidden="hidden" />
+                                    <input value="@name" id="username" name="username" hidden="hidden" />
+                                    <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="margin-right: 50px;margin-top: 80px; color:black !important">
+                                        Посмотреть статистику
+                                    </button>
+
+                                </form>
+
+                </div>
+                            <div id="@idModal" class="modal">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h3 class="modal-title">
+                                                Баланс
+                                            </h3>
+                                            <a href="#@closeModal" title="Close" class="close">×</a>
+                                        </div>
+                                        <div class="modal-body">
+                                            @{
+                                                var sorted = item.BalanceHistory.OrderBy(m => m.Date).Reverse();
+
+                                                foreach (var balance in sorted)
+                                                {
+                                                    <label><b>@balance.Date.ToString("dd MMMM ddd HH:mm")</b></label>
+                                                    <br />
+                                                    <label>@balance.CustomMessage</label>
+                                                    <br />
+                                                    if (balance.CashFlow != null)
+                                                    {
+                                                        <label>@balance.CashFlow.Amount.ToString()</label>
+                                                    }
+                                                    <br />
+                                                    <br />
+                                                }
+                                            }
+                                            <input hidden="hidden" value="" id="userIdBalance" />
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <br />
+
+                        }
+                        }
+                        
+
+              
+            </div>
+            
+        </div>
+
+
+    </section>
+
+
+
+
+</body>
+</html>
+
+
+<div>
+
+  
+
 
 </div>
+
+
+
+
+
 <script>
     function searchTable() {
         var input, filter, table, tr, td, i, txtValue;

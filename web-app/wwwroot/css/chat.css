@@ -63,3 +63,25 @@
         margin-left: 60px !important;
     }
 }
+
+@media (min-width: 1920px) {
+    .contacts_card {
+        width: 550px !important;
+    }
+
+    .card {
+        height: 80vh;
+        width: 160%;
+        margin-left: 0px;
+    }
+
+    .row {
+        flex-wrap: wrap;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .col-md-8 {
+        margin-left: 250px !important;
+    }
+}
