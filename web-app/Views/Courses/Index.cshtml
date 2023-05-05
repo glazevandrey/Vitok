@@ -6,8 +6,75 @@
 }
 <link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
+<style>
 
-<div>
+
+    label {
+        display: block;
+    }
+
+        label > span {
+            display: inline-block;
+            width: 170px;
+        }
+
+        label > input {
+            display: inline-block;
+            width: 170px;
+        }
+
+    input#search {
+        padding-left: 10px;
+    }
+
+    td, th {
+        text-align: center;
+    }
+
+    td, tr, th {
+        border: 1px solid #DBDBDB;
+        font-size:32px;
+        font-family: Poppins;
+    }
+
+    .th1 {
+        width: 150px
+    }
+
+
+    @@media (min-width: 768px) {
+        .th1 {
+            width: 400px !important
+        }
+    }
+
+    @@media (min-width: 1536px) {
+        .div2 {
+            margin-left: 400px !important
+        }
+    }
+
+    @@media (min-width: 1920px) {
+        .div2 {
+            margin-left: 500px !important
+        }
+    }
+
+    
+
+    .th2 {
+        width: 50px
+    }
+    /*  .updateForm{
+            text-align:center;
+        }
+
+            .updateForm input {
+            width:200px;
+        }*/
+</style>
+
+<div class="div2" style="margin-left:500px">
 
     <div id="openModal" class="modal">
     <div class="modal-dialog">
@@ -18,17 +85,17 @@
                 </h3>
                 <a onclick="window.location.href='#'" title="Close" class="close">×</a>
             </div>
-            <div class="modal-body">
-                
-                  <form method="post" action="/courses/savenew">
+                <div class="modal-body" style="text-align:center">
+
+                    <form method="post" style="font-size:20px" action="/courses/savenew">
         
                     <label>Название:</label>
-                    <input name="title" id="title" type="text" value=""/>
+                    <input style="width:300px" name="title" id="title" type="text" value=""/>
                     <br/>
                         <br />
                         <label>Цель:</label>
 
-                    <select name="goalId" id="goalId">
+                        <select style="width:300px" name="goalId" id="goalId">
                         @foreach (Goal item in (List<Goal>)ViewData["goals"])
                         {
                             <option value="@item.Id">@item.Title</option>
@@ -37,8 +104,16 @@
                     </select>
                     <br />
                     <br />
-                    <input type="submit" value="Сохранить"/>
-                        <input type="button" onclick="window.location.href='#'" value="Отмена" />
+
+                        <div style="text-align:center; padding-top:20px">
+                            <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px;color:black !important;display:inline-block;margin-bottom:0px;">
+                                Сохранить
+                            </button>
+                            <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px; color:black !important;display:inline-block;margin-bottom:0px;" onclick="window.location.href='#'">
+                                Отмена
+                            </button>
+                        </div>
+                
 
                     <br />
                     <br />
@@ -52,15 +127,29 @@
 </div>
 
     <br />
-    <input type="text" id="search" placeholder="Поиск...">
-    <input type="button" value="Добавить курс" onclick="window.location.hash='#openModal'" />
+
+    <div>
+        <input type="text" id="search" style="border-radius: 10px; border: 1px solid gray; height:50px;width:500px;font-size:26px" placeholder="Поиск...">
+
+
+
+        <button onclick="window.location.hash = '#openModal'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:20px;color:black !important;height:50px;width:500px">
+            Добавить курс
+        </button>
+    </div>
+
+   @* <input type="text" id="search" placeholder="Поиск...">
+    <input type="button" value="Добавить курс" onclick="window.location.hash='#openModal'" />*@
 
     <br/>
-    <table id="table">
+    <table id="table" style="border-collapse:collapse">
         <thead>
             <tr>
-                <th>Название</th>
+                <th class="th1">Название</th>
+                <th class="th2"></th>
+                <th class="th2"></th>
             </tr>
+
         </thead>
         <tbody id="table-body">
             @foreach (var item in Model)
@@ -73,12 +162,21 @@
                     <td>
                     @item.Title
                     </td>
+
+                    <td>
+                        <img style="width:30px;height:30px;cursor:pointer" src="~/content/images/arrow-square-up.svg" onclick="openEdit('@item.Id', '@item.Title', '@item.Goal.Id')" />
+                    </td>
+                    <td>
+                        <img style="width:30px;height:30px;cursor:pointer" src="~/content/images/arrow-square-up-1.svg" onclick="openRemove('@item.Id')" />
+                    </td>
+
+@*
                     <td>
                         <button onclick="openEdit('@item.Id', '@item.Title', '@item.Goal.Id')">Edit</button>
                     </td>
                     <td>
                         <button onclick="openRemove('@item.Id')">Remove</button>
-                    </td>
+                    </td>*@
                 </tr>   
             
             }
@@ -119,11 +217,14 @@
                 </h3>
                 <a href="#closeEditModal" title="Close" class="close">×</a>
             </div>
-            <div class="modal-body">
-                <form method="post" action="/courses/editCourse">
+            <div class="modal-body" style="text-align:center">
+                <form method="post" action="/courses/editCourse" style="font-size:20px">
                     <input hidden="hidden" value="" id="courseIdEdit" name="courseIdEdit" />
-                    <input value="" id="courseTitle" name="courseTitle" />
-                    <select name="goalEditId" id="goalEditId">
+                    <label>Название:</label>
+                    <input value="" style="width:300px" id="courseTitle" name="courseTitle" />
+                    <br /><br />
+                    <label>Цель:</label>
+                    <select name="goalEditId" style="width:300px" id="goalEditId">
         <option value=""></option>
         @foreach (Goal item in (List<Goal>)ViewData["goals"])
         {
@@ -133,8 +234,16 @@
     </select>
                     <br /><br />
 
-                    <input type="submit" value="Изменить"/>
-                    <input type="button" value="Отмена" onclick="closeEdit()">
+                    <div style="text-align:center; padding-top:20px">
+                        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px;color:black !important;display:inline-block;margin-bottom:0px;">
+                            Сохранить
+                        </button>
+                        <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px; color:black !important;display:inline-block;margin-bottom:0px;" onclick="closeEdit()">
+                            Отмена
+                        </button>
+                    </div>
+@*                    <input type="submit" value="Изменить"/>
+                    <input type="button" value="Отмена" onclick="closeEdit()">*@
                 </form>
 
             </div>
