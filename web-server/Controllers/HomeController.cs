@@ -279,9 +279,9 @@ namespace web_server.Controllers
 
                     Role = "Student",
 
-                    //UserId = 3
                 };
                 data.Students.Add(gg);
+
                 data.SaveChanges();
                 data.Entry(gg).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 var students = TestData.UserList.Where(m => m.Role == "Student");
@@ -304,7 +304,21 @@ namespace web_server.Controllers
                     //{
                     //    dd.Id = 0;
                     //}
-                    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
+                    if (d.About.ToLower().Contains("огэ"))
+                    {
+                        d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
+                    }
+                    else
+                    {
+                        d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "Общий английский").Id });
+
+                    }
+                    if (d.About.ToLower().Contains("егэ"))
+                    {
+                        d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ЕГЭ").Id });
+                    }
+                    
+                    
                     data.Tutors.Add(d);
                 }
                 try

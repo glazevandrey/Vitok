@@ -73,7 +73,7 @@ namespace web_server.Database.Repositories
 
             var tutors = await _context.Tutors.Include(m => m.Schedules).Include(m => m.UserDates).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).Include(m => m.Courses).ThenInclude(c => c.Course).ThenInclude(c => c.Goal).ToListAsync();
             var students = await _context.Students.Include(m => m.Schedules).Include(m => m.Credit).Include(m => m.Money).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).ToListAsync();
-            var managers = await _context.Managers.Include(m => m.Notifications).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).ToListAsync();
+            //var managers = await _context.Managers.Include(m => m.Notifications).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).AsNoTracking().ToListAsync();
             try
             {
                 foreach (var item in tutors)
@@ -83,13 +83,6 @@ namespace web_server.Database.Repositories
 
                 }
                 foreach (var item in students)
-                {
-
-                    _context.Entry(item).State = EntityState.Detached;
-
-
-                }
-                foreach (var item in managers)
                 {
 
                     _context.Entry(item).State = EntityState.Detached;
@@ -113,7 +106,7 @@ namespace web_server.Database.Repositories
             allUsers.AddRange(_mapper.Map<List<Student>>(students));
 
             // Маппинг Managers на UserDTO и добавление в список всех пользователей
-            allUsers.AddRange(_mapper.Map<List<Manager>>(managers));
+            //allUsers.AddRange(_mapper.Map<List<Manager>>(managers));
 
             return allUsers;
 

@@ -248,11 +248,13 @@ namespace web_server
 
             if (user.Role == "Manager")
             {
-                var schedules = await _scheduleRepository.GetSchedulesByFunc(null);
+                var all = await _userRepository.GetAll();
 
-                foreach (var item in schedules)
+                //var schedules = await _scheduleRepository.GetSchedulesByFunc(null);
+
+                foreach (var item in all)
                 {
-                    if (item.TutorId == 1 || item.UserId == 1)
+                    if(item.UserId == user.UserId)
                     {
                         continue;
                     }
@@ -262,26 +264,14 @@ namespace web_server
                         UserId = item.UserId
                     };
 
-                    var tutorContact = new Contact()
-                    {
-                        UserId = item.TutorId
-                    };
-
 
                     if (user.Chat.Contacts.FirstOrDefault(m => m.UserId == userContct.UserId) == null)
                     {
                         user.Chat.Contacts.Add(userContct);
                     }
 
-
-                    if (user.Chat.Contacts.FirstOrDefault(m => m.UserId == tutorContact.UserId) == null)
-                    {
-                        user.Chat.Contacts.Add(tutorContact);
-                    }
                 }
-                //await _userRepository.Update(user);
 
-                await _scheduleRepository.UpdateRange(schedules);
                 return;
             }
             else
