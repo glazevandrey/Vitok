@@ -80,9 +80,9 @@
                 </div>
         var openmodal = "openModal" + modalId;
         var closemodal = "closeModal" + modalId;
-        var url = "/about/details?id=" + item.UserId;
+        var url = "/about/details/" + item.UserId;
        <form method="get" action="@url">
-            <button>Подробнее</button>
+                        <input type="submit" value="Подробнее" />
         </form>
         <button onclick="window.location.href='#@openmodal'">Выбрать время</button>
                 }

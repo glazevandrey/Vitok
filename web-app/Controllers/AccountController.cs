@@ -63,7 +63,7 @@ namespace web_app.Controllers
     [FromForm] string name,
     [FromForm] string lastName,
     [FromForm] string photoUrl,
-    [FromForm] DateTime birthDate,
+    [FromForm] DateTime dob,
     [FromForm] string email,
     [FromForm] string password,
     [FromForm] string phone,
@@ -87,10 +87,10 @@ namespace web_app.Controllers
                 student.About = about;
                 student.Password = password;
                 student.Phone = phone;
-                student.Wish = wish;
+                student.Wish = wish.TrimStart().TrimEnd();
                 student.Email = email;
                 student.PhotoUrl = photoUrl;
-                student.BirthDate = birthDate;
+                student.BirthDate = dob;
                 student.UserId = userId;
                 req = new CustomRequestPost("api/account/saveuserinfo", student);
             }
@@ -105,7 +105,7 @@ namespace web_app.Controllers
                 tutor.Wish = wish;
                 tutor.Email = email;
                 tutor.PhotoUrl = photoUrl;
-                tutor.BirthDate = birthDate;
+                tutor.BirthDate = dob;
                 tutor.UserId = userId;
                 req = new CustomRequestPost("api/account/saveuserinfo", tutor);
 

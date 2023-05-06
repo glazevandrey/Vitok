@@ -61,12 +61,20 @@
     }
     </script>
     <style>
+    hr{
+        margin-left:-50%;
+        margin-right:-50%;
+    }
         input#balance_input[disabled] {
             background-color:white;
         }
 
+        label input[disabled] {
+            background-color: white;
+        }
+
         .hist{
-            font-size:20px;
+            font-size:26px;
         }
 
 
@@ -74,25 +82,48 @@
             #text-d8c022 {
                 width: 200px !important;
             }
-
+           
             #text-d8c0 {
-                width: 400px !important;
+                width: 500px !important;
+            }
+            .toMarg{
+                margin-left:-100px;
             }
         }
         
-
-       
-
         @@media (min-width: 1920px) {
             #text-d8c022 {
                 width: 300px !important;
             }
 
+            .toMarg {
+                margin-left: 100px;
+            }
             #text-d8c0 {
-                width: 600px !important;
+                width: 870px !important;
             }
         }
 
+        #purchase label{
+            font-size:36px;
+            font-weight: 700;
+        }
+
+    
+
+        select {
+            text-align: center;
+        }
+
+        option {
+            text-align: center;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        
     </style>
 
     <div>
@@ -131,11 +162,13 @@
         </div>
     </div>
     <div style="margin-left:250px">
-    @{
+        <p class="u-custom-font u-font-montserrat p12 u-text u-text-default u-text-1 p12" style="margin-left:450px;font-size:30px;font-weight:700">Баланс</p>
+        <div class="toMarg" style="">
+            @{
             if (Model.Role == "Tutor" || Model.Role == "Manager")
             {
                 <div id="balance">
-                    <label  type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-block;margin-left:40px;width:400px;font-size:20px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:20px"><span style="font-weight:700">Баланс</span>: <input value=0 id="balance_input" style="border:none" disabled="disabled" /><img style="width:40px;height:40px;float:right;padding-bottom:5px" src="~/content/images/goldCoins.svg"></label>
+                    <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-block;margin-left:40px;width:400px;font-size:30px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:30px"><span style="font-weight:700">Баланс</span>: <input value=0 id="balance_input" style="border:none;width:100%;" disabled="disabled" /><img style="width:40px;height:40px;float:right;padding-bottom:5px" src="~/content/images/goldCoins.svg"></label>
 
                     <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" id="text-d8c022" style="margin-left:50px;height:60px;display:inline-block;margin-right: 50px;color:black !important;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);" onclick="window.location.href='#withdrawModal'">
                         Вывод средств
@@ -158,8 +191,9 @@
                 }
 
                 <div id="count">
-                    <label>Осталось: </label>
-                    <input disabled="disabled" id="balance_input" value="@stud.LessonsCount занятий" />
+
+                    <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-block;width:400px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:26px;margin-top:50px"><span style="font-weight:700">Осталось</span>: <input value='@stud.LessonsCount занятий' id="balance_input" style="border:none" disabled="disabled" /><img style="width:40px;height:40px;float:right;padding-bottom:5px" src="~/content/images/goldCoins.svg"></label>
+
                 </div>
 
                 <br />
@@ -171,30 +205,32 @@
                         <input hidden="hidden" name="userId" id="userId" value="@stud.UserId" />
                         <input hidden="hidden" name="isTrialPay" id="isTrialPay" value="false" />
 
-                        <br />
-                        <br />
-                        <label>Добавить пробное занятие стоимостью 250 рублей:</label>
+                       
 
                         @{
 
                             if (stud.UsedTrial == false)
                             {
-                                <input value="Добавить" onclick="trial()" type="button" />
+
+                               
+                        <label>Добавить пробное занятие стоимостью 250 рублей:</label>
+                                <button type="button" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" id="text-d8c022" style="margin-left:50px;height:60px;display:inline-block;margin-right: 50px;color:black !important;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);" onclick="trial()">
+                                    Добавить
+                                </button>
+
 
                             }
                             else
                             {
-                                <input disabled="disabled" value="Добавить" onclick="trial()" type="button" />
-
+                               
                             }
-                            <br />
-                            <br />
+                       
 
                         }
 
 
                         <label>Выберите пакет занятий:</label>
-                        <select onchange="selectChanged(this)">
+                        <select id="mySelect" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:20px;display:inline-block;;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);margin-left:50px" onchange="selectChanged(this)">
 
                             @{
                                 <option value="0"></option>
@@ -210,11 +246,19 @@
                         <br />
 
                         <label>Или</label>
-                        <br />
+                        
                         <br />
 
                         <label>Выберите количество занятий (вне пакета)</label>
-                        <input id="count2" onchange="changed2(this)" name="count" type="text" value="0" /><button type="button" style="width:50px;" onclick="clicked()">+</button>
+
+                        <label type="text" placeholder="" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-block;margin-left:40px;width:400px;font-size:20px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:20px;width:80px;height:60px"><input id="count2" onchange="changed2(this)" name="count" maxlength="2" style="border:none;width:100%;padding-left:28%;" type="number" min="0" max="99" value="0" /></label>
+
+                       
+
+                        <button type="button" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" id="text-d8c022" style="margin-bottom:16px;font-size:26px;padding-left:30px;margin-left:50px;height:60px;display:inline-block;margin-right: 50px;color:black !important;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);width:80px !important" onclick="clicked()">
+                            <span>+</span>
+                        </button>
+
                         <input id="count3" hidden="hidden" name="count3" value="0" />
 
 
@@ -223,11 +267,12 @@
                         <br />
                         <br />
                         <div>
-
-                            <label>С вас:</label><input style="width:100px;" id="countView" value="0" /><label> рублей</label>
-
+                            <label type="text" placeholder="" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-flex;margin-left:40px;width:300px;font-size:20px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:20px;height:60px"><span style="display:inline-flex;">Стоимость:</span><input id="countView" disabled="disabled" value="0" style="border:none;width:90px;padding-bottom:10px; display:inline-block;padding-left:20px;font-weight:700;" /> <span>рублей</span></label>
                         </div>
-                        <input type="submit" value="Пополнить счет" />
+
+                        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" id="text-d8c022"  style="margin-top:50px;font-size:20px;margin-left:350px;height:60px;display:inline-block;margin-right: 50px;color:black !important;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);">
+                            Пополнить счет
+                        </button>
                         <br />
                         <br />
 
@@ -238,6 +283,7 @@
             }
 
     }
+        </div>
     </div>
    
 }
@@ -245,8 +291,9 @@
 <br />
 <br />
 <div id="history" style="margin-left:250px">
-    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-1 p12" style="margin-left:350px;font-size:26px">История</p>
+    <p class="u-custom-font u-font-montserrat p12 u-text u-text-default u-text-1 p12" style="margin-left:450px;font-size:30px;font-weight:700">История</p>
     <br />
+    <div class="toMarg" style="">
     @{
 
         var sorted = Model.BalanceHistory.OrderBy(m=>m.Date).Reverse();
@@ -281,3 +328,5 @@
         }
     }
     </div>
+    </div>
+ 

@@ -194,11 +194,13 @@
                                     var sw = ((Tutor)Model).About;
                                     if (sw != null)
                                     {
-                                        <input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" value="@sw">
+                                        <textarea class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" name="about">@sw.ToString().TrimStart().TrimEnd()</textarea>
+                                       // <input type="text" placeholder="" id="text-d8c0" name="about" class=" value="@sw">
                                     }
                                     else
                                     {
-                                        <input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" value="">
+                                        <textarea class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" name="about"></textarea>
+                                        //<input type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" value="">
 
                                     }
                                 }
@@ -278,8 +280,6 @@
                                                 <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA">@time.dateTime.ToString("HH:mm")</label>
 
 
-
-
                                             }
                                         }
 
@@ -302,13 +302,12 @@
                                     var sw = ((Student)Model).Wish;
                                     if (sw != null)
                                     {
-                                        <input type="text" placeholder="" id="text-100d" name="wish" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-8" value="@sw">
+                                        <textarea class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" name="wish">@sw.ToString().TrimStart().TrimEnd()</textarea>
 
                                     }
                                     else
                                     {
-                                        <input type="text" placeholder="" id="text-100d" name="wish" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-8" value="">
-
+                                        <textarea class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" name="wish"></textarea>
                                     }
                             }
                           

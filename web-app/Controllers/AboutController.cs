@@ -126,9 +126,10 @@ namespace web_app.Controllers
             return Redirect($"/login?id={id}");
         }
 
-        [HttpGet("details", Name = "details")]
-        public IActionResult Details([FromQuery] string id)
+        [HttpGet("details/{id}", Name = "details/{id}")]
+        public IActionResult Details([FromRoute] string id)
         {
+
             CustomRequestGet req = new GetTutorByIdRequest(id);
             var response = _requestService.SendGet(req, HttpContext);
             if (response == null)
