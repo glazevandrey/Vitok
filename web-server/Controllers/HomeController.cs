@@ -147,9 +147,16 @@ namespace web_server.Controllers
             return json;
         }
 
+        [HttpGet("getSiteContacts", Name = "getSiteContacts")]
+        public async Task<string> GetSiteContacts()
+        {
 
+            var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(await data.SiteContacts.ToListAsync()));
+            return json;
+        }
 
-        [Authorize]
+        
+                [Authorize]
         [HttpGet("getstatistics", Name = "getstatistics")]
         public async Task<string> Getstatistics([FromQuery] string args)
         {
@@ -244,7 +251,7 @@ namespace web_server.Controllers
         {
             if (data.Tutors.Count() == 0 && data.Students.Count() == 0 && data.Managers.Count() == 0)
             {
-
+                data.SiteContacts.AddRange(TestData.Sites);
 
 
                 data.Goals.AddRange(TestData.Goals);

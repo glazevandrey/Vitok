@@ -140,5 +140,18 @@ namespace web_app.Controllers
             return View(tutor);
         }
 
+        [HttpGet("siteContacts", Name = "SiteContacts")]
+        public IActionResult Contacts()
+        {
+            CustomRequestGet req = new GetSiteContactsRequest();
+            var response = _requestService.SendGet(req, HttpContext);
+            if (response == null)
+            {
+                return BadRequest("Технические проблемы. Мы уже исправляем!");
+            }
+            var res = Newtonsoft.Json.JsonConvert.DeserializeObject<List<SiteContact>>(response.result.ToString());
+            return View(res);
+        }
+
     }
 }

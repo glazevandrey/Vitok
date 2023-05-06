@@ -1,4 +1,322 @@
-﻿
-<form method="get" action="/about/tutors">
-    <input type="submit" value="Записаться"/>
-</form>
+﻿<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
+<script src="~/js/jquery/jquery.min.js"></script>
+<script src="~/js/moment.min.js"></script>
+
+<link rel="stylesheet" href="~/content/nicepage.css">
+<link id="u-page-google-font" rel="stylesheet" href="~/css/fonts/Montserrat.css">
+<link id="u-theme-google-font" rel="stylesheet" href="~/css/fonts/Roboto.css">
+<style>
+    .u-container-layout.u-container-layout-1 {
+        height: 360px !important;
+    }
+
+    .u-image-2 {
+        display: inline-block;
+        margin-bottom: 50px;
+    }
+
+    p.u-custom-font.u-font-montserrat.u-text.u-text-default.u-text-2 {
+        display: inline-block;
+        font-size: 28px;
+        font-weight: 700;
+        margin-left: 40px;
+    }
+
+    p.u-custom-font.u-font-montserrat.u-text.u-text-default.u-text-3 {
+        padding-left: 185px;
+        font-size: 24px;
+    }
+
+    .u-image-2 {
+        margin-left: 20px;
+        margin-top: 20px;
+    }
+
+    .u-btn {
+        display: inline-block;
+        margin-left: 5px;
+    }
+
+    form {
+        display: inline-block;
+    }
+
+    .tutor {
+        height: 360px !important;
+        margin-top: 50px;
+        box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+        width: 1300px;
+        border-radius: 15px;
+    }
+
+    h4 {
+        font-size: 36px;
+        display: inline-block;
+        margin-left: 200px;
+        cursor: pointer;
+    }
+
+    .h4_1 {
+    }
+
+    .h4_2 {
+    }
+
+    .dropdown {
+        display: inline-block;
+        position: relative;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        margin-left: 180px;
+        z-index: 99999;
+        font-size: 26px;
+        background-color: white;
+        width: auto;
+        overflow: auto;
+        box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
+    }
+
+        .dropdown-content a {
+            display: block;
+            color: #000000;
+            width: auto;
+            padding: 5px;
+            text-decoration: none;
+        }
+
+            .dropdown-content a:hover {
+                color: #FFFFFF;
+                background-color: #00A4BD;
+            }
+
+</style>
+
+
+<style>
+    .div2 {
+        width: 1300px;
+        height: 300px;
+        background-color: #8FE1D7;
+        border-radius: 20px;
+        box-shadow: 5px 5px 20px 0 rgb(0 0 0 / 40%);
+        display: inline-block;
+        margin-top: 100px;
+        margin-left: 400px;
+    }
+
+    .div3 {
+        margin-left: 220px;
+        width: 800px;
+        height: 200px;
+        border-radius: 20px;
+        text-align: center;
+        margin-top: 50px;
+        background-color: #FAFAFA;
+        padding-top: 70px;
+    }
+</style>
+<header class="u-clearfix u-header u-valign-middle u-header u-body" id="sec-676a">
+
+    <div class="u-clearfix u-group-elements u-group-elements-1" style="width: 100%">
+        <img class="logo u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="/content/images/image6.png" alt="" data-image-width="94" data-image-height="95">
+        <h3 class="logo-text-vitok u-custom-font u-font-montserrat u-text u-text-1">ВИТОК</h3>
+        <h3 class="logo-text-online u-custom-font u-font-montserrat u-text u-text-2" style="margin-bottom:20px;display: inline-block;">
+            онлайн-школа<br>
+        </h3>
+
+        <div class="dropdown">
+            <h4 class="h4_1">
+                О нас
+
+            </h4>
+            <div class="dropdown-content">
+                <a href="~/about">О школе</a>
+                <a href="~/about/sitecontacts">Контакты</a>
+            </div>
+        </div>
+
+        <h4 class="h4_2" onclick="window.location.href='http://localhost:23571/about/tutors'">
+            Репетиторы
+        </h4>
+
+        <h4 class="h4_3" style="float:right;margin-top:-5px;">
+            <button type="button" onclick="window.location.href='/login'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:30px;margin-right: 50px;color:white !important">
+                Войти
+            </button>
+        </h4>
+    </div>
+</header>
+
+
+ <div class="div2" style="">
+                <div class="div3">
+                    <div style="margin-top:-20px">
+            <label style="color:black;font-weight:700;font-size:30px;text-align:center;font-weight:700;font-size:30px;font-family:Montserrat">НАША ШКОЛА - ЭТО НОВЫЙ ВИТОЙ ЗНАНИЙ <br /> В ВАШУ КОПИЛКУ</label>
+
+                    </div>
+               
+        
+                </div>
+</div>
+<p id="p14" class="u-custom-font u-font-montserrat p12 u-text u-text-default u-text-1 p12" style="margin-left:700px;font-size:40px;font-weight:700;    margin-top: 120px !important;">ВАМ НУЖЕН АНГЛИЙСКИЙ?</p>
+
+<style>
+    .div0{
+        justify-content:center;
+        margin-left:-100px;
+    }
+    .div4{
+        background-color: #FFDAB8;
+        font-size:26px;
+        border-radius:20px;
+        width:300px;
+        height:100px;
+        margin-left:200px;
+        margin-top:70px;
+        flex-basis: 33.33%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .div4 {
+        flex-basis: 33.33%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight:700;
+    }
+
+    .div0:nth-child(3n+1) {
+            clear: both;
+        }
+
+    .div0:nth-child(3n) {
+            margin-right: 0;
+        }
+        .div5{
+            display:flex;
+            text-align:center;
+            
+        }
+
+</style>
+
+
+<div class="div0" style="display:flex;flex-wrap:wrap;">
+
+    <div class="div5">
+
+        <div class="div4">
+            <label>Сдать экзамен</label>
+        </div>
+        <div class="div4">
+            <label>Работать</label>
+        </div>
+        <div class="div4">
+            <label>Преодолеть языковой барьер</label>
+        </div>
+    </div>
+    <div class="div5">
+        <div class="div4">
+
+            <label>Проходить собеседование</label>
+        </div>
+        <div class="div4">
+
+            <label>Путешествовать</label>
+        </div>
+        <div class="div4">
+
+            <label>Повысить уровень</label>
+        </div>
+
+    </div>
+    <br/>
+
+    <br />
+    <div class="div5">
+        <div class="div4" style="    margin-left: 413px !important;
+    width: 533px !important;">
+
+            <label>Изучить с нуля</label>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<style>
+
+    .div6 {
+        background-color: #FF7A00 !important;
+        width: 1000px;
+        height: 611px;
+        background-color: #8FE1D7;
+        border-radius: 20px;
+        box-shadow: 5px 5px 20px 0 rgb(0 0 0 / 40%);
+        display: inline-block;
+        margin-top: 100px;
+        margin-left: 500px;
+        text-align:center;
+    }
+
+    .div7 {
+        margin-left: 120px;
+        width: 750px;
+        display:flex;
+        height: 300px;
+        border-radius: 20px;
+        text-align: center;
+        margin-top: 50px;
+        background-color: #FAFAFA;
+        padding-top: 70px;
+        justify-content:center;
+    }
+</style>
+
+<div class="div6" style="">
+    <div class="div7">
+        <div style="margin-top:-20px">
+            <label style="color:black;font-weight:700;font-size:30px;text-align:center;font-weight:700;font-size:36px;font-family:Montserrat">Стоимость<br/>индивидуального<br/>занятия за 60 минут</label>
+        </div>
+        <div>
+            <label style="color:black;font-size:30px;text-align:center;font-size:36px;font-family:Montserrat">от 699 рублей</label>
+
+        </div>
+
+    </div>
+    <div style="margin-top:10%">
+        <label style="color:white;font-weight:700;font-size:30px;text-align:center;font-size:36px;font-family:Montserrat">ПРОБНОЕ ЗАНЯТИЕ ВСЕГО 250 РУБЛЕЙ!</label>
+    </div>
+
+</div>
+
+
+<div>
+
+    <form method="get" action="/about/tutors">
+
+        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:36px;margin-left:800px;width:400px;margin-right: 50px;margin-top: 80px; color:white !important">
+            Записаться
+        </button>
+    </form>
+</div>
+
+
+
+<script>
+    document.getElementsByTagName('body')[0].style.backgroundColor = '#E9E9E9';
+     var dropdown = document.querySelector('.dropdown');
+    var dropdownContent = document.querySelector('.dropdown-content');
+
+    dropdown.addEventListener('click', function () {
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+    });
+</script>

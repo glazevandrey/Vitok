@@ -38,7 +38,19 @@ new CourseDTO() {Title="Cambridge ESOL", GoalId = 8}
             //new CourseDTO() { Title="ЕГЭ",  GoalId = 2, },
             //new CourseDTO() {Title="Общий английский", GoalId = 2}
         };
-
+        public static List<SiteContact> Sites = new List<SiteContact>()
+        {
+            new SiteContact()
+            {
+                Text = "8-800-800-800",
+                Title="Горячая линия"
+            },
+            new SiteContact()
+            {
+                Text = "Telegram: @vitok",
+                Title="Мы в соцсетях"
+            },
+        };
         public static List<Tariff> Tariffs = new List<Tariff>()
         {
             new Tariff() {  Amount = 2700,  LessonsCount = 3, Title = "ПАКЕТ занятий 3"},

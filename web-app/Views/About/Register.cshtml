@@ -7,6 +7,91 @@
 
 <script src="~/js/jquery/jquery.min.js"></script>
 <script src="~/js/moment.min.js"></script>
+
+<link rel="stylesheet" href="~/content/nicepage.css">
+<link id="u-page-google-font" rel="stylesheet" href="~/css/fonts/Montserrat.css">
+<link id="u-theme-google-font" rel="stylesheet" href="~/css/fonts/Roboto.css">
+<style>
+    .u-container-layout.u-container-layout-1 {
+        height: 360px !important;
+    }
+    .u-image-2{
+        display:inline-block;
+        margin-bottom:50px;
+    }
+    p.u-custom-font.u-font-montserrat.u-text.u-text-default.u-text-2{
+        display: inline-block;
+        font-size: 28px;
+    font-weight: 700;
+    margin-left:40px;
+    }
+    p.u-custom-font.u-font-montserrat.u-text.u-text-default.u-text-3{
+        padding-left:185px;
+        font-size:24px;
+    }
+
+    .u-image-2 {
+        margin-left: 20px;
+        margin-top: 20px;
+    }
+    .u-btn{
+        display:inline-block;
+        margin-left:5px;
+    }
+    form{
+        display: inline-block;
+    }
+    .tutor{
+        height: 360px !important;
+        margin-top: 50px;
+        box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+        width:1300px;
+        border-radius:15px;
+    }
+    h4{
+        font-size: 36px;
+        display: inline-block;
+        margin-left: 200px;
+        cursor:pointer;
+    }
+    .h4_1{
+      
+    }
+    .h4_2{
+     
+    }
+
+    .dropdown {
+        display: inline-block;
+        position: relative;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        margin-left: 180px;
+        z-index:99999;
+        font-size:26px;
+        background-color:white;
+        width: auto;
+        overflow: auto;
+        box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
+    }
+
+        .dropdown-content a {
+            display: block;
+            color: #000000;
+            width: auto;
+            padding: 5px;
+            text-decoration: none;
+        }
+
+            .dropdown-content a:hover {
+                color: #FFFFFF;
+                background-color: #00A4BD;
+            }
+
+</style>
 <script>
     let time = [];
 
@@ -31,7 +116,11 @@
 
         var dateLabels = document.getElementById('date-labels');
         dateLabels.innerHTML = "";
+        console.log(id);
+
         document.getElementById('textTime;' + id).value = time;
+        console.log(time);
+                console.log( document.getElementById('textTime;' + id).value);
 
     }
 
@@ -39,182 +128,256 @@
         return time;
     }
 </script>
-<select id="searchInput" onchange="searchTable(this)">
-    <option value="" disabled selected>Курс</option>
-    @{
-        foreach (var course in (List<Course>)ViewData["courses"])
-        {
-            <option value="@course.Title">@course.Title</option>
-        }
-    }
-</select>
-<input type="reset" onclick="document.getElementById('searchInput').value = ''; document.getElementById('searchInput').onchange();" />
-<br/>
-<br/>
-<div id="tutors">
 
-@{
-    
-    foreach (Tutor item in Model)
-    {
-        <div class="tutor">
-             
+
+
+
+<header class="u-clearfix u-header u-valign-middle u-header u-body" id="sec-676a">
+
+    <div class="u-clearfix u-group-elements u-group-elements-1" style="width: 100%">
+        <img class="logo u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="/content/images/image6.png" alt="" data-image-width="94" data-image-height="95">
+        <h3 class="logo-text-vitok u-custom-font u-font-montserrat u-text u-text-1">ВИТОК</h3>
+        <h3 class="logo-text-online u-custom-font u-font-montserrat u-text u-text-2" style="margin-bottom:20px;display: inline-block;">
+            онлайн-школа<br>
+        </h3>
+
+        <div class="dropdown">
+            <h4 class="h4_1">
+                О нас
+
+            </h4>
+            <div class="dropdown-content">
+                <a href="~/about">О школе</a>
+                <a href="~/about/sitecontacts">Контакты</a>
+            </div>
+        </div>
+
+        <h4 class="h4_2" onclick="window.location.href='http://localhost:23571/about/tutors'">
+            Репетиторы
+        </h4>
+
+        <h4 class="h4_3" style="float:right;margin-top:-5px;">
+            <button type="button" onclick="window.location.href='/login'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:30px;margin-right: 50px;color:white !important">
+                Войти
+            </button>
+        </h4>
+    </div>
+</header><p id="p14" class="u-custom-font u-font-montserrat p12 u-text u-text-default u-text-1 p12" style="margin-left:540px;font-size:46px;font-weight:700;    margin-top: 50px !important;">Репетиторы по английскому языку</p>
+<div style="margin-left:-365px;margin-top:50px">
+    <select id="searchInput" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:420px;margin-left:660px;font-size:20px;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);" onchange="searchTable(this)">
+        <option value="" disabled selected>Курс</option>
         @{
-            <img style="float:left" src="@item.PhotoUrl" width="100" height="100" />
-                    <label><b>@item.FirstName</b></label>
-                    var modalId = "modal" + item.UserId;
-                    <br/>
-                    <label>Курсы: </label>
-                    <div id="tutorCourses">
+            foreach (var course in (List<Course>)ViewData["courses"])
+            {
+                <option value="@course.Title">@course.Title</option>
+            }
+        }
+    </select>
+    <input type="reset" id="search" style="cursor:pointer;border-radius: 10px; border: 1px solid gray; height:50px;width:100px;width: 100px;" onclick="document.getElementById('searchInput').value = ''; document.getElementById('searchInput').onchange();">
 
-                        @{
-                            var courses = "";
-                            foreach (var course in item.Courses)
-                            {
-                                courses += course.Title + ";";
-                            }
-                            courses = courses.TrimEnd(';');
-                            <label>@courses</label>
-                            <br/>
-                        }
-                </div>
-        var openmodal = "openModal" + modalId;
-        var closemodal = "closeModal" + modalId;
-        var url = "/about/details/" + item.UserId;
-       <form method="get" action="@url">
-                        <input type="submit" value="Подробнее" />
-        </form>
-        <button onclick="window.location.href='#@openmodal'">Выбрать время</button>
-                }
-            </div>
-
-        <div id="@openmodal" class="modal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">@item.FirstName @item.LastName</h3>
-                        <a href="#@closemodal" title="Close" class="close">×</a>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-
-                            @{
-                                int x = 0;
-                                int y = 0;
-                                var w_days = new List<DayOfWeek>()
-                                {
-                                    DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
-                                };
-
-                                foreach (var day in w_days)
-                                {
-                                        <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
-                                        y = 0;
-                                        <br />
-                                        <br />
-                                        var dates = item.UserDates.OrderBy(m => m.dateTime);
-                                        dates.Reverse();
-                                        foreach (var time in dates)
-                                    { 
-                                        if(time.dateTime.DayOfWeek == day)
-                                        {
-                                                var name = $"a{item.UserId}{x}{y}";
-                                                <button class="@name" onclick="clickeds('@name', '@item.UserId', '@time.dateTime.ToString("dd.MM.yyyy HH:mm")')">@time.dateTime.ToString("HH:mm")</button>
-                                                y++;
-
-                                                 <br />
-
-                                        }
-                                        x++;
-
-                                       
-                                    }
-                                     <br />
-
-                                }      
-                                <script>
-                                function selectChanged(el){
-                                document.getElementById("course22").value = el.value;
-                                }
-                                </script>
-                                
-                                
-                                <br />
-                                <br />
-                                <br />
-                                <label>Выберите желаемый курс</label>
-                                <select id="courseChange" onchange="selectChanged(this)">
-                                @{
-                                foreach (var course in item.Courses)
-                                {
-                                    <option value="@course.Id">@course.Title</option>
-                                }
-                                }
-                               
-                                </select>
-                                    
-                                        if(item.Courses.Count > 0)
-                                        {
-                                                  <script>
-                                        document.getElementById("course22").value = '@item.Courses.First()?.Id';
-
-                                    </script>
-                                        }
-                                    
-                              
-                                <br />
-                            }
-
-
-                        </p>
-                      
-                        <form method="post" action="FromRegisterToLogin" id="form1">
-                            @{
-                                var textTime = $"textTime;{item.UserId}";
-                                var tutor = $"tutor;{item.UserId}";
-
-                                <input hidden="hidden" class="course" name="course" id="course22" value="" />
-
-                                <input  hidden="hidden" class="textTime" name="textTime" id="@textTime" value="" />
-                                <input  hidden="hidden" class="tutor" name="tutor" id="@tutor" value="@item.UserId" />
-
-                                    <input type="button" onclick="window.location.href='#agree';processDates(time);" value="Записаться" />
-                            }
-
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <br />
-        <br />
-    }
-        <div id="agree" class="modal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title">Выбранные даты занятий</h3>
-                        <a onclick="window.location.href='#'" title="Close" class="close">×</a>
-                    </div>
-                    <div class="modal-body">
-                    <label>Ближайшие даты выбранных занятий:</label>
-                    <br/>
-                        <div id="date-labels"></div>
-                        <br />
-                        <br/>
-                        <input type="button" value="Подтвердить" onclick="document.getElementById('form1').submit()" />
-                        <input type="button" value="Отмена" onclick="window.location.href='#'" />
-
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-}
 
 </div>
+    <div id="tutors" style="margin-top:100px;margin-left:200px;">
+
+  
+        <section class="u-clearfix u-section-1" id="sec-38fc">
+            <div class="u-clearfix u-sheet-1" style="margin-top: -100px;padding-left:100px">
+                @{
+
+                    foreach (Tutor item in Model)
+                    {
+                    <div class="tutor" style="height:400px">
+                            <div class="u-container-style u-custom-color-3 u-group u-radius-10 u-shape-round u-group-1 div1" style="width:1300px ; background-color:#fff!important">
+                                <div class="u-container-layout u-container-layout-1">
+                                <img class="u-image u-image-1 u-image-1 u-image-2" src="@item.PhotoUrl" alt="" data-image-width="94" data-image-height="95" style="border: 1.5px solid #f5f6fa;border-radius: 50% !important; width:100px; height:100px">
+                                    
+                                    
+                                    <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-2" style="padding-top: 10px">@item.FirstName</p>
+
+                                <div style="    margin-left: 10px;">
+                                    @{
+                                        var ab = item.About;
+                                       
+                                        <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-3" style="margin-top:10px"><span style="font-weight:700">О себе:</span> @ab</p>
+
+                                    }
+
+                                    <br />
+                                    <div id="tutorCourses">
+
+                                        @{
+                                            var courses = "";
+                                            foreach (var course in item.Courses)
+                                            {
+                                                courses += course.Title + ";";
+                                            }
+                                            courses = courses.TrimEnd(';');
+                                            <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-3"><span style="font-weight:700">Курсы:</span> @courses</p>
+
+                                            <br />
+                                        }
+                                    </div>
+                                    </div>
+                                   
+                                    @{
+                                        var modalId = "modal" + item.UserId;
+
+                                        var openmodal = "openModal" + modalId;
+                                        var closemodal = "closeModal" + modalId;
+                                        var url = "/about/details/" + item.UserId;
+
+                                    <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="background-color:#FF7A00 !important;font-size:20px;width:160px;float:left;margin-right: 50px;margin-top: -170px; color:white !important;font-weight:700;margin-left:10px" onclick="window.location.href='#@openmodal'">
+                                        Выбрать <br /> время
+                                    </button>
+                                        <form method="get" action="@url">
+                                        <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:20px;width:160px;margin-right: 50px; color:white !important;font-weight:700;margin-top: -70px;margin-left:10px" type="submit">
+                                                Подробнее
+                                            </button>
+                                        </form>
+
+
+                                   
+                                    }
+
+                                </div>
+
+                            </div>
+
+                            @{
+
+                            }
+                        </div>
+
+                        <div id="@openmodal" class="modal">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h3 class="modal-title">@item.FirstName @item.LastName</h3>
+                                        <a href="#@closemodal" title="Close" class="close">×</a>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+
+                                            @{
+                                                int x = 0;
+                                                int y = 0;
+                                                                                        var formId = $"form;{item.UserId}";var courseIdForm = $"course;{item.UserId}";
+
+                                                var w_days = new List<DayOfWeek>()
+                                    {
+                                    DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+                                    };
+
+                                                foreach (var day in w_days)
+                                                {
+                                                    <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                                                    y = 0;
+                                                    <br />
+                                                    <br />
+                                                    var dates = item.UserDates.OrderBy(m => m.dateTime);
+                                                    dates.Reverse();
+                                                    foreach (var time in dates)
+                                                    {
+                                                        if (time.dateTime.DayOfWeek == day)
+                                                        {
+                                                            var name = $"a{item.UserId}{x}{y}";
+                                                            
+                                                            <button class="@name" onclick="clickeds('@name', '@item.UserId', '@time.dateTime.ToString("dd.MM.yyyy HH:mm")')">@time.dateTime.ToString("HH:mm")</button>
+                                                            y++;
+
+                                                            <br />
+
+                                                        }
+                                                        x++;
+
+
+                                                    }
+                                                    <br />
+
+                                                }
+                                                <script>
+                                                    function selectChanged(el, id) {
+                                                        document.getElementById(id).value = el.value;
+                                                    }
+                                                </script>
+
+
+                                                <br />
+                                                <br />
+                                                <br />
+                                                <label>Выберите желаемый курс</label>
+                                                <select id="courseChange" onchange="selectChanged(this, '@courseIdForm')">
+                                                    @{
+                                                        foreach (var course in item.Courses)
+                                                        {
+                                                            <option value="@course.Id">@course.Title</option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                               
+
+
+                                            <br />
+                                        }
+
+
+                                        </p>
+                                        <form method="post" action="FromRegisterToLogin" id="@formId">
+                                            @{
+                                                var textTime = $"textTime;{item.UserId}";
+                                                var tutor = $"tutor;{item.UserId}";
+
+                                            <input hidden="hidden" class="course" name="course" id="@courseIdForm" value="" />
+
+                                                <input hidden="hidden" class="textTime" name="textTime" id="@textTime" value="" />
+                                                <input hidden="hidden" class="tutor" name="tutor" id="@tutor" value="@item.UserId" />
+
+                                            <input type="button" onclick="document.getElementById('agreeId').value = '@item.UserId';window.location.href='#agree';processDates(time);" value="Записаться" />
+                                            }
+
+                                        </form>
+
+                                    <script>
+                                        document.getElementById("@courseIdForm").value = '@item.Courses.First()?.Id';
+                                    </script>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    }
+                    <div id="agree" class="modal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title">Выбранные даты занятий</h3>
+                                    <a onclick="window.location.href='#'" title="Close" class="close">×</a>
+                                </div>
+                                <div class="modal-body">
+                                    <label>Ближайшие даты выбранных занятий:</label>
+                                    <br />
+                                    <input hidden="hidden" value="0" id="agreeId"/>
+                                    <div id="date-labels"></div>
+                                    <br />
+                                    <br />
+
+                                <input type="button" value="Подтвердить" onclick="console.log(document.getElementById('agreeId').value);document.getElementById('form;' + document.getElementById('agreeId').value).submit()" />
+                                    <input type="button" value="Отмена" onclick="window.location.href='#'" />
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </section>
+    </div>
+
 
 <script>
     function processDates(dates) {
@@ -254,7 +417,7 @@
         table = document.getElementById("tutors");
         tr = table.getElementsByClassName("tutor");
         for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("label");
+            td = tr[i].getElementsByTagName("p");
             for (j = 0; j < td.length; j++) {
                 txtValue = td[j].textContent || td[j].innerText || td[j].innerHTML;
 
@@ -275,5 +438,12 @@
     }
 
     document.getElementById("searchInput").onkeyup = searchTable;
+    document.getElementsByTagName('body')[0].style.backgroundColor = '#E9E9E9';
 
-</script>
+    var dropdown = document.querySelector('.dropdown');
+    var dropdownContent = document.querySelector('.dropdown-content');
+
+    dropdown.addEventListener('click', function () {
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+    });
+                     </script>
