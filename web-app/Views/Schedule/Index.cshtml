@@ -30,7 +30,12 @@
     <img id="datepicker-btn" src="~/content/images/calendar.svg" style="width:20px;height:40px;cursor:pointer;margin-left:20px" />
 </form>
 <style>
-
+    .modal-body label {
+        font-size: 26px;
+    }
+    .modal-body input {
+        font-size: 26px;
+    }
     td .circle{
         position: absolute;
         height: 10px;
@@ -40,6 +45,22 @@
         top: 8;
     }
 
+    .myinput.large {
+        height: 22px;
+        width: 22px;
+        box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+    }
+
+        .myinput.large[type="checkbox"]:before {
+            width: 20px;
+            height: 20px;
+        }
+
+        .myinput.large[type="checkbox"]:after {
+            top: -20px;
+            width: 16px;
+            height: 16px;
+        }
     td .mini{
         position: absolute;
         height: 10px;
@@ -59,31 +80,31 @@
 
         @{
 
-            <img class="vopr" src="/content/images/minivoskl.svg" style="height:40px;width:20px;margin-left:12px" />
+            <img class="vopr" src="/content/images/minivoskl.svg" style="height:20px;width:20px;margin-left:12px" />
             <label style="    padding-left: 10px;"> занятие не оплачено</label>
                         <br/>
-            <img class="vopr" src="/content/images/circle.svg" style="height:40px;width:20px;margin-left:12px" />
+            <img class="vopr" src="/content/images/circle.svg" style="height:20px;width:20px;margin-left:12px" />
             <label style="    padding-left: 10px;"> разовое занятие</label>
 
 
                         <br/>
             if (ViewData["role"].ToString() == "Manager" || ViewData["role"].ToString() == "Tutor")
             {
-                <button style="background-color:#36F6F8;color:#36F6F8;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:40px;border-radius:10px"></button>
+                <button style="background-color:#36F6F8;color:#36F6F8;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important ;height:20px !important;border-radius:10px"></button>
                 <label> свободное время</label>
                 <br />
             }
 
-            <button class="vopr" style="background-color:#B1F3F2;color:#B1F3F2;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:40px;border-radius:10px"></button>
+            <button class="vopr" style="background-color:#B1F3F2;color:#B1F3F2;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important;height:20px !important;border-radius:10px"></button>
             <label> в эту дату есть занятие</label>
             <br />
-            <button class="vopr" style="background-color:#A4A4A4;color:#A4A4A4;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:40px;border-radius:10px"></button>
+            <button class="vopr" style="background-color:#A4A4A4;color:#A4A4A4;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important;height:20px !important;border-radius:10px"></button>
             <label> занятие перенесено</label>
             <br />
-            <button class="vopr" style="background-color:#0DB4AA;color:#0DB4AA;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:40px;border-radius:10px"></button>
+            <button class="vopr" style="background-color:#0DB4AA;color:#0DB4AA;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important;height:20px !important;border-radius:10px"></button>
             <label> занятие проведено</label>
             <br />
-            <button class="vopr" style="background-color:#F7B579;color:#F7B579;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px;height:40px;border-radius:10px"></button>
+            <button class="vopr" style="background-color:#F7B579;color:#F7B579;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important;height:20px !important;border-radius:10px"></button>
             <label> занятие пропущено</label>
         }
     </div>
@@ -112,17 +133,25 @@
                     <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
                 </div>
                 <div class="modal-body">
-
-                <label>Добавить свободный час</label>
-                <br/>
-                <a href="#addhour">Добавить</a>
                 
-                <br/>
-                <br/>
+                    
+                    
+                <div style="display:flex;flex-direction:column;margin-left:25px;">
 
-                <label>Добавить занятие</label>
-                <br/>
-                <a href="#choosestudent">Добавить</a>
+               
+                        <button type="button" onclick="window.location.href='#addhour'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;color:white !important">
+                            Добавить свободной час
+                        </button>
+
+                
+
+                        <button type="button" onclick="window.location.href='#choosestudent'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;color:white !important">
+                            Добавить занятие
+                        </button>
+
+               </div>
+                
+          
                 </div>
 
             </div>
@@ -164,7 +193,7 @@
                     </script>
                         <br/>
                         <label>Текущий статус занятия:</label>
-                    <input disabled="disabled" type="text" id="currstatus" name="currstatus" />
+                    <label type="text" placeholder="" id="currstatus" name="currstatus" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);width:130px;background-color:#fff"></label>
                     <br/>
                     <br />
                     <script>
@@ -182,7 +211,7 @@
                     <form method="post" id="rescheduleForm" action="/schedule/changeStatus">
                         @{
                            
-                            <select name="status" id="status" onchange="changesStatus(this)">
+                            <select style="width:130px;font-size:20px" name="status" id="status" onchange="changesStatus(this)">
                                 @{
                                     foreach (Status item in Enum.GetValues(typeof(web_server.Models.Status)))
                                     {
@@ -231,7 +260,7 @@
                         <div id="skippedDiv" style="display:none">
                             <br /><br />
                             <label>Ученик предупредил заранее?</label>
-                            <input type="checkbox" id="userMakeWarn" name="userMakeWarn" />
+                            <input type="checkbox" class="myinput large" style="margin-left:15px" id="userMakeWarn" name="userMakeWarn" />
                         </div>
 
                         <div id="rescheduleDiv" style="display:none">
@@ -239,16 +268,19 @@
                             <input hidden="hidden" type="text" id="currDate" name="currDate" />
                             <input hidden="hidden" type="text" id="startDate" name="startDate" />
                            
-                            <br />
+                            <br />                            <br />
+
                             <label  id="label-looped" for="looped2">Постоянный перенос?</label>
                             <br />
-                            <input type="checkbox" id="looped2" name="looped" />
+                            <input class="myinput large" type="checkbox" id="looped2" name="looped" />
 
-                            <br />
+                            <br />                            <br />
+
                             <label id="reason-label">Причина:</label>
                             <br />
                             <input type="text" id="reason" name="reason" />
-                            <br />
+                            <br />                            <br />
+
                             <label id="date-label">Новая дата:</label>
                           
                             <br />
@@ -272,10 +304,11 @@
                             </script>
                             
                             <br />
+                            <br />
 
                             <label id="who-label" >Кто перенес:</label>
                             <br />
-                            <select  name="initiator" id="initiator">
+                            <select style="font-size:20px" name="initiator" id="initiator">
                                 <option value="Репетитор">Репетитор</option>
                                 <option value="Студент" id="studentId">Студент</option>
 
@@ -290,8 +323,24 @@
 
                         </div>
                         <br/>
-                        <input type="button" onclick="validateDate()" value="ОК" />
-                        <input type="button" value="Отмена" onclick="closeModalWindow()" />
+
+
+                        
+                        <div style="display:flex;flex-direction:column;margin-left:25px;">
+
+
+                            <button onclick="validateDate()" type="button" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:20px;color:white !important">
+                                Подтвердить
+                            </button>
+
+
+
+                            <button type="button"  onclick="closeModalWindow()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:20px;color:white !important">
+                                Отмена
+                            </button>
+
+                        </div>
+
                     </form>
                 </div>
             </div>
@@ -345,12 +394,27 @@
                 <div class="modal-body">
   
                     <form method="post" action="/schedule/AddFreeTime">
-                    
-                    <br />
-                    <input id="date2" name="date2" type="text" value="s" hidden="hidden" />
+                        <input id="date2" name="date2" type="text" value="s" hidden="hidden" />
                         <input id="tutorIdFreeTime" name="tutorIdFreeTime" type="text" value="@ViewData["userid"]" hidden="hidden" />
-                    <input type="submit" value="ОК" />
-                    <input type="button" value="Отмена" onclick ="closeModalWindow()"/>
+
+                        <div style="display:flex;flex-direction:column;margin-left:25px;">
+
+
+                            <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;color:white !important">
+                                Подтвердить
+                            </button>
+
+
+
+                            <button type="button" onclick ="closeModalWindow()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;color:white !important">
+                                Отмена
+                            </button>
+
+                        </div>
+
+
+
+                    <br />
 
                 </form>
             </div>
@@ -368,15 +432,17 @@
                 <div class="modal-body">
        
 
-                <form method="post" action="/schedule/AddSchedule">
-                    <label for="looped">Повторяющееся занятие?</label>
-                    <br />
-                    <input type="checkbox" id="looped" name="looped" />
-                    <br/>
-                                        <br/>
+                <form style="width:100%" method="post" action="/schedule/AddSchedule">
 
-                    <label>Студент: </label>
-                 <select name="userId" id="userId">
+                    <div style="margin-top:20px">
+                            <label for="looped">Повторное занятие: </label>
+                            <input type="checkbox" id="looped" class="myinput large" style="margin-left:15px;" name="looped" />
+
+                        </div>
+                  
+                    <div style="margin-top:50px">
+                         <label>Студент: </label>
+                 <select style="font-size:20px" name="userId" id="userId">
 
                         @{
                             Dictionary<int, string> d = new Dictionary<int, string>();
@@ -392,27 +458,46 @@
                     }
                 </select>
 
-                <br />
-                        <br />
+                    </div>
 
-                                    <label>Курс: </label>
 
-                <select name="courses" id="courses">
-                    @{
-                        foreach (Course item in  (List<Course>)ViewData["courses"])
-                        {
-                            <option value="@item.Id">@item.Title</option>
-                        }
-                    }
+                        <div style="margin-top:50px">
+                            <label>Курс: </label>
 
-                </select>
-                <br/>
-                        <br />
+                            <select style="font-size:20px;text-align:center;" name="courses" id="courses">
+                                @{
+                                    foreach (Course item in (List<Course>)ViewData["courses"])
+                                    {
+                                        <option value="@item.Id">@item.Title</option>
+                                    }
+                                }
+
+                            </select>
+
+            </div>
+                                    
+           
 
                 <input id="date3" name="date3" type="text" value="s" hidden="hidden" />
                 <input id="tutorIdChoosed" name="tutorIdChoosed" type="text" value="@ViewData["userid"]" hidden="hidden" />
-                <input type="submit" value="ОК" />
-                <input type="button" value="Отмена" onclick ="closeModalWindow()" />
+
+                        <div style="margin-top:50px">
+                            <div style="display:flex;flex-direction:column;margin-left:25px;">
+
+
+                                <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:26px;color:white !important">
+                                    Подтвердить
+                                </button>
+
+
+
+                                <button type="button" onclick="closeModalWindow()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:26px;color:white !important">
+                                    Отмена
+                                </button>
+
+                            </div>
+                </div>
+           
                 </form>
                 <script>
                     var el = document.getElementById("choosedDate");
@@ -959,7 +1044,7 @@
                                                                                     document.getElementById("tutorStatus").value = tutor_id;
                                                                                     document.getElementById("userStatus").value = userid;
                                                                                     document.getElementById("courseId").value = @model1.Course?.Id;
-                                                                                    document.getElementById("currstatus").value = "@model1.Status";
+                                                                                    document.getElementById("currstatus").innerHTML = "@model1.Status";
                                                                                     document.getElementById("currDate").value = "@s_date";
                                                                                     document.getElementById("status").value = "@model1.Status";
                                                                                     window.location.href = "#statusModal";
@@ -999,7 +1084,7 @@
                                                                                     document.getElementById("tutorStatus").value = tutor_id;
                                                                                     document.getElementById("userStatus").value = userid;
                                                                                     document.getElementById("courseId").value = @model1.Course?.Id;
-                                                                                    document.getElementById("currstatus").value = "@model1.Status";
+                                                                                    document.getElementById("currstatus").innerHTML = "@model1.Status";
                                                                                     document.getElementById("currDate").value = "@s_date";
                                                                                     document.getElementById("status").value = "@model1.Status";
                                                                                     window.location.href = "#statusModal";
@@ -1044,7 +1129,7 @@
                                                                                             document.getElementById("tutorStatus").value = tutor_id;
                                                                                             document.getElementById("userStatus").value = userid;
                                                                                             document.getElementById("courseId").value = @model1.Course?.Id;
-                                                                                            document.getElementById("currstatus").value = "@model1.Status";
+                                                                                            document.getElementById("currstatus").innerHTML = "@model1.Status";
                                                                                             document.getElementById("currDate").value = "@s_date";
                                                                                             document.getElementById("status").value = "@model1.Status";
                                                                                             window.location.href = "#statusModal";

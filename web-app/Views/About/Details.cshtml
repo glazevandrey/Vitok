@@ -1,26 +1,291 @@
-﻿@using web_server.Models;
+﻿@using System.Globalization;
+@using web_server.Models;
 @using web_server.Models.DBModels;
 @model Tutor
-<img src="@Model.PhotoUrl" style="width:50px;height:50px"/>
-<br/>
-<label>Ученик репетитора:</label>
-<label>@Model.FirstName @Model.LastName</label>
 
-<br />
-<label>О себе:</label>
-<label>@Model.About</label>
 
-<br />
-<label>Курсы:</label>
-@foreach(var item in Model.Courses)
-{
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
 
-    <label>@item.Title</label>
-}
+<script src="~/js/jquery/jquery.min.js"></script>
+<script src="~/js/moment.min.js"></script>
 
-<br/>
-<br />
-@{
-    var url = "/about/tutors?#openModalmodal" + Model.UserId;
-    <a href="@url">Записаться</a>
-}
+<link rel="stylesheet" href="~/content/nicepage.css">
+<link id="u-page-google-font" rel="stylesheet" href="~/css/fonts/Montserrat.css">
+<link id="u-theme-google-font" rel="stylesheet" href="~/css/fonts/Roboto.css">
+
+<style>
+    .div2{
+        width:500px;height:1000px;background-color:white;border-radius:10px;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+        margin-top:100px;
+        margin-left:400px;
+    }
+    .div3{
+        margin-left:50px;
+        width:300px;
+        height:300px;
+        box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+        text-align:center;
+        margin-top:50px;
+        background-color:white;
+    }
+
+    label#text-d8c0 {
+        margin-left: 20px;
+    }
+</style>
+<style>
+    .u-container-layout.u-container-layout-1 {
+        height: 360px !important;
+    }
+
+    .u-image-2 {
+        display: inline-block;
+        margin-bottom: 50px;
+    }
+
+    p.u-custom-font.u-font-montserrat.u-text.u-text-default.u-text-2 {
+        display: inline-block;
+        font-size: 28px;
+        font-weight: 700;
+        margin-left: 40px;
+    }
+
+    p.u-custom-font.u-font-montserrat.u-text.u-text-default.u-text-3 {
+        padding-left: 185px;
+        font-size: 24px;
+    }
+
+    .u-image-2 {
+        margin-left: 20px;
+        margin-top: 20px;
+    }
+
+    .u-btn {
+        display: inline-block;
+        margin-left: 5px;
+    }
+
+    form {
+        display: inline-block;
+    }
+
+    .tutor {
+        height: 360px !important;
+        margin-top: 50px;
+        box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+        width: 1300px;
+        border-radius: 15px;
+    }
+
+    h4 {
+        font-size: 36px;
+        display: inline-block;
+        margin-left: 200px;
+        cursor: pointer;
+    }
+
+    .h4_1 {
+    }
+
+    .h4_2 {
+    }
+
+    .dropdown {
+        display: inline-block;
+        position: relative;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        margin-left: 180px;
+        z-index: 99999;
+        font-size: 26px;
+        background-color: white;
+        width: auto;
+        overflow: auto;
+        box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
+    }
+
+        .dropdown-content a {
+            display: block;
+            color: #000000;
+            width: auto;
+            padding: 5px;
+            text-decoration: none;
+        }
+
+            .dropdown-content a:hover {
+                color: #FFFFFF;
+                background-color: #00A4BD;
+            }
+
+</style>
+
+<header class="u-clearfix u-header u-valign-middle u-header u-body" id="sec-676a">
+
+    <div class="u-clearfix u-group-elements u-group-elements-1" style="width: 100%">
+        <img class="logo u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="/content/images/image6.png" alt="" data-image-width="94" data-image-height="95">
+        <h3 class="logo-text-vitok u-custom-font u-font-montserrat u-text u-text-1">ВИТОК</h3>
+        <h3 class="logo-text-online u-custom-font u-font-montserrat u-text u-text-2" style="margin-bottom:20px;display: inline-block;">
+            онлайн-школа<br>
+        </h3>
+
+        <div class="dropdown">
+            <h4 class="h4_1">
+                О нас
+
+            </h4>
+            <div class="dropdown-content">
+                <a href="~/about">О школе</a>
+                <a href="~/about/sitecontacts">Контакты</a>
+            </div>
+        </div>
+
+        <h4 class="h4_2" onclick="window.location.href='http://localhost:23571/about/tutors'">
+            Репетиторы
+        </h4>
+
+        <h4 class="h4_3" style="float:right;margin-top:-5px;">
+            <button type="button" onclick="window.location.href='/login'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:30px;margin-right: 50px;color:white !important">
+                Войти
+            </button>
+        </h4>
+    </div>
+</header>
+
+<div style="display:flex;">
+     <div class="div2" style="">
+                <div class="div3">
+        <img src="@Model.PhotoUrl" style="width:400px;height:300px" />
+
+        
+        @{
+            var url = "/about/tutors?#openModalmodal" + Model.UserId;
+
+                <button type="button" onclick="window.location.href='@url'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;margin-right: 50px;color:white !important">
+                Записаться
+            </button>
+        }
+                
+
+            @{
+
+                    var w_days = new List<DayOfWeek>()
+                                {
+                                DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+                                };
+                
+                    var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
+
+                    <div>
+                    @{
+                                        foreach (var day in w_days)
+                {
+                    if (ordered.Where(m => m.dateTime.DayOfWeek == day).Count() == 0)
+                    {
+                        continue;
+                    }
+                  
+                    <div class="u-form-group u-label-left u-form-group-6" style="margin-bottom:10px;font-size:22px">
+                                <label for="text-5d98" class="u-label u-spacing-72 u-label-6" style="font-weight:700;width:30px">@DateTimeFormatInfo.CurrentInfo.GetShortestDayName(day)</label>
+
+                                @{
+                                    int x = 0;
+                                    foreach (var time in ordered)
+                                    {
+                                        if(x == 4)
+                                        {
+                                             <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="width:60px;background-color:#fff">...</label>
+
+                                            break;
+                                        }
+                                        if (time.dateTime.DayOfWeek == day)
+                                         {
+                                            <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="width:60px;background-color:#fff">@time.dateTime.ToString("HH:mm")</label>
+                                                                               x++;
+
+                                         }
+                                    }
+                        }
+                    </div>
+                }
+
+                    }
+                    </div>
+
+                     <button type="button" onclick="window.location.href='@url'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:20px;margin-right: 50px;color:white !important;height:50px">
+                Посмотреть полное расписание
+            </button>
+                    
+
+        }
+
+                </div>
+        </div>
+
+        <style>
+            .div6{
+                width:820px;
+                height:1000px;
+                background-color:white;
+            box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+            margin-top: 100px;
+            margin-left: 100px;
+
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            width:600px;
+            /* Set the hr color */
+            color: #E9E9E9; /* old IE */
+            background-color: #E9E9E9; /* Modern Browsers */
+        }
+        </style>
+                <div class="div6">
+
+                    <div style="    text-align:center;">
+                        <label style="font-size:36px;font-weight:600">@Model.FirstName @Model.LastName</label>
+                        <hr style=""/>
+                    </div>
+                    <div style="margin-left:50px;margin-top:50px">
+
+     
+                        <div>
+                            <div>
+                    <label style="font-size:30px;font-weight:700">О себе:</label>
+
+                            </div>
+                            <div>
+                    <label style="font-size:30px">@Model.About</label>
+
+                            </div>
+                        </div>
+
+            <div style="margin-top:50px">
+
+                <label style="font-size:30px;font-weight:700">Курсы:</label>
+            @foreach (var item in Model.Courses)
+            {
+
+                    <label style="font-size:30px">@item.Title</label>
+            }
+                        </div>
+                    </div>
+                </div>
+
+</div>
+
+<script>
+    document.getElementsByTagName('body')[0].style.backgroundColor = '#FAFAFA';
+
+    var dropdown = document.querySelector('.dropdown');
+    var dropdownContent = document.querySelector('.dropdown-content');
+
+    dropdown.addEventListener('click', function () {
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+    });
+</script>
+

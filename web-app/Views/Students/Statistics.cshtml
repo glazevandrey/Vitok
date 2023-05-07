@@ -7,6 +7,8 @@
     User user = (User)ViewData["user"];
 }
 <head>
+    <link rel="stylesheet" type="text/css" href="~/css/modal.css">
+
     <script type="text/javascript" src="~/js/sheetJs.js"></script>
     <script type="text/javascript" src="~/pdf/pdfmake.min.js"></script>
     <script type="text/javascript" src="~/pdf/vfs_fonts.js"></script>
@@ -42,7 +44,7 @@
 
     thead,
     tfoot {
-        background-color: #3f87a6;
+        background-color: #0db4aa !important;
         color: #fff;
     }
 
@@ -73,19 +75,64 @@
         text-align: center;
     }
 
+    th {
+        font-size: 25px;
+        width: 300px;
+    }
 
+    td {
+        font-size: 2px;
+        width: 300px;
+    }
+
+
+    @@media (min-width: 1536px) {
+        th {
+            font-size: 20px !important;
+            width: 200px !important;
+        }
+
+        td {
+            font-size: 20px !important;
+            width: 200px !important;
+        }
+        }
+
+    @@media (min-width: 1920px) {
+        th {
+            font-size: 25px !important;
+            width: 300px !important;
+        }
+
+        td {
+            font-size: 20px !important;
+            width: 300px !important;
+        }
+    }
 </style>
 
 
-<div>
+<div style="margin-left:70px">
     <h2>Статистика студента @ViewData["statuser"].ToString()</h2>
-    <button onclick="printTable()">[Печать]</button>
-    <button onclick="downloadPDF()">[PDF]</button>
-    <button onclick="downloadXLS()">[EXCEL]</button>
+
+    <div style="display :flex">
+        <button onclick="printTable()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="margin-right: 50px;margin-top: 80px; color:white !important">
+            Печать
+        </button>
+
+        <button onclick="downloadPDF()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="margin-right: 50px;margin-top: 80px; color:white !important">
+            PDF
+        </button>
+
+        <button onclick="downloadXLS()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="margin-right: 50px;margin-top: 80px; color:white !important">
+            EXCEL
+        </button>
+    </div>
+  
 
 </div>
 
-<div id="tab2">
+<div id="tab2" style="margin-left:70px">
     <table class="table" id="myTable">
         <thead>
             <tr>
@@ -115,7 +162,6 @@
                                 }
 
                             </td>
-
 
                             <td>
                                 @{
@@ -216,4 +262,11 @@
         const fileName = 'СтатистикаУченика_@ViewData["statuser"].ToString().Replace(" ", string.Empty)_.xls';
         XLSX.writeFile(book, fileName);
     }
+
+
 </script>
+
+        <script>
+    document.getElementsByTagName('body')[0].style.backgroundColor = '#FAFAFA';
+
+        </script>

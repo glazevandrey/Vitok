@@ -63,11 +63,11 @@ namespace web_server.Controllers
             string json = "";
             if(args.Length == 2)
             {
-                json = await _authService.LogIn(args[0], args[1], HttpContext);
+                json = await _authService.LogIn(args[0], args[1], HttpContext, _hubContext);
             }
             else
             {
-                json = await _authService.LogIn(args[0], args[1], args[2], HttpContext);
+                json = await _authService.LogIn(args[0], args[1], args[2], HttpContext, _hubContext);
             }
 
             return json;
@@ -369,10 +369,6 @@ namespace web_server.Controllers
                 }
 
 
-                foreach (var item in TestData.Schedules)
-                {
-                    item.CourseId = TestData.Courses.First(m => m.Title == "ОГЭ").Id;
-                }
                 data.Schedules.AddRange(map.Map<List<ScheduleDTO>>(TestData.Schedules));
                 data.Tariffs.AddRange(TestData.Tariffs);
                 try

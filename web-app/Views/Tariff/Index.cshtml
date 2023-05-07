@@ -31,7 +31,7 @@
             }
            
             #text-d8c0 {
-                width: 500px !important;
+                width: 600px !important;
             }
             .toMarg{
                 margin-left:-100px;
@@ -68,7 +68,7 @@
                 margin-left: 100px;
             }
             #text-d8c0 {
-                width: 600px !important;
+                width: 800px !important;
             }
 
         .div2 {
@@ -160,9 +160,13 @@
                 font-size: 30px;
                 margin-left: 20px;
     }
+
+    .mainDiv:last-child{
+        margin-bottom:100px;
+    }
 </style>
 
-<div style="display:flex;flex-direction:column">
+<div class="mainDiv" style="display:flex;flex-direction:column">
      <div class="div2" style="">
         <label style="color:black;font-size:24px;">Пробное занятие - 250 рублей</label>
 
@@ -177,44 +181,34 @@
     </div>
 
 
-        <div class="div3" style="">
-            <div class="div4">
-                <span>ПАКЕТ занятий 3</span>
-            </div>
-            <label style="color:black;font-size:24px;">900 рублей за занятие / 2700 рублей</label>
+        @{
+            Model.Reverse();
+            foreach (var item in Model)
+            {                    
+                var s = item.Amount / item.LessonsCount;
+
+                <div class="div3">
+                    <div class="div4">
+                        @{
+                            if (item.Title.Contains("81"))
+                            {
+                                <span style="color:#FF7A00">@item.Title</span>
+                            }
+                            else{
+
+                                                        <span>@item.Title</span>
+                            }
+                            }
+
+                    </div>
 
 
-        </div>
+                    <label style="color:black;font-size:24px;">@s рублей за занятие / @item.Amount рублей</label>
 
-        <div class="div3" style="">
-            <div class="div4">
-                <span>ПАКЕТ занятий 9</span>
-            </div>
+                </div>
 
-            <label style="color:black;font-size:24px;"> 850 рублей за занятие / 7650 рублей</label>
-
-
-        </div>
-
-        <div class="div3" style="">
-            <div class="div4">
-                <span>ПАКЕТ занятий 27</span>
-            </div>
-
-            <label style="color:black;font-size:24px;"> 800 рублей за занятие / 21600 рублей</label>
-
-
-    </div>
-
-    <div class="div3" style="">
-            <div class="div4">
-                <span style="color:#FF7A00">ВЫГОДНЫЙ ПАКЕТ ЗАНЯТИЙ 81</span>
-            </div>
-
-            <label style="color:black;font-size:24px;"> 700 рублей за занятие / 56700 рублей</label>
-
-
-    </div>
+            }
+        }
 
 
 </div>

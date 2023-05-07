@@ -15,6 +15,9 @@
     .u-container-layout.u-container-layout-1 {
         height: 360px !important;
     }
+    .days{
+        margin-top:50px;
+    }
     .u-image-2{
         display:inline-block;
         margin-bottom:50px;
@@ -162,7 +165,10 @@
             </button>
         </h4>
     </div>
-</header><p id="p14" class="u-custom-font u-font-montserrat p12 u-text u-text-default u-text-1 p12" style="margin-left:540px;font-size:46px;font-weight:700;    margin-top: 50px !important;">Репетиторы по английскому языку</p>
+</header>
+
+
+<p id="p14" class="u-custom-font u-font-montserrat p12 u-text u-text-default u-text-1 p12" style="margin-left:540px;font-size:46px;font-weight:700;    margin-top: 50px !important;">Репетиторы по английскому языку</p>
 <div style="margin-left:-365px;margin-top:50px">
     <select id="searchInput" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:420px;margin-left:660px;font-size:20px;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);" onchange="searchTable(this)">
         <option value="" disabled selected>Курс</option>
@@ -197,7 +203,14 @@
                                 <div style="    margin-left: 10px;">
                                     @{
                                         var ab = item.About;
-                                       
+                                        if(!string.IsNullOrEmpty(ab)){
+                                            
+                                        
+                                        if(ab.Length > 154)
+                                        {
+                                            ab = ab.Substring(0,154) + "...";
+                                        }
+                                        }
                                         <p class="u-custom-font u-font-montserrat u-text u-text-default u-text-3" style="margin-top:10px"><span style="font-weight:700">О себе:</span> @ab</p>
 
                                     }
@@ -252,7 +265,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h3 class="modal-title">@item.FirstName @item.LastName</h3>
+                                        <h3 style="font-size:32px;font-weight:600" class="modal-title">@item.FirstName @item.LastName</h3>
                                         <a href="#@closemodal" title="Close" class="close">×</a>
                                     </div>
                                     <div class="modal-body">
@@ -270,10 +283,12 @@
 
                                                 foreach (var day in w_days)
                                                 {
-                                                    <label>@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                                                <div class="days">
+                                                    <label style="font-size:30px;font-weight:600;margin-top:50px">@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+
+                                                    </div>
                                                     y = 0;
-                                                    <br />
-                                                    <br />
+                                                  
                                                     var dates = item.UserDates.OrderBy(m => m.dateTime);
                                                     dates.Reverse();
                                                     foreach (var time in dates)
@@ -281,11 +296,11 @@
                                                         if (time.dateTime.DayOfWeek == day)
                                                         {
                                                             var name = $"a{item.UserId}{x}{y}";
-                                                            
-                                                            <button class="@name" onclick="clickeds('@name', '@item.UserId', '@time.dateTime.ToString("dd.MM.yyyy HH:mm")')">@time.dateTime.ToString("HH:mm")</button>
-                                                            y++;
 
-                                                            <br />
+                                                        <label type="text" placeholder="" id="text-d8c0" onclick="clickeds('@name', '@item.UserId', '@time.dateTime.ToString("dd.MM.yyyy HH:mm")')" name="about" class="@name u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:20px;margin:5px;display:inline-block;cursor:pointer;width:72px;background-color:#8FE1D7">@time.dateTime.ToString("HH:mm")</label>
+
+                                                           // <button class="">@time.dateTime.ToString("HH:mm")</button>
+                                                            y++;
 
                                                         }
                                                         x++;
@@ -302,11 +317,9 @@
                                                 </script>
 
 
-                                                <br />
-                                                <br />
-                                                <br />
-                                                <label>Выберите желаемый курс</label>
-                                                <select id="courseChange" onchange="selectChanged(this, '@courseIdForm')">
+                                            <div style="margin-top:50px">
+                                                <label style="font-size:26px">Выберите желаемый курс:</label>
+                                                <select style="margin-left:10px;font-size:26px; border: 1px solid gray;border-radius:10px;text-align:center;width:120px;" id="courseChange" onchange="selectChanged(this, '@courseIdForm')">
                                                     @{
                                                         foreach (var course in item.Courses)
                                                         {
@@ -316,6 +329,8 @@
 
                                                 </select>
 
+                                            </div>
+                                               
                                                
 
 
@@ -324,7 +339,7 @@
 
 
                                         </p>
-                                        <form method="post" action="FromRegisterToLogin" id="@formId">
+                                        <form method="post" style="width:100%;text-align:center" action="FromRegisterToLogin" id="@formId">
                                             @{
                                                 var textTime = $"textTime;{item.UserId}";
                                                 var tutor = $"tutor;{item.UserId}";
@@ -334,7 +349,11 @@
                                                 <input hidden="hidden" class="textTime" name="textTime" id="@textTime" value="" />
                                                 <input hidden="hidden" class="tutor" name="tutor" id="@tutor" value="@item.UserId" />
 
-                                            <input type="button" onclick="document.getElementById('agreeId').value = '@item.UserId';window.location.href='#agree';processDates(time);" value="Записаться" />
+
+
+                                            <button type="button"  onclick="document.getElementById('agreeId').value = '@item.UserId';window.location.href='#agree';processDates(time);" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width: 80%;font-size:30px;color:white !important">
+                                                Записаться
+                                            </button>
                                             }
 
                                         </form>
@@ -357,15 +376,24 @@
                                     <a onclick="window.location.href='#'" title="Close" class="close">×</a>
                                 </div>
                                 <div class="modal-body">
-                                    <label>Ближайшие даты выбранных занятий:</label>
+                                    <label style="font-size:26px;">Ближайшие даты выбранных занятий:</label>
                                     <br />
                                     <input hidden="hidden" value="0" id="agreeId"/>
-                                    <div id="date-labels"></div>
+                                <div id="date-labels" style="font-size:26px;margin-top:20px"></div>
                                     <br />
                                     <br />
 
-                                <input type="button" value="Подтвердить" onclick="console.log(document.getElementById('agreeId').value);document.getElementById('form;' + document.getElementById('agreeId').value).submit()" />
-                                    <input type="button" value="Отмена" onclick="window.location.href='#'" />
+
+                                    <div style="display:flex">
+                                    <button type="button" onclick="console.log(document.getElementById('agreeId').value);document.getElementById('form;' + document.getElementById('agreeId').value).submit()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width: 80%;font-size:20px;color:white !important">
+                                        Подтвердить
+                                    </button>
+
+                                    <button type="button" onclick="window.location.href='#'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width: 80%;font-size:20px;color:white !important">
+                                        Отмена
+                                    </button>
+                                    </div>
+                               
 
                                 </div>
 

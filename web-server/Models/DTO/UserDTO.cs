@@ -11,7 +11,7 @@ namespace web_server.Models.DTO
         public int UserId { get; set; }
         public string Password { get; set; }
         public string FirstName { get; set; }
-        public string PhotoUrl { get; set; } = "/default_img.jpg";
+        public string PhotoUrl { get; set; } = "/content/images/default-avatar.svg";
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public List<NotificationTokens> NotificationTokens { get; set; } = new List<NotificationTokens>();

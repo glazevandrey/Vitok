@@ -1230,7 +1230,7 @@
 
         var dimension = this._getDimension();
 
-        this._element.style[dimension] = this._element.getBoundingClientRect()[dimension] + "px";
+        this._element.style[dimension] = this._element.getBoundingClieтеct()[dimension] + "px";
         Util.reflow(this._element);
         $$$1(this._element).addClass(ClassName.COLLAPSING).removeClass(ClassName.COLLAPSE).removeClass(ClassName.SHOW);
         var triggerArrayLength = this._triggerArray.length;

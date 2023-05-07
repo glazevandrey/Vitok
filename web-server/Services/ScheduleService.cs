@@ -77,7 +77,10 @@ namespace web_server.Services
             }
 
             var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == model.WantThis.FirstOrDefault().dateTime);
-
+            if(rem == null)
+            {
+                rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == model.WantThis.FirstOrDefault().dateTime.AddDays(-7));
+            }
             tutor.UserDates.Remove(rem);
 
             await _userRepository.SaveChanges(tutor);

@@ -95,7 +95,7 @@
         }
     }
 </script>
-о
+
 <script>
     $(document).ready(function () {
         var birthDate = '@Model.BirthDate.ToString("yyyy-MM-dd")';
@@ -140,11 +140,9 @@
                                 <input onchange="submitt(this)" id="photoId" type="file" name="file">
                                 <span>Выберите файл</span>
                             </label>
-                           @* <input type="file" onchange="submitt(this)" class="form-control" id="photoId" name="image" />
-                            *@
+                           
                         </div>
-                            @*<input type="text" id="name-266d" name="name" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-1" value="@Model.FirstName">
-*@                    </div>
+                    </div>
 
                 
                   
@@ -217,7 +215,7 @@
                                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
                                 };
 
-                            <div class="u-form-group u-label-left u-form-group-6">
+                            <div class="u-form-group u-label-left u-form-group-6" style="margin-bottom: -20px;">
                                 <label for="text-5d98" class="u-label u-spacing-72 u-label-6">Курсы</label>
                                 @{
                                     int x = 0;
@@ -239,8 +237,8 @@
                                 var ff = ((Tutor)Model).Courses.Skip(1);
                                 foreach (var item in ff)
                                 {
-                                       <div class="u-form-group u-label-left u-form-group-6">
-                                <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
+                                    <div class="u-form-group u-label-left u-form-group-6">
+                                        <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
                                         <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA">@item.Title</label>
                                     </div>
                                 }
@@ -249,28 +247,57 @@
                             <br />
                             <br />
                             <br />
-                               <div class="u-form-group u-label-left u-form-group-6">
+                            <div class="u-form-group u-label-left u-form-group-6" style="margin-bottom:-20px">
                                 <label for="text-5d98" class="u-label u-spacing-72 u-label-6">Свободное время по МСК</label>
-                                </div>
-                            <br />
-                            <br />
-                            // <table border="1">
+                         
+                                @{
 
-                            var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
+                                    var ordered = ((Tutor)Model).UserDates.OrderBy(m => m.dateTime.TimeOfDay).ToList();
+                                    var day2 = w_days.First();
+                                    foreach (var day in w_days)
+                                    {
+                                        if (ordered.Where(m => m.dateTime.DayOfWeek == day).Count() == 0)
+                                        {
+                                            continue;
+                                        }
 
+                                 
+                                        <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA">@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
+                                        day2 = day;
+                                        
+                                        break;
+                                    }
+                                }
+
+
+                            </div>
+                            <div class="u-form-group u-label-left u-form-group-6" style="margin-bottom:10px;">
+                                <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
+
+                                @{
+                                    foreach (var time in ordered)
+                                    {
+
+                                        if (time.dateTime.DayOfWeek == day2)
+                                        {
+                                            <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA;">@time.dateTime.ToString("HH:mm")</label>
+                                        }
+                                    }
+                                }
+                            </div>
+                            w_days.Remove(day2);
                             foreach (var day in w_days)
                             {
-                                //   <tr>
                                 if (ordered.Where(m => m.dateTime.DayOfWeek == day).Count() == 0)
-                                {
-                                    continue;
-                                }
-                                <div class="u-form-group u-label-left u-form-group-6">
+                                        {
+                                            continue;
+                                        }
+                                <div class="u-form-group u-label-left u-form-group-6" style="margin-bottom:-20px;">
                                     <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
                                     <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA">@DateTimeFormatInfo.CurrentInfo.GetDayName(day)</label>
-                                </div>
 
-                                <div class="u-form-group u-label-left u-form-group-6">
+                                    </div>
+                                <div class="u-form-group u-label-left u-form-group-6" style="margin-bottom:10px;">
                                     <label for="text-5d98" class="u-label u-spacing-72 u-label-6"></label>
 
                                     @{
@@ -279,23 +306,12 @@
 
                                             if (time.dateTime.DayOfWeek == day)
                                             {
-
-
                                                 <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="font-size:32px;background-color:#FAFAFA">@time.dateTime.ToString("HH:mm")</label>
-
-
                                             }
                                         }
-
-
-
                                     }
-
-
                                 </div>
                             }
-
-                          //  </table>
 
                         }
                         else if (Model.Role == "Student")
@@ -324,7 +340,7 @@
                  
                     <div class="u-form-group u-form-submit u-label-left">
                         <label class="u-label u-spacing-72 u-label-9"></label>
-                        <div class="u-align-left u-btn-submit-container">
+                        <div class="u-align-left u-btn-submit-container" style="margin-top: 100px;">
                             <a href="#" onclick="document.getElementById('form1').submit();" class="u-btn u-btn-round u-btn-submit u-button-style u-custom-color-2 u-radius-10 u-btn-1">Сохранить</a>
                         </div>
                         <input type="submit" value="submit" class="u-form-control-hidden">
@@ -338,4 +354,17 @@
 
 
 </body>
+<script>
+
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+        tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+        tx[i].addEventListener("input", OnInput, false);
+    }
+
+    function OnInput() {
+        this.style.height = 0;
+        this.style.height = (this.scrollHeight) + "px";
+    }
+</script>
 </html>
