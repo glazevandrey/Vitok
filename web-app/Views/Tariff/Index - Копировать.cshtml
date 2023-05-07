@@ -1,0 +1,32 @@
+﻿@using web_server.Models;
+@using web_server.Models.DBModels;
+@model List<Tariff>
+
+@{
+    Layout = "_Layout";
+}
+
+<input value="Осталось: @ViewData["count"] занятий" type="text" disabled="disabled"/>
+<br/>
+<br />
+<br/>
+    <label>Пробное занятие - 250 рублей</label>
+    <br />
+    <label>    Цена одного занятия вне пакета - 1000 рублей</label>
+    
+    <br />
+<br />
+
+    @{
+
+    foreach (var item in Model)
+    {
+        <label>@item.Title</label>
+        <br/>
+
+        var s = item.Amount / item.LessonsCount;
+        <label>@s рублей за занятие / @item.Amount рублей</label>
+        <br />
+        <br/>
+    }
+    }

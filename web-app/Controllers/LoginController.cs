@@ -52,14 +52,24 @@ namespace web_app.Controllers
         }
 
         [HttpPost]
-        public IActionResult LoginUser([FromForm] string email, [FromForm] string password)
+        public IActionResult LoginUser([FromForm] string email, [FromForm] string password, [FromQuery] string id)
         {
             if (email == null || password == null)
             {
                 return RedirectToAction("login", new { error = "Необходимо заполнить оба поля" });
             }
 
-            CustomRequestPost req = new CustomRequestPost("api/home/LoginUser", $"{email};{password}");
+            CustomRequestPost req = null;
+            Guid guid;
+            if(!Guid.TryParse(id, out guid))
+            {
+                req = new CustomRequestPost("api/home/LoginUser", $"{email};{password}");
+            }
+            else
+            {
+                req = new CustomRequestPost("api/home/LoginUser", $"{email};{password};{guid}");
+
+            }
             var response = _requestService.SendPost(req, HttpContext);
             if (response == null || response.result == null)
             {

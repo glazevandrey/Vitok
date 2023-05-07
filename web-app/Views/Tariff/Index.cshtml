@@ -6,27 +6,220 @@
     Layout = "_Layout";
 }
 
-<input value="Осталось: @ViewData["count"] занятий" type="text" disabled="disabled"/>
-<br/>
-<br />
-<br/>
-    <label>Пробное занятие - 250 рублей</label>
-    <br />
-    <label>    Цена одного занятия вне пакета - 1000 рублей</label>
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+    <style>
+    hr{
+        margin-left:-50%;
+        margin-right:-50%;
+    }
+        input#balance_input[disabled] {
+            background-color:white;
+        }
+
+        label input[disabled] {
+            background-color: white;
+        }
+
+        .hist{
+            font-size:26px;
+        }
+
+
+        @@media (min-width: 1536px) {
+            #text-d8c022 {
+                width: 200px !important;
+            }
+           
+            #text-d8c0 {
+                width: 500px !important;
+            }
+            .toMarg{
+                margin-left:-100px;
+            }
+
+
+            .div2 {
+                width: 600px !important
+            }
+
+            .div3 {
+                width: 800px !important;
+            }
+
+            .div2 label {
+                font-size: 26px !important;
+            }
+
+            .div3 label {
+                font-size: 26px !important;
+            }
+
+            .div3 span {
+                font-size: 26px !important;
+            }
+        }
+        
+        @@media (min-width: 1920px) {
+            #text-d8c022 {
+                width: 300px !important;
+            }
+
+            .toMarg {
+                margin-left: 100px;
+            }
+            #text-d8c0 {
+                width: 600px !important;
+            }
+
+        .div2 {
+            width: 800px !important
+        }
+
+        .div3 {
+            width: 1100px !important;
+        }
+
+        .div2 label {
+            font-size: 30px !important;
+        }
+
+        .div3 label {
+            font-size: 30px !important;
+        }
+
+        .div3 span {
+            font-size: 30px;
+        }
+        }
+
+        #purchase label{
+            font-size:36px;
+            font-weight: 700;
+        }
+
+       
+        select {
+            text-align: center;
+        }
+
+        option {
+            text-align: center;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+        
+    </style>
+
+<div style="margin-left:150px">
+
+
+    <p class="u-custom-font u-font-montserrat p12 u-text u-text-default u-text-1 p12" style="margin-left:450px;font-size:30px;font-weight:700">Тарифы</p>
+
+<div id="count">
+
+    <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-block;width:400px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:26px;margin-top:50px"><span style="font-weight:700">Осталось</span>: <input value='@ViewData["count"] занятий' id="balance_input" style="border:none" disabled="disabled" /><img style="width:40px;height:40px;float:right;padding-bottom:5px" src="~/content/images/goldCoins.svg"></label>
+
+</div>
+<style>
+    .div2 {
+        width: 600px;
+        height: 80px;
+        background-color: #8FE1D7;
+        border-radius: 20px;
+        box-shadow: 5px 5px 20px 0 rgb(0 0 0 / 40%);
+        display: inline-block;
+        margin-top: 100px;
+            text-align: center;
+            padding-top:20px;
+    }
+
+    .div3 {
+            width: 800px;
+    height: 150px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 5px 5px 20px 0 rgb(0 0 0 / 40%);
+    display: flex;
+    flex-direction: column;
+    margin-top: 100px;
+    padding-top: 20px;
+    }
+
+            .div3 span {
+                float: left;
+                margin: 0 20px 20px 20px;
+                color: #008179;
+                font-size: 26px;
+                font-weight: 600;
+            
+            }
+    .div3 label{
+                font-size: 30px;
+                margin-left: 20px;
+    }
+</style>
+
+<div style="display:flex;flex-direction:column">
+     <div class="div2" style="">
+        <label style="color:black;font-size:24px;">Пробное занятие - 250 рублей</label>
+
+        
+</div>
+
+
+    <div class="div2" style="">
+        <label style="color:black;font-size:24px;"> Цена одного занятия вне пакета - 1000 рублей</label>
+
+
+    </div>
+
+
+        <div class="div3" style="">
+            <div class="div4">
+                <span>ПАКЕТ занятий 3</span>
+            </div>
+            <label style="color:black;font-size:24px;">900 рублей за занятие / 2700 рублей</label>
+
+
+        </div>
+
+        <div class="div3" style="">
+            <div class="div4">
+                <span>ПАКЕТ занятий 9</span>
+            </div>
+
+            <label style="color:black;font-size:24px;"> 850 рублей за занятие / 7650 рублей</label>
+
+
+        </div>
+
+        <div class="div3" style="">
+            <div class="div4">
+                <span>ПАКЕТ занятий 27</span>
+            </div>
+
+            <label style="color:black;font-size:24px;"> 800 рублей за занятие / 21600 рублей</label>
+
+
+    </div>
+
+    <div class="div3" style="">
+            <div class="div4">
+                <span style="color:#FF7A00">ВЫГОДНЫЙ ПАКЕТ ЗАНЯТИЙ 81</span>
+            </div>
+
+            <label style="color:black;font-size:24px;"> 700 рублей за занятие / 56700 рублей</label>
+
+
+    </div>
+
+
+</div>
+
+</div>
+
     
-    <br />
-<br />
-
-    @{
-
-    foreach (var item in Model)
-    {
-        <label>@item.Title</label>
-        <br/>
-
-        var s = item.Amount / item.LessonsCount;
-        <label>@s рублей за занятие / @item.Amount рублей</label>
-        <br />
-        <br/>
-    }
-    }
+    

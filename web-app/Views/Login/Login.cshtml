@@ -52,8 +52,19 @@
             </h1>
 
             <div class="u-form u-form-1">
-
-                <form action="/login/" class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form" method="post" source="email" id="form-1" name="form-1" style="padding: 10px;">
+                @{
+                    var d = "";
+                    if (ViewData["Id"] != null)
+                    {         d = ViewData["Id"].ToString();
+                    if (string.IsNullOrEmpty(d))
+                    {
+                        d = "";
+                    }
+                        
+                    }
+            
+                }
+                <form action="/login?id=@d" class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form" method="post" source="email" id="form-1" name="form-1" style="padding: 10px;">
                     <div class="u-form-group u-form-name">
                     <label id="error" style="color:darkred" hidden="hidden">Неверное имя пользователя или пароль</label>
                     </div>

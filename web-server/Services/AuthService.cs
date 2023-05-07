@@ -107,6 +107,10 @@ namespace web_server.Services
 
         public async Task<string> LogIn(string email, string password, HttpContext context)
         {
+            return await LogIn(email, password, null, context);
+        }
+        public async Task<string> LogIn(string email, string password, string guid, HttpContext context)
+        {
 
             TokenProvider _tokenProvider = new TokenProvider(_userRepository);
 
@@ -125,7 +129,6 @@ namespace web_server.Services
             var role = res.First().Value;
             if (userToken != null)
             {
-                //var user = await _userRepository.GetUserByEmail(login);
                 user.ActiveToken = userToken;
                 try
                 {
@@ -143,9 +146,93 @@ namespace web_server.Services
                         MaxAge = TimeSpan.FromMinutes(1160)
                     });
 
+
+                Registration reg = null;
+
+
+                if (guid != "00000000-0000-0000-0000-000000000000" && !string.IsNullOrEmpty(guid))
+                {
+                    reg = await _userRepository.GetRegistrationByGuid(Guid.Parse(guid));
+
+                    var nearest = reg.WantThis.First().dateTime;
+
+                    if (reg.WantThis.Count > 1)
+                    {
+
+                        foreach (var item in reg.WantThis)
+                        {
+                            if (item.dateTime < nearest)
+                            {
+                                nearest = item.dateTime;
+                            }
+                        }
+                    }
+
+                    var tutor = await _userRepository.GetTutor(reg.TutorId);
+
+                    //var datewarn = reg.WantThis.OrderBy(m => m.dateTime).First().dateTime;
+                    var managerId = await _userRepository.GetManagerId();
+
+                    foreach (var item in reg.WantThis)
+                    {
+                        var scheduleToRemove = tutor.Schedules.FirstOrDefault(m => m.StartDate == item.dateTime);
+                        if (scheduleToRemove == null)
+                        {
+                            scheduleToRemove = tutor.Schedules.FirstOrDefault(m => m.StartDate == item.dateTime.AddDays(-7));
+                        }
+
+                        var rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == item.dateTime);
+                        if (rem == null)
+                        {
+                            rem = tutor.UserDates.FirstOrDefault(m => m.dateTime == item.dateTime.AddDays(-7));
+                        }
+
+                        tutor.UserDates.Remove(rem);
+
+                        tutor.Schedules.Remove(scheduleToRemove);
+
+                        if (item.dateTime < DateTime.Now)
+                        {
+                            while (item.dateTime < DateTime.Now)
+                            {
+                                item.dateTime = item.dateTime.AddDays(7);
+                            }
+                        }
+
+                        var sch = new Schedule()
+                        {
+                            TutorId = reg.TutorId,
+                            Course = reg.Course,
+                            CourseId = reg.Course.Id,
+                            TutorFullName = tutor.FirstName + " " + tutor.LastName,
+                            UserId = user.UserId,
+                            UserName = user.FirstName + " " + user.LastName,
+                            CreatedDate = DateTime.Now,
+                            StartDate = item.dateTime,
+                            Looped = true,
+                            Status = Status.Ожидает
+                        };
+
+                        if (nearest == item.dateTime)
+                        {
+                            sch.WaitPaymentDate = nearest;
+                        }
+
+                        var id = await _scheduleRepository.AddSchedule(sch);
+
+
+                    }
+
+                    await _userRepository.SaveChanges(tutor);
+                    await _userRepository.RemoveRegistration(reg);
+
+                }
+
                 var json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(res));
                 return json;
             }
+
+
 
             return _jsonService.PrepareErrorJson("Неверное имя пользователя или пароль");
         }

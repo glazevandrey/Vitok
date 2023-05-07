@@ -296,6 +296,10 @@ td {
     border: 1px solid #DBDBDB;
     font-size: 12pt;
 }
+td label{
+    height:40px;
+    text-align:center;
+}
 
 th {
     border: 1px solid #DBDBDB;

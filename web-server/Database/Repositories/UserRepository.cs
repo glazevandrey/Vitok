@@ -53,6 +53,21 @@ namespace web_server.Database.Repositories
 
             return _mapper.Map<Registration>(reg);
         }
+        public async Task RemoveRegistration(Registration registration)
+        {
+            var f = _mapper.Map<RegistrationDTO>(registration);
+            try
+            {
+                _context.Entry(f).State = EntityState.Deleted;
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+           
+        }
         public async Task<List<Tutor>> GetAllTutors()
         {
             try

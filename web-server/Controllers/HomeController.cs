@@ -60,7 +60,15 @@ namespace web_server.Controllers
             }
 
             var args = form.Keys.First().Split(";");
-            var json = await _authService.LogIn(args[0], args[1], HttpContext);
+            string json = "";
+            if(args.Length == 2)
+            {
+                json = await _authService.LogIn(args[0], args[1], HttpContext);
+            }
+            else
+            {
+                json = await _authService.LogIn(args[0], args[1], args[2], HttpContext);
+            }
 
             return json;
         }
