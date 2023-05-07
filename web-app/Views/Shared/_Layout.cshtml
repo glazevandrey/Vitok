@@ -267,4 +267,9 @@
     dropdown.addEventListener('click', function () {
         dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
     });
+
+    var inp = document.getElementsByTagName('input');
+    for (var i = 0; i < inp.length; i++) {
+        inp[i].setAttribute('autocomplete', 'off');
+    }
 </script>
