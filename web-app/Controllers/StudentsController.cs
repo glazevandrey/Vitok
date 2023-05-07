@@ -148,7 +148,7 @@ namespace web_app.Controllers
 
 
 
-            var req = new GetLiteUserByToken(id + ";Manager");
+            var req = new GetLiteUserById(id);
             var data = _requestService.SendGet(req, HttpContext);
             if (!data.success)
             {

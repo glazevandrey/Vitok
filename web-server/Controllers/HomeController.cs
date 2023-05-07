@@ -112,6 +112,20 @@ namespace web_server.Controllers
         }
 
         [Authorize]
+        [HttpGet("getliteuserbyid", Name = "getliteuserbyid")]
+        public async Task<string> GetLiteUserById([FromQuery] string args)
+        {
+            if (args == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+
+            var json = await _authService.GetLiteUserById(args);
+
+            return json;
+        }
+
+        [Authorize]
         [HttpGet("getuser", Name = "getuser")]
         public async Task<string> GetUser([FromQuery] string args)
         {
@@ -315,10 +329,7 @@ namespace web_server.Controllers
                 foreach (var item in tutors)
                 {
                     var d = map.Map<TutorDTO>(item);
-                    //foreach (var dd in d.Courses)
-                    //{
-                    //    dd.Id = 0;
-                    //}
+                  
                     if (d.About.ToLower().Contains("огэ"))
                     {
                         d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });

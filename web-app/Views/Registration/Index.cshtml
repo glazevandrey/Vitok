@@ -12,32 +12,108 @@
 }
 
 <!DOCTYPE html>
+
+
 <html style="font-size: 16px;" lang="ru">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <title>Регистрация</title>
-    <link rel="stylesheet" href="/content/nicepage.css" media="screen">
-    <link rel="stylesheet" href="/content/registration/Регистрация.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="~/css/modal.css">
     <link id="u-page-google-font" rel="stylesheet" href="~/css/fonts/Montserrat.css">
     <link id="u-theme-google-font" rel="stylesheet" href="~/css/fonts//Roboto.css">
+
+    <style>
+
+        h4 {
+            font-size: 36px !important;
+            display: inline-block;
+            margin-left: 200px;
+            cursor: pointer;
+        }
+
+        .h4_1 {
+        }
+
+        .h4_2 {
+        }
+
+        .dropdown {
+            display: inline-block;
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            margin-left: 180px;
+            z-index: 99999;
+            font-size: 26px;
+            background-color: white;
+            width: auto;
+            overflow: auto;
+            box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.4);
+        }
+
+            .dropdown-content a {
+                display: block;
+                color: #000000;
+                width: auto;
+                padding: 5px;
+                text-decoration: none;
+            }
+
+                .dropdown-content a:hover {
+                    color: #FFFFFF;
+                    background-color: #00A4BD;
+                }
+    </style>
+
+    <link rel="stylesheet" href="/content/nicepage.css" media="screen">
+    <link rel="stylesheet" href="/content/registration/Регистрация.css" media="screen">
+  
+
+
 
     <meta name="theme-color" content="#478ac9">
     <meta property="og:title" content="Регистрация">
     <meta property="og:type" content="website">
 </head>
 <body class="u-body u-xl-mode" data-lang="ru">
-    <header class="u-clearfix u-header u-valign-middle u-header" id="sec-676a">
-        <div class="u-clearfix u-group-elements u-group-elements-1">
+    <header class="u-clearfix u-header u-valign-middle u-header u-body" id="sec-676a">
+
+        <div class="u-clearfix u-group-elements u-group-elements-1" style="width: 100%">
             <img class="logo u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="/content/images/image6.png" alt="" data-image-width="94" data-image-height="95">
             <h3 class="logo-text-vitok u-custom-font u-font-montserrat u-text u-text-1">ВИТОК</h3>
-            <h3 class="logo-text-online u-custom-font u-font-montserrat u-text u-text-2">
+            <h3 class="logo-text-online u-custom-font u-font-montserrat u-text u-text-2" style="margin-bottom:20px;display: inline-block;">
                 онлайн-школа<br>
             </h3>
+
+            <div class="dropdown">
+                <h4 class="h4_1">
+                    О нас
+
+                </h4>
+                <div class="dropdown-content">
+                    <a href="~/about">О школе</a>
+                    <a href="~/about/sitecontacts">Контакты</a>
+                </div>
+            </div>
+
+            <h4 class="h4_2" onclick="window.location.href='http://localhost:23571/about/tutors'">
+                Репетиторы
+            </h4>
+
+            <h4 class="h4_3" style="float:right;margin-top:-5px;">
+                <button type="button" onclick="window.location.href='/login'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:30px;margin-right: 50px;color:white !important">
+                    Войти
+                </button>
+            </h4>
         </div>
     </header>
+
     <section class="u-clearfix u-section-1" id="sec-e3f3">
-        <div class="u-clearfix u-sheet u-sheet-1">
+        <div class="u-clearfix u-sheet u-sheet-1" style="    margin-top: 100px;">
             <h1 class="u-align-center u-text u-text-1">Регистрация</h1>
             <div class="u-form u-form-1">
                 <form id="form-1" action="@s" class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form"method="post" source="email" name="form-1" style="padding: 10px;">
@@ -88,3 +164,20 @@
 
 </body>
 </html>
+
+                    <script>
+    document.getElementsByTagName('body')[0].style.backgroundColor = '#FAFAFA';
+
+    var dropdown = document.querySelector('.dropdown');
+    var dropdownContent = document.querySelector('.dropdown-content');
+
+    dropdown.addEventListener('click', function () {
+        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+    });
+
+    var inp = document.getElementsByTagName('input');
+    for (var i = 0; i < inp.length; i++) {
+        inp[i].setAttribute('autocomplete', 'off');
+    }
+</script>
+

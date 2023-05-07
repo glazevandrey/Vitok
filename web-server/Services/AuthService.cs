@@ -82,6 +82,28 @@ namespace web_server.Services
             return json;
         }
 
+        public async Task<string> GetLiteUserById(string id)
+        {
+            var user = await _userRepository.GetLiteUser(Convert.ToInt32(id));
+            if (user == null)
+            {
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+            }
+            string json = "";
+            try
+            {
+
+
+                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return json;
+        }
+
 
         public async Task<string> GetUserByToken(string token)
         {

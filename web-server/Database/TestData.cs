@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
@@ -161,7 +162,6 @@ LastName = "Цветкова",
 Password = "1234567",
 Role = "Student",
 WasFirstPayment = true,
-StartWaitPayment = DateTime.Now,
 PhotoUrl = "/content/images/default-avatar.svg",
 Email = "alla_tsvetkova@mail.ru",
 BirthDate = DateTime.Parse("13.05.2007"),
@@ -181,10 +181,9 @@ Email = "makarova_vm@mail.ru",
 Phone = "+79054769537",
 
             },
-
             new TutorDTO()
                 {FirstName = "Иван", MiddleName="Сергеевич", LastName = "Трифонов", About = " Преподаю английский язык 10 лет. Выпустил более 200 учеников с баллом ЕГЭ > 85 и 150 учеников с баллом ОГЭ > 90. Помогу вам с легкостью изучить английский !", BirthDate = DateTime.Parse("14.01.2002"), UserDates = new List<UserDate>(){ },
-                   // Courses = TestData.Courses.Where(m => m.Title == "ОГЭ").ToList(),  },
+                    Courses = new List<TutorCourse>(){ new TutorCourse() { CourseId = 2} , new TutorCourse() { CourseId = 10} },
 
                 Email = "ivan_trifonov@mail.ru", Phone = "+79089385028",
                     PhotoUrl = "/content/images/default-avatar.svg", Password = "1234567", Role="Tutor" },

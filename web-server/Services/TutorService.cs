@@ -359,7 +359,7 @@ namespace web_server.Services
                 }
             }
 
-            old.Courses = mapped;
+ 
 
 
             await _userRepository.SaveChanges(old);

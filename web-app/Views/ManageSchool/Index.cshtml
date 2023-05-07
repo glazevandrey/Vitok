@@ -256,7 +256,7 @@ thead{
                             @{
                                 var href = tutor.UserId;
                             }
-                            <a href="http://localhost:23571/about/details?id=@href">
+                            <a href="http://localhost:23571/about/details/@href">
                         
                         <img src="@tutor.PhotoUrl" style="float:left;width:40px;height:40px; border: 1.5px solid #f5f6fa;border-radius:50% !important; margin-right:10px;margin-left:10px" />
                             </a>
@@ -331,36 +331,34 @@ thead{
 
                                                         var label = $"label_{schedule.UserId}_{schedule.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
                                                         <style>
-                                                            label[data-title] {
-                                                                position: relative;
-                                                                display: inline-block;
-                                                                cursor: pointer;
+                                                        label[data-title] {
+                                                            position: relative;
+                                                            display: inline-block;
+                                                            cursor: pointer;
                                                             white-space: pre-wrap;
-                                                            border-bottom: 1px dashed #000;
+                                                        }
+
+                                                            label[data-title]:hover:before {
+                                                                content: attr(data-title);
+                                                                position: absolute;
+                                                                z-index: 9999;
+                                                                width: 200px;
+                                                                color: #000;
+                                                                height: auto;
+                                                                word-wrap: break-word;
+                                                                background: #E2D7C0;
+                                                                padding: 5px;
+                                                                border-radius: 4px;
+                                                                bottom: 25px;
+                                                                left: 40px;
                                                             }
-
-                                                                label[data-title]:hover:before {
-                                                                    content: attr(data-title);
-                                                                    position: absolute;
-                                                                    width: 200px;
-
-                                                                    color: #fff;
-                                                                    height: auto;
-                                                                    word-wrap: break-word;
-                                                                    background: #000;
-                                                                z-index: 9998;
-                                                                    padding: 5px;
-                                                                    border-radius: 4px;
-                                                                    bottom: 25px;
-                                                                    left: 30px;
-                                                                }
 
                                                             
                                                         </style>
 
                                                     if (string.IsNullOrEmpty(schedule.UserName))
                                                     {
-                                                        <label data-title="@textMouse" id="@label" class="@label" style="width:130px;height:40px;background-color:#36F6F8;border-radius:10px"></label>
+                                                        <label data-title="" id="@label" class="@label" style="width:130px;height:40px;background-color:#36F6F8;border-radius:10px"></label>
                                                     }
                                                     else
                                                     {
