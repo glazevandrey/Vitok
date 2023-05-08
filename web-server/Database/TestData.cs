@@ -66,13 +66,59 @@ new CourseDTO() {Title="Cambridge ESOL", GoalId = 8}
 
         public static List<Notifications> Notifications = new List<Notifications>();
         public static List<ScheduleDTO> Schedules = new List<ScheduleDTO>() {
-            
-              new ScheduleDTO() { UserName = "Алла Цветкова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 2,
-                WaitPaymentDate = DateTime.Parse("10.05.2023 13:00"),
-                StartDate = DateTime.Parse("10.05.2023 13:00"), CourseId = 10, Looped = true},
 
-           new ScheduleDTO() { UserName = "Алла Цветкова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 2,
-                StartDate = DateTime.Parse("10.05.2023 17:00"), CourseId = 10, Looped = true},
+            new ScheduleDTO() { UserName = "Илья Соколов", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 6, WaitPaymentDate = DateTime.Parse("08.05.2023 06:00"), StartDate = DateTime.Parse("08.05.2023 18:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Илья Соколов", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 6, StartDate = DateTime.Parse("09.05.2023 16:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Илья Соколов", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 6, StartDate = DateTime.Parse("21.05.2023 16:00"), CourseId = 9, Looped = false},
+
+
+new ScheduleDTO() { UserName = "Алла Цветкова", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 2, WaitPaymentDate = DateTime.Parse("09.05.2023 15:00"), StartDate = DateTime.Parse("09.05.2023 15:00"), CourseId = 10, Looped = true},
+
+new ScheduleDTO() { UserName = "Алла Цветкова", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 2, StartDate = DateTime.Parse("10.05.2023 15:00"), CourseId = 10, Looped = true},
+
+new ScheduleDTO() { UserName = "Мария Елисеева", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 5, StartDate = DateTime.Parse("08.05.2023 07:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Мария Елисеева", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 5, StartDate = DateTime.Parse("12.05.2023 14:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Дмитрий Муравьев", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 4, StartDate = DateTime.Parse("12.05.2023 13:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Дмитрий Муравьев", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 4, StartDate = DateTime.Parse("17.05.2023 11:00"), CourseId = 9, Looped = false},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 3, StartDate = DateTime.Parse("09.05.2023 12:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 3, StartDate = DateTime.Parse("08.05.2023 08:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Иван Трифонов", TutorId = 11, UserId = 3, StartDate = DateTime.Parse("12.05.2023 16:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 3, StartDate = DateTime.Parse("16.05.2023 13:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 3, StartDate = DateTime.Parse("16.05.2023 15:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 3, StartDate = DateTime.Parse("16.05.2023 16:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 3, StartDate = DateTime.Parse("16.05.2023 14:00"), CourseId = 9, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Карина Уварова", TutorId = 9, UserId = 3, StartDate = DateTime.Parse("16.05.2023 11:00"), CourseId = 3, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Карина Уварова", TutorId = 9, UserId = 3, StartDate = DateTime.Parse("16.05.2023 12:00"), CourseId = 3, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Светлана Примакова", TutorId = 15, UserId = 3, StartDate = DateTime.Parse("15.05.2023 16:00"), CourseId = 7, Looped = true},
+
+new ScheduleDTO() { UserName = "Екатерина Ларионова", TutorFullName = "Светлана Примакова", TutorId = 15, UserId = 3, StartDate = DateTime.Parse("15.05.2023 15:00"), CourseId = 2, Looped = true},
+
+new ScheduleDTO() { UserName = "Сергей Воронов", TutorFullName = "Маргарита Волкова", TutorId = 14, UserId = 7, StartDate = DateTime.Parse("15.05.2023 09:00"), CourseId = 4, Looped = true},
+
+new ScheduleDTO() { UserName = "Сергей Воронов", TutorFullName = "Маргарита Волкова", TutorId = 14, UserId = 7, StartDate = DateTime.Parse("16.05.2023 09:00"), CourseId = 4, Looped = true},
+
+            
+           //   new ScheduleDTO() { UserName = "Алла Цветкова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 2,
+           //     WaitPaymentDate = DateTime.Parse("10.05.2023 13:00"),
+           //     StartDate = DateTime.Parse("10.05.2023 13:00"), CourseId = 10, Looped = true},
+
+           //new ScheduleDTO() { UserName = "Алла Цветкова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 2,
+           //     StartDate = DateTime.Parse("10.05.2023 17:00"), CourseId = 10, Looped = true},
 
         };
 
@@ -117,7 +163,8 @@ LastName = "Елисеева",
 Password = "1234567",
 Role = "Student",
 WasFirstPayment = true,
-StartWaitPayment = DateTime.Now,
+LessonsCount = 3,
+Money = new List<UserMoney>(){ new UserMoney() { Cost = 900, Count = 3} },
 PhotoUrl = "/content/avatars/students/Мария Елисеева.jpg",
 Email = "mary_eliseeva@mail.ru",
 BirthDate = DateTime.Parse("01.10.1991"),
@@ -132,7 +179,9 @@ LastName = "Муравьев",
 Password = "1234567",
 Role = "Student",
 WasFirstPayment = true,
-StartWaitPayment = DateTime.Now,
+LessonsCount = 9,
+Money = new List<UserMoney>(){ new UserMoney() { Cost = 850, Count = 9} },
+
 PhotoUrl = "/content/avatars/students/Дмитрий Муравьев.jpg",
 Email = "dmitry_muraviev@mail.ru",
 BirthDate = DateTime.Parse("18.07.2002"),
@@ -147,7 +196,8 @@ LastName = "Ларионова",
 Password = "1234567",
 Role = "Student",
 WasFirstPayment = true,
-StartWaitPayment = DateTime.Now,
+LessonsCount =27,
+Money = new List<UserMoney>(){ new UserMoney() { Cost = 800, Count = 27} },
 PhotoUrl = "/content/avatars/students/Екатерина Ларионова.jpg",
 Email = "kate_larionova@mail.ru",
 BirthDate = DateTime.Parse("13.05.2005"),
@@ -190,10 +240,12 @@ Phone = "+79054769537",
             
             new TutorDTO()     {FirstName = "Марк", MiddleName="Алексеевич", LastName = "Тихонов", About = " Окончил ИВГУ с отличием. Преподаю английский язык 5 лет. ", BirthDate = DateTime.Parse("14.01.2002"), UserDates = new List<UserDate>(){ },
 Email = "mark_tihonov@mail.ru", Phone = "+79057039923",
+Courses = new List<TutorCourse>(){ new TutorCourse() { CourseId = 8} , new TutorCourse() { CourseId = 7} },
+
 PhotoUrl = "/content/avatars/tutors/Марк Тихонов.jpg", Password = "1234567", Role="Tutor" },
             
             new TutorDTO()
-{FirstName = "Карина", MiddleName="Романовна", LastName = "Уварова", About = " Преподаю английский язык 5 лет. Выпустила более 100 учеников с баллом ЕГЭ > 85 и 75 учеников с баллом ОГЭ > 90", BirthDate = DateTime.Parse("05.12.1997"), UserDates = new List<UserDate>(){ }, Email = "karina_uvarova@mail.ru", Phone = "+79547803756", PhotoUrl = "/content/avatars/tutors/Карина Уварова.jpg", Password = "1234567", Role="Tutor" },
+{FirstName = "Карина", MiddleName="Романовна", Courses = new List<TutorCourse>(){ new TutorCourse() { CourseId = 3} }, LastName = "Уварова", About = " Преподаю английский язык 5 лет. Выпустила более 100 учеников с баллом ЕГЭ > 85 и 75 учеников с баллом ОГЭ > 90", BirthDate = DateTime.Parse("05.12.1997"), UserDates = new List<UserDate>(){ }, Email = "karina_uvarova@mail.ru", Phone = "+79547803756", PhotoUrl = "/content/avatars/tutors/Карина Уварова.jpg", Password = "1234567", Role="Tutor" },
             
             new TutorDTO(){FirstName = "Александр", MiddleName="Дмитриевич", LastName = "Михайлов", About = " Преподаю английский язык 5 лет. Выпустил более 100 учеников с баллом ЕГЭ > 85 и 75 учеников с баллом ОГЭ > 90", BirthDate = DateTime.Parse("08.11.1999"), UserDates = new List<UserDate>(){ }, Email = "alexander_mihailov@mail.ru", Phone = "+79527803756", PhotoUrl = "/content/avatars/tutors/Александр Михайлов.jpg",
  Password = "1234567", Role="Tutor" },
@@ -205,9 +257,9 @@ PhotoUrl = "/content/avatars/tutors/Марк Тихонов.jpg", Password = "12
             new TutorDTO()
  {FirstName = "Маргарита", MiddleName="Павловна", LastName = "Волкова", About = " Преподаю английский язык 20 лет. Выпустила более 200 учеников с баллом ЕГЭ > 90 и 150 учеников с баллом ОГЭ > 90", BirthDate = DateTime.Parse("10.11.1980"), UserDates = new List<UserDate>(){ }, Email = "margo_volkova@mail.ru", Phone = "+79158476586", PhotoUrl = "/content/avatars/tutors/Маргарита Волкова.jpg", Password = "1234567", Role="Tutor" },
            
-            new TutorDTO(){FirstName = "Светлана", MiddleName="Николаевна", LastName = "Примакова", About = " Преподаю английский язык 20 лет. Готовлю учеников к сдаче международных экзаменов на высокий балл!", BirthDate = DateTime.Parse("10.11.1980"), UserDates = new List<UserDate>(){ }, Email = "svetlana_primakova@mail.ru", Phone = "+79108476758", PhotoUrl = "/content/avatars/tutors/Светлана Примакова.jpg", Password = "1234567", Role="Tutor" },
+            new TutorDTO(){FirstName = "Светлана", MiddleName="Николаевна", LastName = "Примакова", About = " Преподаю английский язык 20 лет. Готовлю учеников к сдаче международных экзаменов на высокий балл!", BirthDate = DateTime.Parse("10.11.1980"), UserDates = new List<UserDate>(){ }, Email = "svetlana_primakova@mail.ru", Phone = "+79108476758", PhotoUrl = "/content/avatars/tutors/Светлана Примакова.jpg", Password = "1234567", Courses = new List<TutorCourse>(){ new TutorCourse() { CourseId = 11} , new TutorCourse() { CourseId = 1}, new TutorCourse() { CourseId = 2} }, Role="Tutor" },
          
-            new TutorDTO(){FirstName = "Ольга", MiddleName="Алексеевна", LastName = "Жукова", About = " Преподаю английский язык 8 лет.", BirthDate = DateTime.Parse("10.11.1998"), UserDates = new List<UserDate>(){ }, Email = "olga_zhukova@mail.ru", Phone = "+79065456789", PhotoUrl = "/content/avatars/tutors/Ольга Жукова.jpg", Password = "1234567", Role="Tutor" },
+            new TutorDTO(){FirstName = "Ольга", MiddleName="Алексеевна", LastName = "Жукова", About = " Преподаю английский язык 8 лет.", BirthDate = DateTime.Parse("10.11.1998"), UserDates = new List<UserDate>(){ }, Email = "olga_zhukova@mail.ru", Phone = "+79065456789", PhotoUrl = "/content/avatars/tutors/Ольга Жукова.jpg", Courses = new List<TutorCourse>(){ new TutorCourse() { CourseId = 4} , new TutorCourse() { CourseId = 5} }, Password = "1234567", Role="Tutor" },
        
             new TutorDTO(){FirstName = "Роман", MiddleName="Алексеевич", LastName = "Карпов", About = " Преподаю английский язык 10 лет.", BirthDate = DateTime.Parse("10.11.1993"), UserDates = new List<UserDate>(){ }, Email = "roman_karpov@mail.ru", Phone = "+79065456789", PhotoUrl = "/content/avatars/tutors/Роман Карпов.jpg", Password = "1234567", Role="Tutor" },
         };

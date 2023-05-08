@@ -276,22 +276,23 @@ namespace web_server.Controllers
                 data.SiteContacts.AddRange(TestData.Sites);
 
 
-                data.Goals.AddRange(TestData.Goals);
-                try
+                foreach (var item in TestData.Goals)
                 {
+                    data.Goals.Add(item);
                     data.SaveChanges();
 
+
                 }
-                catch (Exception ex)
+               
+
+                foreach (var item in TestData.Courses)
                 {
-
-                    throw ex;
+                    data.Courses.Add(item);
+                    data.SaveChanges();
                 }
 
-                data.Courses.AddRange(TestData.Courses);
                 try
                 {
-                    data.SaveChanges();
                     foreach (var item in TestData.Courses)
                     {
                         data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
@@ -309,6 +310,7 @@ namespace web_server.Controllers
                     Role = "Student",
 
                 };
+
                 data.Students.Add(gg);
 
                 data.SaveChanges();
@@ -317,45 +319,52 @@ namespace web_server.Controllers
                 foreach (var item in students)
                 {
                     data.Students.Add(map.Map<StudentDTO>(item));
+                    data.SaveChanges();
+
                 }
 
-                data.SaveChanges();
 
                 foreach (var item in students)
                 {
                     data.Entry(item).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
                 }
+
                 var tutors = TestData.UserList.Where(m => m.Role == "Tutor");
                 foreach (var item in tutors)
                 {
                     var d = map.Map<TutorDTO>(item);
-                  
-                    //if (d.About.ToLower().Contains("огэ"))
-                    //{
-                    //    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
-                    //}
-                    //else
-                    //{
-                    //    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "Общий английский").Id });
 
-                    //}
-                    //if (d.About.ToLower().Contains("егэ"))
-                    //{
-                    //    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ЕГЭ").Id });
-                    //}
-                    
-                    
+                    if( d.Courses == null || d.Courses.Count == 0)
+                    {
+                        if (d.About.ToLower().Contains("огэ"))
+                        {
+                            d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
+                        }
+                        else
+                        {
+                            d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "Общий английский").Id });
+
+                        }
+                        if (d.About.ToLower().Contains("егэ"))
+                        {
+                            d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ЕГЭ").Id });
+                        }
+
+                    }
+
+
                     data.Tutors.Add(d);
-                }
-                try
-                {
-                    data.SaveChanges();
-                }
-                catch (Exception ex)
-                {
+                    try
+                    {
+                        data.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
 
-                    throw ex;
+                        throw ex;
+                    }
                 }
+              
                 var manager = TestData.UserList.FirstOrDefault(m => m.Role == "Manager");
                 data.Managers.Add(map.Map<ManagerDTO>(manager));
 
