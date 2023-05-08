@@ -240,11 +240,13 @@
                         {
                             foreach (var course in item.Courses)
                             {
-                                cr += course.Title + ";";
+                                <label>@course.Title</label>
+//cr += course.Title + ";";
                             }
-                            cr = cr.TrimEnd(';');
+  //                          cr = cr.TrimEnd(';');
                         }
-                        @cr
+                        
+    //                    @cr.Replace(";", "<br/>");
                         }
                  
                     </td>

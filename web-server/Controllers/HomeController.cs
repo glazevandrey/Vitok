@@ -330,19 +330,19 @@ namespace web_server.Controllers
                 {
                     var d = map.Map<TutorDTO>(item);
                   
-                    if (d.About.ToLower().Contains("огэ"))
-                    {
-                        d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
-                    }
-                    else
-                    {
-                        d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "Общий английский").Id });
+                    //if (d.About.ToLower().Contains("огэ"))
+                    //{
+                    //    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ОГЭ").Id });
+                    //}
+                    //else
+                    //{
+                    //    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "Общий английский").Id });
 
-                    }
-                    if (d.About.ToLower().Contains("егэ"))
-                    {
-                        d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ЕГЭ").Id });
-                    }
+                    //}
+                    //if (d.About.ToLower().Contains("егэ"))
+                    //{
+                    //    d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ЕГЭ").Id });
+                    //}
                     
                     
                     data.Tutors.Add(d);

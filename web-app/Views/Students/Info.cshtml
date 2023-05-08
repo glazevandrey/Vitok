@@ -4,6 +4,10 @@
 @{
     Layout = "_Layout";
 }
+
+<link rel="stylesheet" href="~/content/profile/Профиль.css">
+<link rel="stylesheet" href="/css/modal.css">
+
 <style>
     label {
         display: block;
@@ -18,66 +22,116 @@
             display: inline-block;
             width: 170px;
         }
+
+    input, textarea {
+        background-color: white !important;
+    }
 </style>
 
-            <fieldset disabled="disabled">
-                <legend>Информация о студенте</legend>
 
-                <div class="container" align="center">
+<body class="u-xl-mode" data-lang="ru">
 
-                <label>
-                <span>Фамилия</span>
-                <input id="lastName" name="lastName" value="@Model.LastName" />
-                </label>
-                <br />
-                <br />
+    <script>
+        $(document).ready(function () {
+            var birthDate = '@Model.BirthDate.ToString("yyyy-MM-dd")';
+            $('#text-1ae8').val(birthDate);
+        });
+    </script>
+    <div style="text-align: center;">
+        <label id="title2" style=" vertical-align: middle; margin-left:400px;font-weight:bold;font-size:32px;font-family:Montserrat">Редактирование профиля</label>
 
-                <label>
-                <span>Имя</span>
-                <input name="firstName" id="firstName" value="@Model.FirstName" />
-                    <br />             <br />
 
-                </label>
-                <label>
-                <span>Отчество</span>
-                <input id="middleName" name="middleName" value="@Model.MiddleName" />
-                    <br />             <br />
+    </div>
 
-                </label>
-                <label>
-                <span>Дата рождения</span>
-                <input name="birthDate" id="birthDate" value="@Model.BirthDate.ToShortDateString()" />
-                    <br /><br />
 
-                </label>
+    <section class="u-clearfix u-section-1" id="sec-f8be">
+        <div class="u-clearfix u-sheet u-sheet-1" style="padding-left:10%">
+            <div class="u-form u-form-1">
 
-                <br/>
-                <label>
+                <div class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form" id="form">
 
-                <span>Почта</span>
 
-                <input name="email" id="email" value="@Model.Email" />
-                    <br />             <br />
+                    <div class="u-form-group u-form-name u-label-left">
+                        <label for="name-266d" class="u-label u-spacing-72 u-label-1">Фотография</label>
 
-                </label>
-            <label>
-                <span>Пароль</span>
-                <input name="password" id="password" value="@Model.Password" />
-                <br />             <br />
-
-            </label>
-                        <label>
-                <span>Телефон</span>
-                <input name="phone" id="phone" value="@Model.Phone" />
-                <br />             <br />
-
-            </label>
-        <label>
-            <span>Пожелания</span>
-            <input name="wish" id="wish" value="@Model.Wish" />
-            <br />             <br />
-
-        </label>
+                        <img width="138" height="142" src="@Model.PhotoUrl" />
+                        
+                    </div>
                 </div>
-            </fieldset>
-            <br/>
+
+                <div class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form" source="email" name="form-1" style="padding: 10px;">
+                    <input type="hidden" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" name="ActiveToken" value="@Model.ActiveToken" />
+
+                    <input type="hidden" name="Role" value="@Model.Role" />
+                    <div class="u-form-group u-form-name u-label-left">
+                        <label for="name-266d" class="u-label u-spacing-72 u-label-1">Имя</label>
+                        <input type="text" id="name-266d" name="name" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-1" value="@Model.FirstName">
+                    </div>
+                    <div class="u-form-group u-label-left u-form-group-2">
+                        <label for="text-565e" class="u-label u-spacing-72 u-label-2">Фамилия</label>
+                        <input type="text" placeholder="" id="text-565e" name="lastname" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-2" value="@Model.LastName">
+                    </div>
+                    <div class="u-form-group u-label-left u-form-group-3">
+                        <label for="text-9ace" class="u-label u-spacing-72 u-label-3">Отчество</label>
+                        <input type="text" placeholder="" id="text-9ace" name="middlename" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-3" value="@Model.MiddleName">
+                    </div>
+
+
+                    <div class="u-form-group u-label-left u-form-group-4">
+                        <label for="text-1ae8" class="u-label u-spacing-72 u-label-4">Дата рождения</label>
+                        <input type="date" placeholder="" id="text-1ae8" name="dob" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-4" value="@Model.BirthDate">
+                    </div>
+                    <div class="u-form-group u-label-left u-form-group-4">
+                        <label for="text-1ae8" class="u-label u-spacing-72 u-label-4">Дата рождения</label>
+                        <input type="email" placeholder="" id="text-1ae8" name="email" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-4" value="@Model.Email">
+                    </div>
+                    <div class="u-form-group u-label-left">
+                        <label for="email-266d" class="u-label u-spacing-72 u-label-5">Пароль</label>
+                        <input type="text" id="email-266d" name="password" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-5" value="@Model.Password">
+                    </div>
+                    <div class="u-form-group u-label-left u-form-group-6">
+                        <label for="text-5d98" class="u-label u-spacing-72 u-label-6">Номер телефона</label>
+                        <input type="text" id="text-5d98" name="phone" class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-6" value="@Model.Phone">
+                    </div>
+                    <input value="@Model.Role" name="role" id="role" hidden="hidden" />
+
+                    @{
+                        
+                            <div class="u-form-group u-label-left u-form-group-8">
+                                <label for="text-100d" class="u-label u-spacing-72 u-label-8">Пожелания</label>
+                                @{
+                                    var sw = (Model).Wish;
+                                    if (sw != null)
+                                    {
+                                        <textarea class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" name="wish">@sw.ToString().TrimStart().TrimEnd()</textarea>
+
+                                    }
+                                    else
+                                    {
+                                        <textarea class="u-custom-color-1 u-input u-input-rectangle u-radius-10 u-input-7" name="wish"></textarea>
+                                    }
+                                }
+
+                            </div>
+                        }
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script>
+
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = 0;
+            this.style.height = (this.scrollHeight) + "px";
+        }
+    </script>
+</body>
