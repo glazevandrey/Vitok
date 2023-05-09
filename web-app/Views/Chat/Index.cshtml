@@ -20,8 +20,7 @@
         height: 500px;
         background-color: #FAFAFA !important;
         width:140%;
-/*        margin-left:60px;
-*/        height:80vh;
+       height:80vh;
     }
     .messagerName {
         padding-left:20px;
@@ -514,7 +513,7 @@
         $('#onlineUsersList').append('<li style="border-radius:10px" class="active" onclick="receiverId(' + "'" + connectionId + "', '" + userId + "'" + ')">' +
             '<div class="d-flex bd-highlight" style="height:70px">' +
             '<div class="img_cont">' +
-            '<a href=""><img src='+photo+' class="rounded-circle user_img"></a>' +
+            '<a href=""><img src="'+photo+'" class="rounded-circle user_img"></a>' +
             '</div>' +
             '<div id="user_info" class="user_info">' +
             '<p>' + userId + '</p></div> </div></li>')

@@ -306,6 +306,7 @@ namespace web_server.Services
             var curr = DateTime.Parse(split[3]);
             var manager_id = await _userRepository.GetManagerId();
             var tutor = await _userRepository.GetTutor(Convert.ToInt32(tutor_id));
+            var user =  await _userRepository.GetStudent(Convert.ToInt32(user_id));
 
             if (tutor_id != null)
             {
@@ -315,6 +316,7 @@ namespace web_server.Services
                 if (schedule != null)
                 {
                     schedule.RemoveDate = curr;
+                    user.Schedules.FirstOrDefault(m=>m.Id == schedule.Id).RemoveDate = curr;
                 }
 
                 // await _scheduleRepository.Update(schedule);
@@ -325,33 +327,33 @@ namespace web_server.Services
                     tutor.UserDates.Remove(date);
                 }
 
+                await CalculateNoWarn2(user,_hubContext);
+
+                //var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.UserId == Convert.ToInt32(user_id)).ToList();
+                ////var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
+                //list.Reverse();
+                //foreach (var item in list)
+                //{
+                //    if (item.WaitPaymentDate != DateTime.MinValue)
+                //    {
+                //        item.WaitPaymentDate = DateTime.MinValue;
+                //    }
+                //}
 
 
-                var list = tutor.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.UserId == Convert.ToInt32(user_id)).ToList();
-                //var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
-                list.Reverse();
-                foreach (var item in list)
-                {
-                    if (item.WaitPaymentDate != DateTime.MinValue)
-                    {
-                        item.WaitPaymentDate = DateTime.MinValue;
-                    }
-                }
+
+                //var sorted = ScheduleService.SortSchedulesForUnpaid(list);
 
 
+                //foreach (var item in sorted)
+                //{
 
-                var sorted = ScheduleService.SortSchedulesForUnpaid(list);
+                //    var sch2 = list.FirstOrDefault(m => m.Id == item.ScheduleId); //_scheduleRepository.GetScheduleById(item.ScheduleId);
 
+                //    sch2.WaitPaymentDate = item.Nearest;
 
-                foreach (var item in sorted)
-                {
-
-                    var sch2 = list.FirstOrDefault(m => m.Id == item.ScheduleId); //_scheduleRepository.GetScheduleById(item.ScheduleId);
-
-                    sch2.WaitPaymentDate = item.Nearest;
-
-                    // await _scheduleRepository.Update(sch2);
-                }
+                //    // await _scheduleRepository.Update(sch2);
+                //}
 
                 await _userRepository.SaveChanges(tutor);
 

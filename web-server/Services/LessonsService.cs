@@ -306,6 +306,7 @@ namespace web_server.Services
                 user.Schedules.Add(_mapper.Map<ScheduleDTO>(new_model));
                 await _userRepository.SaveChanges(user);
                 user = await _userRepository.GetStudent(user_id);
+                
                 await CalculateNoPaidWarn(user, _hubContext);
                 Task.Run(async () =>
                 {

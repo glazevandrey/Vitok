@@ -27,7 +27,7 @@
     <label style="font-size:20px">Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")</label>
     <input hidden="hidden" id="setdate" name="setdate" value="" />
     <input style="display:none" type="text" onchange="setDate(this)" id="datepicker" name="datepicker">
-    <img id="datepicker-btn" src="~/content/images/calendar.svg" style="width:20px;height:40px;cursor:pointer;margin-left:20px" />
+    <img id="datepicker-btn" src="~/content/images/calendar.svg" style="width:20px;cursor:pointer;margin-left:20px" />
 </form>
 <style>
     .modal-body label {
@@ -75,7 +75,7 @@
 
 </style>
 <div class="image-container" style="margin-left:20px">
-    <img src="~/content/images/question.svg" style="width:20px;height:40px;" />
+    <img src="~/content/images/question.svg" style="width:20px" />
                     <div class="image-description">
 
         @{
