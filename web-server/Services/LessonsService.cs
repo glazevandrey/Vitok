@@ -213,7 +213,6 @@ namespace web_server.Services
                     UserId = user_id,
                     TutorFullName = tutor.FirstName + " " + tutor.LastName,
                     UserName = user.FirstName + " " + user.LastName,
-                    //CourseId = courseId,
                     Course = tutor.Courses.FirstOrDefault(m => m.CourseId == courseId).Course,
                     StartDate = newDateTime,
                     Looped = true,
@@ -235,6 +234,9 @@ namespace web_server.Services
                 // await _scheduleRepository.AddSchedule(_mapper.Map<>new_model);
 
                 //user.Schedules.FirstOrDefault(m=>m.StartDate == new_model.StartDate).CourseId = courseId;
+                await _userRepository.SaveChanges(user);
+                user = await _userRepository.GetStudent(user_id);
+
                 await CalculateNoPaidWarn(user, _hubContext);
 
 
@@ -302,7 +304,8 @@ namespace web_server.Services
                 old.RescheduledLessons.Add(new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason });
                 await _userRepository.SaveChanges(tutor);
                 user.Schedules.Add(_mapper.Map<ScheduleDTO>(new_model));
-
+                await _userRepository.SaveChanges(user);
+                user = await _userRepository.GetStudent(user_id);
                 await CalculateNoPaidWarn(user, _hubContext);
                 Task.Run(async () =>
                 {
@@ -368,16 +371,18 @@ namespace web_server.Services
                     //await _scheduleRepository.Update(sch2);
                 }
 
-                var manager = (await _userRepository.GetManagerId());
-                Task.Run(async () =>
-                {
-                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
-                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
-                        user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
-                });
+            
             }
 
             await _userRepository.SaveChanges(user);
+
+            var manager = (await _userRepository.GetManagerId());
+            Task.Run(async () =>
+            {
+                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
+                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                    user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
+            });
 
 
         }

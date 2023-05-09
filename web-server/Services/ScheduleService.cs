@@ -85,6 +85,15 @@ namespace web_server.Services
 
             await _userRepository.SaveChanges(tutor);
             await _userRepository.SaveChanges(user);
+            
+            if (user.LessonsCount <= 0)
+            {
+                user = await _userRepository.GetStudent(model.ExistUserId);
+                await CalculateNoWarn2(user, _hubContext);
+            }
+           
+
+
             s.Stop();
 
             Task.Run(async () =>
@@ -92,6 +101,8 @@ namespace web_server.Services
                 var text = Constants.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
                 await NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext, _mapper);
             });
+
+
 
             return new Schedule();
         }
@@ -269,6 +280,65 @@ namespace web_server.Services
 
 
             return schedules;
+        }
+
+        private async Task CalculateNoWarn2(StudentDTO user,IHubContext<NotifHub> _hubContext)
+        {
+
+            if (user.LessonsCount <= 0)
+            {
+                if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
+                {
+                    user.StartWaitPayment = DateTime.Now;
+                }
+                //var ff = user.Schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
+                ////var ff = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue);
+                ////var ff = TestData.Schedules.Where(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue).ToList();
+                //if (ff.Count > 0)
+                //{
+                //    foreach (var item in ff)
+                //    {
+                //        item.WaitPaymentDate = DateTime.MinValue;
+                //    }
+                //}
+
+                //await _scheduleRepository.UpdateRange(ff);
+                var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).ToList();
+                //var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
+                list.Reverse();
+                //var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
+                foreach (var item in list)
+                {
+                    if (item.WaitPaymentDate != DateTime.MinValue)
+                    {
+                        item.WaitPaymentDate = DateTime.MinValue;
+                    }
+                }
+
+                var sorted = ScheduleService.SortSchedulesForUnpaid(list);
+
+                foreach (var item in sorted)
+                {
+                    var sch2 = user.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+                    //var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+
+                    sch2.WaitPaymentDate = item.Nearest;
+
+                    //await _scheduleRepository.Update(sch2);
+                }
+
+                
+            }
+
+            await _userRepository.SaveChanges(user);
+            var manager = (await _userRepository.GetManagerId());
+
+            Task.Run(async () =>
+            {
+                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
+                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                    user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
+            });
         }
 
         private async Task CalculateNoPaidWarn(StudentDTO user)

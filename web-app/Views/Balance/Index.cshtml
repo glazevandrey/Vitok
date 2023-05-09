@@ -171,7 +171,7 @@
             if (Model.Role == "Tutor" || Model.Role == "Manager")
             {
                 <div id="balance">
-                    <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-block;margin-left:40px;width:400px;font-size:30px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:20px"><span style="font-weight:700">Баланс</span>: <input value=0 id="balance_input" style="border:none;width:60%;" disabled="disabled" /><img style="width:40px;height:40px;float:right;padding-bottom:5px" src="~/content/images/goldCoins.svg"></label>
+                    <label type="text" placeholder="" id="text-d8c0" name="about" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="display:inline-block;margin-left:40px;width:400px;font-size:30px;background-color:#fff;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:20px"><span style="font-weight:700">Баланс</span>: <input id="balance_input" style="border:none;width:60%;" disabled="disabled" value="@Model.Balance" /><img style="width:40px;height:40px;float:right;padding-bottom:5px" src="~/content/images/goldCoins.svg"></label>
 
                     <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" id="text-d8c022" style="margin-left:50px;height:60px;display:inline-block;margin-right: 50px;color:black !important;box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);font-size:20px" onclick="window.location.href='#withdrawModal'">
                         Вывод средств

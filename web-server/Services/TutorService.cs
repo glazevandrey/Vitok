@@ -118,26 +118,29 @@ namespace web_server.Services
 
                 await _userRepository.SaveChanges(user);
 
-                var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue);
+                user = await _userRepository.GetStudent(Convert.ToInt32(user_id));
+                await CalculateNoWarn2(user, _hubContext);
 
-                var sorted = ScheduleService.SortSchedulesForUnpaid(list);
-                foreach (var item in sorted)
-                {
-                    foreach (var sch2 in list)
-                    {
-                        if (item.ScheduleId == sch2.Id)
-                        {
-                            sch2.WaitPaymentDate = item.Nearest;
+                //var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue);
 
-                        }
-                        else
-                        {
-                            sch2.WaitPaymentDate = DateTime.MinValue;
-                        }
+                //var sorted = ScheduleService.SortSchedulesForUnpaid(list);
+                //foreach (var item in sorted)
+                //{
+                //    foreach (var sch2 in list)
+                //    {
+                //        if (item.ScheduleId == sch2.Id)
+                //        {
+                //            sch2.WaitPaymentDate = item.Nearest;
 
-                        await _scheduleRepository.Update(sch2);
-                    }
-                }
+                //        }
+                //        else
+                //        {
+                //            sch2.WaitPaymentDate = DateTime.MinValue;
+                //        }
+
+                //        await _scheduleRepository.Update(sch2);
+                //    }
+                //}
 
 
                 var type = Convert.ToBoolean(split[2]) == true ? "постоянное" : "разовое";
@@ -156,6 +159,66 @@ namespace web_server.Services
 
             return tutor;
         }
+
+        private async Task CalculateNoWarn2(StudentDTO user, IHubContext<NotifHub> _hubContext)
+        {
+
+            if (user.LessonsCount <= 0)
+            {
+                if (user.StartWaitPayment == DateTime.MinValue || user.StartWaitPayment == null)
+                {
+                    user.StartWaitPayment = DateTime.Now;
+                }
+                var ff = user.Schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
+                //var ff = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue);
+                //var ff = TestData.Schedules.Where(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue).ToList();
+                if (ff.Count > 0)
+                {
+                    foreach (var item in ff)
+                    {
+                        item.WaitPaymentDate = DateTime.MinValue;
+                    }
+                }
+
+                //await _scheduleRepository.UpdateRange(ff);
+                var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).ToList();
+                //var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
+                list.Reverse();
+                //var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
+                foreach (var item in list)
+                {
+                    if (item.WaitPaymentDate != DateTime.MinValue)
+                    {
+                        item.WaitPaymentDate = DateTime.MinValue;
+                    }
+                }
+
+                var sorted = ScheduleService.SortSchedulesForUnpaid(list);
+
+                foreach (var item in sorted)
+                {
+                    var sch2 = user.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+                    //var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
+
+                    sch2.WaitPaymentDate = item.Nearest;
+
+                    //await _scheduleRepository.Update(sch2);
+                }
+
+
+            }
+
+            await _userRepository.SaveChanges(user);
+            var manager = (await _userRepository.GetManagerId());
+
+            Task.Run(async () =>
+            {
+                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
+                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                    user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
+            });
+        }
+
 
         public async Task<bool> RejectStudent(string[] args, IHubContext<NotifHub> _hubContext)
         {
