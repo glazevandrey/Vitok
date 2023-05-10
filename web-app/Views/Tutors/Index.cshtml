@@ -17,7 +17,10 @@
     label {
      display: block;
     }
-
+    .modal-body button
+    {
+    color:white;
+    }
     label > span {
         display: inline-block;
         width: 170px;
@@ -144,7 +147,7 @@
                     <br />
 
                     <div style="text-align:center">
-                        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="color:black !important;display:inline-block" onclick="closeModal1()">
+                        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="color:white !important;display:inline-block" onclick="closeModal1()">
                             Добавить
                         </button>
 
@@ -167,7 +170,7 @@
 
 
 
-    <button onclick="window.location.hash = '#openModalAdd'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:20px;margin-left: 20px;color:black !important; display:inline-block;margin-bottom:30px;height:50px;width:400px">
+    <button onclick="window.location.hash = '#openModalAdd'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:20px;margin-left: 20px;color:white !important; display:inline-block;margin-bottom:30px;height:50px;width:400px">
     Добавить нового репетитора
 </button>
 </div>
@@ -290,8 +293,14 @@
                 <form method="post" action="/tutors/removeTutor">
                     <input hidden="hidden" value="" id="userIdRemove" name="userIdRemove" />
                     <br/>
-                    <input type="submit" value="Удалить"/>
-                    <input type="button" value="Отмена" onclick="closeRemove()">
+                    
+    <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:20px;margin-left: 20px;color:white !important; display:inline-block;margin-bottom:30px;height:50px;width:400px">
+    Удалить
+</button>
+
+                    <button onclick="closeRemove()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="font-size:20px;margin-left: 20px;color:white !important; display:inline-block;margin-bottom:30px;height:50px;width:400px">
+    Отмена
+</button>
                 </form>
 
             </div>
@@ -381,10 +390,10 @@
                      
                         </fieldset>
                     <div style="text-align:center; padding-top:20px">
-                        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px;color:black !important;display:inline-block" >
+                        <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px;color:white !important;display:inline-block">
                             Сохранить
                         </button>
-                        <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px; color:black !important;display:inline-block" onclick="window.location.href='#closeModal'">
+                        <button class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="width:150px; color:white !important;display:inline-block" onclick="window.location.href='#closeModal'">
                             Отмена
                         </button>
                     </div>

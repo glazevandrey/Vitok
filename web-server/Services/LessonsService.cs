@@ -372,18 +372,18 @@ namespace web_server.Services
                     //await _scheduleRepository.Update(sch2);
                 }
 
-            
+                var manager = (await _userRepository.GetManagerId());
+                Task.Run(async () =>
+                {
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                        user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
+                });
             }
 
             await _userRepository.SaveChanges(user);
 
-            var manager = (await _userRepository.GetManagerId());
-            Task.Run(async () =>
-            {
-                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
-                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
-                    user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
-            });
+          
 
 
         }

@@ -20,20 +20,37 @@ namespace web_server.Quartz
         }
         public DateTime GetNearestScheduleDate(ScheduleDTO cur)
         {
-            DateTime date2 = DateTime.UtcNow;
+
+            var date2 = cur.StartDate;
             if (cur.Looped)
             {
 
                 if (cur.ReadyDates.Count > 0)
                 {
-                    date2 = cur.ReadyDates.Last().Date.AddDays(7);
+                    if (cur.ReadyDates.FirstOrDefault(m => m.Date == date2) != null)
+                    {
+
+                    }
+                    else
+                    {
+                        date2 = cur.ReadyDates.Last().Date.AddDays(7);
+                    }
+
                 }
 
                 if (cur.RescheduledLessons.Count > 0)
                 {
                     if (date2 < cur.RescheduledLessons.Last().NewTime)
                     {
-                        date2 = cur.RescheduledLessons.Last().NewTime;
+                        if (cur.RescheduledLessons.FirstOrDefault(m => m.OldTime == date2) != null)
+                        {
+                        }
+                        else
+                        {
+                            date2 = cur.RescheduledLessons.Last().NewTime;
+
+                        }
+
 
                     }
                 }
@@ -41,7 +58,14 @@ namespace web_server.Quartz
                 {
                     if (date2 < cur.RescheduledDate)
                     {
-                        date2 = cur.RescheduledDate;
+                        if (date2 == cur.RescheduledDate)
+                        {
+                        }
+                        else
+                        {
+                            date2 = cur.RescheduledDate;
+
+                        }
 
                     }
                 }
@@ -50,16 +74,23 @@ namespace web_server.Quartz
                 {
                     if (date2 < cur.SkippedDates.Last().Date.AddDays(7))
                     {
-                        date2 = cur.SkippedDates.Last().Date.AddDays(7);
+                        if (cur.SkippedDates.FirstOrDefault(m => m.Date == date2) != null)
+                        {
+                        }
+                        else
+                        {
+                            date2 = cur.SkippedDates.Last().Date.AddDays(7);
+
+                        }
 
                     }
+
                 }
 
                 if (date2 < cur.StartDate)
                 {
                     date2 = cur.StartDate;
-
-
+                   
                 }
             }
             else
@@ -67,11 +98,64 @@ namespace web_server.Quartz
                 if (cur.Status == Status.Ожидает)
                 {
                     date2 = cur.StartDate;
-
+                   
                 }
 
             }
+
             return date2;
+            //DateTime date2 = DateTime.Now;
+            //if (cur.Looped)
+            //{
+
+            //    if (cur.ReadyDates.Count > 0)
+            //    {
+            //        date2 = cur.ReadyDates.Last().Date.AddDays(7);
+            //    }
+
+            //    if (cur.RescheduledLessons.Count > 0)
+            //    {
+            //        if (date2 < cur.RescheduledLessons.Last().NewTime)
+            //        {
+            //            date2 = cur.RescheduledLessons.Last().NewTime;
+
+            //        }
+            //    }
+            //    if (cur.RescheduledDate != DateTime.MinValue)
+            //    {
+            //        if (date2 < cur.RescheduledDate)
+            //        {
+            //            date2 = cur.RescheduledDate;
+
+            //        }
+            //    }
+
+            //    if (cur.SkippedDates.Count > 0)
+            //    {
+            //        if (date2 < cur.SkippedDates.Last().Date.AddDays(7))
+            //        {
+            //            date2 = cur.SkippedDates.Last().Date.AddDays(7);
+
+            //        }
+            //    }
+
+            //    if (date2 < cur.StartDate)
+            //    {
+            //        date2 = cur.StartDate;
+
+
+            //    }
+            //}
+            //else
+            //{
+            //    if (cur.Status == Status.Ожидает)
+            //    {
+            //        date2 = cur.StartDate;
+
+            //    }
+
+            //}
+            //return date2;
         }
 
         public async Task MainParse(ISenderService _senderService, IScheduleService _scheduleService)
@@ -131,7 +215,10 @@ namespace web_server.Quartz
 
                             }
                         }
-
+                        if(lessonDate.ToShortDateString() == "10.05.2023")
+                        {
+                            int x = 2;
+                        }
                         if (lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue == false)
                         {
                             TimeSpan timeLeft = lessonDate - DateTime.Now; // Время, оставшееся до конца занятия
@@ -142,7 +229,7 @@ namespace web_server.Quartz
                                 lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue = true;
 
                                 await _scheduleService.Update(lesson);
-                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hub, _mapper);
+                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON + $" Дата занятия: {lessonDate.ToShortDateString()}", lesson.TutorId.ToString(), _hub, _mapper);
                                 //var tutor =await _userRepository.GetUserById(lesson.TutorId); //TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
                                 await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
 
@@ -189,21 +276,18 @@ namespace web_server.Quartz
 
                         if (lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue == false)
                         {
-                            DayOfWeek desiredDayOfWeek = lessonDate.DayOfWeek; // День недели занятия
-                            TimeSpan desiredTime = lessonDate.TimeOfDay; // Время начала занятия
 
                             DateTime now = DateTime.Now; // Текущее время
-                            DateTime nextDesiredDay = now.AddDays(((int)desiredDayOfWeek - (int)now.DayOfWeek + 7) % 7); // Ближайший день с заданным днем недели
-                            DateTime desiredDateTime = nextDesiredDay.Date + desiredTime; // Дата и время начала занятия
+                           
 
-                            TimeSpan timeLeft = desiredDateTime - now; // Время, оставшееся до занятия
-
+                            TimeSpan timeLeft = lessonDate - now; // Время, оставшееся до занятия
+                            
                             if (timeLeft.TotalSeconds < 5)
                             {
                                 //await _scheduleService.Update(lesson);
                                 lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue = true;
                                 await _scheduleService.Update(lesson);
-                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hub, _mapper);
+                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON + $" Дата занятия: {lessonDate.ToShortDateString()}", lesson.TutorId.ToString(), _hub, _mapper);
                                 await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
 
                                 await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.UserId.ToString(), _hub, _mapper);

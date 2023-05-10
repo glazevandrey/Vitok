@@ -746,7 +746,7 @@
 
                                                                         @{
 
-                                                                            var textMouse = $"Курс: {model1.Course?.Title}\nЦель: {model1.Course?.Goal?.Title}\nУченик: {model1.UserName}";
+                                                                            var textMouse = $"Курс: {model1.Course?.Title}\nЦель: {model1.Course?.Goal?.Title}\nУченик: {model1.UserName}\n";
 
 
                                                                             if(model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)
@@ -760,7 +760,7 @@
                                                                                     //{
                                                                                 if (resc.OldTime == s_date)
                                                                                 {
-                                                                                    textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
+                                                                                    textMouse += $"Перенесен на: {resc.NewTime}\nПричина:{resc.Reason}\nИнициатор:{resc.Initiator}";
 
                                                                                     break;
                                                                                 }
@@ -1195,7 +1195,7 @@
                                                                 
                                                                     if(resc.OldTime == s_date)
                                                                     {
-                                                                        textMouse += $"Перенесен на: {resc.NewTime};Причина:{resc.Reason};Инициатор:{resc.Initiator};";
+                                                                        textMouse += $"Перенесен на: {resc.NewTime}\nПричина:{resc.Reason}\nИнициатор:{resc.Initiator}";
 
                                                                         break;
                                                                     }

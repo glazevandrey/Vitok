@@ -254,7 +254,6 @@ namespace web_server.Services
 
                         await CalculateNoPaidWarn(stud, _hubContext);
                     }
-
                     foreach (var item in reg.WantThis)
                     {
                         await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", item.dateTime.ToString("dd.MM.yyyy HH:mm")), reg.TutorId.ToString(), _hubContext, _mapper);
@@ -324,19 +323,21 @@ namespace web_server.Services
                     //await _scheduleRepository.Update(sch2);
                 }
 
+                var manager = (await _userRepository.GetManagerId());
+
+
+                Task.Run(async () =>
+                {
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
+                    await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
+                        user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
+                });
 
             }
 
             await _userRepository.SaveChanges(user);
 
-            var manager = (await _userRepository.GetManagerId());
-            Task.Run(async () =>
-            {
-                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
-                await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
-                    user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
-            });
-
+           
 
         }
 
@@ -460,6 +461,10 @@ namespace web_server.Services
             }
 
             var token = await LogIn(user.Email, user.Password, context, _hubContext);
+
+
+            await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
+
             if (!string.IsNullOrEmpty(guid))
             {
                 return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(reg));

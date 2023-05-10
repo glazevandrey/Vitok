@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace web_server
@@ -12,7 +14,6 @@ namespace web_server
         public static string web_app_ip = "";
         public static bool BackInAir = false;
         public static JsonSerializerSettings settings = new JsonSerializerSettings();
-
 
         public static void Main(string[] args)
         {
