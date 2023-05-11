@@ -230,14 +230,14 @@ namespace web_server.Services
                 model.NewDate = newDateTime;
 
                 user.Schedules.Add(new_model);
+                await CalculateNoPaidWarn(user, _hubContext);
 
                 // await _scheduleRepository.AddSchedule(_mapper.Map<>new_model);
 
                 //user.Schedules.FirstOrDefault(m=>m.StartDate == new_model.StartDate).CourseId = courseId;
                 await _userRepository.SaveChanges(user);
-                user = await _userRepository.GetStudent(user_id);
+                //user = await _userRepository.GetStudent(user_id);
 
-                await CalculateNoPaidWarn(user, _hubContext);
 
 
                 Task.Run(async () =>
@@ -302,12 +302,15 @@ namespace web_server.Services
                 }
 
                 old.RescheduledLessons.Add(new RescheduledLessons() { Initiator = initiator, NewTime = newDateTime, OldTime = cureDate, Reason = reason });
-                await _userRepository.SaveChanges(tutor);
                 user.Schedules.Add(_mapper.Map<ScheduleDTO>(new_model));
-                await _userRepository.SaveChanges(user);
-                user = await _userRepository.GetStudent(user_id);
-                
+
                 await CalculateNoPaidWarn(user, _hubContext);
+
+
+                await _userRepository.SaveChanges(tutor);
+                await _userRepository.SaveChanges(user);
+                //user = await _userRepository.GetStudent(user_id);
+                
                 Task.Run(async () =>
                 {
                     // отправка юзеру что разовый перенос
@@ -373,6 +376,7 @@ namespace web_server.Services
                 }
 
                 var manager = (await _userRepository.GetManagerId());
+               // await _userRepository.SaveChanges(user);
                 Task.Run(async () =>
                 {
                     await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
@@ -381,7 +385,7 @@ namespace web_server.Services
                 });
             }
 
-            await _userRepository.SaveChanges(user);
+           // await _userRepository.SaveChanges(user);
 
           
 

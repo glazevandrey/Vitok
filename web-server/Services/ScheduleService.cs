@@ -83,14 +83,15 @@ namespace web_server.Services
             }
             tutor.UserDates.Remove(rem);
 
+            if (user.LessonsCount <= 0)
+            {
+                // user = await _userRepository.GetStudent(model.ExistUserId);
+                await CalculateNoWarn2(user, _hubContext);
+            }
             await _userRepository.SaveChanges(tutor);
             await _userRepository.SaveChanges(user);
             
-            if (user.LessonsCount <= 0)
-            {
-                user = await _userRepository.GetStudent(model.ExistUserId);
-                await CalculateNoWarn2(user, _hubContext);
-            }
+            
            
 
 
@@ -295,18 +296,7 @@ namespace web_server.Services
                 {
                     user.StartWaitPayment = DateTime.Now;
                 }
-                //var ff = user.Schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
-                ////var ff = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue);
-                ////var ff = TestData.Schedules.Where(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue).ToList();
-                //if (ff.Count > 0)
-                //{
-                //    foreach (var item in ff)
-                //    {
-                //        item.WaitPaymentDate = DateTime.MinValue;
-                //    }
-                //}
-
-                //await _scheduleRepository.UpdateRange(ff);
+              
                 var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).ToList();
                 //var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
                 list.Reverse();
@@ -334,7 +324,7 @@ namespace web_server.Services
                 
             }
 
-            await _userRepository.SaveChanges(user);
+           // await _userRepository.SaveChanges(user);
             var manager = (await _userRepository.GetManagerId());
 
             Task.Run(async () =>
