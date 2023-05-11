@@ -350,6 +350,7 @@ namespace web_server.Controllers
                             d.Courses.Add(new TutorCourse() { CourseId = TestData.Courses.FirstOrDefault(m => m.Title == "ЕГЭ").Id });
                         }
 
+
                     }
 
 
@@ -389,7 +390,20 @@ namespace web_server.Controllers
                 }
 
 
-                data.Schedules.AddRange(map.Map<List<ScheduleDTO>>(TestData.Schedules));
+
+                foreach (var item in TestData.Schedules)
+                {
+                    var f = new List<NotificationTaskDTO>
+                    {
+                        new NotificationTaskDTO() { NotifKey = Constants.NOTIF_START_LESSON, NotifValue = false },
+                        new NotificationTaskDTO() { NotifKey = Constants.NOTIF_TOMORROW_LESSON, NotifValue = false },
+                        new NotificationTaskDTO() { NotifKey = Constants.NOTIF_DONT_FORGET_SET_STATUS, NotifValue = false }
+                    };
+
+                    item.Tasks.AddRange(f);
+                    data.Schedules.Add(item);
+                }
+               // data.Schedules.AddRange(map.Map<List<ScheduleDTO>>(TestData.Schedules));
                 data.Tariffs.AddRange(TestData.Tariffs);
                 try
                 {

@@ -263,6 +263,9 @@ namespace web_server.Services
                             Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).
                             Replace("{date}", item.dateTime.ToString("dd.MM.yyyy HH:mm")),
                             (managerId).ToString(), _hubContext, _mapper);
+
+                        await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON_STUDENT.Replace("{name}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", item.dateTime.ToString("dd.MM.yyyy HH:mm")), user.UserId.ToString(), _hubContext, _mapper);
+
                     }
 
                     await _userRepository.RemoveRegistration(reg);
@@ -450,11 +453,17 @@ namespace web_server.Services
                 {
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", item.dateTime.ToString("dd.MM.yyyy HH:mm")), reg.TutorId.ToString(), _hubContext, _mapper);
 
+                    await NotifHub.SendNotification(Constants.NOTIF_NEW_LESSON_STUDENT.Replace("{name}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", item.dateTime.ToString("dd.MM.yyyy HH:mm")) + " . Не забудьте пополнить баланс!", userid.ToString(), _hubContext, _mapper);
+
+
                     await NotifHub.SendNotification(Constants.NOTIF_NEW_STUDENT_FOR_MANAGER.
                         Replace("{studentName}", user.FirstName + " " + user.LastName).
                         Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName).
                         Replace("{date}", item.dateTime.ToString("dd.MM.yyyy HH:mm")),
                         (managerId).ToString(), _hubContext, _mapper);
+
+
+                   
                 }
 
 

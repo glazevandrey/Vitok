@@ -35,9 +35,6 @@ new CourseDTO() {Title="IELTS", GoalId = 8},
 new CourseDTO() {Title="TOEFL", GoalId = 8},
 new CourseDTO() {Title="Cambridge ESOL", GoalId = 8}
 
-            //new CourseDTO() {Title="ОГЭ", GoalId  = 4 ,},
-            //new CourseDTO() { Title="ЕГЭ",  GoalId = 2, },
-            //new CourseDTO() {Title="Общий английский", GoalId = 2}
         };
         public static List<SiteContact> Sites = new List<SiteContact>()
         {
@@ -112,13 +109,6 @@ new ScheduleDTO() { UserName = "Сергей Воронов", TutorFullName = "�
 
 new ScheduleDTO() { UserName = "Сергей Воронов", TutorFullName = "Маргарита Волкова", TutorId = 14, UserId = 2, StartDate = DateTime.Parse("16.05.2023 09:00"), CourseId = 4, Looped = true},
 
-            
-           //   new ScheduleDTO() { UserName = "Алла Цветкова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 2,
-           //     WaitPaymentDate = DateTime.Parse("10.05.2023 13:00"),
-           //     StartDate = DateTime.Parse("10.05.2023 13:00"), CourseId = 10, Looped = true},
-
-           //new ScheduleDTO() { UserName = "Алла Цветкова", TutorFullName = "Александр Михайлов", TutorId = 8, UserId = 2,
-           //     StartDate = DateTime.Parse("10.05.2023 17:00"), CourseId = 10, Looped = true},
 
         };
 

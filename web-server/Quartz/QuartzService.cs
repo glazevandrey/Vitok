@@ -206,7 +206,7 @@ namespace web_server.Quartz
 
                                 lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_TOMORROW_LESSON && m.Id != 0).NotifValue = true;
 
-                                await _scheduleService.Update(lesson);
+                               await _scheduleService.Update(lesson);
                                 await NotifHub.SendNotification(Constants.NOTIF_TOMORROW_LESSON, lesson.TutorId.ToString(), _hub, _mapper);
                                 await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_TOMORROW_LESSON);
 
@@ -215,10 +215,7 @@ namespace web_server.Quartz
 
                             }
                         }
-                        if(lessonDate.ToShortDateString() == "10.05.2023")
-                        {
-                            int x = 2;
-                        }
+            
                         if (lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue == false)
                         {
                             TimeSpan timeLeft = lessonDate - DateTime.Now; // Время, оставшееся до конца занятия
@@ -229,7 +226,7 @@ namespace web_server.Quartz
                                 lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue = true;
 
                                 await _scheduleService.Update(lesson);
-                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON + $" Дата занятия: {lessonDate.ToShortDateString()}", lesson.TutorId.ToString(), _hub, _mapper);
+                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hub, _mapper);
                                 //var tutor =await _userRepository.GetUserById(lesson.TutorId); //TestData.UserList.FirstOrDefault(m => m.UserId == lesson.TutorId).Email;
                                 await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
 
@@ -247,14 +244,10 @@ namespace web_server.Quartz
                     {
                         if (lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_TOMORROW_LESSON && m.Id != 0).NotifValue == false)
                         {
-                            DayOfWeek desiredDayOfWeek = lessonDate.DayOfWeek; // День недели занятия
-                            TimeSpan desiredTime = lessonDate.TimeOfDay; // Время начала занятия
-
                             DateTime now = DateTime.Now; // Текущее время
-                            DateTime nextDesiredDay = now.AddDays(((int)desiredDayOfWeek - (int)now.DayOfWeek + 7) % 7); // Ближайший день с заданным днем недели
-                            DateTime desiredDateTime = nextDesiredDay.Date + desiredTime; // Дата и время начала занятия
 
-                            TimeSpan timeLeft = desiredDateTime - now; // Время, оставшееся до занятия
+
+                            TimeSpan timeLeft = lessonDate - now; // Время, оставшееся до занятия
 
                             if (timeLeft.TotalHours < 25 && timeLeft.TotalHours > 0) // Если до занятия осталось 1 день или меньше и оно находится в промежутке между 50 минутами и часом
                             {
@@ -280,14 +273,15 @@ namespace web_server.Quartz
                             DateTime now = DateTime.Now; // Текущее время
                            
 
-                            TimeSpan timeLeft = lessonDate - now; // Время, оставшееся до занятия
+                            TimeSpan timeLeft = lessonDate - now; 
                             
                             if (timeLeft.TotalSeconds < 5)
                             {
-                                //await _scheduleService.Update(lesson);
                                 lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON && m.Id != 0).NotifValue = true;
+                                lesson.Tasks.FirstOrDefault(m => m.NotifKey == Constants.NOTIF_START_LESSON).NotifValue = true;
+
                                 await _scheduleService.Update(lesson);
-                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON + $" Дата занятия: {lessonDate.ToShortDateString()}", lesson.TutorId.ToString(), _hub, _mapper);
+                                await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.TutorId.ToString(), _hub, _mapper);
                                 await _senderService.SendMessage(lesson.TutorId, Constants.NOTIF_START_LESSON);
 
                                 await NotifHub.SendNotification(Constants.NOTIF_START_LESSON, lesson.UserId.ToString(), _hub, _mapper);
@@ -299,7 +293,7 @@ namespace web_server.Quartz
                     }
                 }
 
-                await _scheduleService.Update(lesson);
+                //await _scheduleService.Update(lesson);
             }
 
             Program.BackInAir = false;

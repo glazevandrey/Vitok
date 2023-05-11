@@ -40,7 +40,7 @@ namespace web_server
 
             DataContext db = scope.ServiceProvider.GetRequiredService<DataContext>();
             var user = await db.Users.Include(m => m.NotificationTokens).Include(m => m.Notifications).FirstOrDefaultAsync(m => m.UserId == Convert.ToInt32(to));
-            //var user = await userRepository.GetUser(Convert.ToInt32(to));
+
             if (user == null)
             {
                 return;

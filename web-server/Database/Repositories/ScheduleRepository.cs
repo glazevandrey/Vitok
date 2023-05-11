@@ -66,7 +66,9 @@ namespace web_server.Database.Repositories
         {
             try
             {
+                var fg = _context.ChangeTracker.Entries();
                 await _context.SaveChangesAsync();
+                fg = _context.ChangeTracker.Entries();
                 _context.Entry(schedule).State = EntityState.Detached;
 
             }
@@ -127,6 +129,7 @@ namespace web_server.Database.Repositories
                 if (func == null)
                 {
                     var res = await _context.Schedules.Include(m => m.Course).ThenInclude(m => m.Goal).Include(m => m.Tasks).Include(m => m.RescheduledLessons).Include(m => m.SkippedDates).Include(m => m.ReadyDates).Include(m => m.PaidLessons).AsSplitQuery().ToListAsync();
+                    var fgf = _context.ChangeTracker.Entries();
                     return res;
 
                     //return _mapper.Map<List<Schedule>>(res);

@@ -12,6 +12,7 @@
         public const string NOTIF_DONT_FORGET_SET_STATUS = "Не забудьте отметить статус занятия!"; // окончание занятия
         public const string NOTIF_NEW_STUDENT_FOR_TUTOR = "У вас появился новый ученик {name}. Занятие: {date}"; // новый ученик записался
         public const string NOTIF_NEW_LESSON_TUTOR = "У вас новое занятие с учеником {name} на {date}"; // новый ученик записался
+        public const string NOTIF_NEW_LESSON_STUDENT = "У вас новое занятие с репетитором {name} на {date}"; // новый ученик записался
 
         public const string NOTIF_ONE_LESSON_LEFT = "У вас осталось одно занятие! Не забудьте пополнить баланс!"; // когда у ученика осталось 1 занятие
         public const string NOTIF_ZERO_LESSONS_LEFT = "У вас осталось 0 занятий! Не забудьте пополнить баланс!"; // когда у ученика осталось 0 занятия

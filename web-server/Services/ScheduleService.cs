@@ -100,6 +100,10 @@ namespace web_server.Services
             {
                 var text = Constants.NOTIF_NEW_LESSON_TUTOR.Replace("{name}", user.FirstName + " " + user.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
                 await NotifHub.SendNotification(text, model.TutorId.ToString(), _hubContext, _mapper);
+
+
+                text = Constants.NOTIF_NEW_LESSON_STUDENT.Replace("{name}", tutor.FirstName + " " + tutor.LastName).Replace("{date}", schedule.StartDate.ToString("dd.MM.yyyy HH:mm"));
+                await NotifHub.SendNotification(text, user.UserId.ToString(), _hubContext, _mapper);
             });
 
 
@@ -156,7 +160,7 @@ namespace web_server.Services
                 });
             }
 
-            if (user.SkippedInThisMonth == 1)
+            if (user.SkippedInThisMonth == 1 && warn )
             {
                 Task.Run(async () =>
                 {
@@ -175,7 +179,7 @@ namespace web_server.Services
 
             }
 
-            if (user.SkippedInThisMonth == 2)
+            if (user.SkippedInThisMonth == 2 && warn)
             {
                 Task.Run(async () =>
                 {
@@ -189,7 +193,7 @@ namespace web_server.Services
                 });
             }
 
-            if (user.SkippedInThisMonth >= 3)
+            if (user.SkippedInThisMonth >= 3 && warn)
             {
                 Task.Run(async () =>
                 {
