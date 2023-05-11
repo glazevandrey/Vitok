@@ -1,7 +1,10 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using web_server.Database;
 using web_server.Database.Repositories;
 using web_server.Services.Interfaces;
 
@@ -9,14 +12,19 @@ namespace web_server.Services
 {
     public class SenderService : ISenderService
     {
-        UserRepository _userRepository;
-        public SenderService(UserRepository userRepository)
+        private static IServiceProvider _serviceProvider;
+        public SenderService(IServiceProvider serviceProvider)
         {
-            _userRepository = userRepository;
+            _serviceProvider = serviceProvider;
         }
         public async Task SendMessage(int id, string message2)
         {
-            var user = await _userRepository.GetLiteUser(id);
+            var scope = _serviceProvider.CreateScope();
+
+            DataContext db = scope.ServiceProvider.GetRequiredService<DataContext>();
+            var user = await db.Users.FirstOrDefaultAsync(m=>m.UserId == id);
+            db.Entry(user).State = EntityState.Detached;
+            db.Dispose();
             if (user == null)
             {
                 return;
