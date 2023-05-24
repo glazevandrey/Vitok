@@ -67,10 +67,6 @@ namespace web_server.Services
                 };
 
                 await _scheduleRepository.AddSchedule(model);
-                await _userRepository.SaveChanges(tutor);
-
-
-
             }
 
 

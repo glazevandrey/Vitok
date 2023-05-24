@@ -50,8 +50,9 @@ namespace web_server
             notif.Message = message;
             notif.UserIdTo = Convert.ToInt32(to);
             notif.DateTime = DateTime.Now;
-            user.Notifications.Add(mapper.Map<NotificationsDTO>(notif));
-
+            
+            var mapped = mapper.Map<NotificationsDTO>(notif);
+            user.Notifications.Add(mapped);
             try
             {
                 await db.SaveChangesAsync();
@@ -70,7 +71,7 @@ namespace web_server
                 var connecedTokens = user.NotificationTokens.Where(m => m.TokenValue == "Connected").ToList();
                 foreach (var item in connecedTokens)
                 {
-                    await hub.Clients.Client(item.TokenKey).SendAsync("ReceiveNotification", message, false, notif.Id);
+                    await hub.Clients.Client(item.TokenKey).SendAsync("ReceiveNotification", message, false, mapped.Id);
                 }
             }
             catch (Exception ex)
