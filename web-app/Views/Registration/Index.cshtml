@@ -117,35 +117,37 @@
             <h1 class="u-align-center u-text u-text-1">Регистрация</h1>
             <div class="u-form u-form-1">
                 <form id="form-1" action="@s" class="u-clearfix u-form-spacing-50 u-form-vertical u-inner-form"method="post" source="email" name="form-1" style="padding: 10px;">
+                    <div class="u-form-group u-form-group-1">
+                    <label id="error" style="color:darkred;" hidden="hidden"></label>
+                    </div>
                     <div class="u-form-group u-label-none u-form-group-1">
                         <label for="text-955e" class="u-label u-label-1">Поле ввода</label>
-                        @Html.TextBoxFor(m => m.FirstName, new {@id="text-955e", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-1", @placeholder="Имя" })
+                        @Html.TextBoxFor(m => m.FirstName, new {@id="text-955e", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-1", @placeholder="Имя", @required  = "required" })
                     </div>
                     <div class="u-form-group u-label-none u-form-group-2">
                         <label for="text-a400" class="u-label u-label-2">Поле ввода</label>
-                        @Html.TextBoxFor(m => m.LastName, new {@id="text-a400", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-2", @placeholder="Фамилия" })
+                        @Html.TextBoxFor(m => m.LastName, new {@id="text-a400", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-2", @placeholder="Фамилия", @required  = "required" })
 
                     </div>
                     <div class="u-form-group u-label-none u-form-group-3">
                         <label for="text-5785" class="u-label">Поле ввода</label>
-                        @Html.TextBoxFor(m => m.BirthDate, new {@id="text-5785", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-3", @type="date", @min="1920-01-01", @max="2050-12-31" })
+                        @Html.TextBoxFor(m => m.BirthDate, new {@id="text-5785", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-3", @type="date", @min="1920-01-01", @max="2050-12-31", @required  = "required" })
                    </div>
                     <div class="u-form-group u-form-name u-label-none">
                         <label for="name-266d" class="u-label">Имя</label>
-                        @Html.TextBoxFor(m => m.Email, new {@id="name-266d", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-4", @type="email", @placeholder="E-mail"})
+                        @Html.TextBoxFor(m => m.Email, new {@id="name-266d", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-4", @type="email", @placeholder="E-mail", @required  = "required"})
                     </div>
                     <div class="u-form-group u-label-none">
                         <label for="email-266d" class="u-label">password</label>
-                        @Html.PasswordFor(m => m.Password, new {@id="email-266d", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-5", @placeholder="Пароль"})
+                        @Html.PasswordFor(m => m.Password, new {@id="email-266d", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-5", @placeholder="Пароль", @required  = "required", @minlength="6" , @maxlength="20"})
                    </div>
                     <div class="u-form-group u-label-none u-form-group-6">
                         <label for="text-c326" class="u-label u-label-6">Поле ввода</label>
-                        @Html.TextBoxFor(m => m.Phone, new {@id="text-c326", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-6", @placeholder="Номер телефона" })
+                        @Html.TextBoxFor(m => m.Phone, new {@id="text-c326", @class = "form-control txtbox u-custom-color-1 u-input u-input-rectangle u-radius-10 u-text-white u-input-6",  @placeholder="Номер телефона", @required  = "required", @minlength=11, @pattern="8.{10}", @title="Формат: 89002001111" })
                   </div>
                     <div class="u-align-left u-form-group u-form-submit u-label-none">
-                        <a onclick="document.getElementById('form-1').submit()" class="u-btn u-btn-round u-btn-submit u-button-style u-custom-color-2 u-radius-10 u-btn-1">
-                            Зарегистрироваться<br>
-                        </a>
+                        <button type="submit" class="u-btn u-btn-round u-btn-submit u-button-style u-custom-color-2 u-radius-10 u-btn-1">Зарегистрироваться</button>
+                       
                     </div>
                     <div class="u-form-send-message u-form-send-success"> Спасибо! Ваше сообщение отправлено. </div>
                     <div class="u-form-send-error u-form-send-message"> Отправка не удалась. Пожалуйста, исправьте ошибки и попробуйте еще раз. </div>
@@ -164,8 +166,19 @@
 
 </body>
 </html>
+@{
+    if (ViewData["error"] != null)
+    {
+        <script>
+            document.getElementById("error").removeAttribute("hidden");
+            document.getElementById("error").innerHTML = '@ViewData["error"].ToString()';
+        </script>
+    }
+}
 
-                    <script>
+
+
+<script>
     document.getElementsByTagName('body')[0].style.backgroundColor = '#FAFAFA';
 
     var dropdown = document.querySelector('.dropdown');
@@ -178,6 +191,11 @@
     var inp = document.getElementsByTagName('input');
     for (var i = 0; i < inp.length; i++) {
         inp[i].setAttribute('autocomplete', 'off');
+    }
+
+
+    window.onload = function () {
+        history.replaceState({}, document.title, window.location.pathname);
     }
 </script>
 

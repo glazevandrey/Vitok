@@ -20,11 +20,15 @@ namespace web_app.Controllers
             _requestService = requestService;
         }
         [HttpGet]
-        public IActionResult Index([FromQuery] string id)
+        public IActionResult Index([FromQuery] string id, [FromQuery] string error = null)
         {
             if (id != null)
             {
                 ViewData["Id"] = id;
+            }
+            if(error != null)
+            {
+                ViewData["error"] = error;
             }
 
             return View();
@@ -43,7 +47,7 @@ namespace web_app.Controllers
             var response = _requestService.SendPost(req, HttpContext);
             if (response == null)
             {
-                return BadRequest("Неудачная попытка входа");
+                return RedirectToAction("Index", new { error = "Такой E-mail уже занят"});
             }
 
             if (id != null)

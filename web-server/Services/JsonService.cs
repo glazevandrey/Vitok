@@ -6,6 +6,7 @@ namespace web_server.Services
     {
         public string PrepareSuccessJson(string message)
         {
+            var f = @"{""success"":true,""result"":" + message + "}";
             string result = @"{""success"":true,""result"":" + message + "}";
             return result;
         }

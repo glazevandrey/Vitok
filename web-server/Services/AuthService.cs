@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -85,25 +86,28 @@ namespace web_server.Services
 
         public async Task<string> GetLiteUserById(string id)
         {
-            var user = await _userRepository.GetLiteUser(Convert.ToInt32(id));
-            if (user == null)
+            if (string.IsNullOrEmpty(id)) // 1
             {
-                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка");
+                return _jsonService.PrepareErrorJson("Некорректный ID пользователя."); // 7
             }
-            string json = "";
+
+            User user; // 2
             try
             {
-
-
-                json = _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user));
+                user = await _userRepository.GetLiteUser(Convert.ToInt32(id)); // 3
             }
-            catch (Exception ex)
+            catch (Exception ex) // 4
             {
-                throw ex;
+                return _jsonService.PrepareErrorJson("Возникла непредвиденная ошибка с источником данных."); // 8
             }
 
-            return json;
-        }
+            if (user == null) // 5
+            {
+                return _jsonService.PrepareErrorJson("Пользователь с таким ID не найден."); // 9
+            }
+            
+            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user)); // 6
+        } 
 
 
         public async Task<string> GetUserByToken(string token)

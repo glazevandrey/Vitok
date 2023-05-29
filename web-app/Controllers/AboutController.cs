@@ -132,11 +132,16 @@ namespace web_app.Controllers
 
             CustomRequestGet req = new GetTutorByIdRequest(id);
             var response = _requestService.SendGet(req, HttpContext);
-            if (response == null)
+            
+            if (response == null )
             {
                 return BadRequest("Технические проблемы. Мы уже исправляем!");
             }
-            var tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(response.result.ToString(), Program.settings);
+            if(!response.success || string.IsNullOrEmpty(response.result.ToString()))
+            {
+                return RedirectToAction("Index");
+            }
+            var tutor = Newtonsoft.Json.JsonConvert.DeserializeObject<Tutor>(response.result.ToString(), Program.settings);
             return View(tutor);
         }
 
