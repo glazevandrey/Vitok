@@ -26,7 +26,7 @@ namespace web_server.Tests
         [Fact]
         public async Task SuccessedGetLiteUserByIdNumber2()
         {
-            // Arrage
+            // Arrange
             var service = _serviceProvider.GetService<IAuthService>();
             var expected = @"{""success"":true,""result"":{""Wish"":null,""StartWaitPayment"":""0001-01-01T00:00:00"",""WasFirstPayment"":true,""FirstLogin"":true,""LessonsCount"":1,""SkippedInThisMonth"":0,""Money"":[],""Credit"":[],""UsedTrial"":false,""UserId"":2,""Password"":""1234567"",""FirstName"":""Сергей"",""PhotoUrl"":""/content/avatars/students/Сергей Воронов.jpg"",""MiddleName"":""Андреевич"",""LastName"":""Воронов"",""NotificationTokens"":[],""Notifications"":[],""BirthDate"":""1999-05-12T00:00:00"",""Email"":""sergey_voronov@mail.ru"",""Phone"":""+79188793839"",""Role"":""Student"",""ActiveToken"":null,""BalanceHistory"":[],""Balance"":0.0,""Schedules"":[],""Chat"":null,""Courses"":null,""About"":null,""UserDates"":[]}}";
 
@@ -41,7 +41,7 @@ namespace web_server.Tests
         [Fact]
         public async Task ErrorGetLiteUserByIdNumber2BecauseDataBaseError()
         {
-            // Arrage
+            // Arrange
             var service = _serviceProvider.GetService<IAuthService>();
             var expected = @"{""success"":false,""result"":""Возникла непредвиденная ошибка с источником данных.""}";
 
@@ -69,7 +69,7 @@ namespace web_server.Tests
         [Fact]
         public async Task ErrorGetLiteUserByIdNumber2BecauseEmptyId()
         {
-            // Arrage
+            // Arrange
             var service = _serviceProvider.GetService<IAuthService>();
             var expected = @"{""success"":false,""result"":""Некорректный ID пользователя.""}";
 

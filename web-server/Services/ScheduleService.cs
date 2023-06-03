@@ -668,7 +668,6 @@ namespace web_server.Services
             var for_manager = 0.0;
             var f = user.Money.Where(m => m.Count > 0);
             f.Reverse();
-            //var f = user.Money.OrderBy(m => m.Cost).ToList().Where(m => m.Count > 0);
 
             foreach (var item in f)
             {
@@ -676,7 +675,7 @@ namespace web_server.Services
                 {
                     for_tutor = Math.Abs(item.Cost / 100 * 60);
                     for_manager = Math.Abs(item.Cost / 100 * 40);
-                    user.Money.FirstOrDefault(m => m.Cost == item.Cost && item.Count > 0).Count--;
+                    user.Money.FirstOrDefault(m => m.Cost == item.Cost && m.Count > 0).Count--;
                     if (status == Status.Пропущен)
                     {
                         initPay = (int)Math.Abs(item.Cost);

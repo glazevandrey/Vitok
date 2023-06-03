@@ -51,17 +51,17 @@ namespace web_server.Services
             {
                 var one = tariff.Amount / tariff.LessonsCount;
 
-                var needed = user.Money.FirstOrDefault(m => m.Cost == one);
-                if (needed == null)
-                {
+                //var needed = user.Money.FirstOrDefault(m => m.Cost == one);
+                //if (needed == null)
+                //{
 
-                    user.Money.Add(new UserMoney() { Cost = one, Count = lessonCount });
-                }
-                else
-                {
-                    user.Money.FirstOrDefault(m => m.Cost == one).Count += lessonCount;
-                }
-
+                //    user.Money.Add(new UserMoney() { Cost = one, Count = lessonCount });
+                //}
+                //else
+                //{
+                //    user.Money.FirstOrDefault(m => m.Cost == one).Count += lessonCount;
+                //}
+                user.Money.Add(new UserMoney() { Cost = one, Count = lessonCount });
                 user.BalanceHistory.Add(new BalanceHistory() { CashFlow = new CashFlow() { Amount = (int)Math.Abs(tariff.Amount), Count = lessonCount }, CustomMessage = $"Оплата тарифа: {tariff.Title}" });
 
 

@@ -43,7 +43,7 @@ namespace web_app.Controllers
                 }
                 else
                 {
-                    return Redirect("/logout");
+                    return Redirect("/account/logout");
 
                 }
             }

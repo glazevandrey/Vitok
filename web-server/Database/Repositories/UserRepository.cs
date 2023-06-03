@@ -729,18 +729,16 @@ namespace web_server.Database.Repositories
 
             try
             {
-                IQueryable<TutorDTO> d = _context.Tutors.Include(m => m.Schedules)
+                 
+
+                var tutor = await _context.Tutors.Include(m => m.Schedules)
                 .Include(m => m.Schedules).ThenInclude(m => m.RescheduledLessons)
                 .Include(m => m.Schedules).ThenInclude(m => m.ReadyDates)
                 .Include(m => m.Schedules).ThenInclude(m => m.SkippedDates)
-                                    .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
-
+                .Include(m => m.Schedules).ThenInclude(m => m.PaidLessons)
                 .Include(m => m.Schedules).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
                 .Include(m => m.Notifications).Include(m => m.BalanceHistory).ThenInclude(m => m.CashFlow).AsNoTracking().Include(m => m.Chat).Include(m => m.Chat.Messages).Include(m => m.Chat.Contacts).Include(m => m.Chat.ConnectionTokens).Include(m => m.UserDates).Include(m => m.Courses).ThenInclude(m => m.Course).ThenInclude(m => m.Goal)
-                 .AsSingleQuery();
-
-                var tutor = await d
-                .FirstOrDefaultAsync(m => m.UserId == (id));
+                 .AsSplitQuery().FirstOrDefaultAsync(m => m.UserId == (id));
                 if (tutor != null)
                 {
                     _context.Entry(tutor).State = EntityState.Detached;

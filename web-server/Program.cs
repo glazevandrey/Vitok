@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace web_server
@@ -19,10 +21,13 @@ namespace web_server
         {
             web_app_ip = "http://localhost:23571";
             settings.Converters.Add(new UserConverter());
-
+            
             CreateHostBuilder(args).Build().Run();
         }
-
+        public static void Gf(string state)
+        {
+            Console.WriteLine("ddfsdfsdf");
+        }
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

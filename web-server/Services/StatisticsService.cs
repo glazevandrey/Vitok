@@ -25,7 +25,7 @@ namespace web_server.Services
             var user = (Student)await _userRepository.GetUserById(Convert.ToInt32(args));
             var schedules = user.Schedules.Where(m => m.RemoveDate == DateTime.MinValue);
 
-            var startDate = DateTime.Parse("01." + DateTime.Now.Month + "." + DateTime.Now.Year + " 12:00");
+            var startDate = DateTime.Parse("01." + (DateTime.Now.Month-1) + "." + DateTime.Now.Year + " 12:00");
             user.BalanceHistory.Reverse();
             var keys = new Dictionary<DateTime, List<StudentPayment>>();
             var balanceHistories = user.BalanceHistory.Where(m => m.CashFlow != null).GroupBy(x => x.Date.ToShortDateString()).ToList();
@@ -128,7 +128,22 @@ namespace web_server.Services
                                         }
                                         else
                                         {
-                                            keys.Add(date, new List<StudentPayment>() { new StudentPayment() { LessonAmount = 1000, PaymentDate = date, PaymentAmount = paymentAmount, StudentName = item.UserName, LessonDate = date4 } });
+                                            bool gd = false;
+                                            foreach (var ii in keys)
+                                            {
+                                                foreach (var mm in ii.Value)
+                                                {
+                                                    if(mm.LessonDate == date4)
+                                                    {
+                                                        gd= true;
+                                                    }
+                                                }
+                                            }
+                                            if(!gd)
+                                            {
+                                                keys.Add(date, new List<StudentPayment>() { new StudentPayment() { LessonAmount = item.PaidLessons.FirstOrDefault(m => m.PaidDate == date4).PaidCount, PaymentDate = date, PaymentAmount = paymentAmount, StudentName = item.UserName, LessonDate = date4 } });
+
+                                            }
                                         }
 
                                     }
@@ -177,7 +192,7 @@ namespace web_server.Services
                                 {
                                     continue;
                                 }
-                                if (ready > date2 && (date2 != DateTime.MaxValue))
+                                if (DateTime.Parse(ready.ToShortDateString()) >= DateTime.Parse(date2.ToShortDateString()) && (date2 != DateTime.MaxValue))
                                 {
                                     continue;
                                 }
@@ -191,13 +206,28 @@ namespace web_server.Services
                                             continue;
                                         }
 
-                                        keys[date].Add(new StudentPayment()
+                                        bool df = false;
+                                        foreach (var ii in keys)
                                         {
-                                            LessonAmount = skiped.InitPaid,
-                                            StudentName = item.UserName,
-                                            LessonLooped = item.Looped,
-                                            LessonDate = ready
-                                        });
+                                            foreach (var mm in ii.Value)
+                                            {
+                                                if(mm.LessonDate == ready)
+                                                {
+                                                    df = true;
+                                                }
+                                            }
+                                        }
+                                        if (df == false)
+                                        {
+                                            keys[date].Add(new StudentPayment()
+                                            {
+                                                LessonAmount = skiped.InitPaid,
+                                                StudentName = item.UserName,
+                                                LessonLooped = item.Looped,
+                                                LessonDate = ready
+                                            });
+                                        }
+                                    
                                     }
                                     else
                                     {
