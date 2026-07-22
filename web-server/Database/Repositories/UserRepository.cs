@@ -68,6 +68,12 @@ namespace web_server.Database.Repositories
             }
            
         }
+
+        public async Task<ScheduleDTO> GetScheduleById(long id)
+        {
+            return await _context.Schedules.Include(m=>m.SkippedDates).Include(m=>m.ReadyDates).Include(m=>m.SkippedDates).FirstOrDefaultAsync(m=>m.Id == id);
+        }
+
         public async Task<List<Tutor>> GetAllTutors()
         {
             try

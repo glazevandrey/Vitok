@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using web_server;
 using web_server.Models;
+using web_server.Services;
 using web_server.Services.Interfaces;
 
 namespace vitok.Controllers
@@ -17,11 +19,12 @@ namespace vitok.Controllers
         private readonly ILessonsService _lessonsService;
         private readonly ITutorService _tutorService;
         private readonly IScheduleService _scheduleService;
-
+        private readonly IAccountService _accountService;
         private readonly IHubContext<NotifHub> _hubContext;
 
-        public TutorController(IJsonService jsonService, ILessonsService lessonsService, ITutorService tutorService, IScheduleService scheduleService, IHubContext<NotifHub> hubContext)
+        public TutorController(IAccountService accountService, IJsonService jsonService, ILessonsService lessonsService, ITutorService tutorService, IScheduleService scheduleService, IHubContext<NotifHub> hubContext)
         {
+            _accountService = accountService;
             _jsonService = jsonService;
             _lessonsService = lessonsService;
             _tutorService = tutorService;
@@ -107,23 +110,43 @@ namespace vitok.Controllers
         }
 
         [Authorize]
-        [HttpPost("addtutorfreedate", Name = "addtutorfreedate")]
-        public async Task<string> AddTutorFreeDate()
+        [HttpPost("freeTime")]
+        public async Task<IActionResult> AddTutorFreeDate([FromBody] AddFreeTimeDto dto)
         {
-            var form = Request.Form;
-            if (form.Keys.Count == 0)
+            if (dto == null || string.IsNullOrEmpty(dto.TutorIdFreeTime))
             {
-                return _jsonService.PrepareErrorJson("Tutor not found");
-            }
-            var args = form.First().Key;
-            var tutor = await _tutorService.AddTutorFreeDate(args);
-            if (tutor == null)
-            {
-                return _jsonService.PrepareErrorJson("Неудачная попытка добавить свободные даты");
+                return BadRequest(new { success = false, message = "Некорректные данные запроса" });
             }
 
-            return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(tutor.UserDates));
+            try
+            {
+                // Формируем строку аргументов в старом формате, если _tutorService внутри старого ядра всё еще парсит "id;date;loop"
+                bool loop = true;
+                string formattedDate = dto.Date2.ToString("dd.MM.yyyy HH:mm");
+                string oldArgsFormat = $"{dto.TutorIdFreeTime};{formattedDate};{loop}";
+
+                // Вызываем твой сервис ядра
+                var tutor = await _tutorService.AddTutorFreeDate(oldArgsFormat);
+
+                if (tutor == null)
+                {
+                    return BadRequest(new { success = false, message = "Неудачная попытка добавить свободное время" });
+                }
+
+                // Возвращаем успех и обновленные даты
+                return Ok(new
+                {
+                    success = true,
+                    message = "Свободное время успешно добавлено",
+                    userDates = tutor.UserDates
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = $"Ошибка на сервере: {ex.Message}" });
+            }
         }
+
         [Authorize]
         [HttpPost("rejectStudent", Name = "rejectStudent")]
         public async Task<string> RejectStudent()
@@ -227,24 +250,26 @@ namespace vitok.Controllers
             return _jsonService.PrepareSuccessJson(json);
         }
 
+        [HttpGet("students")]
+        public async Task<IActionResult> GetAllTutorStudents([FromQuery] string args)
+        {
+            var users = await _accountService.GetAllUserContacts(args, "Tutor");
 
-        //[HttpPost("removetutortime", Name = "removetotortime")]
-        //public async Task<string> RemoveTutorTime()
-        //{
-        //    var form = Request.Form;
-        //    if (form.Keys.Count == 0)
-        //    {
-        //        return _jsonService.PrepareErrorJson("Tutor not found");
-        //    }
-        //    var args = form.First().Key;
+            if (users != null)
+            {
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(users);
+                return Ok(json);
+            }
 
-        //    var tutor =await _tutorService.RemoveTutorTime(args);
-        //    if (tutor == null)
-        //    {
-        //        return _jsonService.PrepareErrorJson("Tutor not found");
-        //    }
+            return BadRequest("Возникла непредвиденная ошибка");
+        }
 
-        //    return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(true));
-        //}
+        public class AddFreeTimeDto
+        {
+            public string TutorIdFreeTime { get; set; }
+
+            // Передаем дату строкой или DateTime. На фронте будем слать ISO-строку.
+            public DateTime Date2 { get; set; }
+        }
     }
 }

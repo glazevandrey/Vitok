@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Quartz.Logging;
 using System;
 using web_server.Database;
 using web_server.Database.Repositories;
@@ -73,11 +74,13 @@ namespace web_server
 
             services.AddDbContext<DataContext>(options =>
             {
-                options.UseSqlServer(connection);
+                options.UseNpgsql(connection);
+                options.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
                 options.EnableSensitiveDataLogging();
 
             }, ServiceLifetime.Scoped);
 
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             services.AddCustomRepositories(Configuration);
             services.AddCustomServices(Configuration);
@@ -109,22 +112,28 @@ namespace web_server
             }
 
             app.UseStaticFiles();
+
+            // 1. Смягчаем политику для локальной разработки (SecurePolicy.SameAsRequest)
             app.UseCookiePolicy(new CookiePolicyOptions
             {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
+                MinimumSameSitePolicy = SameSiteMode.Lax, // Lax вместо Strict, чтобы кука ходила между портами localhost
                 HttpOnly = HttpOnlyPolicy.Always,
-                Secure = CookieSecurePolicy.Always
+                Secure = env.IsDevelopment() ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always
             });
+
             app.UseRouting();
-            app.UseSwagger();
 
-            app.UseSwaggerUI();
-            app.UseAuthentication();
+            // 2. CORS ДОЛЖЕН БЫТЬ ТУТ (До аутентификации)
+            app.UseCors(x => x
+                .WithOrigins(Program.web_app_ip, "http://localhost:5173", "http://localhost:3000") // Добавь порты твоего реакта
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
+            // 3. КАСТОМНЫЙ МИДЛВАР ТУТ (Вытаскиваем токен ДО выполнения аутентификации)
             app.Use(async (context, next) =>
             {
                 var token = context.Request.Cookies[".AspNetCore.Application.Id"];
-
 
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -135,46 +144,36 @@ namespace web_server
                     else
                     {
                         context.Request.Headers.Add("Authorization", "Bearer " + token);
-
                     }
-
                 }
-                else
+                else if (context.Request.Query.ContainsKey("token"))
                 {
-                    if (context.Request.Query.ContainsKey("token"))
+                    if (context.Request.Headers["Authorization"].Count > 0)
                     {
-                        if (context.Request.Headers["Authorization"].Count > 0)
-                        {
-                            context.Request.Headers["Authorization"] = "Bearer " + context.Request.Query["token"];
-                        }
-                        else
-                        {
-
-                            context.Request.Headers.Add("Authorization", "Bearer " + context.Request.Query["token"]);
-                        }
+                        context.Request.Headers["Authorization"] = "Bearer " + context.Request.Query["token"];
+                    }
+                    else
+                    {
+                        context.Request.Headers.Add("Authorization", "Bearer " + context.Request.Query["token"]);
                     }
                 }
 
                 await next();
             });
-            //      app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            // 4. АУТЕНТИФИКАЦИЯ ТУТ (Теперь она увидит подложенный Bearer токен!)
             app.UseAuthentication();
-            app.UseCors(x => x
-                    .WithOrigins(Program.web_app_ip)
-                    .AllowCredentials()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader());
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chatHub");
+                endpoints.MapHub<NotifHub>("/notifHub");
             });
-
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<NotifHub>("/notifHub");
-                routes.MapHub<ChatHub>("/chatHub");
-            });
-
         }
     }
 }

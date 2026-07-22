@@ -1,0 +1,1525 @@
+﻿@using web_server.Models;
+@using web_server.Models.DBModels;
+
+@model DisplayModelShedule
+@{
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="~/css/schedule.css">
+<link rel="stylesheet" href="~/css/jquery-ui.css">
+<script src="~/js/jquery/jquery-ui.js"></script>
+
+<script src="~/js/datepicker_ru.js"></script>
+<script>
+    function setDate(el) {
+        document.getElementById('setdate').value = el.value;
+        console.log(el.value);
+        document.getElementById('setDateForm').submit();
+    }
+</script>
+
+<link rel="stylesheet" type="text/css" href="~/css/modal.css">
+<link rel="stylesheet" href="~/css/flatpickr/flatpickr.min.css">
+<script src="~/js/flatpickr.js"></script>
+<input id="main-date" class="main-date" hidden="hidden" type="text" value="@Model.Date.ToString("dd MMM")" />
+<form method="get" action="/schedule/setDate" id="setDateForm" style="display: inline-block;">
+    <label style="font-size:20px">Сегодня: @DateTime.Parse(DateTime.Now.Date.ToString()).ToString("dd.MM.yyyy")</label>
+    <input hidden="hidden" id="setdate" name="setdate" value="" />
+    <input style="display:none" type="text" onchange="setDate(this)" id="datepicker" name="datepicker">
+    <img id="datepicker-btn" src="~/content/images/calendar.svg" style="width:20px;cursor:pointer;margin-left:20px" />
+</form>
+<style>
+    .modal-body label {
+        font-size: 26px;
+    }
+    .modal-body input {
+        font-size: 26px;
+    }
+    td .circle{
+        position: absolute;
+        height: 10px;
+        width: 10px;
+        float: right;
+        right: 5;
+        top: 8;
+    }
+
+    .myinput.large {
+        height: 22px;
+        width: 22px;
+        box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);
+    }
+
+        .myinput.large[type="checkbox"]:before {
+            width: 20px;
+            height: 20px;
+        }
+
+        .myinput.large[type="checkbox"]:after {
+            top: -20px;
+            width: 16px;
+            height: 16px;
+        }
+    td .mini{
+        position: absolute;
+        height: 10px;
+        width: 10px;
+        float: right;
+        right: 5;
+        bottom: 8;
+    }
+    td{
+        position: relative;
+    }
+
+</style>
+<div class="image-container" style="margin-left:20px">
+    <img src="~/content/images/question.svg" style="width:20px" />
+                    <div class="image-description">
+
+        @{
+
+            <img class="vopr" src="/content/images/minivoskl.svg" style="height:20px;width:20px;margin-left:12px" />
+            <label style="    padding-left: 10px;"> занятие не оплачено</label>
+                        <br/>
+            <img class="vopr" src="/content/images/circle.svg" style="height:20px;width:20px;margin-left:12px" />
+            <label style="    padding-left: 10px;"> разовое занятие</label>
+
+
+                        <br/>
+            if (ViewData["role"].ToString() == "Manager" || ViewData["role"].ToString() == "Tutor")
+            {
+                <button style="background-color:#36F6F8;color:#36F6F8;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important ;height:20px !important;border-radius:10px"></button>
+                <label> свободное время</label>
+                <br />
+            }
+
+            <button class="vopr" style="background-color:#B1F3F2;color:#B1F3F2;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important;height:20px !important;border-radius:10px"></button>
+            <label> в эту дату есть занятие</label>
+            <br />
+            <button class="vopr" style="background-color:#A4A4A4;color:#A4A4A4;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important;height:20px !important;border-radius:10px"></button>
+            <label> занятие перенесено</label>
+            <br />
+            <button class="vopr" style="background-color:#0DB4AA;color:#0DB4AA;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important;height:20px !important;border-radius:10px"></button>
+            <label> занятие проведено</label>
+            <br />
+            <button class="vopr" style="background-color:#F7B579;color:#F7B579;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;width:40px !important;height:20px !important;border-radius:10px"></button>
+            <label> занятие пропущено</label>
+        }
+    </div>
+
+</div>
+
+<script>
+    $.datepicker.setDefaults($.datepicker.regional["ru"]);
+
+    $(document).ready(function () {
+        $('#datepicker').datepicker({
+            showOn: "button",
+        });
+        $('#datepicker-btn').click(function () {
+            $('#datepicker').datepicker('show');
+        });
+    });
+ </script>
+
+<div oncontextmenu="return false;" style="margin-right:15px">
+    <div id="openmodal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Выберите действие</h3>
+                    <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
+                </div>
+                <div class="modal-body">
+                
+                    
+                    
+                <div style="display:flex;flex-direction:column;margin-left:25px;">
+
+               
+                        <button type="button" onclick="window.location.href='#addhour'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;color:white !important">
+                            Добавить свободной час
+                        </button>
+
+                
+
+                        <button type="button" onclick="window.location.href='#choosestudent'" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;color:white !important">
+                            Добавить занятие
+                        </button>
+
+               </div>
+                
+          
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div id="statusModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                       Выберите статус занятия
+                    </h3>
+                    <a onclick ="closeModalWindowStatus()" title="Close" class="close">×</a>
+                </div>
+                <div class="modal-body">
+
+                    <script>
+                        function changesStatus(value){
+                            if(value.value === 'Перенесен'){
+                                document.getElementById('rescheduleDiv').style.display = 'block';
+                                                                                                document.getElementById('skippedDiv').style.display = 'none';
+
+      
+                            }else if (value.value == 'Пропущен'){
+                                
+                                document.getElementById('skippedDiv').style.display = 'block';
+                                                                document.getElementById('rescheduleDiv').style.display = 'none';
+
+
+                            }
+                            else{
+                                                                document.getElementById('skippedDiv').style.display = 'none';
+
+                                document.getElementById('rescheduleDiv').style.display = 'none';
+                            }
+                        }
+                    </script>
+                        <br/>
+                        <label>Текущий статус занятия:</label>
+                    <label type="text" placeholder="" id="currstatus" name="currstatus" class="u-custom-color-1 u-input u-input-rectangle u-radius-10" style="box-shadow: 5px 5px 20px 0 rgba(0,0,0,0.4);width:130px;background-color:#fff"></label>
+                    <br/>
+                    <br />
+                    <script>
+                        function validAndSubmit(){
+                            var valid = true;
+
+                            if(valid == true)
+                            {
+                                document.getElementById('rescheduleForm').submit();
+                            }
+                        }
+                    </script>
+                    <label>Изменить статус занятия:</label>
+                    <br />
+                    <form method="post" id="rescheduleForm" action="/schedule/changeStatus">
+                        @{
+                           
+                            <select style="width:130px;font-size:20px" name="status" id="status" onchange="changesStatus(this)">
+                                @{
+                                    foreach (Status item in Enum.GetValues(typeof(web_server.Models.Status)))
+                                    {
+                                        if(item == Status.ОжидаетОплату || item == Status.Ожидает)
+                                        {
+                                            continue;
+                                        }
+
+                                        <option value="@item">@item</option>
+                                    }
+                                }
+                            </select>
+                           
+                        }
+
+                        <br/>
+                        <script>
+                            flatpickr("#newTime", {
+                                enableTime: true,
+                                noCalendar: true,
+                                dateFormat: "H:i",
+                                time_24hr: true,
+                                minTime: "00:00",
+                                maxTime: "23:00",
+                                defaultDate: "12:00"
+                            });
+                        </script>
+                        <script>
+                            function validateDate()
+                            {
+                                if(!document.getElementById('status').value){
+                                    return;
+                                }
+                                if ((!document.getElementById('newTime').value || !document.getElementById('newDate')) && document.getElementById('rescheduleDiv').style.display != 'none'){
+                                    document.getElementById('timeError').style.display = 'inline-block';
+                                    return;
+                                }
+                                else
+                                {
+                                    document.getElementById('timeError').style.display = 'none';
+                                    document.getElementById('rescheduleForm').submit();
+                                }
+                            }
+                        </script>
+                   
+                        <div id="skippedDiv" style="display:none">
+                            <br /><br />
+                            <label>Ученик предупредил заранее?</label>
+                            <input type="checkbox" class="myinput large" style="margin-left:15px" id="userMakeWarn" name="userMakeWarn" />
+                        </div>
+
+                        <div id="rescheduleDiv" style="display:none">
+                            <input hidden="hidden" type="text" id="courseId" name="courseId" />
+                            <input hidden="hidden" type="text" id="currDate" name="currDate" />
+                            <input hidden="hidden" type="text" id="startDate" name="startDate" />
+                           
+                            <br />                            <br />
+
+                            <label  id="label-looped" for="looped2">Постоянный перенос?</label>
+                            <br />
+                            <input class="myinput large" type="checkbox" id="looped2" name="looped" />
+
+                            <br />                            <br />
+
+                            <label id="reason-label">Причина:</label>
+                            <br />
+                            <input type="text" id="reason" name="reason" />
+                            <br />                            <br />
+
+                            <label id="date-label">Новая дата:</label>
+                          
+                            <br />
+                            <label style="display:none;color:darkred" id="timeError">*Некорректная дата</label>
+                            <br/>
+                            <input type="date" id="newDate" min="2002-01-01" max="2050-12-31" name="newDate" />
+
+                            <input type="text" style="width:40px" id="newTime" name="newTime">
+                            <label>:00</label>
+                            <script>
+                             flatpickr("#newTime", {
+                              enableTime: true,
+                              noCalendar: true,
+                              dateFormat: "H",
+                              time_24hr: true,
+                              minuteIncrement: 60,
+                              minTime: "00:00",
+                              maxTime: "23:00",
+                              defaultDate: "12:00"
+                            });
+                            </script>
+                            
+                            <br />
+                            <br />
+
+                            <label id="who-label" >Кто перенес:</label>
+                            <br />
+                            <select style="font-size:20px" name="initiator" id="initiator">
+                                <option value="Репетитор">Репетитор</option>
+                                <option value="Студент" id="studentId">Студент</option>
+
+                            </select>
+                            <br />
+
+                            <input hidden="hidden" type="text" value="st" id="dateStatus" name="dateStatus" />
+
+                            <input hidden="hidden" type="text" value="st" id="userStatus" name="userStatus" />
+
+                            <input hidden="hidden" type="text" value="st" id="tutorStatus" name="tutorStatus" />
+
+                        </div>
+                        <br/>
+
+
+                        
+                        <div style="display:flex;flex-direction:column;margin-left:25px;">
+
+
+                            <button onclick="validateDate()" type="button" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:20px;color:white !important">
+                                Подтвердить
+                            </button>
+
+
+
+                            <button type="button"  onclick="closeModalWindow()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:20px;color:white !important">
+                                Отмена
+                            </button>
+
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div id="removeModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                   Удалить выбранное занятие?
+                </h3>
+                <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/schedule/RemoveSchedule">
+                    <input hidden="hidden" type="text" value="ss" id="removeDate" name="removeDate" />
+                    <input hidden="hidden" type="text" value="ss" id="removeTutorId" name="removeTutorId" />
+                    <input hidden="hidden" type="text" value="ss" id="removeUserId" name="removeUserId" />
+                        <input hidden="hidden" type="text" value="ss" id="currRemoveDate" name="currRemoveDate" />
+
+                        
+                    <input type="submit" value="ОК" />
+                    <input type="button" value="Отмена" onclick ="closeModalWindow()" />
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        function changedChooseSelect(el){
+            document.getElementById('tutorIdChoosed').value = el.value;
+
+        }
+        function changedHourSelect(el)    
+        {
+            document.getElementById('tutorIdFreeTime').value = el.value;
+        }
+</script>
+<div id="addhour" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h3 class="modal-title">
+                    Добавить свободный час на выбранную дату?
+                </h3>
+                    <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
+                </div>
+                <div class="modal-body">
+  
+                    <form method="post" action="/schedule/AddFreeTime">
+                        <input id="date2" name="date2" type="text" value="s" hidden="hidden" />
+                        <input id="tutorIdFreeTime" name="tutorIdFreeTime" type="text" value="@ViewData["userid"]" hidden="hidden" />
+
+                        <div style="display:flex;flex-direction:column;margin-left:25px;">
+
+
+                            <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;color:white !important">
+                                Подтвердить
+                            </button>
+
+
+
+                            <button type="button" onclick ="closeModalWindow()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:30px;color:white !important">
+                                Отмена
+                            </button>
+
+                        </div>
+
+
+
+                    <br />
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<div id="choosestudent" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Выберите ученика и курс</h3>
+                    <a onclick ="closeModalWindow()" title="Close" class="close">×</a>
+                </div>
+                <div class="modal-body">
+       
+
+                <form style="width:100%" method="post" action="/schedule/AddSchedule">
+
+                    <div style="margin-top:20px">
+                            <label for="looped">Повторное занятие: </label>
+                            <input type="checkbox" id="looped" class="myinput large" style="margin-left:15px;" name="looped" />
+
+                        </div>
+                  
+                    <div style="margin-top:50px">
+                         <label>Студент: </label>
+                 <select style="font-size:20px" name="userId" id="userId">
+
+                        @{
+                            Dictionary<int, string> d = new Dictionary<int, string>();
+                            foreach (var item in Model.Schedules)
+                            {
+                                if (d.ContainsKey(item.UserId) || string.IsNullOrEmpty(item.UserName)){
+                                    continue;
+                                }
+
+                                d.Add(item.UserId, item.UserName);
+                                <option value="@item.UserId" >@item.UserName</option>
+                        }
+                    }
+                </select>
+
+                    </div>
+
+
+                        <div style="margin-top:50px">
+                            <label>Курс: </label>
+
+                            <select style="font-size:20px;text-align:center;" name="courses" id="courses">
+                                @{
+                                    foreach (Course item in (List<Course>)ViewData["courses"])
+                                    {
+                                        <option value="@item.Id">@item.Title</option>
+                                    }
+                                }
+
+                            </select>
+
+            </div>
+                                    
+           
+
+                <input id="date3" name="date3" type="text" value="s" hidden="hidden" />
+                <input id="tutorIdChoosed" name="tutorIdChoosed" type="text" value="@ViewData["userid"]" hidden="hidden" />
+
+                        <div style="margin-top:50px">
+                            <div style="display:flex;flex-direction:column;margin-left:25px;">
+
+
+                                <button type="submit" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:26px;color:white !important">
+                                    Подтвердить
+                                </button>
+
+
+
+                                <button type="button" onclick="closeModalWindow()" class="u-btn u-btn-round u-button-style u-custom-color-2 u-radius-10" style="    width: 400px;font-size:26px;color:white !important">
+                                    Отмена
+                                </button>
+
+                            </div>
+                </div>
+           
+                </form>
+                <script>
+                    var el = document.getElementById("choosedDate");
+                </script>
+
+            </div>
+        </div>
+    </div>
+</div>
+<input id="choosedDate" type="text" value="s" hidden="hidden" />
+
+    <script>
+        function closeModalWindow() {
+            window.location.hash = "#closeModal";
+        }
+        function closeModalWindowStatus() {
+            document.getElementById('rescheduleDiv').style.display = 'none';
+                                                                            document.getElementById('skippedDiv').style.display = 'none';
+
+            window.location.hash = "#closeModal";
+        }
+                
+        function clicked(time, s_day, s_date) {
+            var months = { "янв": "jan", "фев": "feb", "мар": "mar", "апр": "apr", "май": "may", "июн": "jun", "июл": "jul", "авг": "aug", "сен": "sep", "окт": "oct", "ноя": "nov", "дек": "dec" };
+
+            var date = document.getElementById("main-date").value.toLowerCase();
+
+            for (var key in months) {
+                if (date.includes(key)) {
+                    date = date.replace(key, months[key]);
+                    break;
+                }
+            }
+
+            document.getElementById("choosedDate").value = s_date;
+            document.getElementById("date2").value = s_date;
+            document.getElementById("date3").value = s_date;
+
+            window.location.hash = "#openmodal";
+        }
+    </script>
+
+
+
+    <br/>
+    <br/>
+    <div class="calendar" style="width:100%">
+    <div class="tableHeader" style="border:2px solid black;border-radius: 10px;background-color:white;">
+        <form method="get" id="downdate" action="/schedule/downDate" style="padding-left:10px;padding-top:20px;padding-bottom:10px;">
+            <input hidden="hidden" id="date" name="date" value="@Model.Date" />
+                <img onclick="document.getElementById('downdate').submit()" src="/content/images/Vector.svg" style="transform: rotate(-180deg);transform: rotate(-90deg);cursor:  pointer;width:25px" />
+       </form>
+            <label style="padding-top:10px;padding-bottom:10px;font-size:20pt;padding-left:10px;padding-right:10px">@Model.Date.ToString("dd MMM")</label>
+
+            <form method="get" id="update" action="/schedule/upDate" style="padding-top:10px;padding-bottom:10px;">
+            <input hidden="hidden" id="date" name="date" value="@Model.Date"/>
+                <img onclick="document.getElementById('update').submit()" src="/content/images/Vector.svg" style="cursor: pointer;width:25px;transform: rotate(90deg)" />
+        </form>
+
+            <label  style="font-size:20pt;padding-left:10px">Неделя</label>
+                      
+    </div>
+    <table>
+    <tr>
+            <th></th>
+
+            <th class="myth"> Пн <br/>@Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).Day </th>
+            <th class="myth"> Вт <br/>@Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(1).Day </th>
+            <th class="myth"> Ср <br/>@Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(2).Day </th>
+            <th class="myth"> Чт <br/>@Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(3).Day </th>
+            <th class="myth"> Пт <br/>@Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(4).Day </th>
+            <th class="myth"> Сб <br/>@Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(5).Day </th>
+            <th class="myth"> Вс <br/>@Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(6).Day </th>
+          
+    </tr>
+            @{
+
+                var w_days = new List<DayOfWeek>()
+            {
+            DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
+            };
+
+                var hours = new List<string>()
+            {
+                "0:00", "1:00", "2:00", "3:00", "4:00", "5:00", "6:00", "7:00","8:00", "9:00","10:00", "11:00","12:00", "13:00","14:00", "15:00","16:00", "17:00",
+                "18:00", "19:00","20:00", "21:00","22:00", "23:00"
+            };
+
+                var countA = 0;
+                var prev_day = 0;
+               
+            foreach (var item in hours)
+            {
+                var countB = 1;
+
+                <tr>
+                
+                        <td style="font-size:26px">@item</td>
+                        @{
+                            foreach (var day in w_days)
+                            {
+                                var btn = $"{countA}_{countB}";
+                                                                var tdbtn = $"td_{countA}_{countB}";
+
+                                int s_day = -1;
+                                DateTime s_date;
+                                
+                                <td id="@tdbtn" style="white-space:pre-wrap;height:40px;white-space: normal;word-wrap: break-word;">
+                                    @{
+                                        var date = new DateTime();
+                                        if (@countB == 1)
+                                        {
+                                            date = Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7);
+                                        }
+                                        if (@countB == 2)
+                                        {
+                                            date = Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(1);
+                                        }
+                                        if (@countB == 3)
+                                        {
+                                            date = Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(2);
+                                        }
+                                        if (@countB == 4)
+                                        {
+                                            date = Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(3);
+                                        }
+                                        if (@countB == 5)
+                                        {
+                                            date = Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(4);
+                                        }
+                                        if (@countB == 6)
+                                        {
+                                            date = Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(5);
+                                        }
+                                        if (@countB == 7)
+                                        {
+                                            date = Model.Date.AddDays(-1 * (7 + (Model.Date.DayOfWeek - DayOfWeek.Monday)) % 7).AddDays(6);
+                                        }
+
+                                        s_date = DateTime.Parse($"{date.Day} {date.Month} {date.Year} {item}");
+                                        s_day = date.Day;
+
+                            }
+                         
+                            @{
+                                        if (ViewData["role"].ToString() == "Tutor")
+                                        {
+                                            <button class="@btn" id="@btn" style="background-color:transparent;color:transparent;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;height:40px" onclick="clicked('@item','@s_day','@s_date')"></button>
+                                        }
+                            }
+                                <div>
+                                        @{
+                                            foreach (var model1 in Model.Schedules)
+                                            {
+                                                var _date = s_date;
+
+                                                if (_date < model1.StartDate)
+                                                {
+                                                    continue;
+                                                }
+
+                                                if (model1.RemoveDate != DateTime.MinValue)
+                                                {
+                                                    if (_date >= model1.RemoveDate)
+                                                    {
+                                                        continue;
+                                                    }
+                                                }
+                                                if (model1.RescheduledDate != DateTime.MinValue)
+                                                {
+                                                    if (_date > model1.RescheduledDate && model1.Looped == true)
+                                                    {
+                                                        continue;
+                                                    }
+
+                                                }
+
+
+                                                var m_date = model1.StartDate;
+                                                 if (m_date.DayOfWeek == day)
+                                                {
+                                                    if (model1.Looped != true)
+                                                    {
+                                                        if (m_date != s_date)
+                                                        {
+                                                            continue;
+                                                        }    
+                                                    }
+                                                    if (m_date.Hour == DateTime.Parse(item).Hour)
+                                                    {
+
+
+                                                     
+                                                        if (ViewData["role"].ToString() == "Tutor")
+                                                        {
+                                                            if (string.IsNullOrEmpty(model1.UserName))
+                                                            {                              
+                                                                 <script>
+                                                                    var elem = document.getElementsByClassName('@btn');
+                                                                    if(elem.length > 0){
+                                                                        elem[0].parentNode.removeChild(elem[0]);
+
+                                                                    }
+                                                                 </script>
+
+                                                               btn = $"btn_{model1.UserId}_{model1.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
+                                                                    <button class="@btn" id="@btn" style="background-color:transparent;color:transparent;background-repeat:no-repeat;border:none;cursor:pointer;overflow:hidden;outline:none;height:40px;border-radius:10px">clicked3</button>
+
+                                                                <script>
+                                                                        document.getElementsByClassName('@btn')[0].style.backgroundColor = "#36F6F8";
+                                                                       
+                                                                        $("#@btn").mousedown(function (e) {
+
+                                                                        if (e.which === 3) {
+                                                                                var _class = e.target.getAttribute("id");
+                                                                                var sub = _class.split("_");
+                                                                                var date = sub[2];
+                                                                                var userid = sub[1];
+                                                                                var tutorId = sub[5];
+
+                                                                                var name = e.target.innerHTML;
+                                                                                document.getElementById("removeTutorId").value = tutorId;
+                                                                                document.getElementById("removeUserId").value = userid
+                                                                                document.getElementById("removeDate").value = date;
+                                                                                document.getElementById("currRemoveDate").value = "@s_date";
+
+                                                                                window.location.href = "#removeModal";
+                                                                        }
+
+                                                                    });
+
+                                                                </script>
+                                                                break;
+                                                            }
+                                                            else
+                                                            {
+                                                                <script>
+                                                                    var elem = document.getElementsByClassName('@btn');
+                                                                    if(elem.length > 0){
+                                                                                                                                            elem[0].parentNode.removeChild(elem[0]);
+
+                                                                    }
+                                                                    </script>
+                                                                    var label = $"label_{model1.UserId}_{model1.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}_{model1.TutorId}";
+                                                                    <div id="tooltrip">
+
+                                                                        @{
+
+                                                                            var textMouse = $"Курс: {model1.Course?.Title}\nЦель: {model1.Course?.Goal?.Title}\nУченик: {model1.UserName}\n";
+
+
+                                                                            if(model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)
+                                                                            {
+                                                                                var rescheduled = model1.RescheduledLessons;
+
+                                                                                foreach (var resc in rescheduled)
+                                                                                {
+
+                                                                                   // if(resc.TutorId== model1.TutorId && resc.UserId == model1.UserId)
+                                                                                    //{
+                                                                                if (resc.OldTime == s_date)
+                                                                                {
+                                                                                    textMouse += $"Перенесен на: {resc.NewTime}\nПричина:{resc.Reason}\nИнициатор:{resc.Initiator}";
+
+                                                                                    break;
+                                                                                }
+                                                                
+                                                                                    //}
+                                                                                }
+                                                                                if(model1.RescheduledDate == _date)
+                                                                                {
+                                                                                        textMouse += $"Постоянный перенос на: {model1.NewDate.ToString("dd.MM.yyyy HH:mm")}";
+                                                                                }
+                                                                            }
+
+                                                                        }
+                                                                    @{
+                                                                        var text = model1.UserName.ToString();
+
+                                                                        if(text.Length > 17)
+                                                                        {
+                                                                            var username = text.Split(" ");
+                                                                            <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@username[0].ToString()<br />@username[1].ToString() </label>
+
+                                                                            //text = model1.UserName.Split(" ")[0];
+                                                                            //<label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@text</label>
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var username = text.Split(" ");
+                                                                            <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@username[0].ToString()<br />@username[1].ToString() </label>
+
+                                                                        }
+
+                                                                          
+                                                                            if(!model1.Looped){
+                                                                                var text4 = "Разовое занятие";
+                                                                                <img class="circle" src="/content/images/circle.svg" style="height:10px;width:10px"/>
+                                                                                //<label style="background-color:orange;border-radius:10px;" data-title="@text4">(*)</label>
+                                                                            }
+                                                                        }
+                                                                    </div>
+                                                                    if (model1.ReadyDates.Count > 0)
+                                                                    {
+
+                                                                        var date2 = s_date;
+                                                                        foreach (var readyDate in model1.ReadyDates)
+                                                                         {
+                                                                                     if (readyDate.Date == date2)
+                                                                                    {
+                                                                                        <script>
+                                                                                        document.getElementsByClassName('@label')[0].style.backgroundColor = "#0DB4AA";
+                                                                                        document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                                </script>
+
+
+                                                                            }
+                                                                        }
+
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (model1.Status == Status.Проведен) {
+                                                                            
+                                                                            <script>
+                                                                            document.getElementsByClassName('@label')[0].style.backgroundColor = "#0DB4AA";
+                                                                            document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                            </script>
+
+                                                                        }
+                                                                    }
+                                                                    if(model1.WaitPaymentDate != DateTime.MinValue)
+                                                                    {
+
+                                                                        if (((Dictionary<int, DateTime>)ViewData["waited"]).Count != 0)
+                                                                        {
+                                                                            if (((Dictionary<int, DateTime>)ViewData["waited"]).ContainsKey(model1.UserId))
+                                                                            {
+                                                                                var time = ((Dictionary<int, DateTime>)ViewData["waited"])[model1.UserId];
+                                                                                if (model1.Looped)
+                                                                                {
+                                                                                    if (model1.WaitPaymentDate == s_date)
+                                                                                    {
+                                                                                        if (model1.ReadyDates.Count > 0)
+                                                                                        {
+                                                                                            if (s_date > model1.ReadyDates.Last().Date)
+                                                                                            {
+                                                                                                <script>
+
+                                                                                                    @{
+                                                                                                        var text2 = "";
+                                                                                                         var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                                        if (mod[model1.UserId] == false)
+                                                                                                        {
+                                                                                                            DateTime now = DateTime.Now;
+                                                                                                            DateTime target = time.AddHours(24);
+
+                                                                                                            TimeSpan diff = target - now;
+
+                                                                                                            double totalSeconds = diff.TotalSeconds;
+
+                                                                                                            text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
+                                                                                                        }
+
+                                                                                                    }
+
+                                                                                                </script>
+                                                                                                                                                 <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                                                //<label style="background-color:yellow;border-radius:10px;" data-title="@text2">(!)</label>
+                                                                                            }
+                                                                                        }
+                                                                                        else
+                                                                                        {
+
+                                                                                            <script>
+
+                                                                                                @{
+                                                                                                    var text2 = "";
+                                                                                                    var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                                    if (mod[model1.UserId] == false)
+                                                                                                    {
+                                                                                                        DateTime now = DateTime.Now;
+                                                                                                        DateTime target = time.AddHours(24);
+
+                                                                                                        TimeSpan diff = target - now;
+
+                                                                                                        double totalSeconds = diff.TotalSeconds;
+
+                                                                                                        text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
+                                                                                                    }
+
+                                                                                                }
+
+
+                                                                                            </script>
+                                                                                        <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                                            // <label style="background-color:yellow;border-radius:10px;" data-title="@text2">(!)</label>
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    if (model1.ReadyDates.Count > 0)
+                                                                                    {
+                                                                                        if (s_date > model1.ReadyDates.Last().Date)
+                                                                                        {
+                                                                                            <script>
+
+                                                                                                @{
+                                                                                                    var text2 = "";
+                                                                                                    var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                                    if (mod[model1.UserId] == false)
+                                                                                                    {
+                                                                                                        DateTime now = DateTime.Now;
+                                                                                                        DateTime target = time.AddHours(24);
+
+                                                                                                        TimeSpan diff = target - now;
+
+                                                                                                        double totalSeconds = diff.TotalSeconds;
+
+                                                                                                        text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
+                                                                                                    }
+
+                                                                                                }
+
+
+                                                                                            </script>
+                                                                                        <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                                            
+                                                                                            // <label style="background-color:yellow;border-radius:10px;" data-title="@text2">(!)</label>
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        if (model1.Status != Status.Проведен)
+                                                                                        {
+                                                                                            <script>
+
+                                                                                                @{
+                                                                                                    var text2 = "";
+                                                                                                    var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                                    if (mod[model1.UserId] == false)
+                                                                                                    {
+                                                                                                        DateTime now = DateTime.Now;
+                                                                                                        DateTime target = time.AddHours(24);
+
+                                                                                                        TimeSpan diff = target - now;
+
+                                                                                                        double totalSeconds = diff.TotalSeconds;
+
+                                                                                                        text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
+                                                                                                    }
+
+                                                                                                }
+
+
+                                                                                            </script>
+
+                                                                                        <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                                            //  <label style="background-color:yellow;border-radius:10px;" data-title="@text2">(!)</label>
+
+                                                                                        }
+
+                                                                                    }
+                                                                                }
+                                                                            }
+
+                                                                        }
+                                                                    }
+
+
+                                                                    if(model1.SkippedDates.Count > 0)
+                                                                    {
+                                                                        foreach (var skip in model1.SkippedDates)
+                                                                        {
+                                                                            if(skip.Date == _date)
+                                                                            {
+                                                                                <script>
+                                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "#F7B579";
+                                                                                    document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                                </script>
+                                                                            }   
+                                                                        }
+                                                                    }
+                                                                    if (model1.RescheduledDate != DateTime.Parse("01.01.0001 0:00:00"))
+                                                                    {
+                                                                        if(model1.RescheduledDate == _date)
+                                                                        {
+                                                                            <script>
+                                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "#A4A4A4";
+                                                                            document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                            </script>
+                                                                        }
+                                                                    }
+                                                                    if (model1.RescheduledLessons.Count > 0)
+                                                                    {
+                                                                        foreach (var less in model1.RescheduledLessons)
+                                                                        {
+                                                                            if(less.OldTime == s_date)
+                                                                            {
+                                                                                <script>
+                                                                                    document.getElementsByClassName('@label')[0].style.backgroundColor = "#A4A4A4";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                                </script>
+                                                                            }
+                                                                        }
+                                                                    }
+
+
+
+                                                                    if(model1.Status != Status.Перенесен && model1.RescheduledDate != s_date)
+                                                                    {
+                                                                        <script>
+                                                                            $("#@label").mousedown(function (e) {
+                                                                                if (e.which === 3) {
+                                                                                    var _class = e.target.getAttribute("id");
+                                                                                    var sub = _class.split("_");
+                                                                                    var date = sub[2];
+                                                                                    var userid = sub[1];
+                                                                                    var tutor_id = sub[5];
+                                                                                    var name = e.target.innerHTML;
+
+                                                                                    document.getElementById("removeTutorId").value = tutor_id;
+                                                                                    document.getElementById("removeUserId").value = userid;
+                                                                                    document.getElementById("currRemoveDate").value = "@s_date";
+
+                                                                                    document.getElementById("removeDate").value = date;
+                                                                                    window.location.href = "#removeModal";
+
+                                                                                } else {
+                                                                                    var _class = e.target.getAttribute("id");
+                                                                                    var sub = _class.split("_");
+                                                                                    var datee = sub[2];
+                                                                                    var userid = sub[1];
+                                                                                    var tutor_id = sub[5];
+
+                                                                                    var name = e.target.innerHTML;
+                                                                                    document.getElementById("dateStatus").value = "@model1.StartDate";
+                                                                                    document.getElementById("tutorStatus").value = tutor_id;
+                                                                                    document.getElementById("userStatus").value = userid;
+                                                                                    document.getElementById("courseId").value = @model1.Course?.Id;
+                                                                                    document.getElementById("currstatus").innerHTML = "@model1.Status";
+                                                                                    document.getElementById("currDate").value = "@s_date";
+                                                                                    document.getElementById("status").value = "@model1.Status";
+                                                                                    window.location.href = "#statusModal";
+
+                                                                                }
+                                                                            });
+
+                                                                        </script>
+                                                                    }else if (model1.RescheduledLessons.Count == 0 && model1.RescheduledDate != s_date)
+                                                                    {
+                                                                        <script>
+                                                                            $("#@label").mousedown(function (e) {
+                                                                                if (e.which === 3) {
+                                                                                    var _class = e.target.getAttribute("id");
+                                                                                    var sub = _class.split("_");
+                                                                                    var date = sub[2];
+                                                                                    var userid = sub[1];
+                                                                                    var tutor_id = sub[5];
+                                                                                    var name = e.target.innerHTML;
+
+                                                                                    document.getElementById("removeTutorId").value = tutor_id;
+                                                                                    document.getElementById("removeUserId").value = userid;
+                                                                                    document.getElementById("currRemoveDate").value = "@s_date";
+
+                                                                                    document.getElementById("removeDate").value = date;
+                                                                                    window.location.href = "#removeModal";
+
+                                                                                } else {
+                                                                                    var _class = e.target.getAttribute("id");
+                                                                                    var sub = _class.split("_");
+                                                                                    var datee = sub[2];
+                                                                                    var userid = sub[1];
+                                                                                    var tutor_id = sub[5];
+
+                                                                                    var name = e.target.innerHTML;
+                                                                                    document.getElementById("dateStatus").value = "@model1.StartDate";
+                                                                                    document.getElementById("tutorStatus").value = tutor_id;
+                                                                                    document.getElementById("userStatus").value = userid;
+                                                                                    document.getElementById("courseId").value = @model1.Course?.Id;
+                                                                                    document.getElementById("currstatus").innerHTML = "@model1.Status";
+                                                                                    document.getElementById("currDate").value = "@s_date";
+                                                                                    document.getElementById("status").value = "@model1.Status";
+                                                                                    window.location.href = "#statusModal";
+
+                                                                                }
+                                                                            });
+
+                                                                        </script>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        foreach (var resc in model1.RescheduledLessons)
+                                                                        {
+                                                                            if (s_date != resc.OldTime)
+                                                                            {
+                                                                                <script>
+                                                                                    $("#@label").mousedown(function (e) {
+                                                                                        if (e.which === 3) {
+                                                                                            var _class = e.target.getAttribute("id");
+                                                                                            var sub = _class.split("_");
+                                                                                            var date = sub[2];
+                                                                                            var userid = sub[1];
+                                                                                            var tutor_id = sub[5];
+                                                                                            var name = e.target.innerHTML;
+
+                                                                                            document.getElementById("removeTutorId").value = tutor_id;
+                                                                                            document.getElementById("removeUserId").value = userid;
+                                                                                            document.getElementById("currRemoveDate").value = "@s_date";
+
+                                                                                            document.getElementById("removeDate").value = date;
+                                                                                            window.location.href = "#removeModal";
+
+                                                                                        } else {
+                                                                                            var _class = e.target.getAttribute("id");
+                                                                                            var sub = _class.split("_");
+                                                                                            var datee = sub[2];
+                                                                                            var userid = sub[1];
+                                                                                            var tutor_id = sub[5];
+
+                                                                                            var name = e.target.innerHTML;
+                                                                                            document.getElementById("dateStatus").value = "@model1.StartDate";
+                                                                                            document.getElementById("tutorStatus").value = tutor_id;
+                                                                                            document.getElementById("userStatus").value = userid;
+                                                                                            document.getElementById("courseId").value = @model1.Course?.Id;
+                                                                                            document.getElementById("currstatus").innerHTML = "@model1.Status";
+                                                                                            document.getElementById("currDate").value = "@s_date";
+                                                                                            document.getElementById("status").value = "@model1.Status";
+                                                                                            window.location.href = "#statusModal";
+
+                                                                                        }
+                                                                                    });
+
+                                                                                </script>
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                   
+                                                                        
+
+                                                                    
+                                                                    
+                                                                    <style>
+                                                                        label[data-title] {
+                                                                        position: relative;
+                                                                        display: inline-block;
+                                                                        cursor: pointer;
+                                                                        white-space: pre-wrap;
+                                                                        }
+                                                                        
+                                                                        label[data-title]:hover:before {
+                                                                        content: attr(data-title);
+                                                                        position: absolute;
+                                                                            z-index: 9999;
+                                                                        width: 200px;
+                                                                        color: #000;
+                                                                        height:auto;
+                                                                        word-wrap:break-word;
+                                                                            background: #E2D7C0;
+                                                                        padding: 5px;
+                                                                        border-radius: 4px;
+                                                                        bottom: 25px;
+                                                                        left: 40px;
+                                                                        }
+                                                                    </style>
+                                                                    break;
+                                                                }
+                                                        }
+                                                        else
+                                                        { 
+                                                            <script>
+                                                                    var elem = document.getElementsByClassName('@btn');
+                                                                    if(elem.length > 0){
+                                                                    elem[0].parentNode.removeChild(elem[0]);
+
+                                                                    }
+                                                            </script>
+
+                                                            var textMouse = $"Курс: {model1.Course?.Title}\nЦель: {model1.Course?.Goal?.Title}\nУченик: {model1.TutorFullName}\n";
+
+
+                                                            if (model1.Status == Status.Перенесен || model1.RescheduledLessons.Count > 0)
+                                                            {
+                                                                var rescheduled = model1.RescheduledLessons;
+
+                                                                foreach (var resc in rescheduled)
+                                                                {
+
+                                                                
+                                                                    if(resc.OldTime == s_date)
+                                                                    {
+                                                                        textMouse += $"Перенесен на: {resc.NewTime}\nПричина:{resc.Reason}\nИнициатор:{resc.Initiator}";
+
+                                                                        break;
+                                                                    }
+                                                                  
+                                                                 
+                                                                    }
+                                                                    if (model1.RescheduledDate == _date)
+                                                                    {
+                                                                        textMouse += $"Постоянный перенос на: {model1.NewDate.ToString("dd.MM.yyyy HH:mm")}";
+                                                                    }
+                                                                }
+
+                                                                var label = $"label_{model1.UserId}_{model1.StartDate.ToString("dd-MM-yyyy-HH-mm")}_{countA}_{countB}";
+
+                                                                   <style>
+                                                                        label[data-title] {
+                                                                        position: relative;
+                                                                        display: inline-block;
+                                                                        cursor: pointer;
+                                                                        white-space: pre-wrap;
+                                                                        }
+                                                                        
+                                                                        label[data-title]:hover:before {
+                                                                        content: attr(data-title);
+                                                                        position: absolute;
+                                                                            z-index: 9999;
+                                                                        width: 200px;
+                                                                        color: #000;
+                                                                        height:auto;
+                                                                        word-wrap:break-word;
+                                                                            background: #E2D7C0;
+                                                                        padding: 5px;
+                                                                        border-radius: 4px;
+                                                                        bottom: 25px;
+                                                                        left: 40px;
+                                                                        }
+                                                                    </style>
+
+
+                                                            var text = model1.TutorFullName;
+                                                            string[] split  = model1.TutorFullName.Split(" ");
+                                                            ;
+
+                                                            if (text.Length > 17)
+                                                            {
+                                                                 var username = text.Split(" ");
+                                                                            <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@username[0].ToString()<br />@username[1].ToString() </label>
+
+                                                              //  <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@split[0].ToString()</label>
+                                                            }
+                                                            else
+                                                            {
+                                                                var username = text.Split(" ");
+                                                                <label data-title="@textMouse" id="@label" class="@label" style="background-color:#B1F3F2;border-radius:10px">@username[0].ToString()<br />@username[1].ToString() </label>
+
+                                                            }
+
+
+
+                                                            if (!model1.Looped)
+                                                                {
+                                                                    var text4 = "Разовое занятие";
+                                                                <img class="circle" src="/content/images/circle.svg" style="height:10px;width:10px" />
+                                                                    //<label style="background-color:orange;border-radius:10px;" data-title="@text4">(*)</label>
+
+                                                                }
+
+                                                                if (model1.ReadyDates.Count > 0)
+                                                                {
+
+                                                                    var date3 = s_date;
+                                                                    foreach (var readyDate in model1.ReadyDates)
+                                                                    {
+
+                                                                        if (readyDate.Date == date3)
+                                                                        {
+                                                                            <script>
+                                                                                document.getElementsByClassName('@label')[0].style.backgroundColor = "#0DB4AA";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                            </script>
+                                                                        }
+                                                                    }
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (model1.Status == Status.Проведен)
+                                                                    {
+                                                                        <script>
+                                                                            document.getElementsByClassName('@label')[0].style.backgroundColor = "#0DB4AA";
+                                                                        document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                        </script>
+
+                                                                    }
+                                                                }
+
+
+
+                                                                if (model1.WaitPaymentDate != DateTime.MinValue)
+                                                                {
+
+                                                                    if (((Dictionary<int, DateTime>)ViewData["waited"]).Count != 0)
+                                                                    {
+                                                                        if (((Dictionary<int, DateTime>)ViewData["waited"]).ContainsKey(model1.UserId))
+                                                                        {
+                                                                            var time = ((Dictionary<int, DateTime>)ViewData["waited"])[model1.UserId];
+                                                                            if (model1.Looped)
+                                                                            {
+                                                                                if (model1.WaitPaymentDate == s_date)
+                                                                                {
+                                                                                    if (model1.ReadyDates.Count > 0)
+                                                                                    {
+                                                                                        if (s_date > model1.ReadyDates.Last().Date)
+                                                                                        {
+                                                                                            <script>
+
+
+                                                                                                @{
+                                                                                                    var text2 = "";
+                                                                                                    if ((bool)ViewData["firstPay"] == false)
+                                                                                                    {
+                                                                                                        DateTime now = DateTime.Now;
+                                                                                                        DateTime target = time.AddHours(24);
+
+                                                                                                        TimeSpan diff = target - now;
+
+                                                                                                        double totalSeconds = diff.TotalSeconds;
+
+                                                                                                        text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
+                                                                                                    }
+
+                                                                                                }
+
+                                                                                            </script>
+                                                                                            <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                                           // <label style="background-color:yellow;border-radius:10px;" data-title="@text2">(!)</label>
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+
+                                                                                        <script>
+
+                                                                                            @{
+                                                                                                var text2 = "";
+                                                                                                //var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                                if ((bool)ViewData["firstPay"] == false)
+                                                                                                {
+                                                                                                    DateTime now = DateTime.Now;
+                                                                                                    DateTime target = time.AddHours(24);
+
+                                                                                                    TimeSpan diff = target - now;
+
+                                                                                                    double totalSeconds = diff.TotalSeconds;
+
+                                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
+                                                                                                }
+                                                                                                         
+                                                                                            }
+
+                                                                                        </script>
+                                                                                    <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                                        
+                                                                                        // <label style="background-color:yellow;border-radius:10px;" data-title="@text2">(!)</label>
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (model1.ReadyDates.Count > 0)
+                                                                                {
+                                                                                    if (s_date > model1.ReadyDates.Last().Date)
+                                                                                    {
+                                                                                        <script>
+
+                                                                                            
+                                                                                            @{
+                                                                                                var text2 = "";
+                                                                                                //var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                                if ((bool)ViewData["firstPay"] == false)
+                                                                                                {
+                                                                                                    DateTime now = DateTime.Now;
+                                                                                                    DateTime target = time.AddHours(24);
+
+                                                                                                    TimeSpan diff = target - now;
+
+                                                                                                    double totalSeconds = diff.TotalSeconds;
+
+                                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
+                                                                                                }
+                                                                                                         
+                                                                                            }
+
+                                                                                        </script>
+                                                                                    <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                                        // <label style="background-color:yellow;border-radius:10px;" data-title="@text2">(!)</label>
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    if (model1.Status != Status.Проведен)
+                                                                                    {
+                                                                                        <script>
+
+
+                                                                                            @{
+                                                                                                var text2 = "";
+                                                                                               // var mod = (Dictionary<int, bool>)ViewData["firstPay"];
+                                                                                                if ((bool)ViewData["firstPay"] == false)
+                                                                                                {
+                                                                                                    DateTime now = DateTime.Now;
+                                                                                                    DateTime target = time.AddHours(24);
+
+                                                                                                    TimeSpan diff = target - now;
+
+                                                                                                    double totalSeconds = diff.TotalSeconds;
+
+                                                                                                    text2 += $"Для оплаты занятия у ученика осталось: {TimeSpan.FromSeconds(totalSeconds).ToString(@"h\:mm\:ss")}";
+
+                                                                                                }
+
+                                                                                            }
+
+                                                                                        </script>
+                                                                                        <img title="@text2" class="mini" src="/content/images/minivoskl.svg" style="height:10px;width:10px" />
+                                                                                        //<label style="background-color:yellow;border-radius:10px;" data-title="@text2">(!)</label>
+
+                                                                                    }
+
+                                                                                }
+                                                                            }
+                                                                        }
+
+                                                                    }
+                                                                }
+
+
+
+                                                                if (model1.SkippedDates.Count > 0)
+                                                                {
+                                                                    foreach (var skip in model1.SkippedDates)
+                                                                    {
+                                                                        if (skip.Date == _date)
+                                                                        {
+                                                                            <script>
+                                                                                document.getElementsByClassName('@label')[0].style.backgroundColor = "#F7B579";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                            </script>
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                if (model1.RescheduledDate != DateTime.Parse("01.01.0001 0:00:00"))
+                                                                {
+                                                                    if (model1.RescheduledDate == _date)
+                                                                    {
+                                                                        <script>
+                                                                                document.getElementsByClassName('@label')[0].style.backgroundColor = "#A4A4A4";
+                                                                        document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                        </script>
+                                                                    }
+                                                                }
+                                                                if (model1.RescheduledLessons.Count > 0)
+                                                                {
+                                                                    foreach (var less in model1.RescheduledLessons)
+                                                                    {
+                                                                        if (less.OldTime == s_date)
+                                                                        {
+                                                                            <script>
+                                                                                document.getElementsByClassName('@label')[0].style.backgroundColor = "#A4A4A4";
+                                                                                document.getElementsByClassName('@label')[0].style.color = "black";
+                                                                            </script>
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                                prev_day = s_day;
+                                countB++;
+                            }
+                    }
+                      
+                </tr>
+                countA++;
+            }
+    }    
+    </table>
+    <script>
+            const tds = document.querySelectorAll('td');
+            console.log(tds);
+            tds.forEach(td => {
+                const circle = td.querySelector('.circle');
+                const mini = td.querySelector('.mini');
+                const label = td.querySelector('label');
+
+                if (circle) {
+                    console.log('cr');
+                    label.style.paddingRight = '15px';
+                }
+                  if (mini) {
+                    console.log('mini');
+                    label.style.paddingRight = '15px';
+                }
+            });
+
+    </script>
+
+        @{
+            if (ViewData["error"] != null)
+            {
+                <script>alert('@ViewData["error"].ToString()')</script>
+
+            }
+        }
+</div>
+
+</div>

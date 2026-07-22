@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using web_server.Database;
 using web_server.Database.Repositories;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
+using web_server.Models.V2;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
@@ -19,10 +22,13 @@ namespace web_server.Services
         private readonly ScheduleRepository _scheduleRepository;
         private readonly CourseRepository _courseRepository;
         private readonly NotificationRepository _notificationRepository;
+        private readonly DataContext _context;
+
         IMapper _mapper;
 
-        public TutorService(IMapper mapper, UserRepository userRepository, ScheduleRepository scheduleRepository, CourseRepository courseRepository)
+        public TutorService(IMapper mapper, UserRepository userRepository, ScheduleRepository scheduleRepository, CourseRepository courseRepository, DataContext context)
         {
+            _context = context;
             _mapper = mapper;
             _courseRepository = courseRepository;
             _userRepository = userRepository;
@@ -292,6 +298,59 @@ namespace web_server.Services
             return true;
         }
 
+        public async Task RemoveTutorScheduleV2(RemoveLessonRequest request, IHubContext<NotifHub> _hubContext)
+        {
+            var managerId = await _userRepository.GetManagerId();
+
+            var schedule = await _context.Schedules
+                .FirstOrDefaultAsync(m => m.TutorId == request.TutorId
+                                       && m.UserId == request.UserId
+                                       && m.Id == request.ScheduleId
+                                       && m.RemoveDate == DateTime.MinValue);
+
+            if (schedule == null)
+            {
+                return;
+            }
+
+            schedule.RemoveDate = request.Curr;
+
+            if (request.UserId == 1)
+            {
+                var tutor = await _userRepository.GetTutor(Convert.ToInt32(request.TutorId));
+                var date = tutor.UserDates.FirstOrDefault(m => m.dateTime == request.Curr);
+                tutor.UserDates.Remove(date);
+            }
+
+            var user = await _userRepository.GetStudent(request.UserId);
+            await CalculateNoWarn2(user, _hubContext);
+
+            await _context.SaveChangesAsync();
+
+            string type = schedule.Looped ? "постоянное" : "разовое";
+            string message = Constants.NOTIF_REMOVE_LESSON
+                .Replace("{tutorName}", schedule.TutorFullName)
+                .Replace("{type}", type)
+                .Replace("{studentName}", schedule.UserName)
+                .Replace("{date}", request.Curr.ToString("dd.MM.yyyy HH:mm"));
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    // Студенту
+                    await NotifHub.SendNotification(message, request.UserId.ToString(), _hubContext, _mapper);
+                    // Менеджеру
+                    await NotifHub.SendNotification(message, managerId.ToString(), _hubContext, _mapper);
+                }
+                catch (Exception ex)
+                {
+                    // Обязательно логируем ошибки внутри фоновых задач, иначе они упадут молча
+                    Console.WriteLine($"Ошибка отправки уведомления: {ex.Message}");
+                }
+            });
+        }
+
         public async Task<Tutor> RemoveTutorSchedule(string args, IHubContext<NotifHub> _hubContext)
         {
 
@@ -307,15 +366,12 @@ namespace web_server.Services
             if (tutor_id != null)
             {
                 var schedule = tutor.Schedules.FirstOrDefault(m => m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id) && m.RemoveDate == DateTime.MinValue);
-                //ScheduleDTO schedule = await _scheduleRepository.GetScheduleByFunc(m => m.TutorId == Convert.ToInt32(tutor_id) && m.StartDate == dateTime && m.UserId == Convert.ToInt32(user_id) && m.RemoveDate == DateTime.MinValue);
 
                 if (schedule != null)
                 {
                     schedule.RemoveDate = curr;
                     user.Schedules.FirstOrDefault(m=>m.Id == schedule.Id).RemoveDate = curr;
                 }
-
-                // await _scheduleRepository.Update(schedule);
 
                 if (user_id == "1")
                 {
@@ -325,37 +381,11 @@ namespace web_server.Services
 
                 await CalculateNoWarn2(user,_hubContext);
 
-                //var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.UserId == Convert.ToInt32(user_id)).ToList();
-                ////var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user_id) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
-                //list.Reverse();
-                //foreach (var item in list)
-                //{
-                //    if (item.WaitPaymentDate != DateTime.MinValue)
-                //    {
-                //        item.WaitPaymentDate = DateTime.MinValue;
-                //    }
-                //}
-
-
-
-                //var sorted = ScheduleService.SortSchedulesForUnpaid(list);
-
-
-                //foreach (var item in sorted)
-                //{
-
-                //    var sch2 = list.FirstOrDefault(m => m.Id == item.ScheduleId); //_scheduleRepository.GetScheduleById(item.ScheduleId);
-
-                //    sch2.WaitPaymentDate = item.Nearest;
-
-                //    // await _scheduleRepository.Update(sch2);
-                //}
-
                 await _userRepository.SaveChanges(tutor);
 
-
                 string type = schedule.Looped == true ? "постоянное" : "разовое";
-                Task.Run(async () =>
+                
+                await Task.Run(async () =>
                 {
                     await NotifHub.SendNotification(Constants.NOTIF_REMOVE_LESSON.Replace("{tutorName}", schedule.TutorFullName).Replace("{type}", type).Replace("{studentName}", schedule.UserName).Replace("{date}", dateTime.ToString("dd.MM.yyyy HH:mm")), user_id, _hubContext, _mapper);
 

@@ -1,14 +1,18 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using web_server.Database;
 using web_server.Database.Repositories;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
+using web_server.Models.V2;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
@@ -23,15 +27,18 @@ namespace web_server.Services
     {
         ScheduleRepository _scheduleRepository;
         UserRepository _userRepository;
-        NotificationRepository _notificationRepository;
         IMapper _mapper;
-        public ScheduleService(IMapper mapper, ScheduleRepository scheduleRepository, UserRepository userRepository, NotificationRepository notificationRepository)
+        DataContext _context;
+
+
+        public ScheduleService(DataContext _context, IMapper mapper, ScheduleRepository scheduleRepository, UserRepository userRepository)
         {
+            this._context = _context;
             _mapper = mapper;
             _scheduleRepository = scheduleRepository;
             _userRepository = userRepository;
-            _notificationRepository = notificationRepository;
         }
+
         public async Task<Schedule> AddScheduleFromUser(string args, IHubContext<NotifHub> _hubContext)
         {
             Stopwatch s = new Stopwatch();
@@ -653,7 +660,16 @@ namespace web_server.Services
             }
 
             schedule.WaitPaymentDate = DateTime.MinValue;
-            await _scheduleRepository.Update(schedule);
+            try
+            {
+                await _scheduleRepository.Update(schedule);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
 
 
         }
@@ -731,6 +747,224 @@ namespace web_server.Services
 
             await _scheduleRepository.Update(schedule);
 
+        }
+
+        public async Task<ScheduleWeekResponseDto> GetScheduleAsync(int userId, string role, DateTime from, DateTime to)
+        {
+            var query = _context.Schedules
+                .Include(m => m.ReadyDates)
+                .Include(m => m.SkippedDates)
+                .Include(m=>m.Course)
+                .Include(m=>m.Student)
+                .Include(m => m.RescheduledLessons)
+                .AsQueryable();
+            
+            if (role == "Tutor")
+            {
+                query = query.Where(m => m.TutorId == userId);
+            }
+            else if (role == "Student")
+            {
+                query = query.Where(m => m.Student.UserId == userId);
+            }
+
+            var result = await query.ToListAsync();
+            var response = new ScheduleWeekResponseDto()
+            {
+                WeekStart = from,
+                WeekEnd = to,
+            };
+            foreach (var schedule in result)
+            {
+                var lessons = Build(schedule, from, to);
+                if (!lessons.Any())
+                    continue;
+                response.Lessons.AddRange(lessons);
+            }
+            return response;
+        }
+        private List<LessonOccurrenceDto> Build(
+    ScheduleDTO schedule,
+    DateTime from,
+    DateTime to)
+        {
+            var lessons = GenerateOccurrences(schedule, from, to);
+
+            ApplySkipped(schedule, lessons);
+
+            ApplyReady(schedule, lessons);
+
+            ApplyOneTimeReschedules(schedule, lessons);
+
+            ApplyPaymentWarnings(schedule, lessons);
+
+            return lessons;
+        }
+        
+        private List<LessonOccurrenceDto> GenerateOccurrences(
+    ScheduleDTO schedule,
+    DateTime from,
+    DateTime to)
+        {
+            var lessons = new List<LessonOccurrenceDto>();
+
+            if (!schedule.Looped)
+            {
+                if (schedule.RemoveDate != DateTime.MinValue && schedule.StartDate >= schedule.RemoveDate)
+                {
+                    return lessons;
+                }
+
+                if (schedule.StartDate >= from && schedule.StartDate <= to)
+                {
+                    lessons.Add(CreateOccurrence(schedule, schedule.StartDate));
+                }
+
+                return lessons;
+            }
+
+            var current = schedule.StartDate;
+
+            while (current < from)
+            {
+                current = current.AddDays(7);
+            }
+
+            while (current <= to)
+            {
+                if (schedule.RemoveDate != DateTime.MinValue && current >= schedule.RemoveDate)
+                {
+                    break;
+                }
+
+                lessons.Add(CreateOccurrence(schedule, current));
+
+                current = current.AddDays(7);
+            }
+
+            return lessons;
+        }
+
+        private LessonOccurrenceDto CreateOccurrence(
+    ScheduleDTO schedule,
+    DateTime start)
+        {
+            return new LessonOccurrenceDto
+            {
+                ScheduleId = schedule.Id,
+
+                Start = start,
+
+                StudentName = schedule.Student.FirstName + " " + schedule.Student.LastName,
+                StudentId = schedule.UserId,
+                TutorId = schedule.TutorId,
+
+                CourseTitle = schedule.Course?.Title,
+
+                Status = schedule.Status,
+
+                IsLooped = schedule.Looped
+            };
+        }
+
+        private void ApplyReady(
+    ScheduleDTO schedule,
+    List<LessonOccurrenceDto> lessons)
+        {
+            foreach (var ready in schedule.ReadyDates)
+            {
+                var lesson = lessons.FirstOrDefault(x => x.Start == ready.Date);
+
+                if (lesson != null)
+                {
+                    lesson.Status = Status.Проведен;
+                }
+            }
+        }
+
+        private void ApplySkipped(
+    ScheduleDTO schedule,
+    List<LessonOccurrenceDto> lessons)
+        {
+            foreach (var skipped in schedule.SkippedDates)
+            {
+                var lesson = lessons.FirstOrDefault(x => x.Start == skipped.Date);
+
+                if (lesson != null)
+                {
+                    lesson.Status = Status.Пропущен;
+                }
+            }
+        }
+
+        private void ApplyOneTimeReschedules(ScheduleDTO schedule, List<LessonOccurrenceDto> lessons)
+        {
+            // 1. Постоянный перенос
+            if (schedule.RescheduledDate != DateTime.MinValue)
+            {
+                // Находим старый урок, с которого начался перенос, и помечаем его
+                var oldLesson = lessons.FirstOrDefault(m => m.Start == schedule.RescheduledDate);
+                if (oldLesson != null)
+                {
+                    oldLesson.Status = Status.Перенесен;
+                    // Сюда тоже можно добавить RescheduleInfo, если у старой модели есть NewDate
+                    oldLesson.RescheduleInfo = new RescheduledLessons
+                    {
+                        OldTime = schedule.RescheduledDate,
+                        NewTime = schedule.NewDate
+                    };
+                }
+                return;
+            }
+
+            // 2. Разовые переносы
+            foreach (var move in schedule.RescheduledLessons)
+            {
+                // Ищем старый урок в сгенерированной сетке
+                var oldLesson = lessons.FirstOrDefault(x => x.Start == move.OldTime);
+
+                if (oldLesson == null)
+                    continue;
+
+                // ВАЖНО: Мы НЕ удаляем старый урок (lessons.Remove).
+                // Мы оставляем его на старом месте, но меняем статус на "Перенесен" (4)
+                oldLesson.Status = Status.Перенесен;
+
+                // Прикрепляем детали переноса для тултипа на фронтенде
+                oldLesson.RescheduleInfo = new RescheduledLessons
+                {
+                    OldTime = move.OldTime,
+                    NewTime = move.NewTime,
+                    Initiator = move.Initiator,
+                    Reason = move.Reason,
+                };
+
+                // НОВЫЙ урок мы сюда НЕ добавляем, так как GenerateOccurrences 
+                // сам найдет в базе новую запись Schedule и отрисует её там, где надо.
+            }
+        }
+        
+        private void ApplyPaymentWarnings(
+    ScheduleDTO schedule,
+    List<LessonOccurrenceDto> lessons)
+        {
+            foreach (var lesson in lessons)
+            {
+                if (schedule.WaitPaymentDate == DateTime.MinValue)
+                    continue;
+
+                if (schedule.Status != Status.ОжидаетОплату)
+                    continue;
+
+                var deadline = schedule.WaitPaymentDate.AddHours(24);
+
+                lesson.PaymentWarning = new PaymentWarning
+                {
+                    IsActive = deadline > DateTime.UtcNow,
+                    DeadlineUtc = deadline,
+                    MinutesLeft = (int)(deadline - DateTime.UtcNow).TotalMinutes
+                };
+            }
         }
     }
 }

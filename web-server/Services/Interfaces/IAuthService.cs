@@ -14,6 +14,7 @@ namespace web_server.Services.Interfaces
         public Task<string> GetLiteUserById(string id);
 
         public Task<string> GetUserByToken(string token);
+        public Task<User> GetUserByTokenV2(string token);
 
         public Task<string> GetUserById(string id);
         public Task<bool> AddRegistration(Registration args);

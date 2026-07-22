@@ -7,6 +7,7 @@ using web_server.Database.Repositories;
 using web_server.Models;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
+using web_server.Models.V2;
 using web_server.Services.Interfaces;
 
 namespace web_server.Services
@@ -168,6 +169,152 @@ namespace web_server.Services
             return _mapper.Map<Student>(user);
         }
 
+        public async Task<Schedule> RescheduleLesson(RescheduleLessonDto request, IHubContext<NotifHub> _hubContext)
+        {
+            // 1. Достаем старое расписание из БД. 
+            // Предполагается, что у тебя есть метод вроде _scheduleRepository.GetById или мы ищем внутри пользователя
+            // Для примера я использую воображаемый метод GetScheduleById (адаптируй под свой репозиторий)
+            var oldSchedule = await _userRepository.GetScheduleById(request.ScheduleId);
+
+            if (oldSchedule == null)
+            {
+                return null; // Или лучше выбросить exception (NotFound)
+            }
+
+            // 2. Берем все метаданные прямо из старого занятия (фронту больше не нужно их слать)
+            var tutor_id = oldSchedule.TutorId;
+            var user_id = oldSchedule.UserId;
+            var courseId = oldSchedule.CourseId;
+            var oldDateTime = oldSchedule.StartDate;
+            var cureDate = oldSchedule.StartDate; // Дата, которую мы переносим
+
+            var newDateTime = request.NewStart; // Дата и время уже склеены на фронте
+            var loop = request.IsLooped;
+            var initiator = request.Initiator;
+            var reason = request.Reason;
+
+            var user = await _userRepository.GetStudent(user_id);
+            var tutor = await _userRepository.GetTutor(tutor_id);
+
+            if (loop)
+            {
+                // --- ПОСТОЯННЫЙ ПЕРЕНОС ---
+                var alredyUsed = tutor.Schedules.Where(m => m.StartDate.DayOfWeek == newDateTime.DayOfWeek && m.StartDate.Hour == newDateTime.Hour).ToList();
+
+                if (alredyUsed.Count != 0)
+                {
+                    return null; // Время уже занято
+                }
+
+                var new_model = new ScheduleDTO
+                {
+                    TutorId = tutor_id,
+                    UserId = user_id,
+                    TutorFullName = $"{tutor.FirstName} {tutor.LastName}",
+                    UserName = $"{user.FirstName} {user.LastName}",
+                    Course = tutor.Courses.FirstOrDefault(m => m.CourseId == courseId)?.Course,
+                    StartDate = newDateTime,
+                    Looped = true,
+                };
+
+                if (oldSchedule.WaitPaymentDate != DateTime.MinValue)
+                {
+                    new_model.WaitPaymentDate = oldSchedule.WaitPaymentDate;
+                }
+
+                // Обновляем старое расписание
+                oldSchedule.Status = Status.Перенесен;
+                oldSchedule.RescheduledDate = request.OldDate;
+                oldSchedule.NewDate = newDateTime;
+
+                user.Schedules.Add(new_model);
+                await CalculateNoPaidWarn(user, _hubContext);
+
+                await _userRepository.SaveChanges(user);
+
+                // Уведомления
+                await Task.Run(async () =>
+                {
+                    await NotifHub.SendNotification(Constants.NOTIF_REGULAR_RESCHEDULE
+                        .Replace("{tutorName}", $"{tutor.FirstName} {tutor.LastName}")
+                        .Replace("{studentName}", $"{user.FirstName} {user.LastName}")
+                        .Replace("{oldDate}", cureDate.ToString("dd.MM.yyyy HH:mm"))
+                        .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")),
+                        (await _userRepository.GetManagerId()).ToString(), _hubContext, _mapper);
+
+                    await NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT_REGULAR
+                        .Replace("{name}", $"{tutor.FirstName} {tutor.LastName}")
+                        .Replace("{dateOld}", cureDate.ToString("dd.MM.yyyy HH:mm"))
+                        .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")),
+                        user_id.ToString(), _hubContext, _mapper);
+                });
+
+                return _mapper.Map<Schedule>(new_model);
+            }
+            else
+            {
+                // --- РАЗОВЫЙ ПЕРЕНОС ---
+                if (tutor.Schedules.Any(m => m.StartDate == newDateTime))
+                {
+                    return null; // Время уже занято
+                }
+
+                var new_model = new Schedule
+                {
+                    TutorId = tutor_id,
+                    UserId = user_id,
+                    TutorFullName = $"{tutor.FirstName} {tutor.LastName}",
+                    UserName = $"{user.FirstName} {user.LastName}",
+                    Course = _mapper.Map<Course>(tutor.Courses.FirstOrDefault(m => m.CourseId == courseId)?.Course),
+                    StartDate = newDateTime,
+                    Looped = false,
+                };
+
+                if (oldSchedule.Status == Status.ОжидаетОплату)
+                {
+                    new_model.Status = Status.ОжидаетОплату;
+                }
+                else if (!oldSchedule.Looped)
+                {
+                    oldSchedule.Status = Status.Перенесен;
+                }
+
+                oldSchedule.RescheduledLessons.Add(new RescheduledLessons()
+                {
+                    Initiator = initiator,
+                    NewTime = newDateTime,
+                    OldTime = cureDate,
+                    Reason = reason
+                });
+
+                user.Schedules.Add(_mapper.Map<ScheduleDTO>(new_model));
+
+                await CalculateNoPaidWarn(user, _hubContext);
+
+                await _userRepository.SaveChanges(tutor);
+                await _userRepository.SaveChanges(user);
+
+                // Уведомления
+                await Task.Run(async () =>
+                {
+                    await NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
+                        .Replace("{name}", $"{tutor.FirstName} {tutor.LastName}")
+                        .Replace("{dateOld}", cureDate.ToString("dd.MM.yyyy HH:mm"))
+                        .Replace("{dateNew}", newDateTime.ToString("dd.MM.yyyy HH:mm")),
+                        user_id.ToString(), _hubContext, _mapper);
+
+                    await NotifHub.SendNotification(Constants.NOTIF_RESCHEDULE
+                        .Replace("{tutorName}", $"{tutor.FirstName} {tutor.LastName}")
+                        .Replace("{studentName}", $"{user.FirstName} {user.LastName}")
+                        .Replace("{oldDate}", cureDate.ToString("dd.MM.yyyy HH:mm"))
+                        .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")),
+                        (await _userRepository.GetManagerId()).ToString(), _hubContext, _mapper);
+                });
+
+                return new_model;
+            }
+        }
+
         public async Task<Schedule> RescheduleLesson(string args, IHubContext<NotifHub> _hubContext)
         {
             var split = args.Split(';');
@@ -240,7 +387,7 @@ namespace web_server.Services
 
 
 
-                Task.Run(async () =>
+                await Task.Run(async () =>
                 {
                     // отправка манагеру что постоянный перенос
                     await NotifHub.SendNotification(Constants.NOTIF_REGULAR_RESCHEDULE.Replace("{tutorName}", tutor.FirstName + " " + tutor.LastName)
@@ -256,13 +403,12 @@ namespace web_server.Services
                         .Replace("{dateNew}", newDateTime.ToString("dd.MM.yyyy HH:mm")), user_id.ToString(), _hubContext, _mapper);
 
                 });
+
                 return _mapper.Map<Schedule>(new_model);
             }
             else
             {
-                var alredyUsed = tutor.Schedules.Where(m => m.StartDate == newDateTime).ToList();
-
-                if (alredyUsed.Count != 0)
+                if (tutor.Schedules.Where(m => m.StartDate == newDateTime).Any())
                 {
                     return null;
                 }
@@ -309,9 +455,8 @@ namespace web_server.Services
 
                 await _userRepository.SaveChanges(tutor);
                 await _userRepository.SaveChanges(user);
-                //user = await _userRepository.GetStudent(user_id);
                 
-                Task.Run(async () =>
+                await Task.Run(async () =>
                 {
                     // отправка юзеру что разовый перенос
                     await NotifHub.SendNotification(Constants.NOTIF_LESSON_WAS_RESCHEDULED_FOR_STUDENT
@@ -326,6 +471,7 @@ namespace web_server.Services
                         .Replace("{newDate}", newDateTime.ToString("dd.MM.yyyy HH:mm")), (await _userRepository.GetManagerId()).ToString(), _hubContext, _mapper);
 
                 });
+
                 return new_model;
             }
         }
@@ -340,8 +486,7 @@ namespace web_server.Services
                     user.StartWaitPayment = DateTime.Now;
                 }
                 var ff = user.Schedules.Where(m => m.WaitPaymentDate != DateTime.MinValue).ToList();
-                //var ff = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue);
-                //var ff = TestData.Schedules.Where(m => m.UserId == user.UserId && m.WaitPaymentDate != DateTime.MinValue).ToList();
+              
                 if (ff.Count > 0)
                 {
                     foreach (var item in ff)
@@ -350,11 +495,9 @@ namespace web_server.Services
                     }
                 }
 
-                //await _scheduleRepository.UpdateRange(ff);
                 var list = user.Schedules.Where(m => m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).ToList();
-                //var list = await _scheduleRepository.GetSchedulesByFunc(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue);
                 list.Reverse();
-                //var list = TestData.Schedules.Where(m => m.UserId == Convert.ToInt32(user.UserId) && m.Status == Status.Ожидает && m.RemoveDate == DateTime.MinValue && m.RemoveDate == DateTime.MinValue).Reverse().ToList();
+               
                 foreach (var item in list)
                 {
                     if (item.WaitPaymentDate != DateTime.MinValue)
@@ -368,28 +511,19 @@ namespace web_server.Services
                 foreach (var item in sorted)
                 {
                     var sch2 = user.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
-                    //var sch2 = TestData.Schedules.FirstOrDefault(m => m.Id == item.ScheduleId);
 
                     sch2.WaitPaymentDate = item.Nearest;
-
-                    //await _scheduleRepository.Update(sch2);
                 }
 
                 var manager = (await _userRepository.GetManagerId());
-               // await _userRepository.SaveChanges(user);
-                Task.Run(async () =>
+
+                await Task.Run(async () =>
                 {
                     await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT, user.UserId.ToString(), _hubContext, _mapper);
                     await NotifHub.SendNotification(Constants.NOTIF_ZERO_LESSONS_LEFT_FOR_MANAGER.Replace("{name}",
                         user.FirstName + " " + user.LastName), manager.ToString(), _hubContext, _mapper);
                 });
             }
-
-           // await _userRepository.SaveChanges(user);
-
-          
-
-
         }
     }
 }

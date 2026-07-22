@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using web_server.Models.DBModels;
 using web_server.Models.DTO;
+using web_server.Models.V2;
 
 namespace web_server.Services.Interfaces
 {
@@ -14,5 +16,8 @@ namespace web_server.Services.Interfaces
         public Task<ScheduleDTO> GetScheduleById(int id);
         public Task<bool> Update(ScheduleDTO schedule);
         public Task<string> ChangeStatus(string args, IHubContext<NotifHub> _hubContext);
+
+        //
+        public Task<ScheduleWeekResponseDto> GetScheduleAsync(int userId, string role, DateTime from, DateTime to);
     }
 }

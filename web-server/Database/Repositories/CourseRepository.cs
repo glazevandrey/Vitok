@@ -12,6 +12,7 @@ namespace web_server.Database.Repositories
     {
         DataContext _context;
         IMapper _mapper;
+
         public CourseRepository(IMapper mapper, DataContext context)
         {
             _mapper = mapper;
@@ -27,16 +28,6 @@ namespace web_server.Database.Repositories
         public async Task<CourseDTO> GetCourse(int id)
         {
             return await _context.Courses.Include(m => m.Goal).FirstOrDefaultAsync(m => m.Id == id);
-        }
-
-        public async Task<Course> GetCourseById(int id)
-        {
-            var res = await _context.Courses.Include(m => m.Goal).FirstOrDefaultAsync(m => m.Id == id);
-
-            _context.Entry(res).State = EntityState.Detached;
-
-
-            return _mapper.Map<Course>(res);
         }
 
         public async Task<List<Course>> GetAllCourses()
@@ -76,11 +67,7 @@ namespace web_server.Database.Repositories
         {
             return await _context.Tariffs.ToListAsync();
         }
-        public async Task<Goal> GetGoalById(int id)
-        {
-            var res = await _context.Goals.Include(m => m.Courses).FirstOrDefaultAsync(m => m.Id == id);
-            return _mapper.Map<Goal>(res);
-        }
+
         public async Task Save(CourseDTO course)
         {
             try
@@ -96,27 +83,6 @@ namespace web_server.Database.Repositories
             _context.Entry(course).State = EntityState.Detached;
         }
 
-        public async Task<bool> Update(CourseDTO course)
-        {
-            try
-            {
-                _context.Courses.Update(course);
-                await _context.SaveChangesAsync();
-                _context.Entry(course).State = EntityState.Detached;
-                var dd = _context.ChangeTracker.Entries();
-                foreach (var item in dd)
-                {
-                    item.State = EntityState.Detached;
-                }
-                return true;
-            }
-            catch (System.Exception ex)
-            {
-
-                throw ex;
-            }
-
-        }
         public async Task<bool> AddCourse(CourseDTO course)
         {
             _context.Courses.Add(course);

@@ -107,8 +107,13 @@ namespace web_server.Services
             }
             
             return _jsonService.PrepareSuccessJson(Newtonsoft.Json.JsonConvert.SerializeObject(user)); // 6
-        } 
+        }
 
+        public async Task<User> GetUserByTokenV2(string token)
+        {
+            var user = await _userRepository.GetUserByToken(token);
+            return user;
+        }
 
         public async Task<string> GetUserByToken(string token)
         {
